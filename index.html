@@ -530,12 +530,8 @@ $('moreList').addEventListener('click', async (e) => {
   if (open) return openPage(open.dataset.open);
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (act === 'legal') showDisclaimer();
-  else if (act === 'pdf') {
-    const html = buildReportHtml(rows, { maskIds: false, name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(), faults });
-    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-    if (!window.open(url, '_blank')) toast(t('msg.popup'), 'warn');
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  } else if (act === 'backup') manualBackup();
+  else if (act === 'pdf') openPage('pdf');
+  else if (act === 'backup') manualBackup();
   else if (act === 'refresh') { try { await refresh(); } catch (err) { await disconnect(); toast(t('msg.readError', { error: err.message }), 'err'); } }
   else if (act === 'disconnect') { await disconnect(); toast(t('msg.disconnected')); }
 });
@@ -908,6 +904,28 @@ const PAGES = {
       [t('comp.lock'), t(val('lockEnabled') ? 'comp.lockOn' : 'comp.lockOff'), ''],
     ];
     return { title: t('comp.title'), html: infoGroup(items) };
+  },
+  // PDF-Bericht: hell (zum Ausdrucken) oder dunkel (Self-Stil)
+  pdf() {
+    const choice = (theme, bg, fg) => `<button class="row" data-theme="${theme}">
+      <span class="ico" style="background:${bg};color:${fg};border:1px solid var(--self-line-strong)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS.pdf}</svg></span>
+      <span class="t">${esc(t(`ui.pdf.${theme}`))}<small>${esc(t(`ui.pdf.${theme}Hint`))}</small></span><span class="chev">›</span></button>`;
+    return {
+      title: t('tools.pdf'),
+      html: `<p class="explain">${esc(t('ui.pdf.ask'))}</p>
+        <div class="group" style="margin-top:12px">${choice('light', '#ffffff', '#1f7763')}${choice('dark', '#0d1117', '#43d3ad')}</div>`,
+      bind() {
+        $('sheetBody').onclick = (e) => {
+          const b = e.target.closest('[data-theme]');
+          if (!b) return;
+          const html = buildReportHtml(rows, { maskIds: false, name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(), faults, theme: b.dataset.theme });
+          const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+          if (!window.open(url, '_blank')) toast(t('msg.popup'), 'warn');
+          setTimeout(() => URL.revokeObjectURL(url), 60000);
+          closePage();
+        };
+      },
+    };
   },
   ridemodes() { return { title: t('ride.modesTitle'), html: rideHtml().modes }; },
   stats() { return { title: t('ride.statsTitle'), html: rideHtml().stats }; },
