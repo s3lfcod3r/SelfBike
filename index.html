@@ -179,7 +179,6 @@
     <div id="home" class="hidden">
       <div class="alert hidden" id="pendingHint"></div>
       <div class="tiles" id="tiles"></div>
-      <div id="ride"></div>
       <div id="moreList"></div>
     </div>
   </section>
@@ -273,13 +272,13 @@ import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
 import { DemoUsb } from './lib/demo-usb.js';
-import { savePending, loadPending, clearPending, checkPending } from './lib/care.js';
+import { savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate } from './lib/care.js';
 import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
 import { readFaults } from './lib/diagnostics.js';
 import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
 import { loadCatalog, lookupIssue, importCatalog, catalogInfo } from './lib/issue-catalog.js';
 import { buildReportHtml } from './lib/report.js';
-import { addSnapshot, snapshotFromRows } from './lib/history.js';
+import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
 import { LANGS, t, setLang, detectLang, applyStatic, fmtNum, fmtDate, fmtDateTime, lang } from './lib/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -408,12 +407,11 @@ function renderHome() {
     <button class="tile" data-open="light" style="text-align:left;cursor:pointer;color:inherit"><div class="k">${esc(t('light.title'))}</div>
       <div style="font-size:16px;font-weight:600;margin-top:4px">${esc(light)}</div>
       <div class="c">${esc(ok('lightPower') ? `${fmtNum(val('lightPower'), 1)} W` : '')}</div></button>`;
-  renderRide();
   renderPending();
 }
 
-// Strecke pro Fahrmodus (mit Reichweite) und Fahrstatistik
-function renderRide() {
+// Strecke pro Fahrmodus (mit Reichweite) und Fahrstatistik – Inhalt der beiden Unterseiten unter „Dein Rad“
+function rideHtml() {
   const maxDist = Math.max(1, ...modes.map((m) => m.distance ?? 0));
   const sumDist = modes.reduce((n, m) => n + (m.distance ?? 0), 0);
   // Reichweite pro Modus: Restenergie ÷ (Energie ÷ Strecke)
@@ -439,11 +437,13 @@ function renderRide() {
   if (hours != null) stats.push([t('ride.hours'), `${fmtNum(hours)} h`, motorHours != null ? t('ride.hoursMotor', { h: fmtNum(motorHours) }) : '']);
   if (ok('cadence')) stats.push([t('ride.cadence'), txt('cadence'), t('ride.cadenceHint')]);
 
-  $('ride').innerHTML = `
-    ${modes.length ? `<p class="gh">${esc(t('ride.modesTitle'))}</p><div class="group">${modeRows}</div>
-      <p class="foot">${esc(t('ride.modesFoot'))}</p>` : ''}
-    ${stats.length ? `<p class="gh">${esc(t('ride.statsTitle'))}</p><div class="group noico">${stats.map(([k, v, hint]) =>
-      `<div class="row static"><span class="t">${esc(k)}${hint ? `<small>${esc(hint)}</small>` : ''}</span><span class="kvv" style="color:var(--self-text);font-weight:600">${esc(v)}</span></div>`).join('')}</div>` : ''}`;
+  return {
+    modes: modes.length ? `<div class="group">${modeRows}</div><p class="foot">${esc(t('ride.modesFoot'))}</p>`
+      : `<p class="explain">${esc(t('ride.noModes'))}</p>`,
+    stats: stats.length ? `<div class="group noico">${stats.map(([k, v, hint]) =>
+      `<div class="row static"><span class="t">${esc(k)}${hint ? `<small>${esc(hint)}</small>` : ''}</span><span class="kvv" style="color:var(--self-text);font-weight:600">${esc(v)}</span></div>`).join('')}</div>`
+      : `<p class="explain">${esc(t('ride.noStats'))}</p>`,
+  };
 }
 
 // Unterbrochene Änderung (Kabel/Browser weg): zeigen, welcher Schritt im Rad angekommen ist
@@ -471,7 +471,12 @@ const ICONS = {
   display: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 17h4"/>',
   battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M6 10v4M9 10v4"/>',
   faults: '<path d="M12 3 2 20h20zM12 10v4M12 17v.5"/>',
-  all: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+  ridemodes: '<path d="M4 18 9 9l4 6 3-4 4 7z"/>',
+  stats: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
+  batterycheck: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M7 12l2 2 4-4"/>',
+  range: '<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
+  details: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/>',
+  components: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>',
   backup: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   pdf: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>',
   lang: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
@@ -501,7 +506,12 @@ function renderMore() {
     ${rows.length ? `<p class="gh">${esc(t('ui.groupBike'))}</p><div class="group">
       ${navRow('battery', t('more.battery'), '', '#22a35a')}
       ${navRow('faults', t('ui.faults'), faultCount() ? String(faultCount()) : t('ui.faultsNone'), '#e5534b')}
-      ${navRow('all', t('ui.allValues'), '', '#64748b')}
+      ${navRow('batterycheck', t('bc.title'), '', '#22a35a')}
+      ${navRow('range', t('rg.title'), '', '#22a35a')}
+      ${navRow('components', t('comp.title'), '', '#64748b')}
+      ${navRow('details', t('more.title'), '', '#64748b')}
+      ${navRow('ridemodes', t('ride.modesTitle'), '', '#3b82f6')}
+      ${navRow('stats', t('ride.statsTitle'), '', '#8b5cf6')}
     </div>
     <p class="gh">${esc(t('ui.groupSafe'))}</p><div class="group">
       <button class="row" data-act="backup">${icon('backup', '#0ea5e9')}<span class="t">${esc(t('backup.btn'))}</span></button>
@@ -568,6 +578,9 @@ function closePage() { stack.length = 0; $('sheet').classList.remove('open'); }
 $('sheetBack').onclick = () => { stack.pop(); if (stack.length) drawPage(); else closePage(); };
 $('sheet').addEventListener('click', (e) => { if (e.target === $('sheet')) closePage(); });
 
+// Liste aus [Bezeichnung, Wert, Erklärung, Farbklasse]; leere Einträge (false/null) werden übersprungen
+const infoGroup = (items) => `<div class="group noico">${items.filter(Boolean).map(([k, v, hint, cls = '']) => `<div class="row static"><span class="t">
+  <small>${esc(k)}</small><span class="${cls}" style="font-weight:600;display:block">${esc(v)}</span>${hint ? `<small>${esc(hint)}</small>` : ''}</span></div>`).join('')}</div>`;
 const locked = (cond) => (cond ? `<div class="alert">${esc(t('ui.locked'))}</div>` : '');
 const saveBtn = (id = 'save', disabled = false) => `<button class="btn-big" id="${id}"${disabled ? ' disabled' : ''}>${esc(t('ui.save'))}</button>`;
 
@@ -749,20 +762,94 @@ const PAGES = {
 
   battery() {
     const [hText, hKind] = health(val('batterySoh'));
-    const item = (label, value, cls = '') => `<div class="row static"><span class="t">${esc(label)}</span><span class="kvv ${cls}">${esc(value)}</span></div>`;
+    const deep = val('batteryDeepDischarge');
+    const thermal = val('batteryThermal');
     return {
       title: t('more.battery'),
-      html: `<div class="group noico">
-        ${item(t('bat.soc'), txt('batterySoc'))}
-        ${item(t('bat.soh'), hText ? `${txt('batterySoh')} · ${hText}` : txt('batterySoh'), hKind)}
-        ${item(t('bat.cycles'), txt('batteryCycles'))}
-        ${item(t('bat.remaining'), txt('batteryRiderWh'))}
-        ${item(t('bat.energy'), txt('batteryEnergy'))}
-        ${item(t('more.capacity'), txt('batteryCapacityAh'))}
-        ${item(t('more.voltage'), txt('batteryVoltage'))}
-        ${item(t('more.tempNow'), `${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`)}
-        ${item(t('bat.model'), txt('batteryProduct'))}
-        </div><p class="foot">${esc(t('bat.sohHint'))}</p>`,
+      html: infoGroup([
+        [t('bat.soc'), txt('batterySoc'), t('bat.socHint')],
+        [t('bat.soh'), hText ? `${txt('batterySoh')} · ${hText}` : txt('batterySoh'), t('bat.sohHint'), hKind],
+        [t('bat.cycles'), txt('batteryCycles'), t('bat.cyclesHint')],
+        [t('bat.remaining'), txt('batteryRiderWh'), t('bat.remainingHint')],
+        ok('batteryCapacityAh') && [t('more.capacity'), txt('batteryCapacityAh'), ok('batteryDeliveredAh') ? t('more.delivered', { ah: txt('batteryDeliveredAh'), wh: txt('batteryEnergy') }) : ''],
+        ok('batteryVoltage') && [t('more.voltage'), txt('batteryVoltage'), ok('batteryMaxCurrent') ? t('more.maxCurrent', { a: txt('batteryMaxCurrent') }) : ''],
+        ok('batteryTempNow') && [t('more.tempNow'), `${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`, t('more.tempNowHint')],
+        thermal != null && [t('more.thermal'), `${txt('batteryThermal')} · ${t(thermal ? 'more.seen' : 'more.never')}`, t('more.thermalHint'), thermal ? 'warn' : 'good'],
+        deep != null && [t('more.deep'), `${deep} · ${t(deep ? 'more.seen' : 'more.never')}`, t('more.deepHint'), deep ? 'bad' : 'good'],
+        ok('batterySelfDischarge') && [t('more.selfDischarge'), txt('batterySelfDischarge'), ''],
+        [t('bat.model'), txt('batteryProduct'), ''],
+      ]),
+    };
+  },
+
+  // Akku-Check: Faustregeln aus den Akkuwerten (lib/care.js)
+  batterycheck() {
+    const deg = (x) => `${fmtNum(x, 1)} °C`;
+    const shown = {
+      soh: (c) => `${c.vars.v} %`, deep: (c) => String(c.vars.n), thermal: () => txt('batteryThermal'),
+      hot: (c) => deg(c.vars.v), cold: (c) => deg(c.vars.v), charge: (c) => deg(c.vars.v), store: (c) => `${c.vars.v} %`, cycles: () => txt('batteryCycles'),
+    };
+    const cls = { ok: 'good', warn: 'warn', bad: 'bad', info: '' };
+    const checks = batteryChecks(val);
+    const issues = checks.filter((c) => c.state === 'warn' || c.state === 'bad').length;
+    return {
+      title: t('bc.title'),
+      html: checks.length ? `<p class="explain ${issues ? 'warn' : 'good'}" style="font-weight:600">${esc(t(issues ? 'bc.someWarn' : 'bc.allOk', { n: issues }))}</p>
+        <div style="margin-top:10px">${infoGroup(checks.map((c) => [t(`bc.${c.id}`), `${shown[c.id](c)} · ${t(`bc.state.${c.state}`)}`,
+          t(`bc.${c.id}.${c.state}`, { v: shown[c.id](c), n: c.vars.n }), cls[c.state]]))}</div>
+        <p class="foot">${esc(t('bc.note'))}</p>` : `<p class="explain">${esc(t('tile.unreadable'))}</p>`,
+    };
+  },
+
+  // Reichweite: Verbrauch aus der Fahrstatistik des Rads bzw. dem Verlauf
+  range() {
+    const r = rangeEstimate(val, historyFor(val('motorBikeId')));
+    return {
+      title: t('rg.title'),
+      html: r.now == null ? `<p class="explain">${esc(t('rg.none'))}</p>` : `<div class="tiles" style="margin-top:0">
+          <div class="tile"><div class="k">${esc(t('rg.now'))}</div><div class="n">${esc(fmtNum(r.now, 0))}<small>km</small></div></div>
+          <div class="tile"><div class="k">${esc(t('rg.full'))}</div><div class="n">${r.full ? esc(fmtNum(r.full, 0)) : '–'}<small>km</small></div></div></div>
+        <p class="explain" style="margin-top:12px">${esc(t('rg.basis', { v: fmtNum(r.whkm, 1), wh: `${fmtNum(r.usable, 0)} Wh`,
+          src: r.source.kind === 'bike' ? t('rg.srcBike', { km: km(r.source.km * 1000, 0) }) : t('rg.srcHist') }))}</p>
+        <p class="foot">${esc(t('rg.hint'))}</p>`,
+    };
+  },
+
+  // Mehr Details: Bauteil-Alter, eShift, ABS, Sonstiges
+  details() {
+    const ageText = (key) => {
+      const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(txt(key, ''));
+      if (!m) return null;
+      const months = Math.max(0, Math.round((Date.now() - new Date(+m[3], +m[2] - 1, +m[1])) / (30.44 * 86400000)));
+      return [txt(key), months < 24 ? t('more.months', { n: months }) : t('more.years', { n: fmtNum(months / 12, 1) })];
+    };
+    const ages = [['comp.motor', 'motorMade'], ['comp.battery', 'batteryMade'], ['comp.controller', 'controllerMade'], ['fault.ABS', 'absMade']]
+      .map(([label, key]) => { const a = ageText(key); return a ? [t(label), a[0], a[1]] : null; });
+    const wheelSame = ok('wheelOem') && ok('wheelUser') && val('wheelOem') === val('wheelUser');
+    const section = (title, items) => (items.some(Boolean) ? `<p class="gh">${esc(title)}</p>${infoGroup(items)}` : '');
+    return {
+      title: t('more.title'),
+      html: [
+        section(t('more.ages'), ages),
+        ages.some(Boolean) ? `<p class="foot">${esc(t('more.warrantyHint'))}</p>` : '',
+        ok('gearCount') ? section(t('more.eshift'), [
+          [t('more.gears'), txt('gearCount'), ok('gearNow') ? t('more.gearNow', { g: txt('gearNow') }) : ''],
+          ok('gearCadence') && [t('more.cadence'), txt('gearCadence'), ok('gearCadenceLimits') ? t('more.cadenceRange', { r: txt('gearCadenceLimits') }) : ''],
+        ]) : '',
+        ok('absName') ? section(t('fault.ABS'), [
+          [t('more.absProduct'), txt('absName'), t('abs.mode', { m: txt('absMode') })],
+          ok('absModes') && [t('more.absModes'), txt('absModes'), ''],
+          ok('absDisc') && [t('more.absDisc'), txt('absDisc'), ''],
+          ok('absUpdates') && [t('more.absUpdates'), txt('absUpdates'), `Software ${txt('absSoftware')}`],
+        ]) : '',
+        section(t('more.other'), [
+          ok('rangeExtender') && [t('more.powerMore'), t(val('rangeExtender') ? 'word.yes' : 'word.no'), t('more.powerMoreHint')],
+          ok('wheelOem') && [t('more.wheel'), `${txt('wheelUser')} · ${t(wheelSame ? 'more.factory' : 'more.changed')}`, t('more.wheelHint', { w: txt('wheelOem') }), wheelSame ? '' : 'warn'],
+          ok('startMode') && [t('more.startMode'), txt('startMode'), ''],
+          ok('walkAssist') && [t('disp.walk'), txt('walkAssist'), ''],
+          ok('oemBikeNumber') && txt('oemBikeNumber', '') && [t('more.bikeNumber'), txt('oemBikeNumber').trim(), t('more.bikeNumberHint')],
+        ]),
+      ].join(''),
     };
   },
 
@@ -806,15 +893,26 @@ const PAGES = {
     };
   },
 
-  all() {
-    const groups = {};
-    for (const r of rows) (groups[r.group] ??= []).push(r);
-    return {
-      title: t('ui.allValues'),
-      html: Object.entries(groups).map(([g, list]) => `<p class="gh">${esc(g)}</p><div class="group noico">${list.map((r) =>
-        `<div class="row static"><span class="t" style="font-size:15px">${esc(dpLabel(r.key))}</span><span class="kvv">${esc(r.status === 'ok' ? (r.text || '–') : '–')}</span></div>`).join('')}</div>`).join(''),
-    };
+  components() {
+    const model = txt('oemModel', '');
+    const ver = (sw, hw, serial) => `${t('versions', { sw: txt(sw), hw: txt(hw) })} · ${t('comp.serial', { s: txt(serial) })}`;
+    const tuning = val('tuning');
+    const idOk = ok('motorBikeId') && val('motorBikeId') === val('controllerBikeId');
+    const items = [
+      [t('comp.bike'), `${txt('oemBrand')}${model ? ` ${model}` : ''}`, model ? '' : t('comp.modelMissing')],
+      [t('comp.motor'), `${txt('motorName')} · ${txt('motorModel')}`, ver('motorFirmware', 'motorHardware', 'motorSerial')],
+      [t('comp.battery'), txt('batteryProduct'), ver('batterySoftware', 'batteryHardware', 'batterySerial')],
+      [t('comp.controller'), txt('controllerProduct'), ver('controllerSoftware', 'controllerHardware', 'controllerSerial')],
+      ...(ok('absName') ? [[t('fault.ABS'), txt('absName'), `${t('abs.mode', { m: txt('absMode') })} · Software ${txt('absSoftware')}`]] : []),
+      [t('check.region'), txt('region'), ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
+      [dpLabel('tuning'), txt('tuning'), t('check.tuningHint'), tuning ? (tuning.flag || tuning.counter ? 'bad' : 'good') : ''],
+      [t('comp.bikeId'), t(idOk ? 'comp.idOk' : 'comp.idConflict'), '', idOk ? 'good' : 'bad'],
+      [t('comp.lock'), t(val('lockEnabled') ? 'comp.lockOn' : 'comp.lockOff'), ''],
+    ];
+    return { title: t('comp.title'), html: infoGroup(items) };
   },
+  ridemodes() { return { title: t('ride.modesTitle'), html: rideHtml().modes }; },
+  stats() { return { title: t('ride.statsTitle'), html: rideHtml().stats }; },
 };
 
 // ---------- Ändern: Backup → prüfen → schreiben → zurücklesen ----------
