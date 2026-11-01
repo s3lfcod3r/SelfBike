@@ -391,7 +391,7 @@ function renderHome() {
   const light = ok('lightMode') ? (val('lightMode') === 0 ? t('lightMode.0') : LIGHT_MODES[val('lightMode')] ?? txt('lightMode')) : '–';
   $('tiles').innerHTML = `
     <button class="tile" data-open="battery" style="text-align:left;cursor:pointer;color:inherit">
-      <div class="k">${esc(t('tile.battery'))}</div>
+      <div class="k">${esc(t('tile.battery'))} · ${esc(t('bat.soc'))}</div>
       <div class="n">${soc != null ? esc(fmtNum(soc, 0)) : '–'}<small>%</small></div>
       <div class="meter"><i style="width:${Math.max(0, Math.min(100, soc ?? 0))}%;${soc != null && soc < 20 ? 'background:var(--self-yellow)' : ''}"></i></div>
       <div class="c">${hText ? `<span class="${hKind}">${esc(t('tile.health', { health: hText }))}</span> · ` : ''}${esc(txt('batteryRiderWh', '') ? t('tile.remaining', { wh: txt('batteryRiderWh') }) : '')}</div>
