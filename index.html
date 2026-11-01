@@ -17,8 +17,13 @@
   .hidden { display: none !important; }
   .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
 
-  header.big { padding: calc(14px + env(safe-area-inset-top)) 4px 10px; }
-  .topline { display: flex; align-items: center; gap: 8px; min-height: 22px; font-size: 13px; color: var(--self-text-3); }
+  header.big { display: flex; align-items: center; gap: 12px; padding: calc(14px + env(safe-area-inset-top)) 2px 12px; }
+  .hlogo { width: 40px; height: 40px; flex: none; }
+  .htext { flex: 1; min-width: 0; }
+  .htext h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hright { display: flex; align-items: center; gap: 8px; flex: none; font-size: 13px; color: var(--self-text-3); }
+  .hright .langsel { margin-left: 4px; }
+  @media (max-width: 380px) { .hright #connText { display: none; } }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
   .conn.on { color: var(--self-green); } .conn.busy { color: var(--self-yellow); }
   .langsel { margin-left: auto; background: var(--self-bg-2); color: var(--self-text); border: 1px solid var(--self-line-strong);
@@ -28,8 +33,8 @@
               border-top: 1px solid var(--self-line); font-size: 14px; }
   .foothelp a, .foothelp button { color: var(--self-teal-bright); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: none; }
   .badge { font-size: 11px; font-weight: 600; color: var(--self-yellow); border: 1px solid currentColor; border-radius: 6px; padding: 1px 6px; }
-  h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin: 4px 0 0; }
-  .sub { color: var(--self-text-2); margin: 2px 0 0; font-size: 15px; }
+  h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0; line-height: 1.2; }
+  .sub { color: var(--self-text-2); margin: 1px 0 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* Kacheln */
   .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
@@ -150,12 +155,15 @@
 <body>
 
 <div class="wrap">
+  <!-- Kopfleiste: links Logo + Name, rechts Status und Sprache -->
   <header class="big">
-    <div class="topline"><span class="conn" id="conn"><span class="dot"></span> <span id="connText"></span></span>
+    <img class="hlogo" src="brand/favicon-64.png" alt="SelfBike">
+    <div class="htext"><h1 id="pageTitle"></h1><p class="sub" id="pageSub"></p></div>
+    <div class="hright">
+      <span class="conn" id="conn"><span class="dot"></span> <span id="connText"></span></span>
       <span class="badge hidden" id="demoBadge" data-i18n="demo.badge"></span>
-      <select id="topLang" class="langsel" aria-label="Sprache / Language" title="Sprache / Language"></select></div>
-    <h1 id="pageTitle"></h1>
-    <p class="sub" id="pageSub"></p>
+      <select id="topLang" class="langsel" aria-label="Sprache / Language" title="Sprache / Language"></select>
+    </div>
   </header>
 
   <!-- Start / Übersicht -->
