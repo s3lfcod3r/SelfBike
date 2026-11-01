@@ -498,6 +498,9 @@
   <footer class="legal">
     <a href="#" id="showLegal" data-i18n="tools.legal"></a>
     <span class="faint" id="legalAccepted"></span>
+    <!-- Unterstützung: reiner Link, kein Ko-fi-Skript (keine Daten an Dritte beim Laden) -->
+    <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener" style="margin-left:auto" title="Ko-fi"
+       >☕ <span data-i18n="support.kofi"></span></a>
   </footer>
 </main>
 
@@ -507,6 +510,9 @@
     <div class="modal-head">
       <div><span class="label">SelfBike</span><h2 class="modal-title" id="discTitle" data-i18n="disc.title"></h2>
         <p class="muted" data-i18n="disc.intro"></p></div>
+      <!-- Sprache schon vor dem Bestätigen wählbar (die Auswahl oben liegt hinter dem Fenster) -->
+      <label style="margin-left:auto;flex:none"><span class="label" data-i18n="lang.label"></span>
+        <select id="discLang" class="field" aria-label="Sprache / Language" style="display:block;margin-top:4px"></select></label>
     </div>
     <div class="modal-body">
       <h3 data-i18n="disc.1t"></h3><p data-i18n="disc.1"></p>
@@ -753,10 +759,15 @@ $('showLegal').onclick = (e) => { e.preventDefault(); showDisclaimer(); };
 // ---------- Sprache ----------
 
 $('langSel').innerHTML = Object.entries(LANGS).map(([code, name]) => `<option value="${code}" title="${esc(name)}">${esc(code.toUpperCase())}</option>`).join('');
-$('langSel').onchange = async () => {
-  await setLang($('langSel').value);
+// Im Hinweis-Fenster mit vollem Namen – dort wählt man die Sprache meist zum ersten Mal
+$('discLang').innerHTML = Object.entries(LANGS).map(([code, name]) => `<option value="${code}">${esc(name)}</option>`).join('');
+async function changeLang(code) {
+  await setLang(code);
+  $('langSel').value = $('discLang').value = lang();
   refreshTexts();
-};
+}
+$('langSel').onchange = () => changeLang($('langSel').value);
+$('discLang').onchange = () => changeLang($('discLang').value);
 
 // Alle Texte in der neuen Sprache: feste Texte, dekodierte Werte, Kacheln, Meldung
 function refreshTexts() {
@@ -1868,7 +1879,7 @@ for (const s of document.querySelectorAll('main section[id]')) spy.observe(s);
 log('Bereit.');
 await loadCatalog();
 await setLang(detectLang());
-$('langSel').value = lang();
+$('langSel').value = $('discLang').value = lang();
 refreshTexts();
 if (!discAccepted()) showDisclaimer();
 </script>

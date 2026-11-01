@@ -31,6 +31,12 @@ SelfBike ist ein privates, inoffizielles Projekt ohne Verbindung zur Robert Bosc
 Nutzung auf eigene Gefahr – Änderungen an der E-Bike-Elektronik können Garantie und Verkehrssicherheit betreffen.
 Marken gehören ihren Inhabern und werden nur genannt, um die Kompatibilität zu beschreiben.
 
+## Unterstützen
+
+SelfBike ist kostenlos und ohne Werbung. Wenn es dir hilft und du die Weiterentwicklung unterstützen möchtest:
+
+[☕ SelfBike auf Ko-fi unterstützen](https://ko-fi.com/s3lfcod3r)
+
 ## Danke / Quellen
 
 - **bosch-bes3-reader** von Remko Weijnen (https://github.com/rweijnen/bosch-bes3-reader) – Teile des
