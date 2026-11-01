@@ -21,6 +21,12 @@
   .topline { display: flex; align-items: center; gap: 8px; min-height: 22px; font-size: 13px; color: var(--self-text-3); }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
   .conn.on { color: var(--self-green); } .conn.busy { color: var(--self-yellow); }
+  .langsel { margin-left: auto; background: var(--self-bg-2); color: var(--self-text); border: 1px solid var(--self-line-strong);
+             border-radius: 9px; padding: 5px 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .langsel option { color: #000; }
+  .foothelp { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 34px 0 0; padding-top: 14px;
+              border-top: 1px solid var(--self-line); font-size: 14px; }
+  .foothelp a, .foothelp button { color: var(--self-teal-bright); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: none; }
   .badge { font-size: 11px; font-weight: 600; color: var(--self-yellow); border: 1px solid currentColor; border-radius: 6px; padding: 1px 6px; }
   h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin: 4px 0 0; }
   .sub { color: var(--self-text-2); margin: 2px 0 0; font-size: 15px; }
@@ -146,7 +152,8 @@
 <div class="wrap">
   <header class="big">
     <div class="topline"><span class="conn" id="conn"><span class="dot"></span> <span id="connText"></span></span>
-      <span class="badge hidden" id="demoBadge" data-i18n="demo.badge"></span></div>
+      <span class="badge hidden" id="demoBadge" data-i18n="demo.badge"></span>
+      <select id="topLang" class="langsel" aria-label="Sprache / Language" title="Sprache / Language"></select></div>
     <h1 id="pageTitle"></h1>
     <p class="sub" id="pageSub"></p>
   </header>
@@ -164,6 +171,7 @@
     <div id="home" class="hidden">
       <div class="alert hidden" id="pendingHint"></div>
       <div class="tiles" id="tiles"></div>
+      <div id="moreList"></div>
     </div>
   </section>
 
@@ -172,15 +180,17 @@
     <div class="group" style="margin-top:14px" id="settingsList"></div>
   </section>
 
-  <section id="tab-more" class="hidden">
-    <div id="moreList"></div>
-  </section>
+  <!-- Immer sichtbar: rechtliche Hinweise, Unterstützung, klassische Ansicht -->
+  <footer class="foothelp">
+    <button id="showLegal" data-i18n="tools.legal"></button>
+    <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi"></span></a>
+    <a href="klassisch.html" data-i18n="ui.classic"></a>
+  </footer>
 </div>
 
 <nav class="tabbar">
   <button data-tab="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l-1.5-3H7M13 9l2 7"/></svg><span data-i18n="ui.home"></span></button>
   <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="ui.settings"></span></button>
-  <button data-tab="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span data-i18n="ui.more"></span></button>
 </nav>
 
 <!-- Blatt für Einstellungen und Details -->
@@ -303,7 +313,7 @@ $('toast').onclick = () => $('toast').classList.remove('show');
 
 // ---------- Kopf, Tabs ----------
 
-const TITLES = { home: 'ui.home', settings: 'ui.settings', more: 'ui.more' };
+const TITLES = { home: 'ui.home', settings: 'ui.settings' };
 function showTab(name) {
   tab = name;
   for (const k of Object.keys(TITLES)) $(`tab-${k}`).classList.toggle('hidden', k !== name);
@@ -412,8 +422,8 @@ function renderSettings() {
 }
 $('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
 
+// Unter den Kacheln der Startseite (früher eigener Tab „Mehr“)
 function renderMore() {
-  const langOpts = Object.entries(LANGS).map(([c, n]) => `<option value="${c}"${c === lang() ? ' selected' : ''}>${esc(n)}</option>`).join('');
   $('moreList').innerHTML = `
     ${rows.length ? `<p class="gh">${esc(t('ui.groupBike'))}</p><div class="group">
       ${navRow('battery', t('more.battery'), '', '#22a35a')}
@@ -425,14 +435,7 @@ function renderMore() {
       <button class="row" data-act="pdf">${icon('pdf', '#0ea5e9')}<span class="t">${esc(t('tools.pdf'))}</span></button>
       <button class="row" data-act="refresh">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('ui.refresh'))}</span></button>
     </div>` : ''}
-    <p class="gh">${esc(t('ui.groupApp'))}</p><div class="group">
-      <label class="row">${icon('lang', '#64748b')}<span class="t">${esc(t('lang.label'))}</span><select id="moreLang">${langOpts}</select></label>
-      <button class="row" data-act="legal">${icon('legal', '#64748b')}<span class="t">${esc(t('tools.legal'))}</span><span class="chev">›</span></button>
-      <a class="row" href="klassisch.html">${icon('classic', '#64748b')}<span class="t">${esc(t('ui.classic'))}<small>${esc(t('ui.classicHint'))}</small></span><span class="chev">›</span></a>
-      <a class="row" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">${icon('kofi', '#ff5e5b')}<span class="t">${esc(t('support.kofi'))}</span><span class="chev">›</span></a>
-    </div>
     ${usb ? `<div class="group" style="margin-top:22px"><button class="row danger" data-act="disconnect">${esc(t('ui.disconnect'))}</button></div>` : ''}`;
-  $('moreLang').onchange = () => changeLang($('moreLang').value);
 }
 $('moreList').addEventListener('click', async (e) => {
   const open = e.target.closest('[data-open]');
@@ -923,14 +926,18 @@ $('discAccept').onclick = () => {
   $('discSheet').classList.remove('open');
 };
 $('discClose').onclick = () => $('discSheet').classList.remove('open');
+$('showLegal').onclick = () => showDisclaimer();
 
 // ---------- Sprache ----------
 
+// Oben immer sichtbar (Kürzel), im Hinweis-Fenster mit vollem Namen
+$('topLang').innerHTML = Object.entries(LANGS).map(([c, n]) => `<option value="${c}" title="${esc(n)}">${esc(c.toUpperCase())}</option>`).join('');
 $('discLang').innerHTML = Object.entries(LANGS).map(([c, n]) => `<option value="${c}">${esc(n)}</option>`).join('');
+$('topLang').onchange = () => changeLang($('topLang').value);
 $('discLang').onchange = () => changeLang($('discLang').value);
 async function changeLang(code) {
   await setLang(code);
-  $('discLang').value = lang();
+  $('discLang').value = $('topLang').value = lang();
   // gelesene Werte neu übersetzen geht über ein erneutes Auslesen; die Oberfläche sofort
   applyStatic();
   renderAll();
@@ -941,7 +948,7 @@ async function changeLang(code) {
 
 await loadCatalog();
 await setLang(detectLang());
-$('discLang').value = lang();
+$('discLang').value = $('topLang').value = lang();
 applyStatic();
 if (!window.isSecureContext) {
   $('connect').disabled = true;
