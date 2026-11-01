@@ -505,7 +505,6 @@ function renderMore() {
   $('moreList').innerHTML = `
     ${rows.length ? `<p class="gh">${esc(t('tile.battery'))}</p><div class="group">
       ${navRow('battery', t('more.battery'), '', '#22a35a')}
-      ${navRow('batterycheck', t('bc.title'), '', '#22a35a')}
       ${navRow('range', t('rg.title'), '', '#22a35a')}
     </div>
     <p class="gh">${esc(t('nav.ride'))}</p><div class="group">
@@ -764,29 +763,24 @@ const PAGES = {
     };
   },
 
+  // Akku: oben der Akku-Check mit Bewertung, darunter die übrigen Werte (Gesundheit, Zyklen,
+  // Tiefentladung und Überhitzung stehen schon im Check)
   battery() {
-    const [hText, hKind] = health(val('batterySoh'));
-    const deep = val('batteryDeepDischarge');
-    const thermal = val('batteryThermal');
     return {
       title: t('more.battery'),
-      html: infoGroup([
+      html: `${PAGES.batterycheck().html}<p class="gh">${esc(t('more.battery'))}</p>${infoGroup([
         [t('bat.soc'), txt('batterySoc'), t('bat.socHint')],
-        [t('bat.soh'), hText ? `${txt('batterySoh')} · ${hText}` : txt('batterySoh'), t('bat.sohHint'), hKind],
-        [t('bat.cycles'), txt('batteryCycles'), t('bat.cyclesHint')],
         [t('bat.remaining'), txt('batteryRiderWh'), t('bat.remainingHint')],
         ok('batteryCapacityAh') && [t('more.capacity'), txt('batteryCapacityAh'), ok('batteryDeliveredAh') ? t('more.delivered', { ah: txt('batteryDeliveredAh'), wh: txt('batteryEnergy') }) : ''],
         ok('batteryVoltage') && [t('more.voltage'), txt('batteryVoltage'), ok('batteryMaxCurrent') ? t('more.maxCurrent', { a: txt('batteryMaxCurrent') }) : ''],
         ok('batteryTempNow') && [t('more.tempNow'), `${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`, t('more.tempNowHint')],
-        thermal != null && [t('more.thermal'), `${txt('batteryThermal')} · ${t(thermal ? 'more.seen' : 'more.never')}`, t('more.thermalHint'), thermal ? 'warn' : 'good'],
-        deep != null && [t('more.deep'), `${deep} · ${t(deep ? 'more.seen' : 'more.never')}`, t('more.deepHint'), deep ? 'bad' : 'good'],
         ok('batterySelfDischarge') && [t('more.selfDischarge'), txt('batterySelfDischarge'), ''],
         [t('bat.model'), txt('batteryProduct'), ''],
-      ]),
+      ])}`,
     };
   },
 
-  // Akku-Check: Faustregeln aus den Akkuwerten (lib/care.js)
+  // Akku-Check: Faustregeln aus den Akkuwerten (lib/care.js) – Teil der Akku-Seite
   batterycheck() {
     const deg = (x) => `${fmtNum(x, 1)} °C`;
     const shown = {
