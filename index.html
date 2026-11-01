@@ -154,11 +154,6 @@
                 border-radius: var(--self-radius-sm); padding: 4px 8px; font-size: 12px; color: var(--self-text); white-space: nowrap; transform: translate(-50%, -100%); }
   table.diff { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   table.diff th, table.diff td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--self-line); vertical-align: top; overflow-wrap: anywhere; }
-  /* Messen: Adresse nicht umbrechen, Wertname und Notizfeld mit Mindestbreite */
-  #measTable { min-width: 680px; }
-  #measTable td:nth-child(2), #measTable th:nth-child(2) { white-space: nowrap; overflow-wrap: normal; }
-  #measTable td:first-child { min-width: 140px; overflow-wrap: normal; }
-  #measTable .field { min-width: 170px; margin: 6px 0; }
   table.diff th { color: var(--self-text-2); font-weight: 500; }
   table.diff td.v { font-family: var(--self-font-mono); font-size: 12.5px; }
   table.diff tr.same td { color: var(--self-text-3); }
@@ -247,7 +242,7 @@
         <a href="#uebersicht" data-i18n="nav.overview"></a><a href="#akku" data-i18n="nav.battery"></a>
         <a href="#fahrdaten" data-i18n="nav.ride"></a><a href="#fehler" data-i18n="nav.faults"></a>
         <a href="#einstellungen" data-i18n="nav.settings"></a><a href="#details" data-i18n="nav.details"></a>
-        <a href="#mehr" data-i18n="more.title"></a><a href="#pflege" data-i18n="care.nav"></a><a href="#verlauf" data-i18n="hist.nav"></a><a href="#messen" data-i18n="meas.nav"></a>
+        <a href="#mehr" data-i18n="more.title"></a><a href="#pflege" data-i18n="care.nav"></a><a href="#verlauf" data-i18n="hist.nav"></a>
       </nav>
     </div>
   </div>
@@ -470,29 +465,6 @@
       </div>
     </section>
 
-    <section id="messen">
-      <div class="sec-head"><span class="label" data-i18n="meas.nav"></span><h2 data-i18n="meas.title"></h2><p data-i18n="meas.sub"></p></div>
-      <div class="panel-card form">
-        <p id="measStatus" class="muted" style="margin:0"></p>
-        <ol class="muted" style="margin:0;padding-left:20px">
-          <li data-i18n="meas.step1"></li><li data-i18n="meas.step2"></li><li data-i18n="meas.step3"></li><li data-i18n="meas.step4"></li>
-        </ol>
-        <div class="btnrow" style="align-items:center">
-          <button class="btn" id="measMark" data-i18n="meas.mark"></button>
-          <button class="btn btn-primary" id="measCompare" data-i18n="meas.compare"></button>
-          <label class="chk"><input id="measOnlyChanged" type="checkbox"><span data-i18n="meas.onlyChanged"></span></label>
-        </div>
-        <p id="measInfo" class="muted" style="margin:0"></p>
-        <div class="table-scroll"><table class="diff" id="measTable"></table></div>
-        <div class="btnrow">
-          <button class="btn" id="measExport" data-i18n="meas.export"></button>
-          <label class="btn" style="cursor:pointer"><span data-i18n="meas.import"></span>
-            <input id="measFile" type="file" accept=".json,application/json" class="hidden"></label>
-        </div>
-        <p class="faint" style="margin:0" data-i18n="meas.hint"></p>
-      </div>
-    </section>
-
   </div>
 
   <footer class="legal">
@@ -600,9 +572,6 @@ import {
   METRICS, loadHistory, snapshotFromRows, addSnapshot, historyFor, consumption, clearHistory, exportHistory, importIntoHistory,
 } from './lib/history.js';
 import { parseSnapshotFile, compareSnapshots } from './lib/compare.js';
-import {
-  loadProtocol, addEntry, removeEntry, measureStatus, snapshot, saveMark, loadMark, diffSnapshots, exportProtocol, importProtocol,
-} from './lib/measure.js';
 import { LANGS, t, setLang, detectLang, applyStatic, fmtNum, fmtDate, fmtDateTime, lang } from './lib/i18n.js';
 
 const $ = (id) => document.getElementById(id);
@@ -718,8 +687,6 @@ function setUi() {
   $('cancel').disabled = busy;
   $('pdf').disabled = !rows.length;
   $('exportJson').disabled = !rows.length;
-  $('measMark').disabled = busy || !rows.length;
-  $('measCompare').disabled = busy || !connected || !rows.length;
 }
 
 // Fahrradname: selbst gewählt, weil das Fahrrad nach dem Motortausch kein Modell mehr kennt
@@ -794,7 +761,6 @@ function refreshTexts() {
   if (rows.length) render();
   if (pending) showPreview(pending.plan, true);
   renderCompare();
-  renderMeasure();
   showIssuesInfo();
   updateLegalFooter();
   showLastBackup();
@@ -1160,7 +1126,6 @@ function render() {
   renderCare();
   renderPending();
   renderHistory();
-  renderMeasure();
   showLastBackup();
   setUi();
 }
@@ -1725,100 +1690,6 @@ function renderCompare() {
       shown.map((r) => `<tr class="${r.changed ? '' : 'same'}"><td>${esc(label(r))}</td><td class="v">${cell(r.before)}</td><td class="v">${cell(r.after)}</td></tr>`).join('')
     : `<tr><td>${esc(t('cmp.noChanges'))}</td></tr>`;
 }
-
-// ---------- Eigene Messungen ----------
-
-// Gemerkter Stand (überlebt Neuladen) und die Tabelle: offene Datenpunkte + Fahrmodus-Felder
-let measMark = loadMark();
-// „Mehr Details“ haben keinen Textschlüssel – dann gilt das Label aus READ_PLAN
-const measLabel = (key) => (dp(key) !== `dp.${key}` ? dp(key) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
-const measCell = (x) => (x == null ? '–' : typeof x === 'object' ? `${x.text ?? ''}${x.raw ? ` · ${x.raw}` : ''}` : String(x));
-
-function renderMeasure() {
-  const proto = loadProtocol();
-  const st = measureStatus(proto);
-  $('measStatus').textContent = t('meas.status', { done: st.done, total: st.total, open: st.open.length });
-  $('measInfo').textContent = !rows.length ? t('meas.notConnected')
-    : measMark ? t('meas.marked', { time: fmtDateTime(measMark.at) }) : t('meas.noMark');
-  if (!rows.length) { $('measTable').innerHTML = ''; return; }
-  const { points, fields } = diffSnapshots(measMark, snapshot(rows, modes));
-  const only = $('measOnlyChanged').checked;
-  const line = (key, label, where, r) => {
-    const e = proto.entries[key];
-    const status = e
-      ? `${pill(t('meas.done', { date: fmtDateTime(e.at, { dateStyle: 'medium' }) }), 'ok')} <span class="faint">${esc(e.note)}</span>
-         <button class="btn" data-meas-remove="${esc(key)}">${esc(t('meas.remove'))}</button>`
-      : `${pill(t('meas.open'), 'none')}
-         <input class="field" data-meas-note="${esc(key)}" maxlength="300" placeholder="${esc(t('meas.notePh'))}">
-         <button class="btn" data-meas-add="${esc(key)}">${esc(t('meas.add'))}</button>`;
-    return `<tr class="${r.changed ? '' : 'same'}"><td>${esc(label)}${r.changed ? ` ${pill(t('meas.changed'), 'bad')}` : ''}</td>
-      <td class="v">${esc(where)}</td><td class="v">${esc(measCell(r.before))}</td><td class="v">${esc(measCell(r.after))}</td><td>${status}</td></tr>`;
-  };
-  // Ein Fahrmodus-Feld gilt für alle Modi; eingetragen wird es einmal (udam.N)
-  const html = [
-    ...points.filter((r) => !only || r.changed).map((r) => line(r.key, measLabel(r.key), String(r.address), r)),
-    ...fields.filter((r) => !only || r.changed).map((r) => line(r.key, t('meas.udamField', { mode: r.mode, n: r.field }), `UDAM F${r.field}`, r)),
-  ];
-  $('measTable').innerHTML = html.length
-    ? `<tr><th>${esc(t('meas.colValue'))}</th><th>${esc(t('meas.colWhere'))}</th><th>${esc(t('meas.colBefore'))}</th><th>${esc(t('meas.colNow'))}</th><th>${esc(t('meas.colStatus'))}</th></tr>${html.join('')}`
-    : `<tr><td>${esc(t('cmp.noChanges'))}</td></tr>`;
-}
-
-$('measMark').onclick = () => {
-  measMark = snapshot(rows, modes);
-  saveMark(measMark);
-  renderMeasure();
-};
-$('measCompare').onclick = async () => {
-  try { await refresh(); } catch (e) { await disconnect(); message('msg.readError', { error: e.message }, 'err'); }
-  $('measOnlyChanged').checked = !!measMark;
-  setUi();
-  renderMeasure();
-};
-$('measOnlyChanged').onchange = () => renderMeasure();
-$('measTable').addEventListener('click', (e) => {
-  const add = e.target.closest('[data-meas-add]');
-  const rem = e.target.closest('[data-meas-remove]');
-  if (add) {
-    const key = add.dataset.measAdd;
-    const noteEl = $('measTable').querySelector(`[data-meas-note="${CSS.escape(key)}"]`);
-    const note = noteEl?.value.trim() ?? '';
-    // Hinweis direkt am Feld zeigen – die Meldung oben sieht man hier unten nicht
-    if (note.length < 3) {
-      noteEl.style.borderColor = 'var(--self-yellow)';
-      noteEl.placeholder = t('meas.needNote');
-      noteEl.focus();
-      return;
-    }
-    // Vorher/Jetzt mit ablegen, damit die Messung später nachvollziehbar ist
-    const { points, fields } = diffSnapshots(measMark, snapshot(rows, modes));
-    const r = points.find((x) => x.key === key) ?? fields.find((x) => x.key === key && x.changed) ?? fields.find((x) => x.key === key);
-    addEntry(key, { note, before: r?.before ?? null, after: r?.after ?? null });
-    message('meas.added', { label: key.startsWith('udam.') ? `UDAM F${key.slice(5)}` : measLabel(key) }, 'ok');
-  } else if (rem) {
-    removeEntry(rem.dataset.measRemove);
-  } else return;
-  renderMeasure();
-});
-// Enter im Notizfeld = Eintragen
-$('measTable').addEventListener('keydown', (e) => {
-  const key = e.key === 'Enter' && e.target.dataset?.measNote;
-  if (key) $('measTable').querySelector(`[data-meas-add="${CSS.escape(key)}"]`)?.click();
-});
-$('measExport').onclick = () => {
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([exportProtocol()], { type: 'application/json' }));
-  a.download = `selfbike-messprotokoll-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-};
-$('measFile').onchange = async () => {
-  const f = $('measFile').files[0];
-  $('measFile').value = '';
-  if (!f) return;
-  try { message('meas.imported', { n: importProtocol(await f.text()) }, 'ok'); } catch { message('meas.badFile', {}, 'err'); }
-  renderMeasure();
-};
 
 // ---------- Werkzeuge ----------
 
