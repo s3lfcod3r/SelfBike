@@ -3,8 +3,7 @@
 Browser-App, mit der du dein **eigenes Bosch-Smart-System-E-Bike** per USB ausliest und wenige
 Einstellungen sicher änderst – ohne Installation, ohne Server, ohne Konto. Alles läuft lokal im Browser.
 
-**Direkt starten:** https://s3lfcod3r.github.io/SelfBike/ (Chrome oder Edge am PC) – einfache Ansicht im iPhone-Stil
-**Klassische Ansicht** mit allen Details und Experten-Funktionen: https://s3lfcod3r.github.io/SelfBike/klassisch.html
+**Direkt starten:** https://s3lfcod3r.github.io/SelfBike/ (Chrome oder Edge am PC)
 
 ## Was SelfBike kann
 
@@ -13,7 +12,7 @@ Einstellungen sicher änderst – ohne Installation, ohne Server, ohne Konto. Al
 - **Ändern** (nur was der Hersteller freigibt): Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten,
   Uhrzeit, Schiebehilfe an/aus, Fahrmodi (Unterstützung, Dynamik, Höchstgeschwindigkeit – nie über 25 km/h)
 - **Sicherheit:** vor jeder Änderung Backup, Vorschau vorher → nachher, jeder Schritt wird zurückgelesen, nie automatisch wiederholt
-- PDF-Bericht, Verlauf, Vergleich zweier Stände, Demo-Modus ohne Fahrrad, 12 Sprachen
+- PDF-Bericht, Backup wiederherstellen, Fehlertexte aus der eigenen Flow-App, Demo-Modus ohne Fahrrad, 12 Sprachen
 
 **Nicht** enthalten und bewusst ausgeschlossen: Tuning, Änderungen an Tempolimit oder Region, Fehler löschen,
 Umgehen von Lizenzen oder Händlerfreigaben.
