@@ -12,6 +12,7 @@ import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBac
 import { readFaults } from './lib/diagnostics.js';
 import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
 import { loadCatalog, lookupIssue, importCatalog, catalogInfo } from './lib/issue-catalog.js';
+import { describeFault, codeHex } from './lib/fault-categories.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
 import { LANGS, t, setLang, detectLang, applyStatic, fmtNum, fmtDate, fmtDateTime, lang } from './lib/i18n.js';
@@ -590,14 +591,18 @@ const PAGES = {
       else if (!f.faults.length) inner = `<div class="fault"><span class="good">${esc(t('fault.none'))}</span></div>`;
       else inner = f.faults.map((e) => {
         const info = lookupIssue(e.code ?? 0, lang());
-        const code = (e.code ?? 0).toString(16).toUpperCase().padStart(6, '0');
-        return `<div class="fault"><b>${esc(info?.t || t('fault.code', { code }))}</b>
+        const code = codeHex(e.code);
+        // Ohne Klartext aus der Flow-App: eigene Einordnung (Bereich + allgemeiner Hinweis)
+        const cat = describeFault(e.code);
+        return `<div class="fault"><b>${esc(info?.t || cat.area)}</b>
           <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
+          ${info?.t ? `<span>${esc(`${t('fcat.label')}: ${cat.area}`)}</span>` : ''}
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
-          ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>` : ''}</div>`;
+          ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>`
+            : `<span style="margin-top:4px"><b style="display:inline">${esc(t('fcat.hint'))}:</b> ${esc(cat.hint)}</span>`}</div>`;
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
-    }).join('');
+    }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
     // Klartexte aus der eigenen Flow-App laden, falls nicht schon auf dem Server
     const info = catalogInfo();
     const catalog = info?.fromServer ? '' : `<p class="gh">${esc(t('issues.title'))}</p><div class="group noico">

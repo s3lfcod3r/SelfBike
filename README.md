@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.0.0-33A78C)
+![Version](https://img.shields.io/badge/version-1.1.0-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -45,7 +45,7 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 - **Overview** — motor, battery, display/remote, ABS, eShift, odometer
 - **Battery** — state of charge, health, charge cycles, battery check with rules of thumb, range estimate
 - **Ride data** — ride statistics, distance and energy per assist mode, history over time (stored in your browser)
-- **Fault memory** — read only; plain-language texts optionally imported from **your own** Bosch Flow app
+- **Fault memory** — read only; every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature"); exact plain-language texts optionally imported from **your own** Bosch Flow app
 
 **⚙️ Change (only what the manufacturer allows)**
 - Light, service interval, start mode, display language, units, clock, walk assist on/off
@@ -202,7 +202,7 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - **Übersicht** — Motor, Akku, Bedieneinheit, ABS, eShift, Kilometer
 - **Akku** — Ladezustand, Gesundheit, Ladezyklen, Akku-Check mit Faustregeln, Reichweiten-Schätzung
 - **Fahrdaten** — Fahrstatistik, Strecke und Energie je Fahrmodus, Verlauf über die Zeit (im Browser gespeichert)
-- **Fehlerspeicher** — nur lesen; Klartexte optional aus **deiner eigenen** Bosch-Flow-App importieren
+- **Fehlerspeicher** — nur lesen; jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“); genaue Klartexte optional aus **deiner eigenen** Bosch-Flow-App importieren
 
 **⚙️ Ändern (nur was der Hersteller freigibt)**
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
