@@ -606,11 +606,19 @@ function message(key, vars = {}, kind = '') {
   lastMessage = key ? { key, vars, kind } : null;
   $('message').className = `msg ${kind}`;
   $('message').textContent = key ? t(key, vars) : '';
+  revealMessage(kind);
 }
 function messageText(text, kind = '') {
   lastMessage = null;
   $('message').className = `msg ${kind}`;
   $('message').textContent = text;
+  revealMessage(kind);
+}
+// Hinweise und Fehler sichtbar machen – die Meldung steht oben, geklickt wird oft weit unten
+function revealMessage(kind) {
+  if (kind !== 'warn' && kind !== 'err') return;
+  const r = $('message').getBoundingClientRect();
+  if (r.top < 0 || r.bottom > innerHeight) $('message').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 function progress(fraction) {
   $('progressBar').style.width = fraction == null ? '0' : `${Math.round(fraction * 100)}%`;
