@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Bike ändern</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
+    --line: #dde1e6; --accent: #1f5fd1; --ok: #1a7f37; --warn: #9a6700; --err: #c62828;
+    --code: #f0f2f5; --danger: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1e24; --text: #e6e9ed; --muted: #9aa4b1;
+      --line: #2c323a; --accent: #6ea2ff; --ok: #56d364; --warn: #e3b341; --err: #ff7b72;
+      --code: #0d1014; --danger: #f97066;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  p.lead { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+            padding: 16px; margin-bottom: 16px; }
+  section.locked { opacity: .55; pointer-events: none; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .grid { display: grid; grid-template-columns: max-content 1fr; gap: 8px 12px; align-items: center; }
+  button, input, select { font: inherit; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line);
+           background: var(--card); color: var(--text); }
+  input[type=checkbox], input[type=radio] { width: auto; padding: 0; }
+  input[type=number] { width: 8em; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  label.check { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  #status { font-weight: 600; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  .hint { color: var(--muted); font-size: .9rem; margin: 8px 0 0; }
+  .box { border: 2px solid var(--accent); }
+  .alert { border-left: 4px solid var(--warn); padding: 8px 12px; background: color-mix(in srgb, var(--warn) 10%, transparent);
+           border-radius: 6px; margin: 8px 0; }
+  progress { width: 100%; height: 8px; margin-top: 10px; accent-color: var(--accent); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+        overflow-x: auto; font: 12.5px/1.45 ui-monospace, Consolas, monospace; margin: 0; max-height: 280px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>E-Bike ändern</h1>
+  <p class="lead">Licht und Serviceintervall ändern. Vor jeder Änderung wird der komplette Stand
+    als Backup-Datei gespeichert – ohne Backup wird nichts geschrieben.</p>
+
+  <section>
+    <h2>1 · Verbindung</h2>
+    <div class="row">
+      <button class="primary" id="connect">Verbinden &amp; auslesen</button>
+      <button id="disconnect" disabled>Trennen</button>
+    </div>
+    <p id="status" style="margin:12px 0 0">Nicht verbunden.</p>
+    <progress id="progress" value="0" max="1" hidden></progress>
+    <p class="hint">Chrome oder Edge, USB-Datenkabel, Bosch-Software und die Leseseite vorher schließen.</p>
+  </section>
+
+  <section id="current" class="locked">
+    <h2>2 · Aktueller Stand</h2>
+    <table id="currentTable"><tr><td class="hint">Noch nicht ausgelesen.</td></tr></table>
+  </section>
+
+  <section id="lightSec" class="locked">
+    <h2>3a · Licht ändern</h2>
+    <div class="grid">
+      <span>Modus</span>
+      <select id="lightMode">
+        <option value="1">Immer an</option>
+        <option value="2">An nach dem Start</option>
+        <option value="3">Aus nach dem Start</option>
+        <option value="4">Letzte Einstellung merken</option>
+      </select>
+      <span>Gesamtleistung</span>
+      <span><input id="lightWatts" type="number" min="1" max="18" step="0.1"> W
+        <span class="hint">(Front + Rücklicht zusammen, 1,0–18,0 W)</span></span>
+    </div>
+    <label class="check"><input id="lampsOk" type="checkbox">
+      <span>Ich habe die Watt-Angaben meiner Lampen geprüft – die Leistung passt zu Front- und Rücklicht.</span></label>
+    <button id="planLight">Änderung prüfen</button>
+    <p id="lightNote" class="hint"></p>
+  </section>
+
+  <section id="serviceSec" class="locked">
+    <h2>3b · Serviceintervall ändern</h2>
+    <label class="check"><input id="svcKmOn" type="checkbox" checked>
+      <span>Kilometerziel: in <input id="svcKm" type="number" min="1" max="100000" step="1" value="1500"> km
+        ab aktuellem Stand <span id="svcKmTarget" class="hint"></span></span></label>
+    <label class="check"><input id="svcDateOn" type="checkbox">
+      <span>Datum: <input id="svcDate" type="date"></span></label>
+    <div class="row" style="margin-top:8px">
+      <button id="planService">Änderung prüfen</button>
+      <button id="planServiceDelete">Erinnerung löschen …</button>
+    </div>
+  </section>
+
+  <section id="restoreSec" class="locked">
+    <h2>3c · Aus Backup wiederherstellen</h2>
+    <div class="row"><input id="restoreFile" type="file" accept=".json,application/json"></div>
+    <p id="restoreInfo" class="hint">Stellt Licht und Serviceintervall aus einer Backup-Datei wieder her.
+      Auch dafür wird vorher ein neues Backup gespeichert.</p>
+    <button id="planRestore" disabled>Wiederherstellung prüfen</button>
+  </section>
+
+  <section id="previewSec" class="box" hidden>
+    <h2>4 · Änderung bestätigen</h2>
+    <p id="previewTitle" style="font-weight:600;margin:0 0 8px"></p>
+    <table id="previewTable"></table>
+    <div id="previewWarnings"></div>
+    <label class="check"><input id="confirm" type="checkbox">
+      <span>Ich habe vorher → nachher geprüft und möchte diese Änderung an mein E-Bike senden.</span></label>
+    <div class="row">
+      <button class="danger" id="execute" disabled>Backup speichern &amp; ändern</button>
+      <button id="cancel">Abbrechen</button>
+    </div>
+    <p class="hint">Ablauf: Speicherort wählen → alles neu auslesen → Backup schreiben → Schritt für Schritt
+      ändern und zurücklesen. Bei Unstimmigkeiten wird abgebrochen und nichts wiederholt.</p>
+  </section>
+
+  <section>
+    <h2>Protokoll</h2>
+    <pre id="log"></pre>
+  </section>
+</main>
+
+<script type="module">
+import { McspUsb } from './lib/mcsp-usb.js';
+import { BikeReader } from './lib/bike-reader.js';
+import {
+  readAll, byKey, heartbeat, planLight, planService, planRestore, applyPlan, guardedKeys, LIGHT_MODES,
+} from './lib/bike-writer.js';
+import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+let usb = null;
+let reader = null;
+let state = null;          // byKey der zuletzt gelesenen Zeilen
+let busy = false;
+let blocked = false;       // nach unklarem Schreibversuch: keine weiteren Änderungen
+let pending = null;        // { plan, state } aus der Vorschau
+let restoreBackup = null;
+let hbTimer = null;
+let hbFailures = 0;
+const logLines = [];
+
+function log(msg) {
+  logLines.push(`${new Date().toLocaleTimeString('de-DE')}  ${msg}`);
+  $('log').textContent = logLines.slice(-300).join('\n');
+  $('log').scrollTop = $('log').scrollHeight;
+}
+function setStatus(text, cls = '') {
+  $('status').textContent = text;
+  $('status').className = cls;
+}
+function setBusy(on) {
+  busy = on;
+  const ready = !!state && !on && !blocked && !!usb;
+  for (const id of ['current', 'lightSec', 'serviceSec', 'restoreSec']) $(id).classList.toggle('locked', !ready);
+  $('connect').disabled = !!usb || on;
+  $('disconnect').disabled = !usb || on;
+  $('execute').disabled = on || blocked || !$('confirm').checked;
+  $('cancel').disabled = on;
+}
+
+// ---------- Anzeige ----------
+
+function renderCurrent() {
+  const show = [
+    ['Fahrrad', `${state.oemBrand?.text ?? ''} · ${state.motorName?.text ?? ''}`],
+    ['Bike-ID', state.motorBikeId?.text],
+    ['Kilometerstand', state.odometer?.text],
+    ['Licht – Herstellerfreigabe', state.lightOem?.text],
+    ['Licht – freigeschaltet', state.lightAvailable?.text],
+    ['Licht – Modus', state.lightMode?.text],
+    ['Licht – Gesamtleistung', state.lightPower?.text],
+    ['Nächster Service', state.serviceDue?.text],
+  ];
+  $('currentTable').innerHTML = show.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${esc(v ?? '–')}</td></tr>`).join('');
+
+  if (LIGHT_MODES[state.lightMode?.value]) $('lightMode').value = String(state.lightMode.value);
+  if (Number.isFinite(state.lightPower?.value)) $('lightWatts').value = state.lightPower.value.toFixed(1);
+  const lightOk = state.lightOem?.value?.configurable === true;
+  $('planLight').disabled = !lightOk;
+  $('lightNote').textContent = lightOk ? '' : 'Licht ist vom Hersteller gesperrt – Änderung nicht möglich.';
+  const nextYear = new Date();
+  nextYear.setFullYear(nextYear.getFullYear() + 1);
+  if (!$('svcDate').value) $('svcDate').value = nextYear.toISOString().slice(0, 10);
+  updateKmTarget();
+}
+
+function updateKmTarget() {
+  const odo = state?.odometer?.value;
+  const add = Number($('svcKm').value);
+  $('svcKmTarget').textContent = Number.isFinite(odo) && add > 0
+    ? `→ Ziel bei ${((odo + add * 1000) / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} km` : '';
+}
+$('svcKm').oninput = updateKmTarget;
+
+function showPreview(plan) {
+  if (!plan.steps.length) {
+    $('previewSec').hidden = true;
+    pending = null;
+    setStatus('Keine Änderung nötig – die gewünschten Werte sind schon gespeichert.', 'ok');
+    return;
+  }
+  pending = { plan, state };
+  $('previewTitle').textContent = plan.title;
+  $('previewTable').innerHTML = '<tr><th>Wert</th><th>vorher</th><th>nachher</th></tr>' +
+    plan.steps.map((s) => `<tr><td>${esc(state[s.key].label)}</td><td>${esc(s.before)}</td><td><b>${esc(s.after)}</b></td></tr>`).join('');
+  $('previewWarnings').innerHTML = plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
+  $('confirm').checked = false;
+  $('previewSec').hidden = false;
+  setBusy(false);
+  $('previewSec').scrollIntoView({ behavior: 'smooth' });
+}
+
+function tryPlan(fn) {
+  try { showPreview(fn()); } catch (e) { setStatus(e.message, 'warn'); }
+}
+
+// ---------- Verbindung ----------
+
+async function readState(label) {
+  const bar = $('progress');
+  bar.hidden = false;
+  const rows = await readAll(reader, (row, i, total) => {
+    bar.max = total;
+    bar.value = i + 1;
+    setStatus(`${label} ${i + 1}/${total}: ${row.label} …`);
+  });
+  bar.hidden = true;
+  return rows;
+}
+
+$('connect').onclick = async () => {
+  if (!('usb' in navigator)) return setStatus('WebUSB fehlt – bitte Chrome oder Edge verwenden.', 'err');
+  let device;
+  try {
+    device = await McspUsb.request();
+  } catch (e) {
+    return setStatus(e.name === 'NotFoundError' ? 'Kein Gerät ausgewählt.' : `${e.name}: ${e.message}`, 'warn');
+  }
+  setBusy(true);
+  try {
+    usb = new McspUsb(device, log);
+    await usb.open();
+    reader = new BikeReader(usb);
+    state = byKey(await readState('Lese'));
+    log(`Gelesen: Licht ${state.lightMode?.text}, ${state.lightPower?.text} · Service ${state.serviceDue?.text}`);
+    renderCurrent();
+    startHeartbeat();
+    blocked = false; // Sperre nach unklarem Schreibversuch gilt bis zum frischen Auslesen
+    setStatus('Verbunden. Änderung auswählen.', 'ok');
+  } catch (e) {
+    log(`Fehler: ${e.message}`);
+    await disconnect(`Fehler: ${e.message}`);
+    $('status').className = 'err';
+    return;
+  }
+  setBusy(false);
+};
+
+function startHeartbeat() {
+  hbFailures = 0;
+  hbTimer = setInterval(async () => {
+    if (busy || !reader || performance.now() - reader.lastActivity < 1100) return;
+    try {
+      await heartbeat(reader);
+      hbFailures = 0;
+    } catch (e) {
+      log(`Lebenszeichen fehlgeschlagen (${++hbFailures}): ${e.message}`);
+      if (hbFailures >= 3 && !busy) disconnect('Verbindung verloren (keine Antwort auf Lebenszeichen).');
+    }
+  }, 1500);
+}
+
+async function disconnect(reason) {
+  clearInterval(hbTimer);
+  hbTimer = null;
+  const u = usb;
+  usb = null;
+  reader = null;
+  state = null;
+  pending = null;
+  $('previewSec').hidden = true;
+  if (u) await u.close();
+  $('progress').hidden = true;
+  setStatus(reason || 'Getrennt.');
+  log(reason || 'Verbindung getrennt.');
+  setBusy(false);
+}
+$('disconnect').onclick = () => disconnect();
+navigator.usb?.addEventListener('disconnect', (e) => {
+  if (usb && e.device === usb.device) disconnect('USB-Kabel getrennt.');
+});
+
+// ---------- Pläne ----------
+
+$('planLight').onclick = () => {
+  if (!$('lampsOk').checked) return setStatus('Bitte zuerst bestätigen, dass die Leistung zu deinen Lampen passt.', 'warn');
+  tryPlan(() => planLight(state, { mode: Number($('lightMode').value), watts: Number($('lightWatts').value) }));
+};
+
+$('planService').onclick = () => tryPlan(() => {
+  let odometer = 0;
+  let timestamp = 0;
+  if ($('svcKmOn').checked) {
+    const add = Number($('svcKm').value);
+    if (!Number.isInteger(add) || add < 1) throw new Error('Kilometer: ganze Zahl ab 1');
+    if (state.odometer?.status !== 'ok') throw new Error('Kilometerstand nicht lesbar – bitte nur ein Datum wählen');
+    odometer = state.odometer.value + add * 1000;
+  }
+  if ($('svcDateOn').checked) {
+    const [y, m, d] = $('svcDate').value.split('-').map(Number);
+    if (!y) throw new Error('Bitte ein Datum wählen');
+    timestamp = Date.UTC(y, m - 1, d) / 1000;
+  }
+  if (!odometer && !timestamp) throw new Error('Kilometerziel und/oder Datum wählen – oder „Erinnerung löschen“');
+  return planService(state, { timestamp, odometer });
+});
+
+$('planServiceDelete').onclick = () => tryPlan(() => planService(state, { timestamp: 0, odometer: 0 }));
+
+$('restoreFile').onchange = async () => {
+  restoreBackup = null;
+  $('planRestore').disabled = true;
+  const file = $('restoreFile').files[0];
+  if (!file) return;
+  try {
+    const b = parseBackup(await file.text());
+    const same = b.bikeId && b.bikeId === state?.motorBikeId?.value;
+    const r = Object.fromEntries(b.rows.map((x) => [x.key, x]));
+    $('restoreInfo').innerHTML = `Backup vom <b>${esc(new Date(b.createdAt).toLocaleString('de-DE'))}</b>` +
+      (b.plannedChange?.title ? ` (vor „${esc(b.plannedChange.title)}“)` : '') +
+      `<br>Licht: ${esc(r.lightMode?.text ?? '–')}, ${esc(r.lightPower?.text ?? '–')} · Service: ${esc(r.serviceDue?.text ?? '–')}` +
+      `<br><span class="${same ? 'ok' : 'err'}">${same ? '✓ gleiches Fahrrad' : '✕ anderes Fahrrad – Wiederherstellung nicht möglich'}</span>`;
+    restoreBackup = same ? b : null;
+    $('planRestore').disabled = !same;
+  } catch (e) {
+    $('restoreInfo').textContent = `Datei nicht lesbar: ${e.message}`;
+  }
+};
+$('planRestore').onclick = () => tryPlan(() => planRestore(state, restoreBackup));
+
+$('confirm').onchange = () => setBusy(busy);
+$('cancel').onclick = () => {
+  pending = null;
+  $('previewSec').hidden = true;
+  setStatus('Abgebrochen – nichts geändert.');
+};
+
+// ---------- Ausführen ----------
+
+$('execute').onclick = async () => {
+  if (!pending || busy || blocked || !$('confirm').checked) return;
+  const { plan } = pending;
+  const previewState = pending.state;
+
+  // 1. Speicherort zuerst wählen – der Dialog braucht den Klick als Auslöser
+  let handle = null;
+  const name = backupFileName({ createdAt: new Date().toISOString() });
+  try {
+    handle = await pickBackupFile(name);
+  } catch (e) {
+    return setStatus('Kein Speicherort gewählt – ohne Backup wird nichts geändert.', 'warn');
+  }
+
+  setBusy(true);
+  let backup = null;
+  try {
+    // 2. Alles frisch auslesen und mit der Vorschau vergleichen
+    const fresh = await readState('Backup: lese');
+    const now = byKey(fresh);
+    for (const key of guardedKeys(plan)) {
+      if (now[key]?.rawHex !== previewState[key]?.rawHex) {
+        state = now;
+        renderCurrent();
+        throw new Error(`${now[key]?.label ?? key} hat sich seit der Vorschau geändert – bitte neu prüfen. Nichts geändert.`);
+      }
+    }
+
+    // 3. Backup schreiben
+    backup = createBackup(fresh, { title: plan.title, steps: plan.steps.map(({ key, before, after }) => ({ key, before, after })) });
+    const saved = await writeBackupFile(backup, handle);
+    log(`Backup gespeichert: ${saved.name} (${saved.method === 'file' ? 'Datei geprüft' : 'Download'})`);
+    if (saved.method === 'download' &&
+        !confirm(`Backup wurde als Download „${saved.name}“ angeboten.\n\nIst die Datei gespeichert? Erst dann wird geändert.`)) {
+      throw new Error('Backup nicht bestätigt – nichts geändert.');
+    }
+
+    // 4. Schreiben, Schritt für Schritt mit Rücklesung
+    setStatus(`Ändere: ${plan.title} …`);
+    const result = await applyPlan(reader, plan, now, log);
+    recordOutcome(backup.createdAt, { ok: true, at: new Date().toISOString(), done: result.done });
+    pending = null;
+    $('previewSec').hidden = true;
+    log(`FERTIG: ${plan.title}`);
+    const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ' Bitte E-Bike jetzt aus- und wieder einschalten.' : '';
+
+    // 5. Endstand lesen – scheitert das, ist die Änderung trotzdem geschrieben und zurückgelesen
+    try {
+      state = byKey(await readState('Kontrolle: lese'));
+      renderCurrent();
+    } catch (e) {
+      log(`Auslesen nach der Änderung fehlgeschlagen: ${e.message}`);
+      setStatus(`✓ Geändert und zurückgelesen: ${plan.title}.${restart} Danach ist das Auslesen gescheitert: ${e.message}`, 'warn');
+      return;
+    }
+    setStatus(`✓ Geändert und zurückgelesen: ${plan.title}.${restart}`, 'ok');
+  } catch (e) {
+    if (e.uncertain) {
+      blocked = true;
+      log(`ABBRUCH nach Schreibversuch (${e.attempted.join(', ')}): ${e.message}`);
+      setStatus(`Abbruch: ${e.message}. Weitere Änderungen sind gesperrt – bitte trennen, neu verbinden und den Stand prüfen. Backup ist gespeichert.`, 'err');
+      if (backup) recordOutcome(backup.createdAt, { ok: false, at: new Date().toISOString(), error: e.message, attempted: e.attempted, done: e.done });
+    } else {
+      log(`Abbruch vor dem Schreiben: ${e.message}`);
+      setStatus(e.message, 'warn');
+    }
+  } finally {
+    setBusy(false);
+  }
+};
+
+log('Bereit.');
+setBusy(false);
+</script>
+</body>
+</html>

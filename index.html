@@ -1,0 +1,1876 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SelfBike</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<link rel="apple-touch-icon" href="brand/favicon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="brand/tokens.css">
+<link rel="stylesheet" href="brand/components.css">
+<style>
+  /* SelfBike – nur Self-Tokens, Bausteine aus brand/components.css */
+  html { scroll-behavior: smooth; }
+  main.wrap { max-width: 1120px; padding-bottom: 72px; }
+  /* Sicherheitsabstände an Notch/abgerundeten Rändern (iPhone & Co.) */
+  @supports (padding: max(0px)) {
+    .wrap { padding-left: max(clamp(16px, 3vw, 40px), env(safe-area-inset-left));
+            padding-right: max(clamp(16px, 3vw, 40px), env(safe-area-inset-right)); }
+  }
+  .topbar-inner { flex-wrap: wrap; gap: 10px 14px; padding: 12px 0; }
+  .status { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .actions { display: flex; align-items: center; gap: 8px; }
+  .actions .btn { min-height: 40px; }
+  .actions .btn-icon { width: 42px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+  .actions .btn-icon svg { width: 20px; height: 20px; display: block; }
+  .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .brand-logo { width: 34px; height: 34px; }
+  .bike-name { display: block; width: 100%; min-width: 140px; max-width: 420px; margin-top: 1px; padding: 0;
+               background: transparent; border: 0; color: var(--self-text-2); font: 500 13px var(--self-font-sans);
+               text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+  .bike-name:hover { color: var(--self-text); }
+  .bike-name:focus { outline: 0; color: var(--self-text); box-shadow: 0 1px 0 var(--self-teal); }
+  .lang { padding: 6px 8px; font-size: 13px; font-weight: 600; min-width: 0; }
+  /* Status als dezenter Text (Punkt + Wort), KEIN knopfartiges Kästchen */
+  .status .pill { border: 0; background: transparent; padding: 2px 2px; font-size: 11px; letter-spacing: 0.04em; }
+  .conn { display: inline-flex; align-items: center; gap: 6px; color: var(--self-text-3); }
+  .conn::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+  .status .conn.ok { color: var(--self-green); }
+  .status .conn.none { color: var(--self-yellow); }
+  .status .demo-badge { color: var(--self-yellow); }
+
+  /* Menü: Tabs als weiche Pillen, aktiver Punkt in Teal, kein hässlicher Scrollbalken */
+  .subnav { display: flex; flex-wrap: wrap; gap: 2px; padding: 8px 0; margin-top: 2px;
+            border-top: 1px solid var(--self-line); }
+  .subnav a { font-size: 13.5px; font-weight: 600; color: var(--self-text-2); padding: 7px 12px;
+              border-radius: 999px; white-space: nowrap; text-decoration: none;
+              transition: color var(--self-dur-fast) var(--self-ease), background var(--self-dur-fast) var(--self-ease); }
+  .subnav a:hover { color: var(--self-text); background: var(--self-bg-2); }
+  .subnav a.active { color: var(--self-teal-bright); background: color-mix(in oklab, var(--self-teal) 15%, transparent); }
+  /* Menü-Dropdown (nur am Handy sichtbar, Desktop zeigt die Pillen) */
+  .navwrap { position: relative; }
+  .navtoggle { display: none; }
+  .chev { width: 18px; height: 18px; flex: none; transition: transform var(--self-dur-fast) var(--self-ease); }
+  .progress { height: 2px; background: transparent; }
+  .progress i { display: block; height: 2px; width: 0; background: var(--self-teal); transition: width var(--self-dur) var(--self-ease); }
+
+  section { margin: 24px 0; scroll-margin-top: 120px; }
+  .sec-head { margin-bottom: 10px; }
+  .sec-head h2 { margin: 3px 0 2px; font-size: 20px; font-weight: 700; }
+  .sec-head p { color: var(--self-text-2); margin: 0; font-size: 13.5px; }
+
+  /* kompakter: engere Karten und Kacheln */
+  .panel-card { padding: 16px 18px; margin: 14px 0; }
+  .stats { margin: 0; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .stat { padding: 13px 15px; }
+  .stat .num { margin-top: 7px; font-size: 25px; }
+  .stat .num.word { font-size: 18px; line-height: 1.25; }
+  .stat.wide { grid-column: 1 / -1; }
+  .stat.wide .num.word { color: var(--self-yellow); }
+  .stat .num small { font-size: 14px; color: var(--self-text-2); margin-left: 4px; font-weight: 500; }
+  .stat .cap { color: var(--self-text-2); font-size: 13px; }
+  .stat .cap .pill { margin-right: 6px; }
+  .meter { height: 6px; border-radius: 999px; background: var(--self-bg-3); overflow: hidden; margin-top: 12px; }
+  .meter i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--self-teal-deep), var(--self-teal-bright)); }
+  .meter.warn i { background: var(--self-yellow); }
+
+  .cols { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .cols > .panel-card { margin: 0; }
+  .card-h { font-size: 16px; margin-bottom: 12px; }
+  dl.kv { margin: 0; }
+  .kv .row { display: grid; grid-template-columns: minmax(140px, 38%) 1fr; gap: 14px; padding: 8px 0; border-bottom: 1px solid var(--self-line); }
+  .kv .row:last-child { border-bottom: 0; }
+  .kv dt { color: var(--self-text-2); font-size: 14px; }
+  .kv dd { margin: 0; }
+  .kv dd .val { font-family: var(--self-font-mono); }
+  .kv dd .hint { display: block; color: var(--self-text-3); font-size: 12.5px; margin-top: 2px; }
+
+  .modes { display: grid; gap: 12px; }
+  .mode { display: grid; grid-template-columns: 110px 1fr 120px; gap: 12px; align-items: center; }
+  .mode .meter { margin: 0; height: 10px; }
+  .mode .km { font-family: var(--self-font-mono); text-align: right; }
+  .mode .km small { color: var(--self-text-3); }
+
+  .fault { padding: 10px 0; border-bottom: 1px solid var(--self-line); display: grid; gap: 4px; }
+  .fault:last-child { border-bottom: 0; }
+  .fault .code { font-family: var(--self-font-mono); font-size: 15px; color: var(--self-text); }
+
+  .form { display: grid; gap: 12px; align-content: start; }
+  .form label.block { display: grid; gap: 6px; font-size: 13px; color: var(--self-text-2); }
+  .form .chk { align-items: flex-start; }
+  .form .chk input { margin-top: 3px; }
+  .num-in { width: 110px; }
+  .btnrow { display: flex; gap: 8px; flex-wrap: wrap; }
+  .muted { color: var(--self-text-2); font-size: 14px; margin: 0; }
+  .faint { color: var(--self-text-3); font-size: 13px; }
+
+  .preview { border-color: var(--self-teal); box-shadow: var(--self-glow-teal); }
+  table.list th { cursor: default; }
+  .alert { border: 1px solid var(--self-yellow); color: var(--self-yellow); border-radius: var(--self-radius-sm);
+           padding: 9px 12px; font-size: 14px; margin: 10px 0; }
+
+  .msg { margin: 18px 0 0; padding: 12px 16px; border-radius: var(--self-radius); border: 1px solid var(--self-line-strong);
+         background: var(--self-bg-2); font-size: 14px; }
+  .msg.ok { border-color: var(--self-teal); }
+  .msg.warn { border-color: var(--self-yellow); color: var(--self-yellow); }
+  .msg.err { border-color: var(--self-red); color: var(--self-red); }
+  .msg:empty { display: none; }
+  .msg code { font-family: var(--self-font-mono); color: var(--self-text); background: var(--self-bg-3); padding: 1px 6px; border-radius: 4px; }
+
+  .start { padding: 56px 20px; }
+  .start .shield { width: 84px; height: 84px; object-fit: contain; filter: drop-shadow(var(--self-glow-teal)); }
+  .start h1 { font-size: clamp(24px, 3vw, 34px); margin: 14px 0 6px; color: var(--self-text); }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; max-width: 880px; margin: 26px auto; text-align: left; }
+  .step { background: var(--self-bg-2); border: 1px solid var(--self-line); border-radius: var(--self-radius); padding: 14px 16px; color: var(--self-text); }
+  .step .label { display: block; color: var(--self-teal-bright); margin-bottom: 4px; }
+  pre.log { background: var(--self-bg-1); border: 1px solid var(--self-line); border-radius: var(--self-radius-sm);
+            padding: 12px; font: 12px/1.5 var(--self-font-mono); color: var(--self-text-2); max-height: 320px; overflow: auto; }
+  details summary { cursor: pointer; color: var(--self-text-2); }
+  footer.legal { border-top: 1px solid var(--self-line); padding: 18px 0 30px; display: flex; gap: 16px; flex-wrap: wrap; }
+
+  /* Rechtlicher Hinweis */
+  .disc .modal-body { max-height: 62vh; overflow-y: auto; }
+  .disc h3 { font-size: 15px; margin: 16px 0 4px; color: var(--self-text); }
+  .disc p { color: var(--self-text-2); margin: 0; font-size: 14px; }
+  .disc-foot { padding: 18px 24px 22px; border-top: 1px solid var(--self-line); display: grid; gap: 14px; }
+  .disc-foot .chk { align-items: flex-start; color: var(--self-text); font-size: 14px; }
+  .disc-foot .chk input { margin-top: 3px; width: 18px; height: 18px; }
+
+  /* Verlauf: eine kleine Linie je Kennzahl (eine Achse, eine Farbe) */
+  .charts { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .chart { background: var(--self-bg-2); border: 1px solid var(--self-line); border-radius: var(--self-radius); padding: 12px 14px; position: relative; }
+  .chart .now { font: 600 20px/1.2 var(--self-font-mono); color: var(--self-text); margin: 2px 0 6px; }
+  .chart .now small { font-size: 12px; color: var(--self-text-2); margin-left: 4px; }
+  .chart .delta { font-size: 12.5px; color: var(--self-text-2); }
+  .chart svg { display: block; width: 100%; height: 110px; overflow: visible; }
+  .chart .grid { stroke: var(--self-line); stroke-width: 1; }
+  .chart .axis { fill: var(--self-text-3); font: 10px var(--self-font-mono); }
+  .chart .line { fill: none; stroke: var(--self-teal); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .chart .dot { fill: var(--self-teal); stroke: var(--self-bg-2); stroke-width: 2; }
+  .chart .cross { stroke: var(--self-text-3); stroke-width: 1; stroke-dasharray: 3 3; }
+  .chart .tip { position: absolute; pointer-events: none; background: var(--self-bg-3); border: 1px solid var(--self-line-strong);
+                border-radius: var(--self-radius-sm); padding: 4px 8px; font-size: 12px; color: var(--self-text); white-space: nowrap; transform: translate(-50%, -100%); }
+  table.diff { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.diff th, table.diff td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--self-line); vertical-align: top; overflow-wrap: anywhere; }
+  /* Messen: Adresse nicht umbrechen, Wertname und Notizfeld mit Mindestbreite */
+  #measTable { min-width: 680px; }
+  #measTable td:nth-child(2), #measTable th:nth-child(2) { white-space: nowrap; overflow-wrap: normal; }
+  #measTable td:first-child { min-width: 140px; overflow-wrap: normal; }
+  #measTable .field { min-width: 170px; margin: 6px 0; }
+  table.diff th { color: var(--self-text-2); font-weight: 500; }
+  table.diff td.v { font-family: var(--self-font-mono); font-size: 12.5px; }
+  table.diff tr.same td { color: var(--self-text-3); }
+  .wear { display: grid; grid-template-columns: minmax(120px, 1.2fr) 2fr auto; gap: 6px 14px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--self-line); }
+  .wear .meter { margin: 4px 0 0; height: 8px; }
+  .wear .btnrow { margin: 0; flex-wrap: nowrap; }
+  .demo-badge { color: var(--self-yellow); border-color: var(--self-yellow); }
+  @media (max-width: 640px) { .wear { grid-template-columns: 1fr; } }
+  .table-scroll { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+
+  /* Handy: Kopfleiste in klare Zeilen (Marke / Status / Aktionen) statt Knopf-Haufen, kompakt */
+  @media (max-width: 720px) {
+    .topbar-inner { gap: 8px 10px; padding: 8px 0; }
+    .brand { flex: 1 1 100%; }
+    .brand-logo { width: 30px; height: 30px; }
+    .wordmark { font-size: 20px; }
+    .spacer { display: none; }
+    #langSel { flex: 0 0 auto; }
+    .status { flex: 0 1 auto; }
+    .actions { justify-content: flex-end; margin-left: auto; }
+    .actions:has(#connect:not(.hidden)) { flex: 1 1 100%; }
+    .actions #connect { flex: 1; min-height: 42px; }
+    .actions .btn-icon { flex: 0 0 auto; min-height: 40px; }
+    .actions #langSel { flex: 0 0 auto; min-height: 40px; }
+    .bike-name { margin-top: 0; }
+    /* Menü als Dropdown: ein Knopf mit dem aktuellen Abschnitt, Liste klappt auf */
+    .navtoggle { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      width: 100%; margin-top: 8px; padding: 10px 14px; background: var(--self-bg-2);
+      border: 1px solid var(--self-line-strong); border-radius: var(--self-radius-sm);
+      color: var(--self-text); font: 600 14px var(--self-font-sans); cursor: pointer; }
+    .navwrap.open .navtoggle { border-color: var(--self-teal); }
+    .navwrap.open .chev { transform: rotate(180deg); }
+    .navwrap .subnav { display: none; position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 40;
+      flex-direction: column; flex-wrap: nowrap; gap: 2px; margin: 0; padding: 8px;
+      background: var(--self-bg-2); border: 1px solid var(--self-line-strong); border-radius: var(--self-radius);
+      box-shadow: 0 22px 44px -22px rgba(0,0,0,0.85); max-height: 68vh; overflow-y: auto; }
+    .navwrap.open .subnav { display: flex; }
+    .navwrap .subnav a { padding: 11px 12px; border-radius: var(--self-radius-sm); }
+    section { scroll-margin-top: 120px; }
+  }
+  @media (max-width: 600px) {
+    .kv .row { grid-template-columns: 1fr; gap: 2px; }
+    .mode { grid-template-columns: 80px 1fr 90px; }
+    section { margin: 24px 0; }
+    .sec-head h2 { font-size: 20px; }
+    .panel-card { padding: 18px 16px; }
+    .stats { grid-template-columns: 1fr; }
+    main.wrap { padding-bottom: 48px; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img class="brand-logo" src="brand/favicon-192.png" alt="">
+        <div>
+          <div class="wordmark"><span class="self">Self</span><span class="rest">Bike</span></div>
+          <input id="bikeName" class="bike-name" value="" data-i18n-placeholder="name.placeholder" aria-label="Name">
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <div class="status">
+        <span id="demoBadge" class="pill demo-badge hidden" data-i18n="demo.badge"></span>
+        <span id="conn" class="pill conn"></span>
+      </div>
+      <div class="actions">
+        <select id="langSel" class="field lang" aria-label="Sprache / Language" title="Sprache / Language"></select>
+        <button class="btn btn-primary" id="connect" data-i18n="btn.connect"></button>
+        <button class="btn btn-icon hidden" id="refresh" data-i18n-title="btn.refresh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        <button class="btn btn-icon hidden" id="backupNow" data-i18n-title="btn.backupNow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></button>
+        <button class="btn btn-icon btn-danger hidden" id="disconnect" data-i18n-title="btn.disconnect">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 6.6a9 9 0 1 1-12.8 0"/></svg></button>
+      </div>
+    </div>
+    <div class="navwrap hidden" id="navwrap">
+      <button class="navtoggle" id="navToggle" type="button" aria-expanded="false" aria-haspopup="true">
+        <span id="navLabel"></span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <nav class="subnav" id="nav">
+        <a href="#uebersicht" data-i18n="nav.overview"></a><a href="#akku" data-i18n="nav.battery"></a>
+        <a href="#fahrdaten" data-i18n="nav.ride"></a><a href="#fehler" data-i18n="nav.faults"></a>
+        <a href="#einstellungen" data-i18n="nav.settings"></a><a href="#details" data-i18n="nav.details"></a>
+        <a href="#mehr" data-i18n="more.title"></a><a href="#pflege" data-i18n="care.nav"></a><a href="#verlauf" data-i18n="hist.nav"></a><a href="#messen" data-i18n="meas.nav"></a>
+      </nav>
+    </div>
+  </div>
+  <div class="progress"><i id="progressBar"></i></div>
+</header>
+
+<main class="wrap">
+  <div id="message" class="msg"></div>
+
+  <!-- Startbildschirm -->
+  <div id="start" class="empty start">
+    <img class="shield" src="brand/favicon-192.png" alt="">
+    <h1 data-i18n="start.title"></h1>
+    <p data-i18n="start.text"></p>
+    <div class="steps">
+      <div class="step"><span class="label" data-step="1"></span><span data-i18n="start.s1"></span></div>
+      <div class="step"><span class="label" data-step="2"></span><span data-i18n="start.s2"></span></div>
+      <div class="step"><span class="label" data-step="3"></span><span data-i18n="start.s3"></span></div>
+      <div class="step"><span class="label" data-step="4"></span><span data-i18n="start.s4"></span></div>
+    </div>
+    <p class="label" data-i18n="start.foot"></p>
+    <button class="btn" id="demoStart" data-i18n="demo.btn"></button>
+  </div>
+
+  <div id="app" class="hidden">
+    <section id="uebersicht">
+      <div class="sec-head"><span class="label" data-i18n="nav.overview"></span><h2 data-i18n="ov.title"></h2><p id="readAt"></p></div>
+      <div id="pendingCard"></div>
+      <div class="stats" id="overview"></div>
+    </section>
+
+    <section id="akku">
+      <div class="sec-head"><span class="label" data-i18n="nav.battery"></span><h2 data-i18n="bat.title"></h2></div>
+      <div class="panel-card"><dl class="kv" id="batteryList"></dl></div>
+    </section>
+
+    <section id="fahrdaten">
+      <div class="sec-head"><span class="label" data-i18n="nav.ride"></span><h2 data-i18n="ride.title"></h2><p data-i18n="ride.sub"></p></div>
+      <div class="cols">
+        <div class="panel-card"><h3 class="card-h" data-i18n="ride.modesTitle"></h3><div class="modes" id="modes"></div>
+          <p class="label" style="margin:16px 0 0" data-i18n="ride.modesFoot"></p></div>
+        <div class="panel-card"><h3 class="card-h" data-i18n="ride.statsTitle"></h3><dl class="kv" id="statsList"></dl></div>
+      </div>
+    </section>
+
+    <section id="fehler">
+      <div class="sec-head"><span class="label" data-i18n="nav.faults"></span><h2 data-i18n="faults.title"></h2><p data-i18n="faults.sub"></p></div>
+      <div class="panel-card" id="issuesCard" style="margin:0 0 14px">
+        <div class="btnrow" style="align-items:center">
+          <strong data-i18n="issues.title"></strong>
+          <span id="issuesInfo" class="faint" style="flex:1"></span>
+          <label class="btn" style="cursor:pointer"><span data-i18n="issues.choose"></span>
+            <input id="issuesFile" type="file" accept=".apk,.zip,.json,application/vnd.android.package-archive" class="hidden"></label>
+          <button class="btn hidden" id="issuesClear" data-i18n="issues.remove"></button>
+        </div>
+        <p class="faint" style="margin:8px 0 0" data-i18n="issues.text"></p>
+      </div>
+      <div class="cols" id="faults"></div>
+      <p class="faint" style="margin-top:12px" data-i18n="faults.note"></p>
+    </section>
+
+    <section id="einstellungen">
+      <div class="sec-head"><span class="label" data-i18n="nav.settings"></span><h2 data-i18n="set.title"></h2><p data-i18n="set.sub"></p></div>
+      <div class="cols">
+        <div class="panel-card form">
+          <h3 class="card-h" data-i18n="backup.title"></h3>
+          <p class="muted" data-i18n="backup.text"></p>
+          <div class="btnrow"><button class="btn btn-primary" id="backupNow2" data-i18n="backup.btn"></button></div>
+          <p class="label" id="lastBackup" style="margin:0"></p>
+        </div>
+
+        <div class="panel-card form">
+          <h3 class="card-h" data-i18n="light.title"></h3>
+          <label class="block"><span data-i18n="light.behavior"></span>
+            <select class="field" id="lightMode">
+              <option value="1" data-i18n="lightMode.1"></option>
+              <option value="2" data-i18n="lightMode.2"></option>
+              <option value="3" data-i18n="lightMode.3"></option>
+              <option value="4" data-i18n="lightMode.4"></option>
+            </select></label>
+          <label class="block"><span data-i18n="light.watts"></span>
+            <span><input class="field num-in" id="lightWatts" type="number" min="1" max="18" step="0.1"> W</span></label>
+          <label class="chk"><input id="lampsOk" type="checkbox"><span data-i18n="light.lampsOk"></span></label>
+          <span id="lightLocked" class="pill bad hidden" data-i18n="light.locked"></span>
+          <div class="btnrow"><button class="btn" id="planLight" data-i18n="btn.preview"></button></div>
+        </div>
+
+        <div class="panel-card form">
+          <h3 class="card-h" data-i18n="mode.title"></h3>
+          <p class="muted" data-i18n="mode.text"></p>
+          <label class="block"><span data-i18n="mode.select"></span>
+            <select class="field" id="modeSel"></select></label>
+          <div id="modeFields" class="form"></div>
+          <p id="modeLocked" class="faint hidden" data-i18n="mode.locked"></p>
+          <div class="btnrow"><button class="btn" id="planMode" data-i18n="btn.preview"></button>
+            <button class="btn" id="planModeReset" data-i18n="mode.reset"></button></div>
+        </div>
+
+        <div class="panel-card form">
+          <h3 class="card-h" data-i18n="disp.title"></h3>
+          <p class="muted" data-i18n="disp.text"></p>
+          <label class="block"><span data-i18n="disp.start"></span>
+            <select class="field" id="dispStart"></select></label>
+          <span id="dispStartLocked" class="pill bad hidden" data-i18n="disp.startLocked"></span>
+          <label class="block"><span data-i18n="disp.lang"></span>
+            <select class="field" id="dispLang"></select></label>
+          <label class="block"><span data-i18n="disp.units"></span>
+            <select class="field" id="dispUnits"><option value="0" data-i18n="disp.metric"></option><option value="1" data-i18n="disp.imperial"></option></select></label>
+          <label class="block"><span data-i18n="disp.timeFormat"></span>
+            <select class="field" id="dispTime"><option value="0" data-i18n="disp.h24"></option><option value="1" data-i18n="disp.h12"></option></select></label>
+          <label class="block"><span data-i18n="disp.walk"></span>
+            <select class="field" id="dispWalk"><option value="1" data-i18n="word.on"></option><option value="0" data-i18n="word.off"></option></select></label>
+          <p class="label hidden" id="dispWalkHint" style="margin:0"></p>
+          <span id="dispWalkLocked" class="pill bad hidden" data-i18n="disp.startLocked"></span>
+          <p class="label" id="dispClockNow" style="margin:0"></p>
+          <label class="chk"><input id="dispClock" type="checkbox"><span data-i18n="disp.clockSet"></span></label>
+          <div class="btnrow"><button class="btn" id="planDisplay" data-i18n="btn.preview"></button></div>
+        </div>
+
+        <div class="panel-card form">
+          <h3 class="card-h" data-i18n="svc.title"></h3>
+          <p class="label" id="serviceNow" style="margin:0"></p>
+          <label class="chk"><input id="svcKmOn" type="checkbox" checked>
+            <span><span data-i18n="svc.in"></span> <input class="field num-in" id="svcKm" type="number" min="1" max="100000" value="1500"> km
+              <span id="svcKmTarget" class="faint"></span></span></label>
+          <label class="chk"><input id="svcDateOn" type="checkbox">
+            <span><span data-i18n="svc.on"></span> <input class="field" id="svcDate" type="date"></span></label>
+          <div class="btnrow"><button class="btn" id="planService" data-i18n="btn.preview"></button>
+            <button class="btn btn-danger" id="planServiceDelete" data-i18n="svc.delete"></button></div>
+        </div>
+
+        <div class="panel-card form">
+          <h3 class="card-h" data-i18n="restore.title"></h3>
+          <p class="muted" data-i18n="restore.text"></p>
+          <input class="field" id="restoreFile" type="file" accept=".json,application/json">
+          <div id="restoreInfo" class="muted"></div>
+          <div class="btnrow"><button class="btn" id="planRestore" disabled data-i18n="restore.btn"></button></div>
+        </div>
+      </div>
+
+      <div class="panel-card preview hidden" id="preview">
+        <span class="label" data-i18n="preview.label"></span>
+        <h3 class="card-h" id="previewTitle" style="margin:6px 0 10px"></h3>
+        <table class="list" id="previewTable"></table>
+        <div id="previewWarnings"></div>
+        <label class="chk" style="margin:14px 0"><input id="confirm" type="checkbox"><span data-i18n="preview.confirm"></span></label>
+        <div class="btnrow">
+          <button class="btn btn-primary" id="execute" disabled data-i18n="preview.execute"></button>
+          <button class="btn" id="cancel" data-i18n="preview.cancel"></button>
+        </div>
+        <p class="faint" style="margin:12px 0 0" data-i18n="preview.flow"></p>
+      </div>
+    </section>
+
+    <section id="details">
+      <div class="sec-head"><span class="label" data-i18n="nav.details"></span><h2 data-i18n="details.title"></h2></div>
+      <div class="cols">
+        <div class="panel-card"><h3 class="card-h" data-i18n="comp.title"></h3><dl class="kv" id="componentList"></dl></div>
+        <div class="panel-card form"><h3 class="card-h" data-i18n="tools.title"></h3>
+          <button class="btn" id="pdf" data-i18n="tools.pdf"></button>
+          <label class="chk"><input id="maskIds" type="checkbox"><span data-i18n="tools.mask"></span></label>
+          <button class="btn" id="exportJson" data-i18n="tools.export"></button>
+          <a href="bike-read.html" data-i18n="tools.expert"></a>
+        </div>
+      </div>
+      <details style="margin-top:16px"><summary class="label" data-i18n="log.title"></summary><pre class="log" id="log"></pre></details>
+    </section>
+
+    <section id="mehr">
+      <div class="sec-head"><span class="label" data-i18n="more.title"></span><h2 data-i18n="more.title"></h2><p data-i18n="more.sub"></p></div>
+      <div class="cols" id="moreCards"></div>
+    </section>
+
+    <section id="pflege">
+      <div class="sec-head"><span class="label" data-i18n="care.nav"></span><h2 data-i18n="care.title"></h2><p data-i18n="care.sub"></p></div>
+      <div class="cols">
+        <div class="panel-card"><h3 class="card-h" data-i18n="bc.title"></h3><div id="bcVerdict"></div><dl class="kv" id="bcList"></dl>
+          <p class="faint" style="margin:12px 0 0" data-i18n="bc.note"></p></div>
+        <div class="panel-card"><h3 class="card-h" data-i18n="rg.title"></h3><div id="rgBody"></div>
+          <p class="faint" style="margin:12px 0 0" data-i18n="rg.hint"></p></div>
+      </div>
+      <div class="panel-card form" style="margin-top:16px">
+        <h3 class="card-h" data-i18n="wear.title"></h3>
+        <p class="muted" data-i18n="wear.text"></p>
+        <div id="wearList"></div>
+        <div class="btnrow" style="align-items:flex-end">
+          <label class="block"><span data-i18n="wear.part"></span><select class="field" id="wearPart"></select></label>
+          <label class="block hidden" id="wearNameRow"><span data-i18n="wear.name"></span><input class="field" id="wearName" maxlength="60"></label>
+          <label class="block"><span data-i18n="wear.limit"></span><input class="field num-in" id="wearLimit" type="number" min="1" max="100000" step="100"></label>
+          <label class="block"><span data-i18n="wear.since"></span><input class="field num-in" id="wearSince" type="number" min="0" step="1"></label>
+          <button class="btn" id="wearAdd" data-i18n="wear.add"></button>
+        </div>
+        <p class="faint" style="margin:0" data-i18n="wear.hint"></p>
+      </div>
+    </section>
+
+    <section id="verlauf">
+      <div class="sec-head"><span class="label" data-i18n="hist.nav"></span><h2 data-i18n="hist.title"></h2><p data-i18n="hist.sub"></p></div>
+      <div class="charts" id="histCharts"></div>
+      <p id="histInfo" class="faint" style="margin:10px 0 0"></p>
+      <div class="btnrow" style="margin-top:10px">
+        <label class="btn" style="cursor:pointer"><span data-i18n="hist.import"></span>
+          <input id="histFile" type="file" accept=".json,application/json" multiple class="hidden"></label>
+        <button class="btn" id="histExport" data-i18n="hist.export"></button>
+        <button class="btn btn-danger" id="histClear" data-i18n="hist.clear"></button>
+      </div>
+      <details style="margin-top:12px"><summary class="label" data-i18n="hist.table"></summary>
+        <div class="table-scroll" style="margin-top:8px"><table class="diff" id="histTable"></table></div></details>
+
+      <div class="panel-card form" style="margin-top:22px">
+        <h3 class="card-h" data-i18n="cmp.title"></h3>
+        <p class="muted" data-i18n="cmp.text"></p>
+        <div class="cols">
+          <label class="block"><span data-i18n="cmp.a"></span><input class="field" id="cmpA" type="file" accept=".json,application/json"></label>
+          <label class="block"><span data-i18n="cmp.b"></span><input class="field" id="cmpB" type="file" accept=".json,application/json"></label>
+        </div>
+        <label class="chk"><input id="cmpOnlyChanged" type="checkbox" checked><span data-i18n="cmp.onlyChanged"></span></label>
+        <p id="cmpInfo" class="muted" style="margin:0"></p>
+        <div class="table-scroll"><table class="diff" id="cmpTable"></table></div>
+      </div>
+    </section>
+
+    <section id="messen">
+      <div class="sec-head"><span class="label" data-i18n="meas.nav"></span><h2 data-i18n="meas.title"></h2><p data-i18n="meas.sub"></p></div>
+      <div class="panel-card form">
+        <p id="measStatus" class="muted" style="margin:0"></p>
+        <ol class="muted" style="margin:0;padding-left:20px">
+          <li data-i18n="meas.step1"></li><li data-i18n="meas.step2"></li><li data-i18n="meas.step3"></li><li data-i18n="meas.step4"></li>
+        </ol>
+        <div class="btnrow" style="align-items:center">
+          <button class="btn" id="measMark" data-i18n="meas.mark"></button>
+          <button class="btn btn-primary" id="measCompare" data-i18n="meas.compare"></button>
+          <label class="chk"><input id="measOnlyChanged" type="checkbox"><span data-i18n="meas.onlyChanged"></span></label>
+        </div>
+        <p id="measInfo" class="muted" style="margin:0"></p>
+        <div class="table-scroll"><table class="diff" id="measTable"></table></div>
+        <div class="btnrow">
+          <button class="btn" id="measExport" data-i18n="meas.export"></button>
+          <label class="btn" style="cursor:pointer"><span data-i18n="meas.import"></span>
+            <input id="measFile" type="file" accept=".json,application/json" class="hidden"></label>
+        </div>
+        <p class="faint" style="margin:0" data-i18n="meas.hint"></p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="legal">
+    <a href="#" id="showLegal" data-i18n="tools.legal"></a>
+    <span class="faint" id="legalAccepted"></span>
+  </footer>
+</main>
+
+<!-- Rechtlicher Hinweis: muss vor der ersten Nutzung bestätigt werden -->
+<div class="modal disc" id="disc" role="dialog" aria-modal="true" aria-labelledby="discTitle">
+  <div class="modal-panel" style="max-width:760px">
+    <div class="modal-head">
+      <div><span class="label">SelfBike</span><h2 class="modal-title" id="discTitle" data-i18n="disc.title"></h2>
+        <p class="muted" data-i18n="disc.intro"></p></div>
+    </div>
+    <div class="modal-body">
+      <h3 data-i18n="disc.1t"></h3><p data-i18n="disc.1"></p>
+      <h3 data-i18n="disc.2t"></h3><p data-i18n="disc.2"></p>
+      <h3 data-i18n="disc.3t"></h3><p data-i18n="disc.3"></p>
+      <h3 data-i18n="disc.4t"></h3><p data-i18n="disc.4"></p>
+      <h3 data-i18n="disc.5t"></h3><p data-i18n="disc.5"></p>
+      <h3 data-i18n="disc.6t"></h3><p data-i18n="disc.6"></p>
+      <h3 data-i18n="disc.7t"></h3><p data-i18n="disc.7"></p>
+      <p class="faint" style="margin-top:16px" data-i18n="disc.binding"></p>
+    </div>
+    <div class="disc-foot">
+      <label class="chk" id="discCheckRow"><input id="discCheck" type="checkbox"><span data-i18n="disc.check"></span></label>
+      <div class="btnrow">
+        <button class="btn btn-primary" id="discAccept" disabled data-i18n="disc.accept"></button>
+        <button class="btn hidden" id="discClose" data-i18n="disc.close"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Fortschritt beim Ändern: Status + Protokoll live -->
+<div class="modal" id="progModal" role="dialog" aria-modal="true" aria-labelledby="progTitle">
+  <div class="modal-panel" style="max-width:640px">
+    <div class="modal-head">
+      <div style="flex:1;min-width:0">
+        <span class="label" data-i18n="prog.label"></span>
+        <h2 class="modal-title" id="progTitle" style="font-size:20px;margin:4px 0 0"></h2>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;justify-content:center;margin:4px 0 18px">
+        <div style="position:relative;width:104px;height:104px">
+          <svg viewBox="0 0 104 104" width="104" height="104" style="transform:rotate(-90deg)">
+            <circle cx="52" cy="52" r="46" fill="none" stroke="var(--self-bg-3)" stroke-width="9"></circle>
+            <circle id="progRingArc" cx="52" cy="52" r="46" fill="none" stroke="var(--self-teal)" stroke-width="9" stroke-linecap="round"
+                    stroke-dasharray="289.03" stroke-dashoffset="289.03"
+                    style="transition:stroke-dashoffset var(--self-dur) var(--self-ease), stroke var(--self-dur) var(--self-ease)"></circle>
+          </svg>
+          <div id="progRingPct" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 24px var(--self-font-mono);color:var(--self-text)">0%</div>
+        </div>
+      </div>
+      <div id="progStatus" class="msg" style="margin:0 0 14px;display:flex;align-items:center;gap:10px">
+        <svg id="progSpin" class="spin" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex:none"><path d="M21 12a9 9 0 1 1-2.64-6.36" stroke="var(--self-teal)"></path></svg>
+        <span id="progStatusText"></span>
+      </div>
+      <span class="label" data-i18n="log.title"></span>
+      <pre class="log" id="progLog" style="margin-top:8px;max-height:300px"></pre>
+    </div>
+    <div class="disc-foot" id="progFoot" style="display:none">
+      <button class="btn btn-primary" id="progDoneBtn" data-i18n="disc.close"></button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { McspUsb } from './lib/mcsp-usb.js';
+import { BikeReader } from './lib/bike-reader.js';
+import { READ_PLAN } from './lib/datapoints.js';
+import { decoders, hex } from './lib/messagebus.js';
+import {
+  readAll, byKey, heartbeat, planLight, planService, planRestore, planDisplay, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
+} from './lib/bike-writer.js';
+import { DISPLAY_LANGUAGES } from './lib/bike-reader.js';
+import { DemoUsb } from './lib/demo-usb.js';
+import {
+  savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate,
+  WEAR_PARTS, loadWear, addWear, replacedWear, removeWear, wearStatus,
+} from './lib/care.js';
+import {
+  createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome, storedBackups,
+} from './lib/backup.js';
+import { readFaults } from './lib/diagnostics.js';
+import {
+  readAssistModes, planModeChange, planModeReset, canEdit, bounds, modeSummary, EDITABLE, fmtLimit,
+} from './lib/assist-modes.js';
+import { loadCatalog, importCatalog, clearCatalog, catalogInfo, lookupIssue } from './lib/issue-catalog.js';
+import { buildReportHtml } from './lib/report.js';
+import {
+  METRICS, loadHistory, snapshotFromRows, addSnapshot, historyFor, consumption, clearHistory, exportHistory, importIntoHistory,
+} from './lib/history.js';
+import { parseSnapshotFile, compareSnapshots } from './lib/compare.js';
+import {
+  loadProtocol, addEntry, removeEntry, measureStatus, snapshot, saveMark, loadMark, diffSnapshots, exportProtocol, importProtocol,
+} from './lib/measure.js';
+import { LANGS, t, setLang, detectLang, applyStatic, fmtNum, fmtDate, fmtDateTime, lang } from './lib/i18n.js';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const km = (m, digits = 1) => `${fmtNum(m / 1000, digits)} km`;
+
+let usb = null;
+let reader = null;
+let rows = [];
+let S = {};               // Zeilen nach key
+let faults = [];
+let modes = [];
+let busy = false;
+let blocked = false;      // nach unklarem Schreibversuch
+let demo = false;         // nachgebautes Fahrrad statt USB
+let pending = null;       // { plan, state }
+let restoreBackup = null;
+let hbTimer = null;
+let hbFailures = 0;
+let readAt = null;
+let lastMessage = null;   // { key, vars, kind } – damit Meldungen beim Sprachwechsel mitwechseln
+const logLines = [];
+
+// ---------- Helfer ----------
+
+function log(msg) {
+  logLines.push(`${new Date().toLocaleTimeString()}  ${msg}`);
+  $('log').textContent = logLines.slice(-400).join('\n');
+}
+// Meldung über Textschlüssel (wird bei Sprachwechsel neu übersetzt) oder fertigen Text
+function message(key, vars = {}, kind = '') {
+  lastMessage = key ? { key, vars, kind } : null;
+  $('message').className = `msg ${kind}`;
+  $('message').textContent = key ? t(key, vars) : '';
+}
+function messageText(text, kind = '') {
+  lastMessage = null;
+  $('message').className = `msg ${kind}`;
+  $('message').textContent = text;
+}
+function progress(fraction) {
+  $('progressBar').style.width = fraction == null ? '0' : `${Math.round(fraction * 100)}%`;
+}
+// Fortschritts-Fenster beim Ändern: Status oben, Protokoll darunter – live
+function openProgress(title) {
+  $('progTitle').textContent = title;
+  $('progStatusText').textContent = '';
+  $('progStatus').className = 'msg';
+  $('progLog').textContent = '';
+  $('progSpin').classList.remove('hidden');
+  $('progFoot').style.display = 'none'; // Schließen-Knopf erst nach Abschluss
+  progRing(0);
+  $('progModal').classList.add('open');
+}
+function progStatus(text, kind = '') {
+  $('progStatusText').textContent = text;
+  $('progStatus').className = `msg ${kind}`;
+}
+function progAppend(line) {
+  $('progLog').textContent += `${new Date().toLocaleTimeString()}  ${line}\n`;
+  $('progLog').scrollTop = $('progLog').scrollHeight;
+}
+// Prozent-Kreis: füllt sich von 0 bis 100 %, Farbe nach Ausgang
+const PROG_RING_C = 2 * Math.PI * 46; // Umfang des Kreises (r = 46)
+function progRing(fraction, kind = '') {
+  const f = Math.max(0, Math.min(1, fraction));
+  $('progRingArc').style.strokeDashoffset = `${PROG_RING_C * (1 - f)}`;
+  $('progRingPct').textContent = `${Math.round(f * 100)}%`;
+  $('progRingArc').style.stroke = kind === 'err' ? 'var(--self-red)'
+    : kind === 'warn' ? 'var(--self-yellow)' : 'var(--self-teal-bright)';
+}
+// Spinner aus, farbigen Schließen-Knopf zeigen – erst jetzt darf der Nutzer das Fenster zumachen
+function progDone(kind = '') {
+  $('progSpin').classList.add('hidden');
+  if (kind) $('progStatus').className = `msg ${kind}`;
+  if (kind === 'ok') progRing(1, 'ok'); // Erfolg: Kreis voll
+  else if (kind) $('progRingArc').style.stroke = kind === 'err' ? 'var(--self-red)' : 'var(--self-yellow)';
+  // Knopf färbt sich nach Ausgang: grün = ok, rot = Fehler, neutral sonst
+  $('progDoneBtn').className = `btn ${kind === 'ok' ? 'btn-primary' : kind === 'err' ? 'btn-danger' : ''}`;
+  $('progFoot').style.display = '';
+}
+const closeProgress = () => { if ($('progFoot').style.display !== 'none') $('progModal').classList.remove('open'); };
+$('progDoneBtn').onclick = closeProgress;
+$('progModal').addEventListener('click', (e) => { if (e.target === $('progModal')) closeProgress(); });
+const ok = (key) => S[key]?.status === 'ok';
+const val = (key) => (ok(key) ? S[key].value : null);
+const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key].text ? S[key].text : fallback);
+const dp = (key) => t(`dp.${key}`);
+
+function setUi() {
+  const connected = !!usb;
+  $('conn').className = `pill conn ${busy ? 'none' : connected ? 'ok' : ''}`;
+  $('conn').textContent = t(busy ? 'conn.busy' : connected ? 'conn.on' : 'conn.off');
+  $('connect').classList.toggle('hidden', connected);
+  $('navwrap').classList.toggle('hidden', !connected);
+  for (const id of ['refresh', 'disconnect', 'backupNow']) $(id).classList.toggle('hidden', !connected);
+  for (const id of ['connect', 'refresh', 'disconnect', 'backupNow']) $(id).disabled = busy;
+  if (!window.isSecureContext) $('connect').disabled = true;
+  $('backupNow2').disabled = busy || !connected;
+  const canChange = connected && !busy && !blocked && rows.length > 0;
+  for (const id of ['planLight', 'planService', 'planServiceDelete', 'planDisplay']) $(id).disabled = !canChange;
+  $('dispStart').disabled = val('startModeOem')?.configurable !== true;
+  $('dispWalk').disabled = !ok('walkAssist') || val('walkAssistOem')?.configurable !== true;
+  $('demoBadge').classList.toggle('hidden', !demo);
+  if (val('lightOem')?.configurable !== true) $('planLight').disabled = true;
+  const mode = modes.find((m) => m.id === $('modeSel').value);
+  $('planMode').disabled = !canChange || !canEdit(mode);
+  $('planModeReset').disabled = !canChange || !mode?.defaults;
+  $('planRestore').disabled = !canChange || !restoreBackup;
+  $('execute').disabled = busy || blocked || !$('confirm').checked;
+  $('cancel').disabled = busy;
+  $('pdf').disabled = !rows.length;
+  $('exportJson').disabled = !rows.length;
+  $('measMark').disabled = busy || !rows.length;
+  $('measCompare').disabled = busy || !connected || !rows.length;
+}
+
+// Fahrradname: selbst gewählt, weil das Fahrrad nach dem Motortausch kein Modell mehr kennt
+const NAME_KEY = 'selfbike-name';
+try { $('bikeName').value = localStorage.getItem(NAME_KEY) || localStorage.getItem('ebike-name') || ''; } catch { /* egal */ }
+$('bikeName').onchange = () => { try { localStorage.setItem(NAME_KEY, $('bikeName').value.trim()); } catch { /* egal */ } };
+
+function showLastBackup() {
+  const last = storedBackups()[0];
+  $('lastBackup').textContent = last
+    ? t('backup.last', { date: `${fmtDateTime(last.createdAt)}${last.plannedChange?.title ? ` · ${last.plannedChange.title}` : ''}` })
+    : t('backup.none');
+}
+
+// ---------- Rechtlicher Hinweis ----------
+
+const DISC_KEY = 'selfbike-disclaimer';
+const DISC_VERSION = 1;
+function discAccepted() {
+  try { const d = JSON.parse(localStorage.getItem(DISC_KEY)); return d?.v === DISC_VERSION ? d : null; } catch { return null; }
+}
+function showDisclaimer() {
+  const accepted = discAccepted();
+  $('discCheck').checked = !!accepted;
+  $('discCheckRow').classList.toggle('hidden', !!accepted);
+  $('discAccept').classList.toggle('hidden', !!accepted);
+  $('discClose').classList.toggle('hidden', !accepted);
+  $('discAccept').disabled = true;
+  $('disc').classList.add('open');
+}
+function updateLegalFooter() {
+  const accepted = discAccepted();
+  $('legalAccepted').textContent = accepted ? t('disc.accepted', { date: fmtDateTime(accepted.at) }) : '';
+}
+$('discCheck').onchange = () => { $('discAccept').disabled = !$('discCheck').checked; };
+$('discAccept').onclick = () => {
+  try { localStorage.setItem(DISC_KEY, JSON.stringify({ v: DISC_VERSION, at: new Date().toISOString(), lang: lang() })); } catch { /* egal */ }
+  $('disc').classList.remove('open');
+  updateLegalFooter();
+};
+$('discClose').onclick = () => $('disc').classList.remove('open');
+$('showLegal').onclick = (e) => { e.preventDefault(); showDisclaimer(); };
+
+// ---------- Sprache ----------
+
+$('langSel').innerHTML = Object.entries(LANGS).map(([code, name]) => `<option value="${code}" title="${esc(name)}">${esc(code.toUpperCase())}</option>`).join('');
+$('langSel').onchange = async () => {
+  await setLang($('langSel').value);
+  refreshTexts();
+};
+
+// Alle Texte in der neuen Sprache: feste Texte, dekodierte Werte, Kacheln, Meldung
+function refreshTexts() {
+  applyStatic();
+  // Name im Handy-Dropdown mitübersetzen (aktiver Punkt, sonst der erste)
+  const nl = document.getElementById('navLabel');
+  if (nl) nl.textContent = (document.querySelector('#nav a.active') || document.querySelector('#nav a'))?.textContent || '';
+  for (const el of document.querySelectorAll('[data-step]')) el.textContent = t('start.step', { n: el.dataset.step });
+  for (const row of rows) {
+    if (row.status !== 'ok') continue;
+    const point = READ_PLAN.find((p) => p.key === row.key);
+    const bytes = row.rawHex ? Uint8Array.from(row.rawHex.split(' ').map((h) => parseInt(h, 16))) : new Uint8Array();
+    try { Object.assign(row, decoders[point.decoder](bytes, point)); } catch { /* bleibt wie gelesen */ }
+  }
+  if (lastMessage) message(lastMessage.key, lastMessage.vars, lastMessage.kind);
+  if (!window.isSecureContext) showInsecureHint();
+  if (rows.length) render();
+  if (pending) showPreview(pending.plan, true);
+  renderCompare();
+  renderMeasure();
+  showIssuesInfo();
+  updateLegalFooter();
+  showLastBackup();
+  setUi();
+}
+
+// ---------- Auslesen ----------
+
+async function refresh() {
+  busy = true;
+  setUi();
+  const total = READ_PLAN.length + 8;
+  let done = 0;
+  rows = await readAll(reader, (row, i) => {
+    done = i + 1;
+    progress(done / total);
+    message('msg.reading', { n: done, total: READ_PLAN.length });
+  });
+  S = byKey(rows);
+  log(`Gelesen: ${rows.filter((r) => r.status === 'ok').length}/${rows.length} Datenpunkte`);
+
+  message('msg.readingFaults');
+  faults = await readFaults(reader, () => progress(++done / total));
+  log(`Fehlerspeicher: ${faults.map((f) => `${f.component} ${f.status === 'ok' ? f.faults.length : f.reason}`).join(', ')}`);
+
+  message('msg.readingModes');
+  modes = await readAssistModes(reader, val('activeModes') ?? [], val('modeNames') ?? []);
+  log(`Fahrmodi: ${modes.map((m) => `${m.name} ${m.distance ?? '–'} m`).join(', ')}`);
+
+  progress(null);
+  busy = false;
+  readAt = new Date();
+  if (!demo) addSnapshot(snapshotFromRows(rows, readAt));
+  render();
+  message(demo ? 'demo.on' : null, {}, demo ? 'warn' : '');
+}
+
+$('connect').onclick = async () => {
+  if (!discAccepted()) return showDisclaimer();
+  if (!('usb' in navigator)) return message('msg.noWebusb', {}, 'err');
+  let device;
+  try {
+    device = await McspUsb.request(); // muss als Erstes im Klick passieren
+  } catch (e) {
+    return e.name === 'NotFoundError' ? message('msg.noDevice', {}, 'warn') : messageText(`${e.name}: ${e.message}`, 'warn');
+  }
+  await connectWith(new McspUsb(device, log), false);
+};
+// Demo: gleicher Ablauf, aber das Fahrrad ist nachgebaut (lib/demo-usb.js)
+$('demoStart').onclick = async () => {
+  if (!discAccepted()) return showDisclaimer();
+  await connectWith(new DemoUsb(log), true);
+};
+
+async function connectWith(u, isDemo) {
+  busy = true;
+  demo = isDemo;
+  setUi();
+  message('msg.connecting', { name: u.device.productName });
+  try {
+    usb = u;
+    await usb.open();
+    reader = new BikeReader(usb);
+    await refresh();
+    blocked = false;
+    startHeartbeat();
+    $('start').classList.add('hidden');
+    $('app').classList.remove('hidden');
+    $('navwrap').classList.remove('hidden');
+  } catch (e) {
+    log(`Fehler: ${e.message}`);
+    await disconnect();
+    messageText(`${t('msg.connectFailed', { error: e.message })}${/claim/i.test(e.message) ? ' ' + t('msg.busyHint') : ''}`, 'err');
+  }
+  busy = false;
+  setUi();
+}
+
+$('refresh').onclick = async () => {
+  try { await refresh(); } catch (e) { await disconnect(); message('msg.readError', { error: e.message }, 'err'); }
+  setUi();
+};
+
+function startHeartbeat() {
+  clearInterval(hbTimer);
+  hbFailures = 0;
+  hbTimer = setInterval(async () => {
+    if (busy || !reader || performance.now() - reader.lastActivity < 1100) return;
+    try {
+      await heartbeat(reader);
+      hbFailures = 0;
+    } catch (e) {
+      log(`Lebenszeichen fehlgeschlagen (${++hbFailures}): ${e.message}`);
+      if (hbFailures >= 3 && !busy) {
+        await disconnect();
+        message('msg.hbLost', {}, 'warn');
+      }
+    }
+  }, 1500);
+}
+
+async function disconnect() {
+  clearInterval(hbTimer);
+  hbTimer = null;
+  const u = usb;
+  usb = null;
+  reader = null;
+  pending = null;
+  $('preview').classList.add('hidden');
+  if (u) await u.close();
+  progress(null);
+  busy = false;
+  log('Verbindung getrennt.');
+  setUi();
+}
+$('disconnect').onclick = async () => { await disconnect(); message('msg.disconnected'); };
+navigator.usb?.addEventListener('disconnect', async (e) => {
+  if (usb && e.device === usb.device) { await disconnect(); message('msg.cableOff', {}, 'warn'); }
+});
+
+// ---------- Backup ----------
+
+// Speicherort wählen (im Klick!), dann frisch auslesen und Datei schreiben.
+async function saveBackup(change) {
+  const handle = demo ? null : await pickBackupFile(backupFileName({ createdAt: new Date().toISOString() }));
+  message('msg.backupReading');
+  const fresh = await readAll(reader, (row, i) => progress((i + 1) / READ_PLAN.length));
+  const freshState = byKey(fresh);
+  const freshModes = await readAssistModes(reader, freshState.activeModes?.value ?? [], freshState.modeNames?.value ?? []);
+  progress(null);
+  const backup = createBackup(fresh, change, freshModes);
+  // Demo: keine Datei und kein Eintrag in der Backup-Liste
+  if (demo) return { backup, fresh, saved: { name: t('demo.backupName'), method: 'demo' } };
+  const saved = await writeBackupFile(backup, handle);
+  log(`Backup gespeichert: ${saved.name} (${saved.method === 'file' ? 'Datei geprüft' : 'Download'})`);
+  if (saved.method === 'download' && !confirm(t('msg.backupConfirmDownload', { name: saved.name }))) {
+    throw new Error(t('msg.backupNotConfirmed'));
+  }
+  showLastBackup();
+  return { backup, fresh, saved };
+}
+
+async function manualBackup() {
+  if (!reader || busy) return;
+  busy = true;
+  setUi();
+  try {
+    const { saved } = await saveBackup({ title: t('title.manualBackup'), steps: [] });
+    message('msg.backupSaved', { name: saved.name }, 'ok');
+  } catch (e) {
+    if (e.name === 'AbortError') message('msg.noLocation', {}, 'warn');
+    else message('msg.backupFailed', { error: e.message }, 'warn');
+  } finally {
+    progress(null);
+    busy = false;
+    setUi();
+  }
+}
+$('backupNow').onclick = manualBackup;
+$('backupNow2').onclick = manualBackup;
+
+// ---------- Anzeige ----------
+
+function stat({ label, num: n, unit = '', warn = false, meter = null, caps = [] }) {
+  return `<div class="stat ${warn ? 'warn' : ''}"><span class="label">${esc(label)}</span>
+    <div class="num ${/\p{L}{3}/u.test(String(n)) ? 'word' : ''}">${esc(n)}${unit ? `<small>${esc(unit)}</small>` : ''}</div>
+    ${meter ? `<div class="meter ${meter[1] ? 'warn' : ''}"><i style="width:${Math.max(0, Math.min(100, meter[0]))}%"></i></div>` : ''}
+    ${caps.filter(Boolean).map((c) => `<div class="cap">${c}</div>`).join('')}</div>`;
+}
+const pill = (text, kind = '') => `<span class="pill ${kind}">${esc(text)}</span>`;
+
+function health(soh) {
+  if (soh == null) return null;
+  if (soh >= 90) return [t('health.vgood'), 'ok'];
+  if (soh >= 80) return [t('health.good'), 'ok'];
+  if (soh >= 70) return [t('health.ok'), 'none'];
+  return [t('health.weak'), 'bad'];
+}
+
+function serviceInfo() {
+  const s = val('serviceDue');
+  const odo = val('odometer');
+  if (!s) return { n: '–', caps: [t('tile.unreadable')] };
+  if (!s.timestamp && !s.odometer) return { n: t('tile.none'), caps: [t('tile.svcNone')] };
+  const caps = [];
+  let n = '';
+  let unit = '';
+  let warn = false;
+  if (s.odometer) {
+    const left = (s.odometer - (odo ?? 0)) / 1000;
+    if (left > 0) { n = fmtNum(left, 0); unit = 'km'; } else n = t('tile.due');
+    warn = left < 100;
+    caps.push(t('tile.svcAt', { km: km(s.odometer) }));
+  }
+  if (s.timestamp) {
+    const days = Math.ceil((s.timestamp * 1000 - Date.now()) / 86400000);
+    if (!n) { if (days > 0) { n = String(days); unit = t('tile.days'); } else n = t('tile.due'); }
+    warn = warn || days < 30;
+    caps.push(t('tile.svcDate', { date: fmtDate(s.timestamp) }));
+  }
+  return { n, unit, warn, caps };
+}
+
+// Fahrrad-Check: Region/Geschwindigkeitsklasse, Unterstützung bis, Tuning-Erkennung
+function checkTile() {
+  const tuning = val('tuning');
+  const suspicious = !!tuning && (tuning.flag || tuning.counter > 0);
+  const speed = val('maxAssistSpeed');
+  const legal = val('maxLegalSpeed') ?? 25;
+  // Bosch meldet als „Unterstützung bis“ etwas mehr als die gesetzliche Grenze (Abregelbereich, z. B. 27,4 bei 25).
+  // Auffällig erst bei mehr als 10 % darüber oder wenn die gesetzliche Grenze selbst über 25 km/h liegt (S-Pedelec/Region).
+  const fast = (speed != null && speed > legal * 1.1 + 0.2) || legal > 25.5;
+  if (!tuning && !ok('region')) return '';
+  return stat({
+    label: t('tile.check'),
+    num: t(suspicious || fast ? 'check.warn' : 'check.ok'),
+    warn: suspicious || fast,
+    caps: [
+      ok('region') ? esc(`${t('check.region')}: ${txt('region')}`) : '',
+      speed != null ? esc(`${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}`) : '',
+      tuning ? pill(txt('tuning'), suspicious ? 'bad' : 'ok') : '',
+    ],
+  });
+}
+
+function kv(items) {
+  return items.map(([k, v, hint]) => `<div class="row"><dt>${esc(k)}</dt><dd>${v}${hint ? `<span class="hint">${esc(hint)}</span>` : ''}</dd></div>`).join('');
+}
+const v = (s) => `<span class="val">${esc(s)}</span>`;
+
+function render() {
+  if (!$('bikeName').value) $('bikeName').value = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim();
+  $('readAt').textContent = readAt ? t('msg.readAt', { date: fmtDateTime(readAt, { dateStyle: 'long', timeStyle: 'short' }) }) : '';
+
+  const soc = val('batterySoc');
+  const soh = val('batterySoh');
+  const h = health(soh);
+  const svc = serviceInfo();
+  const faultCount = faults.reduce((n, f) => n + f.faults.length, 0);
+  const faultRead = faults.some((f) => f.status === 'ok');
+  const light = val('lightMode');
+  const lightOn = val('lightState');
+
+  // ID-Konflikt: Motor und Bedieneinheit melden verschiedene Fahrrad-IDs (nur wenn beide lesbar sind)
+  const motorId = val('motorBikeId');
+  const controllerId = val('controllerBikeId');
+  const conflict = motorId && controllerId && motorId !== controllerId;
+  const shortId = (id) => `${id.slice(0, 4)}…${id.slice(-4)}`;
+
+  $('overview').innerHTML = [
+    conflict ? `<div class="stat warn wide"><span class="label">${esc(t('conflict.label'))}</span>
+      <div class="num word">${esc(t('conflict.title'))}</div>
+      <div class="cap">${esc(t('conflict.ids', { motor: shortId(motorId), controller: shortId(controllerId) }))}</div>
+      <div class="cap">${esc(t('conflict.why'))}</div>
+      <div class="cap">${t('conflict.todo')}</div></div>` : '',
+    stat({ label: t('tile.battery'), num: soc ?? '–', unit: '%', warn: soc != null && soc < 20, meter: soc != null ? [soc, soc < 20] : null,
+      caps: [h ? `${pill(t('tile.health', { health: h[0] }), h[1])}${soh} %` : '',
+        ok('batteryRemainingWh') ? esc(t('tile.remaining', { wh: txt('batteryRemainingWh') })) : '',
+        esc(t('tile.cycles', { n: txt('batteryCycles') }))] }),
+    checkTile(),
+    stat({ label: t('tile.odo'), num: ok('odometer') ? fmtNum(val('odometer') / 1000, 1) : '–', unit: 'km', caps: [esc(t('tile.odoCap'))] }),
+    stat({ label: t('tile.service'), num: svc.n, unit: svc.unit, warn: svc.warn, caps: svc.caps.map(esc) }),
+    stat({ label: t('tile.faults'), num: faultRead ? (faultCount || t('tile.none')) : '–',
+      unit: faultCount ? t(faultCount === 1 ? 'tile.entry' : 'tile.entries') : '', warn: faultCount > 0,
+      caps: [faultCount ? `<a href="#fehler">${esc(t('tile.faultsDetails'))}</a>` : esc(t(faultRead ? 'tile.faultsNone' : 'tile.unreadable'))] }),
+    stat({ label: t('tile.light'), num: light != null ? t(`lightMode.${light}`) : '–',
+      caps: [`${lightOn != null ? pill(t(lightOn ? 'tile.lightOn' : 'tile.lightOff'), lightOn ? 'ok' : '') : ''}${esc(t('tile.lightPower', { w: txt('lightPower') }))}`] }),
+    stat({ label: t('tile.ports'), num: [val('lowPortActive'), val('highPortActive')].filter(Boolean).length, unit: t('tile.portsActive'),
+      caps: [esc(t('tile.portsCap', { low: t(val('lowPortActive') ? 'word.on' : 'word.off'), high: t(val('highPortActive') ? 'word.on' : 'word.off') }))] }),
+  ].join('');
+
+  const tmin = val('batteryTempMin');
+  const tmax = val('batteryTempMax');
+  $('batteryList').innerHTML = kv([
+    [t('bat.soc'), v(txt('batterySoc')), t('bat.socHint')],
+    [t('bat.soh'), `${v(txt('batterySoh'))} ${h ? pill(h[0], h[1]) : ''}`, t('bat.sohHint')],
+    [t('bat.remaining'), v(ok('batteryRemainingWh') ? txt('batteryRemainingWh') : '–'), t('bat.remainingHint')],
+    [t('bat.cycles'), v(txt('batteryCycles')),
+      ok('batteryCyclesOnBike') ? `${t('bat.cyclesSplit', { on: txt('batteryCyclesOnBike'), off: txt('batteryCyclesOffBike', '0') })} · ${t('bat.cyclesHint')}` : t('bat.cyclesHint')],
+    [t('bat.energy'), v(txt('batteryEnergy')), t('bat.energyHint')],
+    [t('bat.temp'), v(tmin != null && tmax != null ? `${fmtNum(tmin, 1)} °C – ${fmtNum(tmax, 1)} °C` : '–'), t('bat.tempHint')],
+    [t('bat.model'), v(txt('batteryProduct')), t('versions', { sw: txt('batterySoftware'), hw: txt('batteryHardware') })],
+    [t('bat.serial'), v(txt('batterySerial')), ''],
+  ]);
+
+  const maxDist = Math.max(1, ...modes.map((m) => m.distance ?? 0));
+  const sumDist = modes.reduce((n, m) => n + (m.distance ?? 0), 0);
+  // Reichweite pro Modus: Restenergie ÷ (Energie ÷ Strecke)
+  const remainingWh = val('batteryRiderWh') ?? val('batteryRemainingWh');
+  const range = (m) => (remainingWh && m.distance > 0 && m.energy > 0 ? Math.round(remainingWh / (m.energy / (m.distance / 1000))) : null);
+  $('modes').innerHTML = modes.length ? modes.map((m) => `<div class="mode"><span>${esc(m.name)}</span>
+      <div class="meter"><i style="width:${((m.distance ?? 0) / maxDist) * 100}%"></i></div>
+      <span class="km">${m.distance == null ? '–' : km(m.distance)}${sumDist && m.distance != null ? ` <small>${fmtNum((m.distance / sumDist) * 100)} %</small>` : ''}</span>
+      <span class="faint" style="grid-column:1/-1;margin-top:-6px">${esc(modeSummary(m.udam))}${range(m) ? ` · ${esc(t('ride.rangeKm', { km: range(m) }))}` : ''}</span></div>`).join('')
+    : `<p class="faint">${esc(t('ride.noModes'))}</p>`;
+  renderModeEditor();
+
+  const rs = val('rideStats');
+  const hours = val('powerOnHours');
+  const motorHours = val('motorHours');
+  const stats = [];
+  if (rs) {
+    stats.push([t('ride.dist'), v(km(rs.distance)), rs.resetAt ? t('ride.reset', { date: fmtDate(rs.resetAt) }) : '']);
+    if (rs.distance > 0) stats.push([t('ride.off'), `${v(km(rs.offDistance))} ${pill(`${fmtNum((rs.offDistance / rs.distance) * 100)} %`)}`, '']);
+    stats.push([t('ride.motorWh'), v(`${fmtNum(rs.motorWh)} Wh`), rs.distance > 0 ? t('ride.whkm', { v: fmtNum(rs.motorWh / (rs.distance / 1000), 1) }) : '']);
+    if (rs.otherWh) stats.push([t('ride.otherWh'), v(`${fmtNum(rs.otherWh)} Wh`), '']);
+  }
+  if (hours != null) stats.push([t('ride.hours'), v(`${fmtNum(hours)} h`), motorHours != null ? t('ride.hoursMotor', { h: fmtNum(motorHours) }) : '']);
+  if (ok('cadence')) stats.push([t('ride.cadence'), v(txt('cadence')), t('ride.cadenceHint')]);
+  $('statsList').innerHTML = stats.length ? kv(stats) : `<p class="faint">${esc(t('ride.noStats'))}</p>`;
+
+  $('faults').innerHTML = faults.map((f) => {
+    let body;
+    if (f.status === 'none') body = `<p class="faint" style="margin:0">${esc(t('fault.notInstalled'))}</p>`;
+    else if (f.status !== 'ok') body = `<p class="faint" style="margin:0">${esc(t('fault.unreadable'))}</p>`;
+    else if (!f.faults.length) body = pill(t('fault.none'), 'ok');
+    else {
+      // Bosch schreibt Smart-System-Codes hexadezimal, z. B. 523001 oder 1B7210
+      body = f.faults.map((e) => {
+        const info = lookupIssue(e.code ?? 0, lang());
+        const sev = info?.s ? pill(t(`sev.${info.s}`), info.s === 'CRITICAL_ERROR' || info.s === 'ERROR' ? 'bad' : info.s === 'WARNING' ? 'none' : '') : '';
+        return `<div class="fault"><span class="code">${esc(t('fault.code', { code: (e.code ?? 0).toString(16).toUpperCase().padStart(6, '0') }))}
+          ${pill(`${e.count ?? '?'}×`, e.count > 5 ? 'none' : '')} ${sev}</span>
+        ${info?.t ? `<strong style="color:var(--self-text)">${esc(info.t)}</strong>` : ''}
+        ${info?.d ? `<span style="white-space:pre-line;color:var(--self-text-2);font-size:14px">${esc(info.d)}</span>` : ''}
+        ${info?.m ? `<span style="white-space:pre-line;font-size:14px"><span class="label">${esc(t('issues.measures'))}</span><br>${esc(info.m)}</span>` : ''}
+        <span class="faint">${esc(e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime'))}</span></div>`;
+      }).join('');
+    }
+    return `<div class="panel-card"><h3 class="card-h">${esc(t(`fault.${f.component}`))}</h3>${body}</div>`;
+  }).join('');
+
+  if (LIGHT_MODES[light]) $('lightMode').value = String(light);
+  if (ok('lightPower')) $('lightWatts').value = val('lightPower').toFixed(1);
+  $('lightLocked').classList.toggle('hidden', val('lightOem')?.configurable === true);
+  $('serviceNow').textContent = t('svc.now', { value: txt('serviceDue') });
+  if (!$('svcDate').value) {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    $('svcDate').value = d.toISOString().slice(0, 10);
+  }
+  updateKmTarget();
+
+  const model = txt('oemModel', '');
+  $('componentList').innerHTML = kv([
+    [t('comp.bike'), v(`${txt('oemBrand')}${model ? ' ' + model : ''}`), model ? '' : t('comp.modelMissing')],
+    [t('comp.motor'), v(`${txt('motorName')} · ${txt('motorModel')}`),
+      `${t('versions', { sw: txt('motorFirmware'), hw: txt('motorHardware') })} · ${t('comp.serial', { s: txt('motorSerial') })}`],
+    [t('comp.battery'), v(txt('batteryProduct')),
+      `${t('versions', { sw: txt('batterySoftware'), hw: txt('batteryHardware') })} · ${t('comp.serial', { s: txt('batterySerial') })}`],
+    [t('comp.controller'), v(txt('controllerProduct')),
+      `${t('versions', { sw: txt('controllerSoftware'), hw: txt('controllerHardware') })} · ${t('comp.serial', { s: txt('controllerSerial') })}`],
+    ...(ok('absName') ? [[t('fault.ABS'), v(txt('absName')), `${t('abs.mode', { m: txt('absMode') })} · Software ${txt('absSoftware')}`]] : []),
+    [t('check.region'), v(txt('region')),
+      ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
+    [dp('tuning'), ok('tuning') ? pill(txt('tuning'), val('tuning').flag || val('tuning').counter ? 'bad' : 'ok') : v('–'), t('check.tuningHint')],
+    [t('comp.bikeId'), ok('motorBikeId') && motorId === controllerId ? pill(t('comp.idOk'), 'ok') : pill(t('comp.idConflict'), 'bad'), ''],
+    [t('comp.lock'), esc(t(val('lockEnabled') ? 'comp.lockOn' : 'comp.lockOff')), ''],
+  ]);
+
+  renderMore();
+  renderDisplayEditor();
+  renderCare();
+  renderPending();
+  renderHistory();
+  renderMeasure();
+  showLastBackup();
+  setUi();
+}
+
+// ---------- Unterbrochene Änderung ----------
+
+function renderPending() {
+  const steps = checkPending(loadPending(), S);
+  if (!steps) { $('pendingCard').innerHTML = ''; return; }
+  const p = loadPending();
+  const kind = { arrived: 'ok', notArrived: '', other: 'bad', unknown: 'none' };
+  $('pendingCard').innerHTML = `<div class="panel-card" style="margin:0 0 16px;border-color:var(--self-yellow)">
+    <h3 class="card-h" style="color:var(--self-yellow)">${esc(t('pend.title'))}</h3>
+    <p class="muted">${esc(t('pend.text', { date: fmtDateTime(p.at), title: p.title }))}</p>
+    <div class="table-scroll"><table class="list"><tr><th>${esc(t('preview.colSetting'))}</th><th>${esc(t('preview.colBefore'))}</th>
+      <th>${esc(t('preview.colAfter'))}</th><th>${esc(t('pend.colNow'))}</th><th></th></tr>
+    ${steps.map((s) => `<tr><td>${esc(s.label)}</td><td class="mono">${esc(s.before)}</td><td class="mono">${esc(s.after)}</td>
+      <td class="mono">${esc(s.now ?? '–')}</td><td>${pill(t(`pend.${s.result}`), kind[s.result])}</td></tr>`).join('')}</table></div>
+    <p class="faint">${esc(t('pend.backup', { name: p.backupName }))}</p>
+    <div class="btnrow"><button class="btn" id="pendingOk">${esc(t('pend.ok'))}</button></div></div>`;
+  $('pendingOk').onclick = () => { clearPending(); renderPending(); };
+}
+
+// ---------- Pflege: Akku-Check, Reichweite, Verschleiß ----------
+
+function renderCare() {
+  const deg = (x) => `${fmtNum(x, 1)} °C`;
+  const shown = {
+    soh: (c) => `${c.vars.v} %`, deep: (c) => String(c.vars.n), thermal: () => txt('batteryThermal'),
+    hot: (c) => deg(c.vars.v), cold: (c) => deg(c.vars.v), charge: (c) => deg(c.vars.v), store: (c) => `${c.vars.v} %`, cycles: () => txt('batteryCycles'),
+  };
+  const kind = { ok: 'ok', warn: 'none', bad: 'bad', info: '' };
+  const checks = batteryChecks(val);
+  const issues = checks.filter((c) => c.state === 'warn' || c.state === 'bad').length;
+  $('bcVerdict').innerHTML = checks.length ? `<p>${pill(t(issues ? 'bc.someWarn' : 'bc.allOk', { n: issues }), issues ? 'none' : 'ok')}</p>` : '';
+  $('bcList').innerHTML = checks.length ? kv(checks.map((c) => [t(`bc.${c.id}`),
+    `${v(shown[c.id](c))} ${pill(t(`bc.state.${c.state}`), kind[c.state])}`, t(`bc.${c.id}.${c.state}`, { v: shown[c.id](c), n: c.vars.n })]))
+    : `<p class="faint">${esc(t('tile.unreadable'))}</p>`;
+
+  const r = rangeEstimate(val, historyFor(val('motorBikeId')));
+  $('rgBody').innerHTML = r.now == null ? `<p class="faint">${esc(t('rg.none'))}</p>`
+    : `<div class="stats">${stat({ label: t('rg.now'), num: fmtNum(r.now, 0), unit: 'km' })}${stat({ label: t('rg.full'), num: r.full ? fmtNum(r.full, 0) : '–', unit: 'km' })}</div>
+      <p class="muted" style="margin:12px 0 0">${esc(t('rg.basis', {
+        v: fmtNum(r.whkm, 1), wh: `${fmtNum(r.usable, 0)} Wh`,
+        src: r.source.kind === 'bike' ? t('rg.srcBike', { km: km(r.source.km * 1000, 0) }) : t('rg.srcHist'),
+      }))}</p>`;
+  renderWear();
+}
+
+const odoKm = () => (ok('odometer') ? val('odometer') / 1000 : null);
+function renderWear() {
+  const sel = $('wearPart');
+  const previous = sel.value;
+  sel.innerHTML = [...Object.keys(WEAR_PARTS), 'custom'].map((p) => `<option value="${p}">${esc(t(`wear.p.${p}`))}</option>`).join('');
+  sel.value = previous || 'chain';
+  if (!$('wearLimit').value) $('wearLimit').value = WEAR_PARTS[sel.value] ?? 1000;
+  if (!$('wearSince').value && odoKm() != null) $('wearSince').value = Math.round(odoKm());
+  $('wearNameRow').classList.toggle('hidden', sel.value !== 'custom');
+  const list = loadWear();
+  $('wearList').innerHTML = list.length ? list.map((e) => {
+    const s = wearStatus(e, odoKm());
+    const name = e.part ? t(`wear.p.${e.part}`) : e.name;
+    return `<div class="wear"><div><strong>${esc(name)}</strong>
+        <div class="faint">${esc(t('wear.sinceDate', { date: fmtDateTime(e.sinceDate, { dateStyle: 'medium' }), km: km(e.sinceKm * 1000, 0) }))}</div></div>
+      <div><span class="mono">${esc(t('wear.used', { km: s.used == null ? '–' : fmtNum(s.used, 0), limit: fmtNum(e.limitKm, 0) }))}</span>
+        ${s.state === 'bad' ? pill(t('wear.due'), 'bad') : s.state === 'none' ? pill(t('wear.soon'), 'none') : ''}
+        <div class="meter ${s.share >= 0.8 ? 'warn' : ''}"><i style="width:${Math.min(100, (s.share ?? 0) * 100)}%"></i></div></div>
+      <div class="btnrow"><button class="btn btn-small" data-wear-done="${esc(e.id)}" ${odoKm() == null ? 'disabled' : ''}>${esc(t('wear.replaced'))}</button>
+        <button class="btn btn-small" data-wear-del="${esc(e.id)}" title="${esc(t('wear.remove'))}" aria-label="${esc(t('wear.remove'))}">✕</button></div></div>`;
+  }).join('') : `<p class="faint">${esc(t('wear.empty'))}</p>`;
+}
+$('wearPart').onchange = () => {
+  $('wearLimit').value = WEAR_PARTS[$('wearPart').value] ?? 1000;
+  $('wearNameRow').classList.toggle('hidden', $('wearPart').value !== 'custom');
+};
+$('wearAdd').onclick = () => {
+  const part = $('wearPart').value;
+  const limitKm = Number($('wearLimit').value);
+  const sinceKm = Number($('wearSince').value);
+  const odo = odoKm();
+  if (!Number.isInteger(limitKm) || limitKm < 1 || !Number.isFinite(sinceKm) || sinceKm < 0 || (odo != null && sinceKm > odo + 1)) {
+    return message('wear.badKm', {}, 'warn');
+  }
+  if (part === 'custom' && !$('wearName').value.trim()) return message('wear.badName', {}, 'warn');
+  addWear({ part, name: $('wearName').value, limitKm, sinceKm });
+  $('wearName').value = '';
+  message(null);
+  renderWear();
+};
+$('wearList').onclick = (ev) => {
+  const done = ev.target.closest('[data-wear-done]')?.dataset.wearDone;
+  const del = ev.target.closest('[data-wear-del]')?.dataset.wearDel;
+  const entry = loadWear().find((e) => e.id === (done || del));
+  if (!entry) return;
+  const name = entry.part ? t(`wear.p.${entry.part}`) : entry.name;
+  if (done && odoKm() != null && confirm(t('wear.replacedConfirm', { name, km: km(odoKm() * 1000, 0) }))) replacedWear(done, odoKm());
+  if (del && confirm(t('wear.removeConfirm', { name }))) removeWear(del);
+  renderWear();
+};
+
+// Herstelldatum „TT.MM.JJJJ“ → Alter in Monaten
+function ageText(key) {
+  const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(txt(key, ''));
+  if (!m) return null;
+  const made = new Date(+m[3], +m[2] - 1, +m[1]);
+  const months = Math.max(0, Math.round((Date.now() - made) / (30.44 * 86400000)));
+  return { date: txt(key), age: months < 24 ? t('more.months', { n: months }) : t('more.years', { n: fmtNum(months / 12, 1) }) };
+}
+
+function renderMore() {
+  const card = (title, items) => {
+    const rows = items.filter(Boolean);
+    return rows.length ? `<div class="panel-card"><h3 class="card-h">${esc(title)}</h3><dl class="kv">${kv(rows)}</dl></div>` : '';
+  };
+  const ages = [['comp.motor', 'motorMade'], ['comp.battery', 'batteryMade'], ['comp.controller', 'controllerMade'], ['fault.ABS', 'absMade']]
+    .map(([label, key]) => { const a = ageText(key); return a ? [t(label), v(a.date), a.age] : null; });
+  const deep = val('batteryDeepDischarge');
+  const thermal = val('batteryThermal');
+  const wheelSame = ok('wheelOem') && ok('wheelUser') && val('wheelOem') === val('wheelUser');
+  $('moreCards').innerHTML = [
+    card(t('more.ages'), [...ages, ages.some(Boolean) ? [t('more.warranty'), '', t('more.warrantyHint')] : null]),
+    card(t('more.battery'), [
+      ok('batteryCapacityAh') && [t('more.capacity'), v(`${txt('batteryCapacityAh')}`), ok('batteryDeliveredAh') ? t('more.delivered', { ah: txt('batteryDeliveredAh'), wh: txt('batteryEnergy') }) : ''],
+      ok('batteryVoltage') && [t('more.voltage'), v(txt('batteryVoltage')), ok('batteryMaxCurrent') ? t('more.maxCurrent', { a: txt('batteryMaxCurrent') }) : ''],
+      ok('batteryTempNow') && [t('more.tempNow'), v(`${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`), t('more.tempNowHint')],
+      thermal != null && [t('more.thermal'), `${v(txt('batteryThermal'))} ${pill(t(thermal ? 'more.seen' : 'more.never'), thermal ? 'none' : 'ok')}`, t('more.thermalHint')],
+      deep != null && [t('more.deep'), `${v(String(deep))} ${pill(t(deep ? 'more.seen' : 'more.never'), deep ? 'bad' : 'ok')}`, t('more.deepHint')],
+      ok('batterySelfDischarge') && [t('more.selfDischarge'), v(txt('batterySelfDischarge')), ''],
+    ]),
+    ok('gearCount') ? card(t('more.eshift'), [
+      [t('more.gears'), v(txt('gearCount')), ok('gearNow') ? t('more.gearNow', { g: txt('gearNow') }) : ''],
+      ok('gearCadence') && [t('more.cadence'), v(txt('gearCadence')), ok('gearCadenceLimits') ? t('more.cadenceRange', { r: txt('gearCadenceLimits') }) : ''],
+    ]) : '',
+    ok('absName') ? card(t('fault.ABS'), [
+      [t('more.absProduct'), v(txt('absName')), t('abs.mode', { m: txt('absMode') })],
+      ok('absModes') && [t('more.absModes'), v(txt('absModes')), ''],
+      ok('absDisc') && [t('more.absDisc'), v(txt('absDisc')), ''],
+      ok('absUpdates') && [t('more.absUpdates'), v(txt('absUpdates')), `Software ${txt('absSoftware')}`],
+    ]) : '',
+    card(t('more.other'), [
+      ok('rangeExtender') && [t('more.powerMore'), pill(t(val('rangeExtender') ? 'word.yes' : 'word.no'), val('rangeExtender') ? 'ok' : ''), t('more.powerMoreHint')],
+      ok('wheelOem') && [t('more.wheel'), `${v(txt('wheelUser'))} ${pill(t(wheelSame ? 'more.factory' : 'more.changed'), wheelSame ? 'ok' : 'none')}`, t('more.wheelHint', { w: txt('wheelOem') })],
+      ok('startMode') && [t('more.startMode'), v(txt('startMode')), ''],
+      ok('walkAssist') && [t('disp.walk'), v(txt('walkAssist')), ''],
+      ok('oemBikeNumber') && txt('oemBikeNumber', '') && [t('more.bikeNumber'), v(txt('oemBikeNumber').trim()), t('more.bikeNumberHint')],
+    ]),
+  ].join('');
+}
+
+// ---------- Änderungen ----------
+
+function updateKmTarget() {
+  const odo = val('odometer');
+  const add = Number($('svcKm').value);
+  $('svcKmTarget').textContent = odo != null && add > 0 ? t('svc.target', { km: km(odo + add * 1000) }) : '';
+}
+$('svcKm').oninput = updateKmTarget;
+
+// Pläne werden bei Sprachwechsel neu erzeugt, damit Titel und Werte übersetzt sind
+let lastPlanFn = null;
+function showPreview(plan, keepConfirm = false) {
+  if (keepConfirm && lastPlanFn) { try { plan = lastPlanFn(); } catch { /* alter Plan bleibt */ } }
+  if (!plan.steps.length) return message('msg.noChange', {}, 'ok');
+  pending = { plan, state: S };
+  $('previewTitle').textContent = plan.title;
+  $('previewTable').innerHTML = `<tr><th>${esc(t('preview.colSetting'))}</th><th>${esc(t('preview.colBefore'))}</th><th>${esc(t('preview.colAfter'))}</th></tr>` +
+    plan.steps.map((s) => `<tr><td>${esc(s.label ?? dp(s.key))}</td><td class="mono">${esc(s.before)}</td><td class="mono" style="color:var(--self-teal-bright)">${esc(s.after)}</td></tr>`).join('');
+  $('previewWarnings').innerHTML = plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
+  if (!keepConfirm) {
+    $('confirm').checked = false;
+    message(null);
+    $('preview').classList.remove('hidden');
+    $('preview').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  setUi();
+}
+function tryPlan(fn) {
+  try { lastPlanFn = fn; showPreview(fn()); } catch (e) { messageText(e.message, 'warn'); }
+}
+
+$('planLight').onclick = () => {
+  if (!$('lampsOk').checked) return message('msg.lampsFirst', {}, 'warn');
+  const mode = Number($('lightMode').value);
+  const watts = Number($('lightWatts').value);
+  tryPlan(() => planLight(S, { mode, watts }));
+};
+$('planService').onclick = () => {
+  let odometer = 0;
+  let timestamp = 0;
+  if ($('svcKmOn').checked) {
+    const add = Number($('svcKm').value);
+    if (!Number.isInteger(add) || add < 1) return message('msg.kmInt', {}, 'warn');
+    if (!ok('odometer')) return message('msg.odoUnreadable', {}, 'warn');
+    odometer = val('odometer') + add * 1000;
+  }
+  if ($('svcDateOn').checked) {
+    const [y, m, d] = $('svcDate').value.split('-').map(Number);
+    if (!y) return message('msg.chooseDate', {}, 'warn');
+    timestamp = Date.UTC(y, m - 1, d) / 1000;
+  }
+  if (!odometer && !timestamp) return message('msg.chooseKmOrDate', {}, 'warn');
+  tryPlan(() => planService(S, { timestamp, odometer }));
+};
+$('planServiceDelete').onclick = () => tryPlan(() => planService(S, { timestamp: 0, odometer: 0 }));
+$('planDisplay').onclick = () => tryPlan(() => planDisplay(S, {
+  startMode: Number($('dispStart').value), language: $('dispLang').value,
+  displayUnits: Number($('dispUnits').value), timeFormat: Number($('dispTime').value), setClock: $('dispClock').checked,
+  walkAssist: ok('walkAssist') ? $('dispWalk').value === '1' : null,
+}, modes.map((m) => m.name)));
+
+// Auswahlfelder auf den gelesenen Stand setzen; unbekannte aktuelle Werte bleiben als eigene Option wählbar
+function renderDisplayEditor() {
+  const options = (list, current) => {
+    const all = current != null && !list.some((o) => String(o.value) === String(current)) ? [{ value: current, text: String(current) }, ...list] : list;
+    return all.map((o) => `<option value="${esc(o.value)}">${esc(o.text)}</option>`).join('');
+  };
+  $('dispStart').innerHTML = options(startModeOptions(modes.map((m) => m.name)), val('startMode'));
+  if (ok('startMode')) $('dispStart').value = String(val('startMode'));
+  $('dispStartLocked').classList.toggle('hidden', val('startModeOem')?.configurable !== false);
+  $('dispLang').innerHTML = options(DISPLAY_LANGUAGES.map((c) => ({ value: c, text: LANGS[c] })), val('displayLanguage'));
+  if (ok('displayLanguage')) $('dispLang').value = val('displayLanguage');
+  if (ok('displayUnits')) $('dispUnits').value = String(val('displayUnits'));
+  if (ok('timeFormat')) $('dispTime').value = String(val('timeFormat'));
+  // Schiebehilfe: nur an/aus, Geschwindigkeit bleibt
+  if (ok('walkAssist')) $('dispWalk').value = val('walkAssist').enabled ? '1' : '0';
+  $('dispWalkHint').textContent = ok('walkAssist') ? t('disp.walkHint', { speed: `${fmtNum(val('walkAssist').maxSpeed / 100, 1)} km/h` }) : '';
+  $('dispWalkHint').classList.toggle('hidden', !ok('walkAssist'));
+  $('dispWalkLocked').classList.toggle('hidden', val('walkAssistOem')?.configurable !== false);
+  // Gang der Uhr zum Zeitpunkt des Auslesens
+  const clock = val('bikeClock');
+  let state = '';
+  if (clock && readAt) {
+    const d = Math.round(clock - readAt.getTime() / 1000);
+    const span = Math.abs(d) < 3600 ? `${fmtNum(Math.abs(d) / 60, 0)} min` : `${fmtNum(Math.abs(d) / 3600, 1)} h`;
+    state = Math.abs(d) < 60 ? t('disp.clockOk') : t(d > 0 ? 'disp.clockAhead' : 'disp.clockBehind', { t: span });
+  }
+  $('dispClockNow').textContent = `${t('disp.clock')}: ${txt('bikeClock')}${state ? ` · ${state}` : ''}`;
+  $('dispClock').disabled = !ok('bikeClock');
+}
+
+$('restoreFile').onchange = async () => {
+  restoreBackup = null;
+  const file = $('restoreFile').files[0];
+  if (file) {
+    try {
+      const b = parseBackup(await file.text());
+      const r = Object.fromEntries(b.rows.map((x) => [x.key, x]));
+      const same = b.bikeId && b.bikeId === val('motorBikeId');
+      $('restoreInfo').innerHTML = `${esc(t('restore.from', { date: fmtDateTime(b.createdAt) }))}` +
+        `${b.plannedChange?.title ? ` · ${esc(b.plannedChange.title)}` : ''}<br>` +
+        `${esc(t('restore.summary', { light: `${r.lightMode?.text ?? '–'}, ${r.lightPower?.text ?? '–'}`, service: r.serviceDue?.text ?? '–' }))}<br>` +
+        (same ? pill(t('restore.same'), 'ok') : pill(t('restore.other'), 'bad'));
+      restoreBackup = same ? b : null;
+    } catch (e) {
+      $('restoreInfo').textContent = t('restore.unreadable', { error: e.message });
+    }
+  }
+  setUi();
+};
+$('planRestore').onclick = () => tryPlan(() => planRestore(S, restoreBackup, modes));
+
+$('confirm').onchange = setUi;
+$('cancel').onclick = () => {
+  pending = null;
+  $('preview').classList.add('hidden');
+  message('msg.cancelled');
+};
+
+$('execute').onclick = async () => {
+  if (!pending || busy || blocked || !$('confirm').checked) return;
+  const { plan } = pending;
+  const previewState = pending.state;
+  busy = true;
+  setUi();
+  openProgress(plan.title);
+  const totalSteps = plan.steps.length || 1;
+  let doneSteps = 0;
+  const plog = (m) => {
+    log(m); progAppend(m);
+    // jeder zurückgelesene Schritt („OK …") füllt den Kreis ein Stück weiter
+    if (/^OK /.test(m)) progRing((doneSteps = Math.min(totalSteps, doneSteps + 1)) / totalSteps);
+  };
+  let backup = null;
+  try {
+    const result = await saveBackup({ title: plan.title, steps: plan.steps.map(({ key, before, after }) => ({ key, before, after })) })
+      .catch((e) => { throw Object.assign(e, { beforeWrite: true }); });
+    backup = result.backup;
+    const now = byKey(result.fresh);
+    for (const key of guardedKeys(plan)) {
+      if (now[key]?.rawHex !== previewState[key]?.rawHex) throw new Error(t('msg.changedPreview', { label: dp(key) }));
+    }
+    // Merken, was gleich geschrieben wird – falls Kabel oder Browser mittendrin weg sind
+    savePending({
+      bikeId: now.motorBikeId?.value, at: new Date().toISOString(), title: plan.title, backupName: result.saved.name,
+      steps: plan.steps.map((s) => {
+        const known = !s.write && !s.volatile;
+        return { key: s.key, label: s.label ?? dp(s.key), before: s.before, after: s.after,
+          beforeHex: known ? now[s.key]?.rawHex ?? '' : null, afterHex: known ? hex(s.payload) : null };
+      }),
+    });
+    message('msg.changing', { title: plan.title });
+    progStatus(t('msg.changing', { title: plan.title }));
+    const applied = await applyPlan(reader, plan, now, plog);
+    clearPending();
+    recordOutcome(backup.createdAt, { ok: true, at: new Date().toISOString(), done: applied.done });
+    $('dispClock').checked = false;
+    pending = null;
+    lastPlanFn = null;
+    $('preview').classList.add('hidden');
+    plog(`FERTIG: ${plan.title}`);
+    const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ' ' + t('msg.restart') : '';
+    const changed = t('msg.changed', { title: plan.title, name: result.saved.name }) + restart;
+    try {
+      await refresh();
+    } catch (e) {
+      // Änderung ist geschrieben und zurückgelesen – nur das Auslesen danach ist gescheitert
+      plog(`Auslesen nach der Änderung fehlgeschlagen: ${e.message}`);
+      await disconnect();
+      messageText(`${changed} ${t('msg.readError', { error: e.message })}`, 'warn');
+      progStatus(`${changed} ${t('msg.readError', { error: e.message })}`, 'warn');
+      progDone('warn');
+      return;
+    }
+    messageText(changed, 'ok');
+    progStatus(changed, 'ok');
+    progDone('ok');
+  } catch (e) {
+    progress(null);
+    if (e.uncertain) {
+      blocked = true;
+      plog(`ABBRUCH nach Schreibversuch (${e.attempted.join(', ')}): ${e.message}`);
+      message('msg.abort', { error: e.message }, 'err');
+      progStatus(t('msg.abort', { error: e.message }), 'err');
+    } else if (e.beforeWrite && e.name === 'AbortError') {
+      clearPending();
+      message('msg.noLocation', {}, 'warn');
+      progStatus(t('msg.noLocation'), 'warn');
+    } else {
+      clearPending();
+      plog(`Nicht geändert: ${e.message}`);
+      message('msg.notChanged', { error: e.message }, 'warn');
+      progStatus(t('msg.notChanged', { error: e.message }), 'warn');
+    }
+    progDone();
+    if (backup) recordOutcome(backup.createdAt, { ok: false, at: new Date().toISOString(), error: e.message, attempted: e.attempted ?? [] });
+  } finally {
+    busy = false;
+    setUi();
+  }
+};
+
+// ---------- Fehlertexte (aus der eigenen Flow-App) ----------
+
+function showIssuesInfo() {
+  const info = catalogInfo();
+  $('issuesInfo').textContent = info ? t('issues.loaded', { n: fmtNum(info.count), langs: info.langs.join(', ') }) : t('issues.none');
+  $('issuesClear').classList.toggle('hidden', !info);
+  // Texte liegen auf dem Server → kein Import nötig, Bereich ausblenden
+  $('issuesCard').classList.toggle('hidden', !!info?.fromServer);
+}
+$('issuesFile').onchange = async () => {
+  const file = $('issuesFile').files[0];
+  $('issuesFile').value = '';
+  if (!file) return;
+  $('issuesInfo').textContent = t('issues.reading');
+  try {
+    const info = await importCatalog(file);
+    log(`Fehlertexte geladen: ${info.count} Codes, Sprachen ${info.langs.join(', ')}`);
+    message(null);
+  } catch (e) {
+    message(e.message === 'no-catalog' ? 'issues.notFound' : 'issues.error', { error: e.message }, 'warn');
+  }
+  showIssuesInfo();
+  if (rows.length) render();
+};
+$('issuesClear').onclick = async () => { await clearCatalog(); await loadCatalog(); showIssuesInfo(); if (rows.length) render(); };
+
+// ---------- Fahrmodi anpassen ----------
+
+// Anzeige-Umrechnung: Geschwindigkeit roh in 0,01 km/h, Unterstützung/Dynamik in %
+const toShown = (key, raw) => (key === 'maximumBikeSpeed' ? raw / 100 : raw);
+const toRaw = (key, shown) => (key === 'maximumBikeSpeed' ? Math.round(shown * 100) : Math.round(shown));
+
+function renderModeEditor() {
+  const sel = $('modeSel');
+  const previous = sel.value;
+  sel.innerHTML = modes.map((m) => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join('');
+  if (modes.some((m) => m.id === previous)) sel.value = previous;
+  const mode = modes.find((m) => m.id === sel.value);
+  const editable = canEdit(mode);
+  $('modeLocked').classList.toggle('hidden', editable || !mode);
+  $('modeFields').innerHTML = editable ? EDITABLE.map((key) => {
+    const { min, max } = bounds(mode, key);
+    const step = key === 'maximumBikeSpeed' ? '0.1' : '1';
+    const range = min == null ? t('mode.upTo', { max: fmtLimit(key, max) }) : t('mode.range', { min: fmtLimit(key, min), max: fmtLimit(key, max) });
+    const factory = mode.defaults?.[key] != null ? ` · ${t('mode.factory', { v: fmtLimit(key, mode.defaults[key]) })}` : '';
+    return `<label class="block"><span>${esc(t(`mode.${key}`))} <span class="faint">(${esc(range + factory)})</span></span>
+      <span><input class="field num-in" type="number" step="${step}" data-key="${key}"
+        min="${min != null ? toShown(key, min) : ''}" max="${max != null ? toShown(key, max) : ''}"
+        value="${mode.udam[key] != null ? toShown(key, mode.udam[key]) : ''}"> ${key === 'maximumBikeSpeed' ? 'km/h' : '%'}
+        <span class="pill" data-flow="${key}"></span></span></label>`;
+  }).join('') : '';
+  updateFlowSteps();
+  setUi();
+}
+$('modeSel').onchange = renderModeEditor;
+
+// Unterstützung/Dynamik: 100 % = Werkseinstellung; in der Flow-App entspricht das Stufen −5 … +5 (je 10 %)
+function updateFlowSteps() {
+  for (const pillEl of $('modeFields').querySelectorAll('[data-flow]')) {
+    const key = pillEl.dataset.flow;
+    const input = $('modeFields').querySelector(`input[data-key="${key}"]`);
+    if (key === 'maximumBikeSpeed' || input.value === '') { pillEl.classList.add('hidden'); continue; }
+    const s = Math.max(-5, Math.min(5, Math.round((Number(input.value) - 100) / 10)));
+    pillEl.classList.remove('hidden');
+    pillEl.textContent = `Flow ${s > 0 ? '+' : ''}${s}`;
+  }
+}
+$('modeFields').addEventListener('input', updateFlowSteps);
+
+$('planMode').onclick = () => {
+  const mode = modes.find((m) => m.id === $('modeSel').value);
+  const values = {};
+  for (const input of $('modeFields').querySelectorAll('input[data-key]')) {
+    if (input.value !== '') values[input.dataset.key] = toRaw(input.dataset.key, Number(input.value));
+  }
+  tryPlan(() => planModeChange(mode, values));
+};
+$('planModeReset').onclick = () => {
+  const mode = modes.find((m) => m.id === $('modeSel').value);
+  tryPlan(() => planModeReset(mode));
+};
+
+// ---------- Verlauf ----------
+
+const fmtShortDate = (iso) => fmtDateTime(iso, { dateStyle: 'short' });
+
+// Kleine Linie für eine Kennzahl; Hover zeigt Datum und Wert des nächsten Punktes
+function lineChart(el, points, { unit, digits }) {
+  const W = Math.max(220, el.clientWidth - 28), H = 110, L = 40, R = 8, T = 8, B = 18;
+  const xs = points.map((p) => new Date(p.at).getTime());
+  const ys = points.map((p) => p.y);
+  let [y0, y1] = [Math.min(...ys), Math.max(...ys)];
+  if (y1 - y0 < 1e-9) { y0 -= 1; y1 += 1; }
+  const pad = (y1 - y0) * 0.1; y0 -= pad; y1 += pad;
+  const [x0, x1] = [xs[0], xs[xs.length - 1] === xs[0] ? xs[0] + 1 : xs[xs.length - 1]];
+  const px = (x) => L + ((x - x0) / (x1 - x0)) * (W - L - R);
+  const py = (y) => T + (1 - (y - y0) / (y1 - y0)) * (H - T - B);
+  const fmt = (y) => `${fmtNum(y, digits)}${unit ? ` ${unit}` : ''}`;
+  const path = points.map((p, i) => `${i ? 'L' : 'M'}${px(xs[i]).toFixed(1)},${py(p.y).toFixed(1)}`).join('');
+  const ticks = [y0 + pad, y1 - pad];
+  el.querySelector('.plot').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(el.dataset.title)}">
+    ${ticks.map((y) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${py(y)}" y2="${py(y)}"/>
+      <text class="axis" x="${L - 6}" y="${py(y) + 3}" text-anchor="end">${esc(fmtNum(y, digits))}</text>`).join('')}
+    <text class="axis" x="${L}" y="${H - 4}">${esc(fmtShortDate(points[0].at))}</text>
+    <text class="axis" x="${W - R}" y="${H - 4}" text-anchor="end">${esc(fmtShortDate(points[points.length - 1].at))}</text>
+    <path class="line" d="${path}"/>
+    ${points.length <= 40 ? points.map((p, i) => `<circle class="dot" cx="${px(xs[i])}" cy="${py(p.y)}" r="4"/>`).join('') : ''}
+    <line class="cross hidden" y1="${T}" y2="${H - B}"/><circle class="dot hl hidden" r="5"/>
+  </svg>`;
+  const svg = el.querySelector('svg'), cross = svg.querySelector('.cross'), hl = svg.querySelector('.hl');
+  let tip = el.querySelector('.tip');
+  if (!tip) { tip = document.createElement('div'); tip.className = 'tip hidden'; el.append(tip); }
+  svg.onpointermove = (e) => {
+    const box = svg.getBoundingClientRect();
+    const x = ((e.clientX - box.left) / box.width) * W;
+    let i = 0;
+    for (let k = 1; k < xs.length; k++) if (Math.abs(px(xs[k]) - x) < Math.abs(px(xs[i]) - x)) i = k;
+    const cx = px(xs[i]), cy = py(points[i].y);
+    cross.setAttribute('x1', cx); cross.setAttribute('x2', cx); hl.setAttribute('cx', cx); hl.setAttribute('cy', cy);
+    cross.classList.remove('hidden'); hl.classList.remove('hidden'); tip.classList.remove('hidden');
+    tip.textContent = `${fmtDateTime(points[i].at, { dateStyle: 'medium', timeStyle: 'short' })} · ${fmt(points[i].y)}`;
+    tip.style.left = `${14 + (cx / W) * box.width}px`;
+    tip.style.top = `${svg.offsetTop + (cy / H) * box.height - 8}px`;
+  };
+  svg.onpointerleave = () => { cross.classList.add('hidden'); hl.classList.add('hidden'); tip.classList.add('hidden'); };
+}
+
+function renderHistory() {
+  const bike = val('motorBikeId') || null;
+  const list = historyFor(bike);
+  const series = [
+    ...METRICS.map((m) => ({ ...m, points: list.filter((s) => s[m.id] != null).map((s) => ({ at: s.at, y: s[m.id] })) })),
+    { id: 'whkm', unit: 'Wh/km', digits: 1, points: consumption(list.filter((s) => s.km != null && s.kwh != null)).map((c) => ({ at: c.at, y: c.whkm })) },
+  ].filter((s) => s.points.length);
+  $('histCharts').innerHTML = series.map((s) => {
+    const last = s.points[s.points.length - 1].y, first = s.points[0].y;
+    const delta = s.points.length > 1 && s.id !== 'whkm'
+      ? t('hist.since', { delta: `${last - first >= 0 ? '+' : '−'}${fmtNum(Math.abs(last - first), s.digits)}`, date: fmtShortDate(s.points[0].at) })
+      : s.id === 'whkm' ? t('hist.whkmHint') : '';
+    return `<div class="chart" data-id="${s.id}" data-title="${esc(t(`hist.m.${s.id}`))}"><span class="label">${esc(t(`hist.m.${s.id}`))}</span>
+      <div class="now">${esc(fmtNum(last, s.digits))}<small>${esc(s.unit)}</small></div>
+      <div class="delta">${esc(delta)}</div><div class="plot"></div></div>`;
+  }).join('');
+  for (const s of series) {
+    const el = $('histCharts').querySelector(`[data-id="${s.id}"]`);
+    if (s.points.length > 1) lineChart(el, s.points, s);
+  }
+  $('histInfo').textContent = list.length
+    ? t(list.length > 1 ? 'hist.info' : 'hist.onePoint', { n: list.length, date: fmtShortDate(list[0].at) })
+    : t('hist.empty');
+  $('histClear').disabled = !list.length;
+  $('histTable').innerHTML = list.length ? `<tr><th>${esc(t('hist.date'))}</th>${METRICS.map((m) => `<th>${esc(t(`hist.m.${m.id}`))}</th>`).join('')}</tr>` +
+    [...list].reverse().map((s) => `<tr><td>${esc(fmtDateTime(s.at, { dateStyle: 'medium', timeStyle: 'short' }))}</td>${METRICS.map((m) =>
+      `<td class="v">${s[m.id] != null ? esc(`${fmtNum(s[m.id], m.digits)} ${m.unit}`.trim()) : '–'}</td>`).join('')}</tr>`).join('') : '';
+}
+let histResize = null;
+window.addEventListener('resize', () => { clearTimeout(histResize); histResize = setTimeout(() => { if (rows.length) renderHistory(); }, 200); });
+
+$('histFile').onchange = async () => {
+  const files = [...$('histFile').files];
+  $('histFile').value = '';
+  let added = 0, failed = 0;
+  for (const f of files) {
+    try { added += importIntoHistory(await f.text()); } catch { failed++; }
+  }
+  message(failed ? 'hist.importPartial' : 'hist.imported', { n: added, failed }, failed ? 'warn' : 'ok');
+  renderHistory();
+};
+$('histExport').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(exportHistory(), null, 2)], { type: 'application/json' }));
+  a.download = `selfbike-verlauf-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+};
+$('histClear').onclick = () => {
+  if (!confirm(t('hist.clearConfirm'))) return;
+  clearHistory(val('motorBikeId') || null);
+  renderHistory();
+};
+
+// ---------- Vergleichen ----------
+
+const cmpFiles = { A: null, B: null };
+for (const side of ['A', 'B']) {
+  $(`cmp${side}`).onchange = async () => {
+    const f = $(`cmp${side}`).files[0];
+    cmpFiles[side] = null;
+    if (f) {
+      try { cmpFiles[side] = parseSnapshotFile(await f.text(), f.name); } catch { cmpFiles[side] = { error: f.name }; }
+    }
+    renderCompare();
+  };
+}
+$('cmpOnlyChanged').onchange = () => renderCompare();
+
+function renderCompare() {
+  const { A, B } = cmpFiles;
+  const bad = [A, B].find((x) => x?.error);
+  if (bad) { $('cmpInfo').textContent = t('cmp.badFile', { file: bad.error }); $('cmpTable').innerHTML = ''; return; }
+  if (!A || !B) { $('cmpInfo').textContent = t('cmp.pick'); $('cmpTable').innerHTML = ''; return; }
+  const all = compareSnapshots(A, B);
+  const changed = all.filter((r) => r.changed);
+  const when = (x) => (x.createdAt ? fmtDateTime(x.createdAt, { dateStyle: 'medium', timeStyle: 'short' }) : x.fileName);
+  $('cmpInfo').textContent = t('cmp.info', { n: changed.length, total: all.length, a: when(A), b: when(B) });
+  const label = (r) => (r.key && t(`dp.${r.key}`) !== `dp.${r.key}` ? t(`dp.${r.key}`) : r.label);
+  const shown = $('cmpOnlyChanged').checked ? changed : all;
+  const cell = (x) => (x == null ? `<span class="faint">${esc(t('cmp.missing'))}</span>` : esc(x));
+  $('cmpTable').innerHTML = shown.length
+    ? `<tr><th>${esc(t('cmp.value'))}</th><th>${esc(when(A))}</th><th>${esc(when(B))}</th></tr>` +
+      shown.map((r) => `<tr class="${r.changed ? '' : 'same'}"><td>${esc(label(r))}</td><td class="v">${cell(r.before)}</td><td class="v">${cell(r.after)}</td></tr>`).join('')
+    : `<tr><td>${esc(t('cmp.noChanges'))}</td></tr>`;
+}
+
+// ---------- Eigene Messungen ----------
+
+// Gemerkter Stand (überlebt Neuladen) und die Tabelle: offene Datenpunkte + Fahrmodus-Felder
+let measMark = loadMark();
+// „Mehr Details“ haben keinen Textschlüssel – dann gilt das Label aus READ_PLAN
+const measLabel = (key) => (dp(key) !== `dp.${key}` ? dp(key) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
+const measCell = (x) => (x == null ? '–' : typeof x === 'object' ? `${x.text ?? ''}${x.raw ? ` · ${x.raw}` : ''}` : String(x));
+
+function renderMeasure() {
+  const proto = loadProtocol();
+  const st = measureStatus(proto);
+  $('measStatus').textContent = t('meas.status', { done: st.done, total: st.total, open: st.open.length });
+  $('measInfo').textContent = !rows.length ? t('meas.notConnected')
+    : measMark ? t('meas.marked', { time: fmtDateTime(measMark.at) }) : t('meas.noMark');
+  if (!rows.length) { $('measTable').innerHTML = ''; return; }
+  const { points, fields } = diffSnapshots(measMark, snapshot(rows, modes));
+  const only = $('measOnlyChanged').checked;
+  const line = (key, label, where, r) => {
+    const e = proto.entries[key];
+    const status = e
+      ? `${pill(t('meas.done', { date: fmtDateTime(e.at, { dateStyle: 'medium' }) }), 'ok')} <span class="faint">${esc(e.note)}</span>
+         <button class="btn" data-meas-remove="${esc(key)}">${esc(t('meas.remove'))}</button>`
+      : `${pill(t('meas.open'), 'none')}
+         <input class="field" data-meas-note="${esc(key)}" maxlength="300" placeholder="${esc(t('meas.notePh'))}">
+         <button class="btn" data-meas-add="${esc(key)}">${esc(t('meas.add'))}</button>`;
+    return `<tr class="${r.changed ? '' : 'same'}"><td>${esc(label)}${r.changed ? ` ${pill(t('meas.changed'), 'bad')}` : ''}</td>
+      <td class="v">${esc(where)}</td><td class="v">${esc(measCell(r.before))}</td><td class="v">${esc(measCell(r.after))}</td><td>${status}</td></tr>`;
+  };
+  // Ein Fahrmodus-Feld gilt für alle Modi; eingetragen wird es einmal (udam.N)
+  const html = [
+    ...points.filter((r) => !only || r.changed).map((r) => line(r.key, measLabel(r.key), String(r.address), r)),
+    ...fields.filter((r) => !only || r.changed).map((r) => line(r.key, t('meas.udamField', { mode: r.mode, n: r.field }), `UDAM F${r.field}`, r)),
+  ];
+  $('measTable').innerHTML = html.length
+    ? `<tr><th>${esc(t('meas.colValue'))}</th><th>${esc(t('meas.colWhere'))}</th><th>${esc(t('meas.colBefore'))}</th><th>${esc(t('meas.colNow'))}</th><th>${esc(t('meas.colStatus'))}</th></tr>${html.join('')}`
+    : `<tr><td>${esc(t('cmp.noChanges'))}</td></tr>`;
+}
+
+$('measMark').onclick = () => {
+  measMark = snapshot(rows, modes);
+  saveMark(measMark);
+  renderMeasure();
+};
+$('measCompare').onclick = async () => {
+  try { await refresh(); } catch (e) { await disconnect(); message('msg.readError', { error: e.message }, 'err'); }
+  $('measOnlyChanged').checked = !!measMark;
+  setUi();
+  renderMeasure();
+};
+$('measOnlyChanged').onchange = () => renderMeasure();
+$('measTable').addEventListener('click', (e) => {
+  const add = e.target.closest('[data-meas-add]');
+  const rem = e.target.closest('[data-meas-remove]');
+  if (add) {
+    const key = add.dataset.measAdd;
+    const noteEl = $('measTable').querySelector(`[data-meas-note="${CSS.escape(key)}"]`);
+    const note = noteEl?.value.trim() ?? '';
+    // Hinweis direkt am Feld zeigen – die Meldung oben sieht man hier unten nicht
+    if (note.length < 3) {
+      noteEl.style.borderColor = 'var(--self-yellow)';
+      noteEl.placeholder = t('meas.needNote');
+      noteEl.focus();
+      return;
+    }
+    // Vorher/Jetzt mit ablegen, damit die Messung später nachvollziehbar ist
+    const { points, fields } = diffSnapshots(measMark, snapshot(rows, modes));
+    const r = points.find((x) => x.key === key) ?? fields.find((x) => x.key === key && x.changed) ?? fields.find((x) => x.key === key);
+    addEntry(key, { note, before: r?.before ?? null, after: r?.after ?? null });
+    message('meas.added', { label: key.startsWith('udam.') ? `UDAM F${key.slice(5)}` : measLabel(key) }, 'ok');
+  } else if (rem) {
+    removeEntry(rem.dataset.measRemove);
+  } else return;
+  renderMeasure();
+});
+// Enter im Notizfeld = Eintragen
+$('measTable').addEventListener('keydown', (e) => {
+  const key = e.key === 'Enter' && e.target.dataset?.measNote;
+  if (key) $('measTable').querySelector(`[data-meas-add="${CSS.escape(key)}"]`)?.click();
+});
+$('measExport').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([exportProtocol()], { type: 'application/json' }));
+  a.download = `selfbike-messprotokoll-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+};
+$('measFile').onchange = async () => {
+  const f = $('measFile').files[0];
+  $('measFile').value = '';
+  if (!f) return;
+  try { message('meas.imported', { n: importProtocol(await f.text()) }, 'ok'); } catch { message('meas.badFile', {}, 'err'); }
+  renderMeasure();
+};
+
+// ---------- Werkzeuge ----------
+
+$('pdf').onclick = () => {
+  const html = buildReportHtml(rows, { maskIds: $('maskIds').checked, name: $('bikeName').value.trim(), faults });
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  if (!window.open(url, '_blank')) message('msg.popup', {}, 'warn');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+};
+$('exportJson').onclick = () => {
+  const data = {
+    createdAt: new Date().toISOString(), bikeName: $('bikeName').value,
+    rows: rows.map(({ address, key, status, value, text, rawHex }) => ({ address, key, status, value, text, raw: rawHex })),
+    faults, modes,
+  };
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+  a.download = `selfbike-daten-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+};
+
+// ---------- Ohne HTTPS ----------
+
+// Browser erlauben USB nur in „sicheren“ Seiten (HTTPS oder localhost).
+function showInsecureHint() {
+  const https = `https://${location.hostname}:8094${location.pathname}`;
+  const flag = /Edg\//.test(navigator.userAgent)
+    ? 'edge://flags/#unsafely-treat-insecure-origin-as-secure'
+    : 'chrome://flags/#unsafely-treat-insecure-origin-as-secure';
+  lastMessage = null;
+  $('message').className = 'msg warn';
+  $('message').innerHTML = esc(t('msg.insecure', { link: '\u0000' })).replace('\u0000', `<a href="${esc(https)}">${esc(https)}</a>`) +
+    '<br><br>' + esc(t('msg.insecureFlag', { flag: '\u0001', origin: location.origin }))
+      .replace('\u0001', `<code>${esc(flag)}</code>`);
+}
+
+// ---------- Menü: aktiven Abschnitt hervorheben ----------
+
+// Hebt im Menü den Punkt des Abschnitts hervor, der gerade in der Bildschirmmitte steht.
+const navLinks = [...document.querySelectorAll('#nav a')];
+const navToggleBtn = $('navToggle');
+const navWrapEl = $('navwrap');
+const closeNav = () => { navWrapEl.classList.remove('open'); navToggleBtn.setAttribute('aria-expanded', 'false'); };
+navToggleBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = navWrapEl.classList.toggle('open');
+  navToggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
+for (const a of navLinks) a.addEventListener('click', closeNav);
+document.addEventListener('click', (e) => { if (!navWrapEl.contains(e.target)) closeNav(); });
+
+const spy = new IntersectionObserver((entries) => {
+  const seen = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+  if (!seen) return;
+  let activeText = '';
+  for (const a of navLinks) { const on = a.getAttribute('href') === `#${seen.target.id}`; a.classList.toggle('active', on); if (on) activeText = a.textContent; }
+  if (activeText) $('navLabel').textContent = activeText; // Name im Handy-Dropdown aktuell halten
+  navLinks.find((a) => a.classList.contains('active'))?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}, { rootMargin: '-45% 0px -50% 0px', threshold: [0, 0.2, 0.6, 1] });
+for (const s of document.querySelectorAll('main section[id]')) spy.observe(s);
+
+// ---------- Start ----------
+
+log('Bereit.');
+await loadCatalog();
+await setLang(detectLang());
+$('langSel').value = lang();
+refreshTexts();
+if (!discAccepted()) showDisclaimer();
+</script>
+</body>
+</html>

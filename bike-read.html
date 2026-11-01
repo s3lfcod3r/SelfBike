@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Bike auslesen</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
+    --line: #dde1e6; --accent: #1f5fd1; --ok: #1a7f37; --warn: #9a6700; --err: #c62828;
+    --code: #f0f2f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1e24; --text: #e6e9ed; --muted: #9aa4b1;
+      --line: #2c323a; --accent: #6ea2ff; --ok: #56d364; --warn: #e3b341; --err: #ff7b72;
+      --code: #0d1014;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  p.lead { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+            padding: 16px; margin-bottom: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button, input { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line);
+           background: var(--card); color: var(--text); }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  input { width: 9em; }
+  #status { font-weight: 600; }
+  progress { width: 100%; height: 8px; margin-top: 10px; accent-color: var(--accent); }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: .85rem; }
+  tr.group td { font-weight: 600; padding-top: 14px; border-bottom: 2px solid var(--line); }
+  td.raw { font: 12px/1.4 ui-monospace, Consolas, monospace; color: var(--muted); word-break: break-all; }
+  td.raw b { color: var(--text); font-weight: 600; }
+  tr.changed td { background: color-mix(in srgb, var(--warn) 14%, transparent); }
+  .before { display: block; font-size: .85rem; color: var(--warn); }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+        overflow-x: auto; font: 12.5px/1.45 ui-monospace, Consolas, monospace; margin: 0; max-height: 300px; }
+  .hint { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
+</style>
+</head>
+<body>
+<main>
+  <h1>E-Bike auslesen</h1>
+  <p class="lead">Bosch Smart System · Schritt 2: liest Daten aus dem Fahrrad.
+    Das Programm kann ausschließlich <strong>lesen</strong> – es ändert keine Einstellungen.</p>
+
+  <section>
+    <h2>Verbindung</h2>
+    <div class="row">
+      <button class="primary" id="connect">Verbinden &amp; auslesen</button>
+      <button id="reread" disabled>Erneut auslesen</button>
+      <button id="disconnect" disabled>Trennen</button>
+    </div>
+    <p id="status" style="margin:12px 0 0">Nicht verbunden.</p>
+    <progress id="progress" value="0" max="1" hidden></progress>
+    <p class="hint">E-Bike einschalten, USB-Datenkabel an die Bedieneinheit, Bosch-Software schließen.
+      Diese Seite in Chrome oder Edge öffnen (nicht in der Claude-App).</p>
+  </section>
+
+  <section>
+    <h2>Ergebnis</h2>
+    <div class="row" style="margin-bottom:8px">
+      <button id="snap" disabled>Stand merken</button>
+      <button id="unsnap" disabled>Vergleich löschen</button>
+      <span id="snapInfo" class="hint" style="margin:0">Kein gemerkter Stand.</span>
+    </div>
+    <div class="row" style="margin-bottom:8px">
+      <button id="pdf" disabled>PDF-Bericht</button>
+      <label class="hint" style="margin:0"><input id="maskIds" type="checkbox" style="width:auto;padding:0">
+        Fahrrad-IDs im Bericht kürzen (z. B. zum Weitergeben)</label>
+    </div>
+    <p class="hint" style="margin:0 0 12px">Zum Entschlüsseln: Stand merken → Einstellung in der Bosch-App ändern →
+      „Erneut auslesen“. Geänderte Werte werden markiert.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Datenpunkt</th><th>Wert</th><th>Status</th><th>Felder / Rohdaten (hex)</th></tr></thead>
+        <tbody id="results"><tr><td colspan="4" class="hint">Noch nichts ausgelesen.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Einzelne Adresse lesen (Experte)</h2>
+    <div class="row">
+      <input id="addr" type="number" min="0" max="32767" placeholder="z. B. 6147">
+      <button id="readOne" disabled>Lesen</button>
+    </div>
+    <p class="hint">Sendet nur eine Lese-Anfrage an die angegebene Bus-Adresse.</p>
+    <div class="row" style="margin-top:12px">
+      <input id="scanFrom" type="number" min="0" max="32767" placeholder="von, z. B. 6170">
+      <input id="scanTo" type="number" min="0" max="32767" placeholder="bis, z. B. 6200">
+      <button id="scan" disabled>Bereich lesen</button>
+      <button id="stop" disabled>Stopp</button>
+    </div>
+    <p class="hint">Liest bis zu 100 Adressen nacheinander (nur lesen) und zeigt die, die antworten.
+      Dauert knapp 1 Sekunde pro Adresse.</p>
+  </section>
+
+  <section>
+    <h2>Protokoll &amp; Export</h2>
+    <div class="row" style="margin-bottom:12px">
+      <button id="copy">Ergebnis kopieren</button>
+      <button id="save">Als Datei speichern</button>
+    </div>
+    <pre id="log"></pre>
+    <p class="hint">Beim Kopieren/Speichern werden Bike-IDs gekürzt.</p>
+  </section>
+</main>
+
+<script type="module">
+import { McspUsb } from './lib/mcsp-usb.js';
+import { BikeReader } from './lib/bike-reader.js';
+import { READ_PLAN } from './lib/datapoints.js';
+import { buildReportHtml } from './lib/report.js';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const STATUS = {
+  ok: ['✓ OK', 'ok'], rejected: ['abgelehnt', 'warn'], timeout: ['keine Antwort', 'warn'],
+  decode: ['unklar', 'warn'], error: ['Fehler', 'err'],
+};
+
+const SNAP_KEY = 'ebike-snapshot';
+const SCAN_GROUP = 'Bereichs-Scan';
+const isPlanRow = (r) => READ_PLAN.some((p) => p.key === r.key);
+
+let usb = null;
+let reader = null;
+let rows = [];
+let stopRequested = false;
+const logLines = [];
+let snapshot = null;
+try { snapshot = JSON.parse(localStorage.getItem(SNAP_KEY)); } catch { /* kein Speicher */ }
+
+function log(msg) {
+  logLines.push(`${new Date().toLocaleTimeString('de-DE')}  ${msg}`);
+  $('log').textContent = logLines.slice(-200).join('\n');
+  $('log').scrollTop = $('log').scrollHeight;
+}
+function setStatus(text, cls = '') {
+  $('status').textContent = text;
+  $('status').className = cls;
+}
+function setConnected(on, busy = false, scanning = false) {
+  $('connect').disabled = on || busy;
+  $('reread').disabled = !on || busy;
+  $('readOne').disabled = !on || busy;
+  $('scan').disabled = !on || busy;
+  $('stop').disabled = !scanning;
+  $('disconnect').disabled = !on;
+  $('snap').disabled = !rows.length || busy;
+  $('pdf').disabled = !rows.length || busy;
+  $('unsnap').disabled = !snapshot;
+}
+
+function updateSnapInfo() {
+  $('snapInfo').textContent = snapshot
+    ? `Vergleich mit Stand vom ${new Date(snapshot.at).toLocaleTimeString('de-DE')} (${Object.keys(snapshot.rows).length} Werte).`
+    : 'Kein gemerkter Stand.';
+  $('unsnap').disabled = !snapshot;
+}
+
+// Ein Wert gilt als geändert, wenn die Rohdaten vom gemerkten Stand abweichen.
+const previous = (r) => snapshot?.rows[r.address];
+const isChanged = (r) => r.status === 'ok' && previous(r) && previous(r).rawHex !== r.rawHex;
+
+function renderRows() {
+  let html = '';
+  let group = null;
+  for (const r of rows) {
+    if (r.group !== group) {
+      group = r.group;
+      html += `<tr class="group"><td colspan="4">${esc(group)}</td></tr>`;
+    }
+    const [label, cls] = STATUS[r.status] ?? STATUS.error;
+    const before = isChanged(r)
+      ? `<span class="before">vorher: ${esc(previous(r).fields || previous(r).rawHex || '(leer)')}</span>` : '';
+    html += `<tr class="${isChanged(r) ? 'changed' : ''}"><td>${esc(r.label)}<br><span class="hint">Adresse ${r.address}</span></td>
+      <td>${esc(r.status === 'ok' ? r.text : r.error)}${before}</td>
+      <td class="${cls}">${label}</td>
+      <td class="raw">${r.fields ? `<b>${esc(r.fields)}</b><br>` : ''}${esc(r.rawHex)}</td></tr>`;
+  }
+  $('results').innerHTML = html || '<tr><td colspan="4" class="hint">Noch nichts ausgelesen.</td></tr>';
+}
+
+async function readAll() {
+  setConnected(true, true);
+  const extras = rows.filter((r) => !isPlanRow(r));
+  rows = [];
+  renderRows();
+  const bar = $('progress');
+  bar.hidden = false;
+  bar.max = READ_PLAN.length;
+  for (const [i, point] of READ_PLAN.entries()) {
+    bar.value = i;
+    setStatus(`Lese ${i + 1}/${READ_PLAN.length}: ${point.label} …`);
+    const row = await reader.readPoint(point);
+    log(`READ ${point.address} ${point.key}: ${row.status}${row.error ? ' – ' + row.error : ''} (${row.elapsed} ms)`);
+    rows.push(row);
+    renderRows();
+    if (!usb) return; // zwischendurch getrennt
+    if (row.status === 'error') throw new Error(row.error); // USB-Fehler: abbrechen statt weiterlesen
+  }
+  bar.value = bar.max;
+  // Service-Kilometerziel mit aktuellem Kilometerstand verrechnen
+  const odo = rows.find((r) => r.key === 'odometer' && r.status === 'ok');
+  const service = rows.find((r) => r.key === 'serviceDue' && r.status === 'ok');
+  if (odo && service?.value?.odometer > 0) {
+    const left = (service.value.odometer - odo.value) / 1000;
+    service.text += left > 0
+      ? ` · noch ${left.toLocaleString('de-DE', { maximumFractionDigits: 0 })} km`
+      : ' · fällig';
+  }
+  const ok = rows.filter((r) => r.status === 'ok').length;
+  const changed = rows.filter(isChanged);
+  for (const r of changed) log(`GEÄNDERT ${r.address} ${r.key}: ${previous(r).fields || previous(r).rawHex} → ${r.fields || r.rawHex}`);
+  setStatus(`Fertig: ${ok} von ${rows.length} Datenpunkten gelesen.` +
+    (snapshot ? ` ${changed.length} geändert.` : ''), ok ? 'ok' : 'warn');
+  rows = rows.concat(extras);
+  renderRows();
+  setConnected(true);
+}
+
+$('snap').onclick = () => {
+  snapshot = {
+    at: new Date().toISOString(),
+    rows: Object.fromEntries(rows.filter((r) => r.status === 'ok')
+      .map((r) => [r.address, { key: r.key, text: r.text, rawHex: r.rawHex, fields: r.fields }])),
+  };
+  try { localStorage.setItem(SNAP_KEY, JSON.stringify(snapshot)); } catch { /* nur im Speicher */ }
+  log(`Stand gemerkt (${Object.keys(snapshot.rows).length} Werte).`);
+  updateSnapInfo();
+  renderRows();
+};
+$('pdf').onclick = () => {
+  const html = buildReportHtml(rows.filter(isPlanRow), { maskIds: $('maskIds').checked });
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+  const win = window.open(url, '_blank');
+  if (!win) setStatus('Pop-up wurde blockiert – bitte für localhost erlauben.', 'warn');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+  log('PDF-Bericht geöffnet.');
+};
+$('unsnap').onclick = () => {
+  snapshot = null;
+  try { localStorage.removeItem(SNAP_KEY); } catch { /* egal */ }
+  updateSnapInfo();
+  renderRows();
+};
+
+$('scan').onclick = async () => {
+  const from = Number($('scanFrom').value);
+  const to = Number($('scanTo').value);
+  if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || to > 32767 || to < from || to - from >= 100) {
+    return setStatus('Bereich ungültig: von ≤ bis, höchstens 100 Adressen, 0–32767.', 'warn');
+  }
+  stopRequested = false;
+  setConnected(true, true, true);
+  rows = rows.filter((r) => r.group !== SCAN_GROUP);
+  const bar = $('progress');
+  bar.hidden = false;
+  bar.max = to - from + 1;
+  let found = 0;
+  for (let a = from; a <= to; a++) {
+    if (stopRequested || !usb) break;
+    bar.value = a - from;
+    setStatus(`Scanne Adresse ${a} (${a - from + 1}/${to - from + 1}) – ${found} gefunden …`);
+    const known = READ_PLAN.find((p) => p.address === a);
+    const row = await reader.readPoint({
+      address: a, key: `addr${a}`, label: known ? known.label : `Adresse ${a}`, group: SCAN_GROUP, decoder: 'raw',
+    });
+    log(`SCAN ${a}: ${row.status}${row.error ? ' – ' + row.error : ''}${row.rawHex ? ' · ' + row.rawHex : ''}`);
+    if (row.status === 'error') return disconnect(`Fehler: ${row.error}`);
+    // Antwortende und "verweigerte" Adressen sind interessant (Datenpunkt existiert)
+    if (row.status === 'ok' || row.error === 'verweigert') {
+      found++;
+      rows.push(row);
+      renderRows();
+    }
+  }
+  bar.value = bar.max;
+  setStatus(`${stopRequested ? 'Scan gestoppt' : 'Scan fertig'}: ${found} Adressen antworten.`, 'ok');
+  setConnected(true);
+};
+$('stop').onclick = () => { stopRequested = true; };
+
+async function disconnect(reason) {
+  const u = usb;
+  usb = null;
+  reader = null;
+  if (u) await u.close();
+  setConnected(false);
+  $('progress').hidden = true;
+  setStatus(reason || 'Getrennt.');
+  log(reason || 'Verbindung getrennt.');
+}
+
+$('connect').onclick = async () => {
+  if (!('usb' in navigator)) return setStatus('WebUSB fehlt – bitte Chrome oder Edge verwenden.', 'err');
+  let device;
+  try {
+    device = await McspUsb.request(); // muss als Erstes im Klick passieren
+  } catch (e) {
+    return setStatus(e.name === 'NotFoundError' ? 'Kein Gerät ausgewählt.' : `${e.name}: ${e.message}`, 'warn');
+  }
+  setConnected(false, true);
+  setStatus(`Verbinde mit ${device.productName} …`);
+  log(`Gerät gewählt: ${device.productName} (PID ${device.productId})`);
+  try {
+    usb = new McspUsb(device, log);
+    await usb.open();
+    reader = new BikeReader(usb);
+    await readAll();
+  } catch (e) {
+    log(`Fehler: ${e.message}`);
+    await disconnect(`Fehler: ${e.message}`);
+    $('status').className = 'err';
+  }
+};
+
+$('reread').onclick = () => readAll().catch((e) => disconnect(`Fehler: ${e.message}`));
+$('disconnect').onclick = () => disconnect();
+
+$('readOne').onclick = async () => {
+  const address = Number($('addr').value);
+  if (!Number.isInteger(address) || address < 0 || address > 32767) return setStatus('Adresse 0–32767 eingeben.', 'warn');
+  setConnected(true, true);
+  const row = await reader.readPoint({ address, key: `addr${address}`, label: `Adresse ${address}`, group: 'Einzeln gelesen', decoder: 'raw' });
+  log(`READ ${address}: ${row.status}${row.error ? ' – ' + row.error : ''} · ${row.rawHex || '(leer)'}`);
+  rows = rows.filter((r) => r.address !== address || r.group !== 'Einzeln gelesen').concat(row);
+  renderRows();
+  setStatus(`Adresse ${address}: ${STATUS[row.status]?.[0] ?? row.status}`);
+  setConnected(true);
+};
+
+navigator.usb?.addEventListener('disconnect', (e) => {
+  if (usb && e.device === usb.device) disconnect('USB-Kabel getrennt.');
+});
+
+function exportData() {
+  const mask = (s) => (typeof s === 'string' && s.length > 8 ? s.slice(0, 4) + '…' + s.slice(-4) : s);
+  return JSON.stringify({
+    createdAt: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    rows: rows.map((r) => ({
+      address: r.address, key: r.key, status: r.status, error: r.error,
+      value: r.private ? mask(r.value) : r.value,
+      raw: r.private ? mask(r.rawHex) : r.rawHex,
+      fields: r.private ? undefined : r.fields,
+      ...(isChanged(r) && !r.private ? { before: previous(r).fields || previous(r).rawHex } : {}),
+      ms: r.elapsed,
+    })),
+    snapshotAt: snapshot?.at ?? null,
+    log: logLines.slice(-100),
+  }, null, 2);
+}
+$('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(exportData()); log('Ergebnis kopiert.'); }
+  catch { log('Kopieren nicht möglich.'); }
+};
+$('save').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([exportData()], { type: 'application/json' }));
+  a.download = `ebike-read-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+updateSnapInfo();
+log('Bereit.');
+</script>
+</body>
+</html>

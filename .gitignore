@@ -1,0 +1,9 @@
+# Private Notizen und Heimnetz-Einstellungen – bleiben nur lokal
+AGENTS.md
+CLAUDE.md
+docs/
+deploy/
+Hier/
+
+# Bosch-Fehlertexte aus der eigenen Flow-App (gehören Bosch)
+data/private/

@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-Bike USB-Check</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
+    --line: #dde1e6; --accent: #1f5fd1; --ok: #1a7f37; --warn: #9a6700; --err: #c62828;
+    --code: #f0f2f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1e24; --text: #e6e9ed; --muted: #9aa4b1;
+      --line: #2c323a; --accent: #6ea2ff; --ok: #56d364; --warn: #e3b341; --err: #ff7b72;
+      --code: #0d1014;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  p.lead { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+            padding: 16px; margin-bottom: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line);
+           background: var(--card); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  table { border-collapse: collapse; width: 100%; }
+  td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child { color: var(--muted); width: 40%; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+        overflow-x: auto; font: 12.5px/1.45 ui-monospace, Consolas, monospace; margin: 0;
+        max-height: 420px; }
+  .hint { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
+  .device { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  .badge { display: inline-block; font-size: .8rem; padding: 1px 8px; border-radius: 99px;
+           border: 1px solid currentColor; margin-left: 6px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>E-Bike USB-Check</h1>
+  <p class="lead">Schritt 1: Prüft nur, ob dein Bosch-Controller per USB erkannt wird.
+    Es werden <strong>keine Daten an das Fahrrad gesendet</strong>.</p>
+
+  <section>
+    <h2>1 · Browser-Voraussetzungen</h2>
+    <table id="env"></table>
+  </section>
+
+  <section>
+    <h2>2 · Gerät suchen</h2>
+    <p class="hint" style="margin-top:0">E-Bike einschalten, USB-<em>Daten</em>kabel an die Bedieneinheit
+      anschließen, dann einen Knopf drücken und das Gerät im Browser-Dialog auswählen.</p>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="usbBosch">Smart System suchen (WebUSB)</button>
+      <button id="hidBosch">BES2 suchen (WebHID)</button>
+      <button id="usbAll">Alle USB-Geräte</button>
+      <button id="hidAll">Alle HID-Geräte</button>
+    </div>
+    <p class="hint">Findet „Smart System suchen“ nichts, probiere „Alle USB-Geräte“ – dann sehen wir,
+      unter welcher Kennung sich dein Fahrrad meldet.</p>
+    <div id="devices"></div>
+  </section>
+
+  <section>
+    <h2>3 · Ergebnis</h2>
+    <div class="row" style="margin-bottom:12px">
+      <button id="copy">Ergebnis kopieren</button>
+      <button id="save">Als Datei speichern</button>
+      <button id="clear">Leeren</button>
+    </div>
+    <pre id="log">Noch kein Gerät ausgewählt.</pre>
+    <p class="hint">Schick mir den Inhalt (Seriennummern sind standardmäßig gekürzt).</p>
+  </section>
+</main>
+
+<script>
+'use strict';
+const BOSCH_VID = 0x108c;
+// Bekannte Product-IDs von Smart-System-Controllern (aus öffentlich sichtbaren Infos)
+const KNOWN_SMART_PIDS = [448, 452, 454, 462, 468];
+
+const $ = (id) => document.getElementById(id);
+const hex = (n) => '0x' + n.toString(16).padStart(4, '0');
+const mask = (s) => (s && s.length > 4) ? s.slice(0, 2) + '…' + s.slice(-2) : s;
+const report = { createdAt: new Date().toISOString(), environment: {}, devices: [], events: [] };
+
+function render() {
+  $('log').textContent = JSON.stringify(report, null, 2);
+}
+function event(msg, level = 'info') {
+  report.events.push({ t: new Date().toLocaleTimeString('de-DE'), level, msg });
+  render();
+}
+
+// ---------- 1. Umgebung ----------
+function checkEnv() {
+  const env = {
+    secureContext: window.isSecureContext,
+    webusb: 'usb' in navigator,
+    webhid: 'hid' in navigator,
+    protocol: location.protocol,
+    userAgent: navigator.userAgent,
+  };
+  report.environment = env;
+  const rows = [
+    ['Sicherer Kontext', env.secureContext, 'Seite über localhost oder als Datei öffnen'],
+    ['WebUSB (Smart System)', env.webusb, 'Chrome oder Edge verwenden'],
+    ['WebHID (BES2)', env.webhid, 'Chrome oder Edge am PC verwenden'],
+  ];
+  $('env').innerHTML = rows.map(([label, ok, fix]) =>
+    `<tr><td>${label}</td><td class="${ok ? 'ok' : 'err'}">${ok ? '✓ verfügbar' : '✕ fehlt – ' + fix}</td></tr>`
+  ).join('');
+  for (const id of ['usbBosch', 'usbAll']) $(id).disabled = !env.webusb;
+  for (const id of ['hidBosch', 'hidAll']) $(id).disabled = !env.webhid;
+}
+
+// ---------- 2a. WebUSB ----------
+function describeUsb(d) {
+  return {
+    api: 'WebUSB',
+    vendorId: hex(d.vendorId),
+    productId: hex(d.productId) + ' (' + d.productId + ')',
+    isBosch: d.vendorId === BOSCH_VID,
+    knownSmartController: d.vendorId === BOSCH_VID && KNOWN_SMART_PIDS.includes(d.productId),
+    manufacturer: d.manufacturerName,
+    product: d.productName,
+    serial: mask(d.serialNumber),
+    usbVersion: `${d.usbVersionMajor}.${d.usbVersionMinor}`,
+    deviceVersion: `${d.deviceVersionMajor}.${d.deviceVersionMinor}.${d.deviceVersionSubminor}`,
+    deviceClass: `${d.deviceClass}/${d.deviceSubclass}/${d.deviceProtocol}`,
+    configurations: d.configurations.map((c) => ({
+      value: c.configurationValue,
+      name: c.configurationName,
+      interfaces: c.interfaces.map((i) => ({
+        number: i.interfaceNumber,
+        alternates: i.alternates.map((a) => ({
+          setting: a.alternateSetting,
+          class: `${a.interfaceClass}/${a.interfaceSubclass}/${a.interfaceProtocol}`,
+          name: a.interfaceName,
+          endpoints: a.endpoints.map((e) =>
+            `EP${e.endpointNumber} ${e.direction.toUpperCase()} ${e.type} (${e.packetSize} B)`),
+        })),
+      })),
+    })),
+  };
+}
+
+// Öffnet und schließt das Gerät nur – prüft, ob der Browser Zugriff bekommt (Treiber).
+async function testUsbAccess(d, entry) {
+  try {
+    await d.open();
+    entry.accessTest = '✓ Öffnen möglich';
+    event(`USB ${hex(d.productId)}: Gerät lässt sich öffnen.`, 'ok');
+  } catch (e) {
+    entry.accessTest = `✕ ${e.name}: ${e.message}`;
+    event(`USB ${hex(d.productId)}: Öffnen fehlgeschlagen – ${e.name}. ` +
+      'Läuft noch Bosch-Software? Unter Windows fehlt evtl. der WinUSB-Treiber.', 'err');
+  } finally {
+    if (d.opened) await d.close().catch(() => {});
+  }
+}
+
+async function pickUsb(filters) {
+  try {
+    const d = await navigator.usb.requestDevice({ filters });
+    addDevice(describeUsb(d), () => testUsbAccess(d, report.devices.find((x) => x._ref === d)), d);
+  } catch (e) {
+    event(e.name === 'NotFoundError' ? 'Kein Gerät ausgewählt bzw. keins gefunden.' : `${e.name}: ${e.message}`,
+      e.name === 'NotFoundError' ? 'warn' : 'err');
+  }
+}
+
+// ---------- 2b. WebHID ----------
+function describeHid(d) {
+  const reports = (list) => (list || []).map((r) => ({
+    id: r.reportId,
+    bytes: Math.ceil((r.items || []).reduce((s, it) => s + it.reportSize * it.reportCount, 0) / 8),
+  }));
+  return {
+    api: 'WebHID',
+    vendorId: hex(d.vendorId),
+    productId: hex(d.productId) + ' (' + d.productId + ')',
+    isBosch: d.vendorId === BOSCH_VID,
+    product: d.productName,
+    collections: d.collections.map((c) => ({
+      usagePage: hex(c.usagePage), usage: hex(c.usage),
+      input: reports(c.inputReports), output: reports(c.outputReports), feature: reports(c.featureReports),
+    })),
+  };
+}
+
+async function testHidAccess(d, entry) {
+  try {
+    if (!d.opened) await d.open();
+    entry.accessTest = '✓ Öffnen möglich';
+    event(`HID ${hex(d.productId)}: Gerät lässt sich öffnen.`, 'ok');
+  } catch (e) {
+    entry.accessTest = `✕ ${e.name}: ${e.message}`;
+    event(`HID ${hex(d.productId)}: Öffnen fehlgeschlagen – ${e.name}`, 'err');
+  } finally {
+    if (d.opened) await d.close().catch(() => {});
+  }
+}
+
+async function pickHid(filters) {
+  try {
+    const list = await navigator.hid.requestDevice({ filters });
+    if (!list.length) return event('Kein Gerät ausgewählt.', 'warn');
+    for (const d of list) addDevice(describeHid(d), () => testHidAccess(d, report.devices.find((x) => x._ref === d)), d);
+  } catch (e) {
+    event(`${e.name}: ${e.message}`, 'err');
+  }
+}
+
+// ---------- Anzeige ----------
+function addDevice(info, accessTest, ref) {
+  if (report.devices.some((x) => x._ref === ref)) return event(`${info.api} ${info.productId}: bereits in der Liste.`);
+  Object.defineProperty(info, '_ref', { value: ref, enumerable: false });
+  report.devices.push(info);
+
+  const box = document.createElement('div');
+  box.className = 'device';
+  const tag = info.knownSmartController ? '<span class="badge ok">bekannter Smart-System-Controller</span>'
+    : info.isBosch ? '<span class="badge ok">Bosch</span>' : '<span class="badge warn">kein Bosch-Gerät</span>';
+  box.innerHTML = `<strong>${info.product || 'Unbenanntes Gerät'}</strong>${tag}
+    <table>
+      <tr><td>Schnittstelle</td><td>${info.api}</td></tr>
+      <tr><td>Vendor-ID / Product-ID</td><td>${info.vendorId} / ${info.productId}</td></tr>
+      ${info.manufacturer ? `<tr><td>Hersteller</td><td>${info.manufacturer}</td></tr>` : ''}
+    </table>
+    <div class="row" style="margin-top:8px"><button>Zugriff testen (öffnen/schließen)</button></div>`;
+  box.querySelector('button').onclick = async (ev) => {
+    ev.target.disabled = true;
+    await accessTest();
+    ev.target.disabled = false;
+  };
+  $('devices').append(box);
+  event(`${info.api}-Gerät erkannt: ${info.vendorId}/${info.productId} ${info.product || ''}`.trim(), 'ok');
+}
+
+// ---------- Export ----------
+$('copy').onclick = async () => {
+  try { await navigator.clipboard.writeText($('log').textContent); event('Ergebnis in die Zwischenablage kopiert.'); }
+  catch { event('Kopieren nicht möglich – Text bitte manuell markieren.', 'warn'); }
+};
+$('save').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([$('log').textContent], { type: 'application/json' }));
+  a.download = `usb-check-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
+$('clear').onclick = () => { report.devices = []; report.events = []; $('devices').innerHTML = ''; render(); };
+
+$('usbBosch').onclick = () => pickUsb([{ vendorId: BOSCH_VID }]);
+$('usbAll').onclick = () => pickUsb([]);
+$('hidBosch').onclick = () => pickHid([{ vendorId: BOSCH_VID }]);
+$('hidAll').onclick = () => pickHid([]);
+
+if ('usb' in navigator) {
+  navigator.usb.addEventListener('disconnect', (e) => event(`USB getrennt: ${hex(e.device.productId)}`, 'warn'));
+}
+checkEnv();
+render();
+</script>
+</body>
+</html>
