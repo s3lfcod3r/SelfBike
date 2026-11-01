@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SelfBike</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<link rel="apple-touch-icon" href="brand/favicon-192.png">
+<link rel="stylesheet" href="brand/tokens.css">
+<style>
+  /* SelfBike – einfache Ansicht im iPhone-Stil. Farben nur aus brand/tokens.css */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--self-bg-0); color: var(--self-text); }
+  body { font: 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
+         -webkit-font-smoothing: antialiased; }
+  button, input, select { font: inherit; color: inherit; }
+  .hidden { display: none !important; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
+
+  header.big { padding: calc(14px + env(safe-area-inset-top)) 4px 10px; }
+  .topline { display: flex; align-items: center; gap: 8px; min-height: 22px; font-size: 13px; color: var(--self-text-3); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
+  .conn.on { color: var(--self-green); } .conn.busy { color: var(--self-yellow); }
+  .badge { font-size: 11px; font-weight: 600; color: var(--self-yellow); border: 1px solid currentColor; border-radius: 6px; padding: 1px 6px; }
+  h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin: 4px 0 0; }
+  .sub { color: var(--self-text-2); margin: 2px 0 0; font-size: 15px; }
+
+  /* Kacheln */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .tile { background: var(--self-bg-2); border-radius: 16px; padding: 14px; border: 1px solid var(--self-line); }
+  .tile.wide { grid-column: 1 / -1; }
+  .tile .k { font-size: 13px; color: var(--self-text-2); }
+  .tile .n { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .tile .n small { font-size: 16px; font-weight: 600; color: var(--self-text-2); margin-left: 3px; }
+  .tile .c { font-size: 13px; color: var(--self-text-2); margin-top: 4px; }
+  .meter { height: 8px; border-radius: 4px; background: var(--self-bg-3); margin-top: 8px; overflow: hidden; }
+  .meter i { display: block; height: 100%; border-radius: 4px; background: var(--self-green); }
+  .good { color: var(--self-green); } .warn { color: var(--self-yellow); } .bad { color: var(--self-red); }
+
+  /* Gruppierte Listen wie in den iPhone-Einstellungen */
+  .gh { font-size: 13px; color: var(--self-text-2); margin: 22px 16px 6px; text-transform: none; }
+  .group { background: var(--self-bg-2); border-radius: 14px; overflow: hidden; border: 1px solid var(--self-line); }
+  .row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 50px; padding: 10px 14px; background: none;
+         border: 0; text-align: left; cursor: pointer; position: relative; color: var(--self-text); text-decoration: none; }
+  .row + .row::before { content: ""; position: absolute; top: 0; left: 52px; right: 0; border-top: 1px solid var(--self-line); }
+  .row.noico + .row::before, .group.noico .row + .row::before { left: 14px; }
+  .row:active { background: var(--self-bg-3); }
+  .row .ico { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; flex: none; background: var(--self-teal); color: #fff; }
+  .row .ico svg { width: 17px; height: 17px; }
+  .row .t { flex: 1; min-width: 0; }
+  .row .t small { display: block; font-size: 13px; color: var(--self-text-2); }
+  .row .v { color: var(--self-text-2); font-size: 15px; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .chev { color: var(--self-text-3); font-size: 22px; line-height: 1; margin-left: -4px; }
+  .row.danger { color: var(--self-red); justify-content: center; }
+  .row.static { cursor: default; } .row.static:active { background: none; }
+  .row select { background: transparent; border: 0; color: var(--self-text-2); text-align: right; max-width: 60%; padding: 4px 0; }
+  .row select option { color: #000; }
+  .row .check { color: var(--self-teal-bright); font-size: 20px; visibility: hidden; }
+  .row.sel .check { visibility: visible; }
+  .foot { font-size: 13px; color: var(--self-text-2); margin: 6px 16px 0; }
+  .explain { font-size: 16px; color: var(--self-text-2); margin: 4px 4px 0; }
+
+  /* Schalter */
+  input.sw { appearance: none; width: 51px; height: 31px; border-radius: 16px; background: var(--self-bg-3); position: relative;
+             flex: none; cursor: pointer; transition: background .2s; border: 1px solid var(--self-line-strong); }
+  input.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 25px; height: 25px; border-radius: 50%; background: #fff; transition: left .2s; }
+  input.sw:checked { background: var(--self-green); border-color: transparent; }
+  input.sw:checked::after { left: 22px; }
+  input.sw:disabled { opacity: .4; cursor: default; }
+
+  /* Zahlen und Schieberegler */
+  .stepper { display: flex; align-items: center; gap: 6px; }
+  .stepper button { width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--self-bg-3); font-size: 20px; cursor: pointer; }
+  .stepper input, .numin { width: 74px; text-align: center; background: var(--self-bg-3); border: 0; border-radius: 10px; padding: 7px 4px; }
+  input[type=date].numin { width: auto; padding: 7px 10px; }
+  .slider { padding: 12px 14px; }
+  .slider .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .slider .val { font-weight: 700; font-size: 20px; color: var(--self-teal-bright); }
+  .slider input[type=range] { width: 100%; accent-color: var(--self-teal); margin: 10px 0 2px; }
+  .slider .hint { font-size: 13px; color: var(--self-text-2); }
+  .slider .ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--self-text-3); }
+
+  /* Knöpfe */
+  .btn-big { display: block; width: 100%; margin-top: 22px; padding: 15px; border: 0; border-radius: 14px; background: var(--self-teal);
+             color: #fff; font-size: 17px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+  .btn-big:disabled { opacity: .4; cursor: default; }
+  .btn-big.plain { background: var(--self-bg-2); color: var(--self-teal-bright); border: 1px solid var(--self-line); }
+  .btn-text { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 15px; }
+  .btn-text.red { color: var(--self-red); }
+
+  .card { background: var(--self-bg-2); border: 1px solid var(--self-line); border-radius: 18px; padding: 22px 18px; margin-top: 10px; text-align: center; }
+  .card .logo { width: 64px; height: 64px; margin: 0 auto 8px; display: block; }
+  .card h2 { margin: 6px 0; font-size: 22px; }
+  .card p { color: var(--self-text-2); margin: 6px 0; }
+  .alert { background: color-mix(in oklab, var(--self-yellow) 14%, transparent); color: var(--self-text); border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 14px; }
+
+  /* Tab-Leiste unten */
+  nav.tabbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 0;
+               background: color-mix(in oklab, var(--self-bg-1) 88%, transparent); backdrop-filter: blur(18px);
+               border-top: 1px solid var(--self-line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); z-index: 5; }
+  nav.tabbar button { flex: 1; max-width: 160px; background: none; border: 0; color: var(--self-text-3); font-size: 11px; cursor: pointer; padding: 4px 0; }
+  nav.tabbar svg { display: block; margin: 0 auto 2px; width: 26px; height: 26px; }
+  nav.tabbar button.on { color: var(--self-teal-bright); }
+
+  /* Blätter (von unten) */
+  .sheet { position: fixed; inset: 0; z-index: 10; display: none; background: rgba(0,0,0,.45); }
+  .sheet.open { display: flex; align-items: flex-end; justify-content: center; }
+  .panel { width: 100%; max-width: 560px; max-height: 94vh; background: var(--self-bg-0); border-radius: 18px 18px 0 0; display: flex; flex-direction: column;
+           animation: up .25s ease-out; }
+  @keyframes up { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .phead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--self-line); }
+  .phead h2 { margin: 0; font-size: 17px; font-weight: 600; text-align: center; }
+  .phead button { background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 16px; justify-self: start; padding: 4px 0; }
+  .phead button.r { justify-self: end; font-weight: 600; }
+  .pbody { overflow-y: auto; padding: 14px 16px calc(24px + env(safe-area-inset-bottom)); }
+
+  /* Vorher → nachher */
+  .chg { display: grid; grid-template-columns: 1fr; gap: 2px; }
+  .chg .b { color: var(--self-text-3); text-decoration: line-through; font-size: 14px; }
+  .chg .a { color: var(--self-teal-bright); font-weight: 600; }
+
+  /* Fortschrittskreis */
+  .ring { position: relative; width: 132px; height: 132px; margin: 14px auto 10px; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; font-weight: 700; }
+  .status { text-align: center; font-size: 16px; margin: 6px 8px 0; }
+  .status.ok { color: var(--self-green); } .status.err { color: var(--self-red); } .status.warn { color: var(--self-yellow); }
+  pre.log { font: 12px/1.5 ui-monospace, monospace; color: var(--self-text-2); white-space: pre-wrap; max-height: 200px; overflow: auto; margin: 8px 0 0; }
+  details summary { cursor: pointer; color: var(--self-text-2); font-size: 14px; margin-top: 16px; }
+
+  /* Meldungen unten */
+  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 20;
+           max-width: min(520px, calc(100% - 32px)); background: var(--self-bg-3); border: 1px solid var(--self-line-strong);
+           border-radius: 14px; padding: 12px 16px; font-size: 15px; box-shadow: 0 12px 30px rgba(0,0,0,.35); display: none; }
+  .toast.show { display: block; }
+  .toast.ok { border-color: var(--self-green); } .toast.warn { border-color: var(--self-yellow); } .toast.err { border-color: var(--self-red); }
+
+  .fault { padding: 12px 14px; } .fault + .fault { border-top: 1px solid var(--self-line); }
+  .fault b { display: block; } .fault span { display: block; color: var(--self-text-2); font-size: 14px; white-space: pre-line; }
+  .kvv { color: var(--self-text-2); text-align: right; font-size: 15px; }
+  .disc-body h3 { font-size: 16px; margin: 16px 0 4px; } .disc-body p { color: var(--self-text-2); margin: 0; font-size: 15px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="big">
+    <div class="topline"><span class="conn" id="conn"><span class="dot"></span> <span id="connText"></span></span>
+      <span class="badge hidden" id="demoBadge" data-i18n="demo.badge"></span></div>
+    <h1 id="pageTitle"></h1>
+    <p class="sub" id="pageSub"></p>
+  </header>
+
+  <!-- Start / Übersicht -->
+  <section id="tab-home">
+    <div class="card" id="connectCard">
+      <img class="logo" src="brand/favicon-192.png" alt="">
+      <h2 data-i18n="ui.connect"></h2>
+      <p data-i18n="ui.connectText"></p>
+      <p class="alert hidden" id="insecure"></p>
+      <button class="btn-big" id="connect" data-i18n="ui.connect"></button>
+      <button class="btn-text" id="demoStart" data-i18n="ui.demo"></button>
+    </div>
+    <div id="home" class="hidden">
+      <div class="alert hidden" id="pendingHint"></div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <section id="tab-settings" class="hidden">
+    <p class="explain" data-i18n="ui.settingsExplain"></p>
+    <div class="group" style="margin-top:14px" id="settingsList"></div>
+  </section>
+
+  <section id="tab-more" class="hidden">
+    <div id="moreList"></div>
+  </section>
+</div>
+
+<nav class="tabbar">
+  <button data-tab="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l-1.5-3H7M13 9l2 7"/></svg><span data-i18n="ui.home"></span></button>
+  <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="ui.settings"></span></button>
+  <button data-tab="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span data-i18n="ui.more"></span></button>
+</nav>
+
+<!-- Blatt für Einstellungen und Details -->
+<div class="sheet" id="sheet"><div class="panel">
+  <div class="phead"><button id="sheetBack"></button><h2 id="sheetTitle"></h2><span></span></div>
+  <div class="pbody" id="sheetBody"></div>
+</div></div>
+
+<!-- Bestätigen: vorher → nachher -->
+<div class="sheet" id="confirmSheet"><div class="panel">
+  <div class="phead"><button id="confirmCancel" data-i18n="preview.cancel"></button><h2 data-i18n="ui.confirmTitle"></h2><span></span></div>
+  <div class="pbody">
+    <p class="explain" id="confirmPlan" style="margin:0 4px 10px;font-weight:600;color:var(--self-text)"></p>
+    <div class="group noico" id="confirmList"></div>
+    <div id="confirmWarn"></div>
+    <p class="foot" id="confirmText"></p>
+    <button class="btn-big" id="confirmGo" data-i18n="ui.confirmGo"></button>
+  </div>
+</div></div>
+
+<!-- Fortschritt mit Kreis -->
+<div class="sheet" id="progSheet"><div class="panel">
+  <div class="phead"><span></span><h2 id="progTitle"></h2><span></span></div>
+  <div class="pbody">
+    <div class="ring">
+      <svg viewBox="0 0 132 132" width="132" height="132">
+        <circle cx="66" cy="66" r="58" fill="none" stroke="var(--self-bg-3)" stroke-width="11"/>
+        <circle id="ringArc" cx="66" cy="66" r="58" fill="none" stroke="var(--self-teal-bright)" stroke-width="11" stroke-linecap="round"
+                stroke-dasharray="364.4" stroke-dashoffset="364.4" style="transition:stroke-dashoffset .4s ease, stroke .3s"/>
+      </svg>
+      <div class="pct" id="ringPct">0%</div>
+    </div>
+    <p class="status" id="progStatus"></p>
+    <div class="card hidden" id="progKofi" style="padding:16px">
+      <p data-i18n="support.thanks" style="margin:0 0 10px"></p>
+      <a class="btn-big plain" style="margin:0" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi"></span></a>
+    </div>
+    <details><summary data-i18n="log.title"></summary><pre class="log" id="progLog"></pre></details>
+    <button class="btn-big hidden" id="progDone" data-i18n="ui.done"></button>
+  </div>
+</div></div>
+
+<!-- Rechtlicher Hinweis -->
+<div class="sheet" id="discSheet"><div class="panel">
+  <div class="phead"><span></span><h2 data-i18n="tools.legal"></h2><button class="r hidden" id="discClose" data-i18n="ui.done"></button></div>
+  <div class="pbody">
+    <div class="group noico"><label class="row"><span class="t" data-i18n="lang.label"></span><select id="discLang"></select></label></div>
+    <h2 data-i18n="disc.title" style="font-size:20px;margin:18px 4px 4px"></h2>
+    <p class="explain" data-i18n="disc.intro"></p>
+    <div class="disc-body" style="margin:0 4px">
+      <h3 data-i18n="disc.1t"></h3><p data-i18n="disc.1"></p><h3 data-i18n="disc.2t"></h3><p data-i18n="disc.2"></p>
+      <h3 data-i18n="disc.3t"></h3><p data-i18n="disc.3"></p><h3 data-i18n="disc.4t"></h3><p data-i18n="disc.4"></p>
+      <h3 data-i18n="disc.5t"></h3><p data-i18n="disc.5"></p><h3 data-i18n="disc.6t"></h3><p data-i18n="disc.6"></p>
+      <h3 data-i18n="disc.7t"></h3><p data-i18n="disc.7"></p>
+      <p style="margin-top:14px;font-size:13px" data-i18n="disc.binding"></p>
+    </div>
+    <div id="discAcceptBox">
+      <div class="group noico" style="margin-top:16px"><label class="row"><span class="t" data-i18n="disc.check" style="font-size:15px"></span><input type="checkbox" class="sw" id="discCheck"></label></div>
+      <button class="btn-big" id="discAccept" disabled data-i18n="disc.accept"></button>
+    </div>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { McspUsb } from './lib/mcsp-usb.js';
+import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
+import { READ_PLAN } from './lib/datapoints.js';
+import { hex } from './lib/messagebus.js';
+import {
+  readAll, byKey, heartbeat, planLight, planService, planDisplay, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
+} from './lib/bike-writer.js';
+import { DemoUsb } from './lib/demo-usb.js';
+import { savePending, loadPending, clearPending } from './lib/care.js';
+import { createBackup, backupFileName, pickBackupFile, writeBackupFile, recordOutcome } from './lib/backup.js';
+import { readFaults } from './lib/diagnostics.js';
+import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE } from './lib/assist-modes.js';
+import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
+import { buildReportHtml } from './lib/report.js';
+import { addSnapshot, snapshotFromRows } from './lib/history.js';
+import { LANGS, t, setLang, detectLang, applyStatic, fmtNum, fmtDate, fmtDateTime, lang } from './lib/i18n.js';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const km = (m, digits = 0) => `${fmtNum(m / 1000, digits)} km`;
+
+let usb = null;
+let reader = null;
+let rows = [];
+let S = {};
+let faults = [];
+let modes = [];
+let busy = false;
+let blocked = false;   // nach unklarem Schreibversuch
+let demo = false;
+let tab = 'home';
+let pending = null;    // { plan, state }
+let hbTimer = null;
+let hbFailures = 0;
+const logLines = [];
+
+const ok = (key) => S[key]?.status === 'ok';
+const val = (key) => (ok(key) ? S[key].value : null);
+const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key].text ? S[key].text : fallback);
+const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
+const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); };
+
+// ---------- Meldungen ----------
+
+let toastTimer = null;
+function toast(text, kind = '') {
+  clearTimeout(toastTimer);
+  $('toast').textContent = text;
+  $('toast').className = `toast show ${kind}`;
+  // Erfolg/Info verschwindet von selbst, Warnungen bleiben länger
+  toastTimer = setTimeout(() => $('toast').classList.remove('show'), kind === 'err' ? 9000 : kind === 'warn' ? 6000 : 3500);
+}
+$('toast').onclick = () => $('toast').classList.remove('show');
+
+// ---------- Kopf, Tabs ----------
+
+const TITLES = { home: 'ui.home', settings: 'ui.settings', more: 'ui.more' };
+function showTab(name) {
+  tab = name;
+  for (const k of Object.keys(TITLES)) $(`tab-${k}`).classList.toggle('hidden', k !== name);
+  for (const b of document.querySelectorAll('nav.tabbar button')) b.classList.toggle('on', b.dataset.tab === name);
+  renderHead();
+  scrollTo(0, 0);
+}
+for (const b of document.querySelectorAll('nav.tabbar button')) b.onclick = () => showTab(b.dataset.tab);
+
+function renderHead() {
+  $('pageTitle').textContent = tab === 'home' && rows.length
+    ? ([txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim() || t('ui.home')) : t(TITLES[tab]);
+  $('pageSub').textContent = tab === 'home' && rows.length ? t('ui.homeSub') : '';
+  $('conn').className = `conn ${busy ? 'busy' : usb ? 'on' : ''}`;
+  $('connText').textContent = t(busy ? 'conn.busy' : usb ? 'conn.on' : 'conn.off');
+  $('demoBadge').classList.toggle('hidden', !demo);
+}
+
+// ---------- Übersicht ----------
+
+function health(soh) {
+  if (soh == null) return ['', ''];
+  if (soh >= 90) return [t('health.vgood'), 'good'];
+  if (soh >= 80) return [t('health.good'), 'good'];
+  if (soh >= 70) return [t('health.ok'), 'warn'];
+  return [t('health.weak'), 'bad'];
+}
+function serviceText() {
+  const s = val('serviceDue');
+  const odo = val('odometer');
+  if (!s) return { n: '–', c: t('tile.unreadable') };
+  if (!s.timestamp && !s.odometer) return { n: t('tile.none'), c: t('tile.svcNone') };
+  if (s.odometer) {
+    const left = (s.odometer - (odo ?? 0)) / 1000;
+    return { n: left > 0 ? fmtNum(left, 0) : t('tile.due'), unit: left > 0 ? 'km' : '', warn: left < 100,
+      c: s.timestamp ? t('tile.svcDate', { date: fmtDate(s.timestamp) }) : '' };
+  }
+  const days = Math.ceil((s.timestamp * 1000 - Date.now()) / 86400000);
+  return { n: days > 0 ? String(days) : t('tile.due'), unit: days > 0 ? t('tile.days') : '', warn: days < 30, c: t('tile.svcDate', { date: fmtDate(s.timestamp) }) };
+}
+const faultCount = () => faults.reduce((n, f) => n + (f.status === 'ok' ? f.faults.length : 0), 0);
+
+function renderHome() {
+  const connected = rows.length > 0;
+  $('connectCard').classList.toggle('hidden', connected);
+  $('home').classList.toggle('hidden', !connected);
+  if (!connected) return;
+  const soc = val('batterySoc');
+  const [hText, hKind] = health(val('batterySoh'));
+  const svc = serviceText();
+  const fc = faultCount();
+  const light = ok('lightMode') ? (val('lightMode') === 0 ? t('lightMode.0') : LIGHT_MODES[val('lightMode')] ?? txt('lightMode')) : '–';
+  $('tiles').innerHTML = `
+    <button class="tile wide" data-open="battery" style="text-align:left;cursor:pointer;color:inherit">
+      <div class="k">${esc(t('tile.battery'))}</div>
+      <div class="n">${soc != null ? esc(fmtNum(soc, 0)) : '–'}<small>%</small></div>
+      <div class="meter"><i style="width:${Math.max(0, Math.min(100, soc ?? 0))}%;${soc != null && soc < 20 ? 'background:var(--self-yellow)' : ''}"></i></div>
+      <div class="c">${hText ? `<span class="${hKind}">${esc(t('tile.health', { health: hText }))}</span> · ` : ''}${esc(txt('batteryRiderWh', '') ? t('tile.remaining', { wh: txt('batteryRiderWh') }) : '')}</div>
+    </button>
+    <div class="tile"><div class="k">${esc(t('ui.km'))}</div>
+      <div class="n">${ok('odometer') ? esc(fmtNum(val('odometer') / 1000, 0)) : '–'}<small>km</small></div></div>
+    <button class="tile" data-open="faults" style="text-align:left;cursor:pointer;color:inherit"><div class="k">${esc(t('ui.faults'))}</div>
+      <div class="n ${fc ? 'warn' : 'good'}" style="font-size:24px">${fc ? esc(fc) : esc(t('ui.faultsNone'))}</div></button>
+    <button class="tile" data-open="service" style="text-align:left;cursor:pointer;color:inherit"><div class="k">${esc(t('tile.service'))}</div>
+      <div class="n ${svc.warn ? 'warn' : ''}" style="font-size:24px">${esc(svc.n)}${svc.unit ? `<small>${esc(svc.unit)}</small>` : ''}</div>
+      ${svc.c ? `<div class="c">${esc(svc.c)}</div>` : ''}</button>
+    <button class="tile" data-open="light" style="text-align:left;cursor:pointer;color:inherit"><div class="k">${esc(t('light.title'))}</div>
+      <div style="font-size:16px;font-weight:600;margin-top:4px">${esc(light)}</div>
+      <div class="c">${esc(ok('lightPower') ? `${fmtNum(val('lightPower'), 1)} W` : '')}</div></button>`;
+  const p = loadPending();
+  $('pendingHint').classList.toggle('hidden', !p);
+  if (p) $('pendingHint').innerHTML = `${esc(t('ui.pending'))} <a href="index.html" style="color:var(--self-teal-bright)">${esc(t('ui.classic'))} ›</a>`;
+}
+$('tiles').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
+
+// ---------- Listen ----------
+
+const ICONS = {
+  light: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3z"/>',
+  modes: '<path d="M4 18 9 9l4 6 3-4 4 7z"/>',
+  service: '<path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/>',
+  display: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 17h4"/>',
+  battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M6 10v4M9 10v4"/>',
+  faults: '<path d="M12 3 2 20h20zM12 10v4M12 17v.5"/>',
+  all: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+  backup: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  pdf: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>',
+  lang: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
+  legal: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/>',
+  classic: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',
+  kofi: '<path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17"/>',
+  refresh: '<path d="M20 11A8 8 0 0 0 5.6 6.6L4 8M4 4v4h4M4 13a8 8 0 0 0 14.4 4.4L20 16M20 20v-4h-4"/>',
+};
+const icon = (name, color = '') => `<span class="ico"${color ? ` style="background:${color}"` : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg></span>`;
+const navRow = (key, label, value = '', color = '') =>
+  `<button class="row" data-open="${key}">${icon(key, color)}<span class="t">${esc(label)}</span><span class="v">${esc(value)}</span><span class="chev">›</span></button>`;
+
+function renderSettings() {
+  const modeNames = modes.map((m) => m.name).join(', ');
+  $('settingsList').innerHTML = [
+    navRow('light', t('light.title'), ok('lightMode') ? (val('lightMode') === 0 ? t('lightMode.0') : LIGHT_MODES[val('lightMode')] ?? '') : '', '#e0a020'),
+    navRow('modes', t('mode.title'), modeNames, '#3b82f6'),
+    navRow('service', t('svc.title'), rows.length ? serviceText().n + (serviceText().unit ? ` ${serviceText().unit}` : '') : '', '#8b5cf6'),
+    navRow('display', t('disp.title'), '', '#64748b'),
+  ].join('');
+}
+$('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
+
+function renderMore() {
+  const langOpts = Object.entries(LANGS).map(([c, n]) => `<option value="${c}"${c === lang() ? ' selected' : ''}>${esc(n)}</option>`).join('');
+  $('moreList').innerHTML = `
+    ${rows.length ? `<p class="gh">${esc(t('ui.groupBike'))}</p><div class="group">
+      ${navRow('battery', t('more.battery'), '', '#22a35a')}
+      ${navRow('faults', t('ui.faults'), faultCount() ? String(faultCount()) : t('ui.faultsNone'), '#e5534b')}
+      ${navRow('all', t('ui.allValues'), '', '#64748b')}
+    </div>
+    <p class="gh">${esc(t('ui.groupSafe'))}</p><div class="group">
+      <button class="row" data-act="backup">${icon('backup', '#0ea5e9')}<span class="t">${esc(t('backup.btn'))}</span></button>
+      <button class="row" data-act="pdf">${icon('pdf', '#0ea5e9')}<span class="t">${esc(t('tools.pdf'))}</span></button>
+      <button class="row" data-act="refresh">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('ui.refresh'))}</span></button>
+    </div>` : ''}
+    <p class="gh">${esc(t('ui.groupApp'))}</p><div class="group">
+      <label class="row">${icon('lang', '#64748b')}<span class="t">${esc(t('lang.label'))}</span><select id="moreLang">${langOpts}</select></label>
+      <button class="row" data-act="legal">${icon('legal', '#64748b')}<span class="t">${esc(t('tools.legal'))}</span><span class="chev">›</span></button>
+      <a class="row" href="index.html">${icon('classic', '#64748b')}<span class="t">${esc(t('ui.classic'))}<small>${esc(t('ui.classicHint'))}</small></span><span class="chev">›</span></a>
+      <a class="row" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">${icon('kofi', '#ff5e5b')}<span class="t">${esc(t('support.kofi'))}</span><span class="chev">›</span></a>
+    </div>
+    ${usb ? `<div class="group" style="margin-top:22px"><button class="row danger" data-act="disconnect">${esc(t('ui.disconnect'))}</button></div>` : ''}`;
+  $('moreLang').onchange = () => changeLang($('moreLang').value);
+}
+$('moreList').addEventListener('click', async (e) => {
+  const open = e.target.closest('[data-open]');
+  if (open) return openPage(open.dataset.open);
+  const act = e.target.closest('[data-act]')?.dataset.act;
+  if (act === 'legal') showDisclaimer();
+  else if (act === 'pdf') {
+    const html = buildReportHtml(rows, { maskIds: false, name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(), faults });
+    const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+    if (!window.open(url, '_blank')) toast(t('msg.popup'), 'warn');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } else if (act === 'backup') manualBackup();
+  else if (act === 'refresh') { try { await refresh(); } catch (err) { await disconnect(); toast(t('msg.readError', { error: err.message }), 'err'); } }
+  else if (act === 'disconnect') { await disconnect(); toast(t('msg.disconnected')); }
+});
+
+function renderAll() {
+  renderHead();
+  renderHome();
+  renderSettings();
+  renderMore();
+}
+
+// ---------- Blätter (Unterseiten) ----------
+
+// Stapel: Fahrmodi → einzelner Modus; „Zurück“ geht eine Ebene hoch
+const stack = [];
+function openPage(name, arg) {
+  if (!rows.length && name !== 'legal') return toast(t('ui.notConnected'), 'warn');
+  stack.push({ name, arg });
+  drawPage();
+  $('sheet').classList.add('open');
+}
+function drawPage() {
+  const { name, arg } = stack[stack.length - 1];
+  const page = PAGES[name](arg);
+  $('sheetTitle').textContent = page.title;
+  $('sheetBack').textContent = stack.length > 1 ? `‹ ${t('ui.back')}` : t('ui.close');
+  $('sheetBody').innerHTML = page.html;
+  $('sheetBody').scrollTop = 0;
+  page.bind?.();
+}
+function closePage() { stack.length = 0; $('sheet').classList.remove('open'); }
+$('sheetBack').onclick = () => { stack.pop(); if (stack.length) drawPage(); else closePage(); };
+$('sheet').addEventListener('click', (e) => { if (e.target === $('sheet')) closePage(); });
+
+const locked = (cond) => (cond ? `<div class="alert">${esc(t('ui.locked'))}</div>` : '');
+const saveBtn = (id = 'save', disabled = false) => `<button class="btn-big" id="${id}"${disabled ? ' disabled' : ''}>${esc(t('ui.save'))}</button>`;
+
+// Plan bauen → bei „nichts zu tun“ Meldung, sonst Bestätigung zeigen
+function propose(fn) {
+  let plan;
+  try { plan = fn(); } catch (e) { return toast(e.message, 'warn'); }
+  if (!plan.steps.length) return toast(t('msg.noChange'), 'ok');
+  if (blocked) return toast(t('msg.abort', { error: '' }), 'err');
+  pending = { plan, state: S };
+  $('confirmPlan').textContent = plan.title;
+  $('confirmList').innerHTML = plan.steps.map((s) => `<div class="row static"><span class="t">${esc(s.label ?? dpLabel(s.key))}
+    <span class="chg"><span class="b">${esc(s.before)}</span><span class="a">${esc(s.after)}</span></span></span></div>`).join('');
+  $('confirmWarn').innerHTML = plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
+  $('confirmText').textContent = t(demo ? 'ui.confirmDemo' : 'ui.confirmText');
+  $('confirmSheet').classList.add('open');
+}
+$('confirmCancel').onclick = () => { pending = null; $('confirmSheet').classList.remove('open'); toast(t('msg.cancelled')); };
+
+const PAGES = {
+  light() {
+    const can = val('lightOem')?.configurable === true;
+    const cur = val('lightMode');
+    const w = ok('lightPower') ? val('lightPower') : 1;
+    return {
+      title: t('light.title'),
+      html: `<p class="explain">${esc(t('ui.lightExplain'))}</p>
+        <div class="group noico" style="margin-top:12px" id="lmList">${[1, 2, 3, 4].map((n) =>
+          `<button class="row${cur === n ? ' sel' : ''}" data-mode="${n}"${can ? '' : ' disabled'}><span class="t">${esc(LIGHT_MODES[n])}</span><span class="check">✓</span></button>`).join('')}</div>
+        <p class="gh">${esc(t('ui.lightPower'))}</p>
+        <div class="group noico">
+          <div class="row static"><span class="t">${esc(t('ui.watts'))}</span>
+            <span class="stepper"><button data-step="-0.5" aria-label="−">−</button><input id="lw" type="number" min="1" max="18" step="0.1" value="${esc(w)}"${can ? '' : ' disabled'}><span>W</span><button data-step="0.5" aria-label="+">+</button></span></div>
+          <label class="row"><span class="t" style="font-size:15px">${esc(t('ui.lampsOk'))}</span><input type="checkbox" class="sw" id="lampsOk"${can ? '' : ' disabled'}></label>
+        </div>
+        <p class="foot">${esc(t('ui.lightPowerHint'))}</p>
+        ${locked(!can)}${saveBtn('save', !can)}`,
+      bind() {
+        let mode = cur >= 1 && cur <= 4 ? cur : 3;
+        $('lmList').onclick = (e) => {
+          const b = e.target.closest('[data-mode]'); if (!b) return;
+          mode = Number(b.dataset.mode);
+          for (const r of $('lmList').children) r.classList.toggle('sel', r === b);
+        };
+        for (const b of $('sheetBody').querySelectorAll('[data-step]')) b.onclick = () => {
+          const v = Math.round((Number($('lw').value) + Number(b.dataset.step)) * 10) / 10;
+          $('lw').value = Math.max(1, Math.min(18, v));
+        };
+        $('save').onclick = () => {
+          if (!$('lampsOk').checked) return toast(t('msg.lampsFirst'), 'warn');
+          propose(() => planLight(S, { mode, watts: Number($('lw').value) }));
+        };
+      },
+    };
+  },
+
+  modes() {
+    return {
+      title: t('mode.title'),
+      html: `<p class="explain">${esc(t('ui.modesExplain'))}</p>
+        <div class="group noico" style="margin-top:12px">${modes.map((m) =>
+          `<button class="row" data-mode="${esc(m.id)}"><span class="t">${esc(m.name)}<small>${esc(m.udam ? `${m.udam.assistLevel ?? '–'} % · ${fmtNum((m.udam.maximumBikeSpeed ?? 0) / 100, 0)} km/h` : '')}</small></span><span class="chev">›</span></button>`).join('')}</div>`,
+      bind() {
+        $('sheetBody').onclick = (e) => { const b = e.target.closest('[data-mode]'); if (b) { stack.push({ name: 'mode', arg: b.dataset.mode }); drawPage(); } };
+      },
+    };
+  },
+
+  mode(id) {
+    const m = modes.find((x) => x.id === id);
+    const can = canEdit(m);
+    const shown = (k, raw) => (k === 'maximumBikeSpeed' ? raw / 100 : raw);
+    const sliders = can ? EDITABLE.map((k) => {
+      const { min, max } = bounds(m, k);
+      const lo = shown(k, min ?? 0);
+      const hi = shown(k, max ?? 0);
+      const unit = k === 'maximumBikeSpeed' ? 'km/h' : '%';
+      const step = k === 'maximumBikeSpeed' ? 0.5 : 1;
+      return `<div class="slider">
+        <div class="top"><span>${esc(t(`mode.${k}`))}</span><span class="val"><span data-out="${k}">${esc(fmtNum(shown(k, m.udam[k]), k === 'maximumBikeSpeed' ? 1 : 0))}</span> ${unit}</span></div>
+        <input type="range" data-key="${k}" min="${lo}" max="${hi}" step="${step}" value="${shown(k, m.udam[k])}">
+        <div class="ends"><span>${esc(fmtNum(lo, k === 'maximumBikeSpeed' ? 1 : 0))} ${unit}</span><span>${esc(fmtNum(hi, k === 'maximumBikeSpeed' ? 1 : 0))} ${unit}</span></div>
+        <div class="hint">${esc(t(`ui.hint.${k}`))}</div></div>`;
+    }).join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>') : '';
+    return {
+      title: m?.name ?? t('mode.title'),
+      html: `${can ? `<div class="group">${sliders}</div>` : locked(true)}
+        ${saveBtn('save', !can)}
+        ${m?.defaults ? `<button class="btn-text" id="reset">${esc(t('ui.factory'))}</button>` : ''}`,
+      bind() {
+        for (const r of $('sheetBody').querySelectorAll('input[type=range]')) {
+          r.oninput = () => { $('sheetBody').querySelector(`[data-out="${r.dataset.key}"]`).textContent = fmtNum(Number(r.value), r.dataset.key === 'maximumBikeSpeed' ? 1 : 0); };
+        }
+        if (can) $('save').onclick = () => {
+          const values = {};
+          for (const r of $('sheetBody').querySelectorAll('input[type=range]')) {
+            values[r.dataset.key] = r.dataset.key === 'maximumBikeSpeed' ? Math.round(Number(r.value) * 100) : Math.round(Number(r.value));
+          }
+          propose(() => planModeChange(m, values));
+        };
+        if ($('reset')) $('reset').onclick = () => propose(() => planModeReset(m));
+      },
+    };
+  },
+
+  service() {
+    return {
+      title: t('svc.title'),
+      html: `<p class="explain">${esc(t('ui.svcExplain'))}</p>
+        <div class="group noico" style="margin-top:12px"><div class="row static"><span class="t">${esc(t('ui.svcNow'))}</span><span class="v">${esc(txt('serviceDue'))}</span></div></div>
+        <p class="gh">${esc(t('ui.svcNew'))}</p>
+        <div class="group noico">
+          <label class="row"><span class="t">${esc(t('ui.svcByKm'))}</span><input type="checkbox" class="sw" id="byKm" checked></label>
+          <div class="row static" id="kmRow"><span class="t">${esc(t('ui.svcInKm'))}<small id="kmTarget"></small></span><input class="numin" id="kmIn" type="number" min="1" max="100000" step="100" value="1500"></div>
+          <label class="row"><span class="t">${esc(t('ui.svcByDate'))}</span><input type="checkbox" class="sw" id="byDate"></label>
+          <div class="row static hidden" id="dateRow"><span class="t">${esc(t('ui.svcDate'))}</span><input class="numin" id="dateIn" type="date"></div>
+        </div>
+        ${saveBtn()}
+        <button class="btn-text red" id="del">${esc(t('ui.svcDelete'))}</button>`,
+      bind() {
+        const upd = () => {
+          $('kmRow').classList.toggle('hidden', !$('byKm').checked);
+          $('dateRow').classList.toggle('hidden', !$('byDate').checked);
+          const add = Number($('kmIn').value);
+          $('kmTarget').textContent = ok('odometer') && add > 0 ? t('svc.target', { km: km(val('odometer') + add * 1000) }) : '';
+        };
+        $('byKm').onchange = upd; $('byDate').onchange = upd; $('kmIn').oninput = upd; upd();
+        $('save').onclick = () => {
+          let odometer = 0; let timestamp = 0;
+          if ($('byKm').checked) {
+            const add = Number($('kmIn').value);
+            if (!Number.isInteger(add) || add < 1) return toast(t('msg.kmInt'), 'warn');
+            if (!ok('odometer')) return toast(t('msg.odoUnreadable'), 'warn');
+            odometer = val('odometer') + add * 1000;
+          }
+          if ($('byDate').checked) {
+            const [y, mo, d] = $('dateIn').value.split('-').map(Number);
+            if (!y) return toast(t('msg.chooseDate'), 'warn');
+            timestamp = Date.UTC(y, mo - 1, d) / 1000;
+          }
+          if (!odometer && !timestamp) return toast(t('msg.chooseKmOrDate'), 'warn');
+          propose(() => planService(S, { timestamp, odometer }));
+        };
+        $('del').onclick = () => propose(() => planService(S, { timestamp: 0, odometer: 0 }));
+      },
+    };
+  },
+
+  display() {
+    const opts = (list, cur) => {
+      const all = cur != null && !list.some((o) => String(o.value) === String(cur)) ? [{ value: cur, text: String(cur) }, ...list] : list;
+      return all.map((o) => `<option value="${esc(o.value)}"${String(o.value) === String(cur) ? ' selected' : ''}>${esc(o.text)}</option>`).join('');
+    };
+    const startLocked = val('startModeOem')?.configurable !== true;
+    const walkLocked = !ok('walkAssist') || val('walkAssistOem')?.configurable !== true;
+    return {
+      title: t('disp.title'),
+      html: `<p class="explain">${esc(t('ui.dispExplain'))}</p>
+        <div class="group noico" style="margin-top:12px">
+          <label class="row"><span class="t">${esc(t('disp.start'))}</span><select id="dStart"${startLocked ? ' disabled' : ''}>${opts(startModeOptions(modes.map((m) => m.name)), val('startMode'))}</select></label>
+          <label class="row"><span class="t">${esc(t('disp.lang'))}</span><select id="dLang">${opts(DISPLAY_LANGUAGES.map((c) => ({ value: c, text: LANGS[c] })), val('displayLanguage'))}</select></label>
+          <label class="row"><span class="t">${esc(t('disp.units'))}</span><select id="dUnits">${opts([{ value: 0, text: t('disp.metric') }, { value: 1, text: t('disp.imperial') }], val('displayUnits'))}</select></label>
+          <label class="row"><span class="t">${esc(t('disp.timeFormat'))}</span><select id="dTime">${opts([{ value: 0, text: t('disp.h24') }, { value: 1, text: t('disp.h12') }], val('timeFormat'))}</select></label>
+        </div>
+        <div class="group noico" style="margin-top:14px">
+          <label class="row"><span class="t">${esc(t('disp.walk'))}<small>${esc(t('ui.walkHint'))}</small></span><input type="checkbox" class="sw" id="dWalk"${val('walkAssist')?.enabled ? ' checked' : ''}${walkLocked ? ' disabled' : ''}></label>
+          <label class="row"><span class="t">${esc(t('ui.clock'))}<small>${esc(`${t('disp.clock')}: ${txt('bikeClock')}`)}</small></span><input type="checkbox" class="sw" id="dClock"${ok('bikeClock') ? '' : ' disabled'}></label>
+        </div>
+        ${saveBtn()}`,
+      bind() {
+        $('save').onclick = () => propose(() => planDisplay(S, {
+          startMode: Number($('dStart').value), language: $('dLang').value,
+          displayUnits: Number($('dUnits').value), timeFormat: Number($('dTime').value), setClock: $('dClock').checked,
+          walkAssist: ok('walkAssist') ? $('dWalk').checked : null,
+        }, modes.map((m) => m.name)));
+      },
+    };
+  },
+
+  battery() {
+    const [hText, hKind] = health(val('batterySoh'));
+    const item = (label, value, cls = '') => `<div class="row static"><span class="t">${esc(label)}</span><span class="kvv ${cls}">${esc(value)}</span></div>`;
+    return {
+      title: t('more.battery'),
+      html: `<div class="group noico">
+        ${item(t('bat.soc'), txt('batterySoc'))}
+        ${item(t('bat.soh'), hText ? `${txt('batterySoh')} · ${hText}` : txt('batterySoh'), hKind)}
+        ${item(t('bat.cycles'), txt('batteryCycles'))}
+        ${item(t('bat.remaining'), txt('batteryRiderWh'))}
+        ${item(t('bat.energy'), txt('batteryEnergy'))}
+        ${item(t('more.capacity'), txt('batteryCapacityAh'))}
+        ${item(t('more.voltage'), txt('batteryVoltage'))}
+        ${item(t('more.tempNow'), `${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`)}
+        ${item(t('bat.model'), txt('batteryProduct'))}
+        </div><p class="foot">${esc(t('bat.sohHint'))}</p>`,
+    };
+  },
+
+  faults() {
+    const body = faults.map((f) => {
+      let inner;
+      if (f.status === 'none') inner = `<div class="fault"><span>${esc(t('fault.notInstalled'))}</span></div>`;
+      else if (f.status !== 'ok') inner = `<div class="fault"><span>${esc(t('fault.unreadable'))}</span></div>`;
+      else if (!f.faults.length) inner = `<div class="fault"><span class="good">${esc(t('fault.none'))}</span></div>`;
+      else inner = f.faults.map((e) => {
+        const info = lookupIssue(e.code ?? 0, lang());
+        const code = (e.code ?? 0).toString(16).toUpperCase().padStart(6, '0');
+        return `<div class="fault"><b>${esc(info?.t || t('fault.code', { code }))}</b>
+          <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
+          ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
+          ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>` : ''}</div>`;
+      }).join('');
+      return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
+    }).join('');
+    return { title: t('ui.faults'), html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}` };
+  },
+
+  all() {
+    const groups = {};
+    for (const r of rows) (groups[r.group] ??= []).push(r);
+    return {
+      title: t('ui.allValues'),
+      html: Object.entries(groups).map(([g, list]) => `<p class="gh">${esc(g)}</p><div class="group noico">${list.map((r) =>
+        `<div class="row static"><span class="t" style="font-size:15px">${esc(dpLabel(r.key))}</span><span class="kvv">${esc(r.status === 'ok' ? (r.text || '–') : '–')}</span></div>`).join('')}</div>`).join(''),
+    };
+  },
+};
+
+// ---------- Ändern: Backup → prüfen → schreiben → zurücklesen ----------
+
+const RING = 2 * Math.PI * 58;
+function ring(f, kind = '') {
+  const v = Math.max(0, Math.min(1, f));
+  $('ringArc').style.strokeDashoffset = `${RING * (1 - v)}`;
+  $('ringArc').style.stroke = kind === 'err' ? 'var(--self-red)' : kind === 'warn' ? 'var(--self-yellow)' : 'var(--self-teal-bright)';
+  $('ringPct').textContent = `${Math.round(v * 100)}%`;
+}
+function progStatus(text, kind = '') { $('progStatus').textContent = text; $('progStatus').className = `status ${kind}`; }
+function progDone(kind) {
+  if (kind === 'ok') ring(1);
+  else $('ringArc').style.stroke = kind === 'err' ? 'var(--self-red)' : 'var(--self-yellow)';
+  $('progKofi').classList.toggle('hidden', kind !== 'ok');
+  $('progDone').classList.remove('hidden');
+}
+$('progDone').onclick = () => { $('progSheet').classList.remove('open'); closePage(); };
+
+async function saveBackup(change) {
+  const handle = demo ? null : await pickBackupFile(backupFileName({ createdAt: new Date().toISOString() }));
+  const fresh = await readAll(reader);
+  const freshState = byKey(fresh);
+  const freshModes = await readAssistModes(reader, freshState.activeModes?.value ?? [], freshState.modeNames?.value ?? []);
+  const backup = createBackup(fresh, change, freshModes);
+  if (demo) return { backup, fresh, saved: { name: t('demo.backupName'), method: 'demo' } };
+  const saved = await writeBackupFile(backup, handle);
+  if (saved.method === 'download' && !confirm(t('msg.backupConfirmDownload', { name: saved.name }))) throw new Error(t('msg.backupNotConfirmed'));
+  return { backup, fresh, saved };
+}
+
+$('confirmGo').onclick = async () => {
+  if (!pending || busy || blocked) return;
+  const { plan, state: previewState } = pending;
+  busy = true;
+  renderHead();
+  $('confirmSheet').classList.remove('open');
+  $('progTitle').textContent = plan.title;
+  $('progLog').textContent = '';
+  $('progKofi').classList.add('hidden');
+  $('progDone').classList.add('hidden');
+  progStatus(t('msg.backupReading'));
+  ring(0);
+  $('progSheet').classList.add('open');
+  const total = plan.steps.length || 1;
+  let done = 0;
+  const plog = (m) => {
+    log(m); $('progLog').textContent += `${new Date().toLocaleTimeString()}  ${m}\n`;
+    if (/^OK /.test(m)) ring((done = Math.min(total, done + 1)) / total);
+  };
+  let backup = null;
+  try {
+    const result = await saveBackup({ title: plan.title, steps: plan.steps.map(({ key, before, after }) => ({ key, before, after })) })
+      .catch((e) => { throw Object.assign(e, { beforeWrite: true }); });
+    backup = result.backup;
+    const now = byKey(result.fresh);
+    for (const key of guardedKeys(plan)) {
+      if (now[key]?.rawHex !== previewState[key]?.rawHex) throw new Error(t('msg.changedPreview', { label: dpLabel(key) }));
+    }
+    savePending({
+      bikeId: now.motorBikeId?.value, at: new Date().toISOString(), title: plan.title, backupName: result.saved.name,
+      steps: plan.steps.map((s) => {
+        const known = !s.write && !s.volatile;
+        return { key: s.key, label: s.label ?? dpLabel(s.key), before: s.before, after: s.after,
+          beforeHex: known ? now[s.key]?.rawHex ?? '' : null, afterHex: known ? hex(s.payload) : null };
+      }),
+    });
+    progStatus(t('msg.changing', { title: plan.title }));
+    const applied = await applyPlan(reader, plan, now, plog);
+    clearPending();
+    recordOutcome(backup.createdAt, { ok: true, at: new Date().toISOString(), done: applied.done });
+    pending = null;
+    plog(`FERTIG: ${plan.title}`);
+    const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ` ${t('msg.restart')}` : '';
+    const changed = t('ui.changed') + restart;
+    try { await refresh(); } catch (e) {
+      await disconnect();
+      progStatus(`${changed} ${t('msg.readError', { error: e.message })}`, 'warn');
+      return progDone('warn');
+    }
+    progStatus(changed, 'ok');
+    progDone('ok');
+  } catch (e) {
+    if (e.uncertain) {
+      blocked = true;
+      plog(`ABBRUCH nach Schreibversuch (${e.attempted.join(', ')}): ${e.message}`);
+      progStatus(t('msg.abort', { error: e.message }), 'err');
+      progDone('err');
+    } else {
+      clearPending();
+      plog(`Nicht geändert: ${e.message}`);
+      progStatus(e.beforeWrite && e.name === 'AbortError' ? t('msg.noLocation') : t('msg.notChanged', { error: e.message }), 'warn');
+      progDone('warn');
+    }
+    if (backup) recordOutcome(backup.createdAt, { ok: false, at: new Date().toISOString(), error: e.message, attempted: e.attempted ?? [] });
+  } finally {
+    busy = false;
+    renderAll();
+  }
+};
+
+async function manualBackup() {
+  if (!reader || busy) return;
+  busy = true; renderHead();
+  toast(t('msg.backupReading'));
+  try {
+    const { saved } = await saveBackup({ title: t('title.manualBackup'), steps: [] });
+    toast(t('msg.backupSaved', { name: saved.name }), 'ok');
+  } catch (e) {
+    toast(e.name === 'AbortError' ? t('msg.noLocation') : t('msg.backupFailed', { error: e.message }), 'warn');
+  } finally { busy = false; renderHead(); }
+}
+
+// ---------- Verbinden und Auslesen ----------
+
+async function refresh() {
+  busy = true;
+  renderHead();
+  rows = await readAll(reader, (row, i) => { $('pageSub').textContent = t('msg.reading', { n: i + 1, total: READ_PLAN.length }); });
+  S = byKey(rows);
+  $('pageSub').textContent = t('msg.readingFaults');
+  faults = await readFaults(reader);
+  $('pageSub').textContent = t('msg.readingModes');
+  modes = await readAssistModes(reader, val('activeModes') ?? [], val('modeNames') ?? []);
+  busy = false;
+  if (!demo) addSnapshot(snapshotFromRows(rows, new Date()));
+  renderAll();
+  if (stack.length) drawPage();
+}
+
+async function connectWith(u, isDemo) {
+  busy = true;
+  demo = isDemo;
+  renderHead();
+  $('connect').disabled = true;
+  $('pageSub').textContent = t('msg.connecting', { name: u.device.productName });
+  try {
+    usb = u;
+    await usb.open();
+    reader = new BikeReader(usb);
+    await refresh();
+    blocked = false;
+    startHeartbeat();
+    if (demo) toast(t('demo.on'), 'warn');
+  } catch (e) {
+    log(`Fehler: ${e.message}`);
+    await disconnect();
+    toast(`${t('msg.connectFailed', { error: e.message })}${/claim/i.test(e.message) ? ' ' + t('msg.busyHint') : ''}`, 'err');
+  }
+  busy = false;
+  $('connect').disabled = !window.isSecureContext;
+  renderAll();
+}
+
+$('connect').onclick = async () => {
+  if (!discAccepted()) return showDisclaimer();
+  if (!('usb' in navigator)) return toast(t('msg.noWebusb'), 'err');
+  let device;
+  try {
+    device = await McspUsb.request(); // muss als Erstes im Klick passieren
+  } catch (e) {
+    return toast(e.name === 'NotFoundError' ? t('msg.noDevice') : `${e.name}: ${e.message}`, 'warn');
+  }
+  await connectWith(new McspUsb(device, log), false);
+};
+$('demoStart').onclick = async () => {
+  if (!discAccepted()) return showDisclaimer();
+  await connectWith(new DemoUsb(log), true);
+};
+
+function startHeartbeat() {
+  clearInterval(hbTimer);
+  hbFailures = 0;
+  hbTimer = setInterval(async () => {
+    if (busy || !reader || performance.now() - reader.lastActivity < 1100) return;
+    try { await heartbeat(reader); hbFailures = 0; } catch (e) {
+      log(`Lebenszeichen fehlgeschlagen (${++hbFailures}): ${e.message}`);
+      if (hbFailures >= 3 && !busy) { await disconnect(); toast(t('msg.hbLost'), 'warn'); }
+    }
+  }, 1500);
+}
+
+async function disconnect() {
+  clearInterval(hbTimer);
+  hbTimer = null;
+  const u = usb;
+  usb = null;
+  reader = null;
+  pending = null;
+  if (u) await u.close();
+  busy = false;
+  renderAll();
+}
+navigator.usb?.addEventListener('disconnect', async (e) => {
+  if (usb && e.device === usb.device) { await disconnect(); toast(t('msg.cableOff'), 'warn'); }
+});
+
+// ---------- Rechtlicher Hinweis ----------
+
+const DISC_KEY = 'selfbike-disclaimer';
+function discAccepted() {
+  try { const d = JSON.parse(localStorage.getItem(DISC_KEY)); return d?.v === 1 ? d : null; } catch { return null; }
+}
+function showDisclaimer() {
+  const accepted = !!discAccepted();
+  $('discAcceptBox').classList.toggle('hidden', accepted);
+  $('discClose').classList.toggle('hidden', !accepted);
+  $('discCheck').checked = false;
+  $('discAccept').disabled = true;
+  $('discSheet').classList.add('open');
+}
+$('discCheck').onchange = () => { $('discAccept').disabled = !$('discCheck').checked; };
+$('discAccept').onclick = () => {
+  try { localStorage.setItem(DISC_KEY, JSON.stringify({ v: 1, at: new Date().toISOString(), lang: lang() })); } catch { /* egal */ }
+  $('discSheet').classList.remove('open');
+};
+$('discClose').onclick = () => $('discSheet').classList.remove('open');
+
+// ---------- Sprache ----------
+
+$('discLang').innerHTML = Object.entries(LANGS).map(([c, n]) => `<option value="${c}">${esc(n)}</option>`).join('');
+$('discLang').onchange = () => changeLang($('discLang').value);
+async function changeLang(code) {
+  await setLang(code);
+  $('discLang').value = lang();
+  // gelesene Werte neu übersetzen geht über ein erneutes Auslesen; die Oberfläche sofort
+  applyStatic();
+  renderAll();
+  if (stack.length) drawPage();
+}
+
+// ---------- Start ----------
+
+await loadCatalog();
+await setLang(detectLang());
+$('discLang').value = lang();
+applyStatic();
+if (!window.isSecureContext) {
+  $('connect').disabled = true;
+  $('insecure').textContent = t('msg.insecure', { link: `https://${location.hostname}:8094${location.pathname}` });
+  $('insecure').classList.remove('hidden');
+}
+renderAll();
+if (!discAccepted()) showDisclaimer();
+</script>
+</body>
+</html>
