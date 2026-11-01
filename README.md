@@ -3,7 +3,7 @@
 Browser-App, mit der du dein **eigenes Bosch-Smart-System-E-Bike** per USB ausliest und wenige
 Einstellungen sicher änderst – ohne Installation, ohne Server, ohne Konto. Alles läuft lokal im Browser.
 
-**Direkt starten:** https://s3lfcod3r.github.io/SelfBike/ (Chrome oder Edge am PC)
+**Direkt starten:** https://bike.selfcoder.de (Chrome oder Edge am PC)
 
 ## Was SelfBike kann
 
