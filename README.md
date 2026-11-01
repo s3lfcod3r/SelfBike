@@ -1,10 +1,11 @@
 <div align="center">
 
-<img src="brand/avatar-512.png" width="240" alt="SelfBike logo" />
+<img src="assets/logo.png" width="240" alt="SelfBike logo" />
 
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
+![Version](https://img.shields.io/badge/version-1.0.0-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -13,6 +14,8 @@
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-support%20me-FF5E5B?logo=ko-fi&logoColor=white)](https://ko-fi.com/s3lfcod3r)
 
 **[🇬🇧 English](#-english) · [🇩🇪 Deutsch](#-deutsch)**
+
+📰 **What's new / Neuigkeiten** → [CHANGELOG.md](CHANGELOG.md)
 
 </div>
 
@@ -32,7 +35,7 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 
 ### 📑 Table of contents
 
-[Features](#en-features) · [Not included](#en-not-included) · [Usage](#en-usage) · [Architecture](#en-architecture) · [Quick start](#en-quick-start) · [Security](#en-security) · [Tech stack](#en-tech-stack) · [Credits](#en-credits)
+[Features](#en-features) · [Not included](#en-not-included) · [Usage](#en-usage) · [Architecture](#en-architecture) · [Quick start](#en-quick-start) · [Security](#en-security) · [Tech stack](#en-tech-stack) · [Development](#en-development) · [Roadmap](#en-roadmap) · [Credits](#en-credits) · [Support](#en-support)
 
 <a id="en-features"></a>
 
@@ -122,6 +125,8 @@ Open `http://localhost:8080` → SelfBike runs locally. Any other static server 
 - **No server, no account** — data stays in your browser (`localStorage` / IndexedDB); serial numbers are shortened in exports
 - Bosch fault texts are **not shipped** — they are read from your own Flow app and stay in your browser
 
+Security update history → [CHANGELOG.md](CHANGELOG.md) (entries marked 🔒).
+
 <a id="en-tech-stack"></a>
 
 ### 🧱 Tech stack
@@ -134,6 +139,31 @@ Open `http://localhost:8080` → SelfBike runs locally. Any other static server 
 | Report | Print-ready HTML → PDF via the browser |
 | Deploy | GitHub Pages (`bike.selfcoder.de`) |
 
+<a id="en-development"></a>
+
+### 🛠️ Development
+
+No build step, no dependencies — edit the files and reload. Start the local server (WebUSB needs `localhost` or HTTPS):
+
+```powershell
+.\start-server.ps1
+```
+
+- `index.html` — the app; logic lives in `lib/` (ES modules)
+- `lib/i18n/<lang>*.js` — translations, German is the source; missing keys fall back to German
+- `bike-read.html`, `bike-write.html`, `usb-check.html` — simple expert/test pages for reading, writing and checking the USB connection
+- Without a bike: demo mode (`lib/demo-usb.js` + `lib/demo-data.js`) runs the full app including the safety guard
+
+<a id="en-roadmap"></a>
+
+### 🗺️ Roadmap
+
+- [x] Read out motor, battery, display, ABS, eShift and ride data over WebUSB
+- [x] Safe changes with backup, preview, step-by-step read-back
+- [x] Assist modes within the bike's limits (max. 25 km/h)
+- [x] Fault memory, PDF report, history, compare, demo mode, 12 languages
+- [ ] Next steps — tell me what you'd like to see via [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
+
 <a id="en-credits"></a>
 
 ### 🙏 Credits
@@ -143,6 +173,14 @@ Open `http://localhost:8080` → SelfBike runs locally. Any other static server 
 Details: [data/ATTRIBUTION.md](data/ATTRIBUTION.md), licence text: [data/LICENSE-MIT-bes3-reader.txt](data/LICENSE-MIT-bes3-reader.txt).
 
 Trademarks belong to their owners and are only named to describe compatibility.
+
+<a id="en-support"></a>
+
+### ☕ Support
+
+SelfBike is free and without ads. If it helps you and you'd like to support further development:
+
+[☕ Support SelfBike on Ko-fi](https://ko-fi.com/s3lfcod3r)
 
 <p align="right"><a href="#-english">⬆ back to top</a></p>
 
@@ -162,7 +200,7 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 
 ### 📑 Inhaltsverzeichnis
 
-[Funktionen](#de-funktionen) · [Nicht enthalten](#de-nicht-enthalten) · [Benutzung](#de-benutzung) · [Architektur](#de-architektur) · [Schnellstart](#de-schnellstart) · [Sicherheit](#de-sicherheit) · [Tech-Stack](#de-tech-stack) · [Danke / Quellen](#de-quellen)
+[Funktionen](#de-funktionen) · [Nicht enthalten](#de-nicht-enthalten) · [Benutzung](#de-benutzung) · [Architektur](#de-architektur) · [Schnellstart](#de-schnellstart) · [Sicherheit](#de-sicherheit) · [Tech-Stack](#de-tech-stack) · [Entwicklung](#de-entwicklung) · [Roadmap](#de-roadmap) · [Danke / Quellen](#de-quellen) · [Unterstützen](#de-unterstuetzen)
 
 <a id="de-funktionen"></a>
 
@@ -253,6 +291,8 @@ Selbst betreiben: reines HTML/JS, kein Build — WebUSB braucht `localhost` oder
 - **Kein Server, kein Konto** — Daten bleiben in deinem Browser (`localStorage` / IndexedDB); Seriennummern werden beim Export gekürzt
 - Bosch-Fehlertexte werden **nicht mitgeliefert** — sie kommen aus deiner eigenen Flow-App und bleiben in deinem Browser
 
+Verlauf der Sicherheitsupdates → [CHANGELOG.md](CHANGELOG.md) (Einträge mit 🔒).
+
 <a id="de-tech-stack"></a>
 
 ### 🧱 Tech-Stack
@@ -265,6 +305,31 @@ Selbst betreiben: reines HTML/JS, kein Build — WebUSB braucht `localhost` oder
 | Bericht | Druckfertiges HTML → PDF über den Browser |
 | Deploy | GitHub Pages (`bike.selfcoder.de`) |
 
+<a id="de-entwicklung"></a>
+
+### 🛠️ Entwicklung
+
+Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Server starten (WebUSB braucht `localhost` oder HTTPS):
+
+```powershell
+.\start-server.ps1
+```
+
+- `index.html` — die App; die Logik liegt in `lib/` (ES-Module)
+- `lib/i18n/<sprache>*.js` — Übersetzungen, Deutsch ist die Quelle; fehlende Texte fallen auf Deutsch zurück
+- `bike-read.html`, `bike-write.html`, `usb-check.html` — einfache Experten-/Testseiten zum Lesen, Schreiben und Prüfen der USB-Verbindung
+- Ohne Fahrrad: Demo-Modus (`lib/demo-usb.js` + `lib/demo-data.js`) fährt die ganze App samt Sicherheits-Guard
+
+<a id="de-roadmap"></a>
+
+### 🗺️ Roadmap
+
+- [x] Motor, Akku, Bedieneinheit, ABS, eShift und Fahrdaten per WebUSB auslesen
+- [x] Sichere Änderungen mit Backup, Vorschau und Rücklesen Schritt für Schritt
+- [x] Fahrmodi innerhalb der Grenzen des Fahrrads (max. 25 km/h)
+- [x] Fehlerspeicher, PDF-Bericht, Verlauf, Vergleich, Demo-Modus, 12 Sprachen
+- [ ] Nächste Schritte — Wünsche gern über [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
+
 <a id="de-quellen"></a>
 
 ### 🙏 Danke / Quellen
@@ -274,6 +339,14 @@ Selbst betreiben: reines HTML/JS, kein Build — WebUSB braucht `localhost` oder
 Details: [data/ATTRIBUTION.md](data/ATTRIBUTION.md), Lizenztext: [data/LICENSE-MIT-bes3-reader.txt](data/LICENSE-MIT-bes3-reader.txt).
 
 Marken gehören ihren Inhabern und werden nur genannt, um die Kompatibilität zu beschreiben.
+
+<a id="de-unterstuetzen"></a>
+
+### ☕ Unterstützen
+
+SelfBike ist kostenlos und ohne Werbung. Wenn es dir hilft und du die Weiterentwicklung unterstützen möchtest:
+
+[☕ SelfBike auf Ko-fi unterstützen](https://ko-fi.com/s3lfcod3r)
 
 <p align="right"><a href="#-deutsch">⬆ nach oben</a></p>
 
