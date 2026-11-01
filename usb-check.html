@@ -89,6 +89,8 @@ const BOSCH_VID = 0x108c;
 const KNOWN_SMART_PIDS = [448, 452, 454, 462, 468];
 
 const $ = (id) => document.getElementById(id);
+// Gerätenamen kommen vom USB-Gerät selbst: vor innerHTML immer maskieren
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const hex = (n) => '0x' + n.toString(16).padStart(4, '0');
 const mask = (s) => (s && s.length > 4) ? s.slice(0, 2) + '…' + s.slice(-2) : s;
 const report = { createdAt: new Date().toISOString(), environment: {}, devices: [], events: [] };
@@ -231,11 +233,11 @@ function addDevice(info, accessTest, ref) {
   box.className = 'device';
   const tag = info.knownSmartController ? '<span class="badge ok">bekannter Smart-System-Controller</span>'
     : info.isBosch ? '<span class="badge ok">Bosch</span>' : '<span class="badge warn">kein Bosch-Gerät</span>';
-  box.innerHTML = `<strong>${info.product || 'Unbenanntes Gerät'}</strong>${tag}
+  box.innerHTML = `<strong>${esc(info.product || 'Unbenanntes Gerät')}</strong>${tag}
     <table>
-      <tr><td>Schnittstelle</td><td>${info.api}</td></tr>
-      <tr><td>Vendor-ID / Product-ID</td><td>${info.vendorId} / ${info.productId}</td></tr>
-      ${info.manufacturer ? `<tr><td>Hersteller</td><td>${info.manufacturer}</td></tr>` : ''}
+      <tr><td>Schnittstelle</td><td>${esc(info.api)}</td></tr>
+      <tr><td>Vendor-ID / Product-ID</td><td>${esc(info.vendorId)} / ${esc(info.productId)}</td></tr>
+      ${info.manufacturer ? `<tr><td>Hersteller</td><td>${esc(info.manufacturer)}</td></tr>` : ''}
     </table>
     <div class="row" style="margin-top:8px"><button>Zugriff testen (öffnen/schließen)</button></div>`;
   box.querySelector('button').onclick = async (ev) => {
