@@ -35,7 +35,7 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 
 ### 📑 Table of contents
 
-[Features](#en-features) · [Not included](#en-not-included) · [Usage](#en-usage) · [Architecture](#en-architecture) · [Quick start](#en-quick-start) · [Security](#en-security) · [Tech stack](#en-tech-stack) · [Development](#en-development) · [Roadmap](#en-roadmap) · [Credits](#en-credits) · [Support](#en-support)
+[Features](#en-features) · [Not included](#en-not-included) · [Usage](#en-usage) · [Architecture](#en-architecture) · [Quick start](#en-quick-start) · [Security](#en-security) · [Tech stack](#en-tech-stack) · [Development](#en-development) · [Roadmap](#en-roadmap) · [Support](#en-support)
 
 <a id="en-features"></a>
 
@@ -164,14 +164,6 @@ No build step, no dependencies — edit the files and reload. Start the local se
 - [x] Fault memory, PDF report, history, compare, demo mode, 12 languages
 - [ ] Next steps — tell me what you'd like to see via [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
 
-<a id="en-credits"></a>
-
-### 🙏 Credits
-
-- **[bosch-bes3-reader](https://github.com/rweijnen/bosch-bes3-reader)** by Remko Weijnen — parts of the protocol understanding and single address/type facts. Code licence MIT, address registry CC BY 4.0.
-
-Details: [data/ATTRIBUTION.md](data/ATTRIBUTION.md), licence text: [data/LICENSE-MIT-bes3-reader.txt](data/LICENSE-MIT-bes3-reader.txt).
-
 Trademarks belong to their owners and are only named to describe compatibility.
 
 <a id="en-support"></a>
@@ -200,7 +192,7 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 
 ### 📑 Inhaltsverzeichnis
 
-[Funktionen](#de-funktionen) · [Nicht enthalten](#de-nicht-enthalten) · [Benutzung](#de-benutzung) · [Architektur](#de-architektur) · [Schnellstart](#de-schnellstart) · [Sicherheit](#de-sicherheit) · [Tech-Stack](#de-tech-stack) · [Entwicklung](#de-entwicklung) · [Roadmap](#de-roadmap) · [Danke / Quellen](#de-quellen) · [Unterstützen](#de-unterstuetzen)
+[Funktionen](#de-funktionen) · [Nicht enthalten](#de-nicht-enthalten) · [Benutzung](#de-benutzung) · [Architektur](#de-architektur) · [Schnellstart](#de-schnellstart) · [Sicherheit](#de-sicherheit) · [Tech-Stack](#de-tech-stack) · [Entwicklung](#de-entwicklung) · [Roadmap](#de-roadmap) · [Unterstützen](#de-unterstuetzen)
 
 <a id="de-funktionen"></a>
 
@@ -329,14 +321,6 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 - [x] Fahrmodi innerhalb der Grenzen des Fahrrads (max. 25 km/h)
 - [x] Fehlerspeicher, PDF-Bericht, Verlauf, Vergleich, Demo-Modus, 12 Sprachen
 - [ ] Nächste Schritte — Wünsche gern über [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
-
-<a id="de-quellen"></a>
-
-### 🙏 Danke / Quellen
-
-- **[bosch-bes3-reader](https://github.com/rweijnen/bosch-bes3-reader)** von Remko Weijnen — Teile des Protokollverständnisses und einzelne Adress-/Typangaben. Code-Lizenz MIT, Adressverzeichnis CC BY 4.0.
-
-Details: [data/ATTRIBUTION.md](data/ATTRIBUTION.md), Lizenztext: [data/LICENSE-MIT-bes3-reader.txt](data/LICENSE-MIT-bes3-reader.txt).
 
 Marken gehören ihren Inhabern und werden nur genannt, um die Kompatibilität zu beschreiben.
 
