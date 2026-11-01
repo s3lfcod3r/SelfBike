@@ -503,15 +503,19 @@ $('settingsList').addEventListener('click', (e) => { const b = e.target.closest(
 // Unter den Kacheln der Startseite (früher eigener Tab „Mehr“)
 function renderMore() {
   $('moreList').innerHTML = `
-    ${rows.length ? `<p class="gh">${esc(t('ui.groupBike'))}</p><div class="group">
+    ${rows.length ? `<p class="gh">${esc(t('tile.battery'))}</p><div class="group">
       ${navRow('battery', t('more.battery'), '', '#22a35a')}
-      ${navRow('faults', t('ui.faults'), faultCount() ? String(faultCount()) : t('ui.faultsNone'), '#e5534b')}
       ${navRow('batterycheck', t('bc.title'), '', '#22a35a')}
       ${navRow('range', t('rg.title'), '', '#22a35a')}
+    </div>
+    <p class="gh">${esc(t('nav.ride'))}</p><div class="group">
+      ${navRow('ridemodes', t('ride.modesTitle'), '', '#3b82f6')}
+      ${navRow('stats', t('ride.statsTitle'), '', '#3b82f6')}
+    </div>
+    <p class="gh">${esc(t('ui.groupBike'))}</p><div class="group">
+      ${navRow('faults', t('ui.faults'), faultCount() ? String(faultCount()) : t('ui.faultsNone'), '#e5534b')}
       ${navRow('components', t('comp.title'), '', '#64748b')}
       ${navRow('details', t('more.title'), '', '#64748b')}
-      ${navRow('ridemodes', t('ride.modesTitle'), '', '#3b82f6')}
-      ${navRow('stats', t('ride.statsTitle'), '', '#8b5cf6')}
     </div>
     <p class="gh">${esc(t('ui.groupSafe'))}</p><div class="group">
       <button class="row" data-act="backup">${icon('backup', '#0ea5e9')}<span class="t">${esc(t('backup.btn'))}</span></button>
