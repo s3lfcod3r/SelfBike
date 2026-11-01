@@ -371,7 +371,7 @@ function checkTile() {
   const speed = val('maxAssistSpeed');
   const legal = val('maxLegalSpeed') ?? 25;
   const warn = suspicious || (speed != null && speed > legal * 1.1 + 0.2) || legal > 25.5;
-  return `<div class="tile wide"><div class="k">${esc(t('tile.check'))}</div>
+  return `<div class="tile"><div class="k">${esc(t('tile.check'))}</div>
     <div class="n ${warn ? 'warn' : 'good'}" style="font-size:24px">${esc(t(warn ? 'check.warn' : 'check.ok'))}</div>
     ${ok('region') ? `<div class="c">${esc(`${t('check.region')}: ${txt('region')}`)}</div>` : ''}
     ${speed != null ? `<div class="c">${esc(t('check.speed', { v: txt('maxAssistSpeed') }))}${ok('maxLegalSpeed') ? ` · ${esc(t('check.legal', { v: txt('maxLegalSpeed') }))}` : ''}</div>` : ''}
@@ -390,7 +390,7 @@ function renderHome() {
   const fc = faultCount();
   const light = ok('lightMode') ? (val('lightMode') === 0 ? t('lightMode.0') : LIGHT_MODES[val('lightMode')] ?? txt('lightMode')) : '–';
   $('tiles').innerHTML = `
-    <button class="tile wide" data-open="battery" style="text-align:left;cursor:pointer;color:inherit">
+    <button class="tile" data-open="battery" style="text-align:left;cursor:pointer;color:inherit">
       <div class="k">${esc(t('tile.battery'))}</div>
       <div class="n">${soc != null ? esc(fmtNum(soc, 0)) : '–'}<small>%</small></div>
       <div class="meter"><i style="width:${Math.max(0, Math.min(100, soc ?? 0))}%;${soc != null && soc < 20 ? 'background:var(--self-yellow)' : ''}"></i></div>
