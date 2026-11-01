@@ -171,6 +171,7 @@
     <div id="home" class="hidden">
       <div class="alert hidden" id="pendingHint"></div>
       <div class="tiles" id="tiles"></div>
+      <div id="ride"></div>
       <div id="moreList"></div>
     </div>
   </section>
@@ -267,7 +268,7 @@ import { DemoUsb } from './lib/demo-usb.js';
 import { savePending, loadPending, clearPending, checkPending } from './lib/care.js';
 import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
 import { readFaults } from './lib/diagnostics.js';
-import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE } from './lib/assist-modes.js';
+import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
 import { loadCatalog, lookupIssue, importCatalog, catalogInfo } from './lib/issue-catalog.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows } from './lib/history.js';
@@ -353,6 +354,22 @@ function serviceText() {
   const days = Math.ceil((s.timestamp * 1000 - Date.now()) / 86400000);
   return { n: days > 0 ? String(days) : t('tile.due'), unit: days > 0 ? t('tile.days') : '', warn: days < 30, c: t('tile.svcDate', { date: fmtDate(s.timestamp) }) };
 }
+// Fahrrad-Check: Region, Unterstützung bis, Tuning-Erkennung.
+// Bosch meldet „Unterstützung bis“ etwas über der gesetzlichen Grenze (Abregelbereich, z. B. 27,4 bei 25);
+// auffällig erst bei mehr als 10 % darüber, bei einer gesetzlichen Grenze über 25 km/h oder erkannter Manipulation.
+function checkTile() {
+  const tuning = val('tuning');
+  if (!tuning && !ok('region')) return '';
+  const suspicious = !!tuning && (tuning.flag || tuning.counter > 0);
+  const speed = val('maxAssistSpeed');
+  const legal = val('maxLegalSpeed') ?? 25;
+  const warn = suspicious || (speed != null && speed > legal * 1.1 + 0.2) || legal > 25.5;
+  return `<div class="tile wide"><div class="k">${esc(t('tile.check'))}</div>
+    <div class="n ${warn ? 'warn' : 'good'}" style="font-size:24px">${esc(t(warn ? 'check.warn' : 'check.ok'))}</div>
+    ${ok('region') ? `<div class="c">${esc(`${t('check.region')}: ${txt('region')}`)}</div>` : ''}
+    ${speed != null ? `<div class="c">${esc(t('check.speed', { v: txt('maxAssistSpeed') }))}${ok('maxLegalSpeed') ? ` · ${esc(t('check.legal', { v: txt('maxLegalSpeed') }))}` : ''}</div>` : ''}
+    ${tuning ? `<div class="c ${suspicious ? 'bad' : 'good'}">${esc(txt('tuning'))}</div>` : ''}</div>`;
+}
 const faultCount = () => faults.reduce((n, f) => n + (f.status === 'ok' ? f.faults.length : 0), 0);
 
 function renderHome() {
@@ -372,6 +389,7 @@ function renderHome() {
       <div class="meter"><i style="width:${Math.max(0, Math.min(100, soc ?? 0))}%;${soc != null && soc < 20 ? 'background:var(--self-yellow)' : ''}"></i></div>
       <div class="c">${hText ? `<span class="${hKind}">${esc(t('tile.health', { health: hText }))}</span> · ` : ''}${esc(txt('batteryRiderWh', '') ? t('tile.remaining', { wh: txt('batteryRiderWh') }) : '')}</div>
     </button>
+    ${checkTile()}
     <div class="tile"><div class="k">${esc(t('ui.km'))}</div>
       <div class="n">${ok('odometer') ? esc(fmtNum(val('odometer') / 1000, 0)) : '–'}<small>km</small></div></div>
     <button class="tile" data-open="faults" style="text-align:left;cursor:pointer;color:inherit"><div class="k">${esc(t('ui.faults'))}</div>
@@ -382,7 +400,42 @@ function renderHome() {
     <button class="tile" data-open="light" style="text-align:left;cursor:pointer;color:inherit"><div class="k">${esc(t('light.title'))}</div>
       <div style="font-size:16px;font-weight:600;margin-top:4px">${esc(light)}</div>
       <div class="c">${esc(ok('lightPower') ? `${fmtNum(val('lightPower'), 1)} W` : '')}</div></button>`;
+  renderRide();
   renderPending();
+}
+
+// Strecke pro Fahrmodus (mit Reichweite) und Fahrstatistik
+function renderRide() {
+  const maxDist = Math.max(1, ...modes.map((m) => m.distance ?? 0));
+  const sumDist = modes.reduce((n, m) => n + (m.distance ?? 0), 0);
+  // Reichweite pro Modus: Restenergie ÷ (Energie ÷ Strecke)
+  const remainingWh = val('batteryRiderWh') ?? val('batteryRemainingWh');
+  const range = (m) => (remainingWh && m.distance > 0 && m.energy > 0 ? Math.round(remainingWh / (m.energy / (m.distance / 1000))) : null);
+  const modeRows = modes.map((m) => `<div class="slider">
+      <div class="top"><span style="font-weight:600">${esc(m.name)}</span>
+        <span>${m.distance == null ? '–' : esc(km(m.distance, 1))}${sumDist && m.distance != null ? ` <span style="color:var(--self-text-3)">${esc(fmtNum((m.distance / sumDist) * 100))} %</span>` : ''}</span></div>
+      <div class="meter"><i style="width:${((m.distance ?? 0) / maxDist) * 100}%;background:var(--self-teal-bright)"></i></div>
+      <div class="hint" style="margin-top:6px">${esc(modeSummary(m.udam))}${range(m) ? ` · ${esc(t('ride.rangeKm', { km: range(m) }))}` : ''}</div></div>`)
+    .join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>');
+
+  const rs = val('rideStats');
+  const hours = val('powerOnHours');
+  const motorHours = val('motorHours');
+  const stats = [];
+  if (rs) {
+    stats.push([t('ride.dist'), km(rs.distance, 1), rs.resetAt ? t('ride.reset', { date: fmtDate(rs.resetAt) }) : '']);
+    if (rs.distance > 0) stats.push([t('ride.off'), `${km(rs.offDistance, 1)} · ${fmtNum((rs.offDistance / rs.distance) * 100)} %`, '']);
+    stats.push([t('ride.motorWh'), `${fmtNum(rs.motorWh)} Wh`, rs.distance > 0 ? t('ride.whkm', { v: fmtNum(rs.motorWh / (rs.distance / 1000), 1) }) : '']);
+    if (rs.otherWh) stats.push([t('ride.otherWh'), `${fmtNum(rs.otherWh)} Wh`, '']);
+  }
+  if (hours != null) stats.push([t('ride.hours'), `${fmtNum(hours)} h`, motorHours != null ? t('ride.hoursMotor', { h: fmtNum(motorHours) }) : '']);
+  if (ok('cadence')) stats.push([t('ride.cadence'), txt('cadence'), t('ride.cadenceHint')]);
+
+  $('ride').innerHTML = `
+    ${modes.length ? `<p class="gh">${esc(t('ride.modesTitle'))}</p><div class="group">${modeRows}</div>
+      <p class="foot">${esc(t('ride.modesFoot'))}</p>` : ''}
+    ${stats.length ? `<p class="gh">${esc(t('ride.statsTitle'))}</p><div class="group noico">${stats.map(([k, v, hint]) =>
+      `<div class="row static"><span class="t">${esc(k)}${hint ? `<small>${esc(hint)}</small>` : ''}</span><span class="kvv" style="color:var(--self-text);font-weight:600">${esc(v)}</span></div>`).join('')}</div>` : ''}`;
 }
 
 // Unterbrochene Änderung (Kabel/Browser weg): zeigen, welcher Schritt im Rad angekommen ist
