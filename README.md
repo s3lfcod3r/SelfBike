@@ -45,7 +45,7 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 - **Overview** — motor, battery, display/remote, ABS, eShift, odometer
 - **Battery** — state of charge, health, charge cycles, battery check with rules of thumb, range estimate
 - **Ride data** — ride statistics, distance and energy per assist mode, history over time (stored in your browser)
-- **Fault memory** — read only; every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature"); exact plain-language texts optionally imported from **your own** Bosch Flow app
+- **Fault memory** — read only; every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature")
 
 **⚙️ Change (only what the manufacturer allows)**
 - Light, service interval, start mode, display language, units, clock, walk assist on/off
@@ -124,7 +124,7 @@ Open `http://localhost:8080` → SelfBike runs locally. Any other static server 
 - **Manufacturer approval** — only values the bike reports as changeable
 - **Hard limits** — assist speed never above 25 km/h, no region / speed-limit writes, fault memory read only
 - **No server, no account** — data stays in your browser (`localStorage` / IndexedDB); serial numbers are shortened in exports
-- Bosch fault texts are **not shipped** — they are read from your own Flow app and stay in your browser
+- Bosch fault texts are **not shipped** — SelfBike shows its own classification (area + general tip) instead
 
 Security update history → [CHANGELOG.md](CHANGELOG.md) (entries marked 🔒).
 
@@ -203,7 +203,7 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - **Übersicht** — Motor, Akku, Bedieneinheit, ABS, eShift, Kilometer
 - **Akku** — Ladezustand, Gesundheit, Ladezyklen, Akku-Check mit Faustregeln, Reichweiten-Schätzung
 - **Fahrdaten** — Fahrstatistik, Strecke und Energie je Fahrmodus, Verlauf über die Zeit (im Browser gespeichert)
-- **Fehlerspeicher** — nur lesen; jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“); genaue Klartexte optional aus **deiner eigenen** Bosch-Flow-App importieren
+- **Fehlerspeicher** — nur lesen; jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“)
 
 **⚙️ Ändern (nur was der Hersteller freigibt)**
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
@@ -283,7 +283,7 @@ Selbst betreiben: reines HTML/JS, kein Build — WebUSB braucht `localhost` oder
 - **Herstellerfreigabe** — nur Werte, die das Fahrrad als „änderbar“ meldet
 - **Harte Grenzen** — Unterstützung nie über 25 km/h, kein Schreiben von Region/Tempolimit, Fehlerspeicher nur lesen
 - **Kein Server, kein Konto** — Daten bleiben in deinem Browser (`localStorage` / IndexedDB); Seriennummern werden beim Export gekürzt
-- Bosch-Fehlertexte werden **nicht mitgeliefert** — sie kommen aus deiner eigenen Flow-App und bleiben in deinem Browser
+- Bosch-Fehlertexte werden **nicht mitgeliefert** — SelfBike zeigt stattdessen eine eigene Einordnung (Bereich + allgemeiner Hinweis)
 
 Verlauf der Sicherheitsupdates → [CHANGELOG.md](CHANGELOG.md) (Einträge mit 🔒).
 

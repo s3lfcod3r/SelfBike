@@ -11,7 +11,7 @@ import { savePending, loadPending, clearPending, checkPending, batteryChecks, ra
 import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
 import { readFaults } from './lib/diagnostics.js';
 import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
-import { loadCatalog, lookupIssue, importCatalog, catalogInfo } from './lib/issue-catalog.js';
+import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex } from './lib/fault-categories.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
@@ -631,27 +631,9 @@ const PAGES = {
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
-    // Klartexte aus der eigenen Flow-App laden, falls nicht schon auf dem Server
-    const info = catalogInfo();
-    const catalog = info?.fromServer ? '' : `<p class="gh">${esc(t('issues.title'))}</p><div class="group noico">
-      <label class="row"><span class="t">${esc(t('issues.choose'))}<small>${esc(info ? t('issues.loaded', { n: fmtNum(info.count), langs: info.langs.join(', ') }) : t('issues.none'))}</small></span>
-        <span class="chev">›</span><input type="file" id="issuesFile" class="hidden"></label></div>
-      <p class="foot">${esc(t('issues.text'))}</p>`;
     return {
       title: t('ui.faults'),
-      html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}${catalog}`,
-      bind() {
-        if (!$('issuesFile')) return;
-        $('issuesFile').onchange = async () => {
-          const f = $('issuesFile').files[0];
-          if (!f) return;
-          toast(t('issues.reading'));
-          try { await importCatalog(f); toast(t('issues.loaded', { n: fmtNum(catalogInfo().count), langs: catalogInfo().langs.join(', ') }), 'ok'); } catch (err) {
-            toast(t(err.message === 'no-catalog' ? 'issues.notFound' : 'issues.error', { error: err.message }), 'warn');
-          }
-          drawPage();
-        };
-      },
+      html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}`,
     };
   },
 
