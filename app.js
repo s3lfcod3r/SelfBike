@@ -717,16 +717,36 @@ function progDone(kind) {
 }
 $('progDone').onclick = () => { $('progSheet').classList.remove('open'); closePage(); };
 
-async function saveBackup(change) {
+// onStatus: Fortschritt für die Anzeige (Speicherort wählen, dann „lese n/gesamt“)
+async function saveBackup(change, onStatus = () => {}) {
+  if (!demo) onStatus(t('msg.backupWhere'));
   const handle = demo ? null : await pickBackupFile(backupFileName({ createdAt: new Date().toISOString() }));
-  const fresh = await readAll(reader);
+  const fresh = await readAll(reader, (row, i, total) => onStatus(`${t('msg.backupReading')} ${i + 1}/${total}`));
   const freshState = byKey(fresh);
   const freshModes = await readAssistModes(reader, freshState.activeModes?.value ?? [], freshState.modeNames?.value ?? []);
   const backup = createBackup(fresh, change, freshModes);
-  if (demo) return { backup, fresh, saved: { name: t('demo.backupName'), method: 'demo' } };
+  if (demo) return { backup, fresh, freshModes, saved: { name: t('demo.backupName'), method: 'demo' } };
   const saved = await writeBackupFile(backup, handle);
   if (saved.method === 'download' && !confirm(t('msg.backupConfirmDownload', { name: saved.name }))) throw new Error(t('msg.backupNotConfirmed'));
-  return { backup, fresh, saved };
+  return { backup, fresh, freshModes, saved };
+}
+
+// Nach einer Änderung nicht alles neu auslesen: Grundlage ist der frische Stand aus dem Backup,
+// neu gelesen werden nur die geänderten Werte (und die Fahrmodi, falls einer geändert wurde).
+async function refreshChanged(plan, fresh, freshModes) {
+  rows = fresh.slice();
+  for (const key of new Set(plan.steps.filter((s) => !s.write).map((s) => s.key))) {
+    const i = rows.findIndex((r) => r.key === key);
+    const row = await reader.readPoint(READ_PLAN.find((p) => p.key === key));
+    if (row.status === 'error') throw new Error(`${dpLabel(key)}: ${row.error}`);
+    if (i >= 0) rows[i] = row;
+  }
+  S = byKey(rows);
+  modes = plan.steps.some((s) => s.write)
+    ? await readAssistModes(reader, val('activeModes') ?? [], val('modeNames') ?? [])
+    : freshModes;
+  renderAll();
+  if (stack.length) drawPage();
 }
 
 $('confirmGo').onclick = async () => {
@@ -750,7 +770,7 @@ $('confirmGo').onclick = async () => {
   };
   let backup = null;
   try {
-    const result = await saveBackup({ title: plan.title, steps: plan.steps.map(({ key, before, after }) => ({ key, before, after })) })
+    const result = await saveBackup({ title: plan.title, steps: plan.steps.map(({ key, before, after }) => ({ key, before, after })) }, progStatus)
       .catch((e) => { throw Object.assign(e, { beforeWrite: true }); });
     backup = result.backup;
     const now = byKey(result.fresh);
@@ -773,7 +793,7 @@ $('confirmGo').onclick = async () => {
     plog(`FERTIG: ${plan.title}`);
     const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ` ${t('msg.restart')}` : '';
     const changed = t('ui.changed') + restart;
-    try { await refresh(); } catch (e) {
+    try { await refreshChanged(plan, result.fresh, result.freshModes); } catch (e) {
       await disconnect();
       progStatus(`${changed} ${t('msg.readError', { error: e.message })}`, 'warn');
       return progDone('warn');
@@ -804,7 +824,7 @@ async function manualBackup() {
   busy = true; renderHead();
   toast(t('msg.backupReading'));
   try {
-    const { saved } = await saveBackup({ title: t('title.manualBackup'), steps: [] });
+    const { saved } = await saveBackup({ title: t('title.manualBackup'), steps: [] }, (s) => { $('pageSub').textContent = s; });
     toast(t('msg.backupSaved', { name: saved.name }), 'ok');
   } catch (e) {
     toast(e.name === 'AbortError' ? t('msg.noLocation') : t('msg.backupFailed', { error: e.message }), 'warn');
