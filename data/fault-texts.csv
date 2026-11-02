@@ -17,1117 +17,1117 @@ code;lang;severity;title;hint
 #     unter data/fault-texts.csv hochladen.
 # Zeilen, die mit # beginnen, sind nur Erklärungen und werden ignoriert.
 # ===========================================================================
-113111;de;Kritisch;;
-120109;de;Kritisch;;
-1B7201;de;Kritisch;;
-1B7601;de;Kritisch;;
-1B7654;de;Kritisch;;
-1B7701;de;Kritisch;;
-1B7740;de;Kritisch;;
-1B7754;de;Kritisch;;
-1B7901;de;Kritisch;;
-1C7401;de;Kritisch;;
-1C7454;de;Kritisch;;
-1C7501;de;Kritisch;;
-1C7540;de;Kritisch;;
-1C7554;de;Kritisch;;
-1C7601;de;Kritisch;;
-1C7701;de;Kritisch;;
-1C7740;de;Kritisch;;
-1C7754;de;Kritisch;;
-1C7801;de;Kritisch;;
-1C7901;de;Kritisch;;
-1C8001;de;Kritisch;;
-1C8020;de;Kritisch;;
-1C8080;de;Kritisch;;
-6A0000;de;Kritisch;;
-6A0004;de;Kritisch;;
-890000;de;Kritisch;;
-F10004;de;Kritisch;;
-F10005;de;Kritisch;;
-100009;de;Fehler;;
-10000A;de;Fehler;;
-10000B;de;Fehler;;
-10000C;de;Fehler;;
-10000D;de;Fehler;;
-10000E;de;Fehler;;
-110001;de;Fehler;;
-112000;de;Fehler;;
-112002;de;Fehler;;
-112100;de;Fehler;;
-113101;de;Fehler;;
-113102;de;Fehler;;
-113103;de;Fehler;;
-113104;de;Fehler;;
-113113;de;Fehler;;
-113114;de;Fehler;;
-113120;de;Fehler;;
-113150;de;Fehler;;
-116000;de;Fehler;;
-116001;de;Fehler;;
-120107;de;Fehler;;
-120111;de;Fehler;;
-120113;de;Fehler;;
-131000;de;Fehler;;
-133000;de;Fehler;;
-133001;de;Fehler;;
-133002;de;Fehler;;
-135000;de;Fehler;;
-136001;de;Fehler;;
-141000;de;Fehler;;
-141200;de;Fehler;;
-142002;de;Fehler;;
-144001;de;Fehler;;
-152001;de;Fehler;;
-152002;de;Fehler;;
-153001;de;Fehler;;
-153004;de;Fehler;;
-1B0002;de;Fehler;;
-1B0003;de;Fehler;;
-1B7202;de;Fehler;;
-1B7210;de;Fehler;;
-1B7211;de;Fehler;;
-1B7212;de;Fehler;;
-1B7213;de;Fehler;;
-1B7214;de;Fehler;;
-1B7224;de;Fehler;;
-1B7602;de;Fehler;;
-1B7610;de;Fehler;;
-1B7611;de;Fehler;;
-1B7612;de;Fehler;;
-1B7613;de;Fehler;;
-1B7614;de;Fehler;;
-1B7640;de;Fehler;;
-1B7641;de;Fehler;;
-1B7642;de;Fehler;;
-1B7643;de;Fehler;;
-1B7644;de;Fehler;;
-1B7645;de;Fehler;;
-1B7646;de;Fehler;;
-1B7647;de;Fehler;;
-1B7648;de;Fehler;;
-1B7649;de;Fehler;;
-1B764A;de;Fehler;;
-1B764B;de;Fehler;;
-1B764C;de;Fehler;;
-1B764D;de;Fehler;;
-1B7702;de;Fehler;;
-1B7710;de;Fehler;;
-1B7711;de;Fehler;;
-1B7712;de;Fehler;;
-1B7713;de;Fehler;;
-1B7714;de;Fehler;;
-1B7741;de;Fehler;;
-1B7742;de;Fehler;;
-1B7743;de;Fehler;;
-1B7747;de;Fehler;;
-1B7748;de;Fehler;;
-1B7749;de;Fehler;;
-1B774A;de;Fehler;;
-1B774B;de;Fehler;;
-1B774C;de;Fehler;;
-1B774D;de;Fehler;;
-1B7902;de;Fehler;;
-1B7910;de;Fehler;;
-1B7911;de;Fehler;;
-1B7912;de;Fehler;;
-1B7913;de;Fehler;;
-1B7914;de;Fehler;;
-1C7402;de;Fehler;;
-1C7410;de;Fehler;;
-1C7411;de;Fehler;;
-1C7412;de;Fehler;;
-1C7413;de;Fehler;;
-1C7414;de;Fehler;;
-1C7440;de;Fehler;;
-1C7441;de;Fehler;;
-1C7442;de;Fehler;;
-1C7443;de;Fehler;;
-1C7444;de;Fehler;;
-1C7445;de;Fehler;;
-1C7448;de;Fehler;;
-1C7449;de;Fehler;;
-1C744A;de;Fehler;;
-1C744B;de;Fehler;;
-1C744C;de;Fehler;;
-1C744D;de;Fehler;;
-1C7502;de;Fehler;;
-1C7510;de;Fehler;;
-1C7511;de;Fehler;;
-1C7512;de;Fehler;;
-1C7513;de;Fehler;;
-1C7514;de;Fehler;;
-1C7541;de;Fehler;;
-1C7542;de;Fehler;;
-1C7543;de;Fehler;;
-1C7547;de;Fehler;;
-1C7548;de;Fehler;;
-1C7549;de;Fehler;;
-1C754A;de;Fehler;;
-1C754B;de;Fehler;;
-1C754C;de;Fehler;;
-1C754D;de;Fehler;;
-1C7602;de;Fehler;;
-1C7610;de;Fehler;;
-1C7611;de;Fehler;;
-1C7612;de;Fehler;;
-1C7613;de;Fehler;;
-1C7614;de;Fehler;;
-1C7641;de;Fehler;;
-1C7642;de;Fehler;;
-1C7643;de;Fehler;;
-1C7645;de;Fehler;;
-1C7702;de;Fehler;;
-1C7710;de;Fehler;;
-1C7711;de;Fehler;;
-1C7713;de;Fehler;;
-1C7714;de;Fehler;;
-1C7741;de;Fehler;;
-1C7742;de;Fehler;;
-1C7743;de;Fehler;;
-1C7744;de;Fehler;;
-1C7747;de;Fehler;;
-1C7748;de;Fehler;;
-1C7749;de;Fehler;;
-1C774A;de;Fehler;;
-1C774B;de;Fehler;;
-1C774C;de;Fehler;;
-1C774D;de;Fehler;;
-1C7802;de;Fehler;;
-1C7810;de;Fehler;;
-1C7811;de;Fehler;;
-1C7812;de;Fehler;;
-1C7813;de;Fehler;;
-1C7814;de;Fehler;;
-1C7902;de;Fehler;;
-1C7910;de;Fehler;;
-1C7911;de;Fehler;;
-1C7912;de;Fehler;;
-1C7913;de;Fehler;;
-1C7914;de;Fehler;;
-1C8010;de;Fehler;;
-1C8011;de;Fehler;;
-1C8012;de;Fehler;;
-1C8013;de;Fehler;;
-1C8030;de;Fehler;;
-1C8060;de;Fehler;;
-1C8070;de;Fehler;;
-1C9000;de;Fehler;;
-1C9001;de;Fehler;;
-1C9002;de;Fehler;;
-1C9005;de;Fehler;;
-1C9021;de;Fehler;;
-1F0200;de;Fehler;;
-430006;de;Fehler;;
-430013;de;Fehler;;
-434004;de;Fehler;;
-434304;de;Fehler;;
-440001;de;Fehler;;
-500006;de;Fehler;;
-500007;de;Fehler;;
-500008;de;Fehler;;
-50000B;de;Fehler;;
-50000C;de;Fehler;;
-50000D;de;Fehler;;
-50000E;de;Fehler;;
-50000F;de;Fehler;;
-500010;de;Fehler;;
-500012;de;Fehler;;
-500013;de;Fehler;;
-500014;de;Fehler;;
-500015;de;Fehler;;
-500016;de;Fehler;;
-500017;de;Fehler;;
-500018;de;Fehler;;
-500019;de;Fehler;;
-50001B;de;Fehler;;
-50001C;de;Fehler;;
-50001D;de;Fehler;;
-501000;de;Fehler;;
-501001;de;Fehler;;
-501002;de;Fehler;;
-501003;de;Fehler;;
-501004;de;Fehler;;
-501005;de;Fehler;;
-501006;de;Fehler;;
-501007;de;Fehler;;
-501008;de;Fehler;;
-501009;de;Fehler;;
-50100B;de;Fehler;;
-50100C;de;Fehler;;
-50100D;de;Fehler;;
-50100E;de;Fehler;;
-50100F;de;Fehler;;
-501010;de;Fehler;;
-501011;de;Fehler;;
-501012;de;Fehler;;
-502000;de;Fehler;;
-502001;de;Fehler;;
-502002;de;Fehler;;
-502003;de;Fehler;;
-502004;de;Fehler;;
-502005;de;Fehler;;
-502006;de;Fehler;;
-502007;de;Fehler;;
-502008;de;Fehler;;
-502009;de;Fehler;;
-503000;de;Fehler;;
-503001;de;Fehler;;
-503002;de;Fehler;;
-503004;de;Fehler;;
-503005;de;Fehler;;
-503006;de;Fehler;;
-503007;de;Fehler;;
-503008;de;Fehler;;
-503009;de;Fehler;;
-50300A;de;Fehler;;
-50300B;de;Fehler;;
-50300C;de;Fehler;;
-50300E;de;Fehler;;
-50300F;de;Fehler;;
-503011;de;Fehler;;
-503012;de;Fehler;;
-503013;de;Fehler;;
-503014;de;Fehler;;
-503015;de;Fehler;;
-503016;de;Fehler;;
-503017;de;Fehler;;
-503018;de;Fehler;;
-503019;de;Fehler;;
-50301A;de;Fehler;;
-50301E;de;Fehler;;
-50301F;de;Fehler;;
-503020;de;Fehler;;
-503021;de;Fehler;;
-503022;de;Fehler;;
-503023;de;Fehler;;
-504000;de;Fehler;;
-505002;de;Fehler;;
-505003;de;Fehler;;
-505004;de;Fehler;;
-505010;de;Fehler;;
-505020;de;Fehler;;
-505120;de;Fehler;;
-506002;de;Fehler;;
-506003;de;Fehler;;
-506004;de;Fehler;;
-506101;de;Fehler;;
-506102;de;Fehler;;
-506103;de;Fehler;;
-507000;de;Fehler;;
-507001;de;Fehler;;
-510001;de;Fehler;;
-510002;de;Fehler;;
-510003;de;Fehler;;
-510004;de;Fehler;;
-510005;de;Fehler;;
-51000A;de;Fehler;;
-51000B;de;Fehler;;
-51000C;de;Fehler;;
-51000E;de;Fehler;;
-510010;de;Fehler;;
-510011;de;Fehler;;
-510012;de;Fehler;;
-511001;de;Fehler;;
-511002;de;Fehler;;
-511003;de;Fehler;;
-511004;de;Fehler;;
-511102;de;Fehler;;
-511103;de;Fehler;;
-511104;de;Fehler;;
-513002;de;Fehler;;
-513004;de;Fehler;;
-513005;de;Fehler;;
-51301C;de;Fehler;;
-51301D;de;Fehler;;
-51301E;de;Fehler;;
-514001;de;Fehler;;
-514002;de;Fehler;;
-514003;de;Fehler;;
-514008;de;Fehler;;
-51400B;de;Fehler;;
-51400C;de;Fehler;;
-51400D;de;Fehler;;
-51400E;de;Fehler;;
-51400F;de;Fehler;;
-514010;de;Fehler;;
-514011;de;Fehler;;
-514012;de;Fehler;;
-514014;de;Fehler;;
-514015;de;Fehler;;
-515004;de;Fehler;;
-518001;de;Fehler;;
-518013;de;Fehler;;
-518015;de;Fehler;;
-518016;de;Fehler;;
-518017;de;Fehler;;
-518018;de;Fehler;;
-518110;de;Fehler;;
-518111;de;Fehler;;
-518112;de;Fehler;;
-518113;de;Fehler;;
-518120;de;Fehler;;
-518121;de;Fehler;;
-518122;de;Fehler;;
-518123;de;Fehler;;
-518130;de;Fehler;;
-518131;de;Fehler;;
-518132;de;Fehler;;
-518133;de;Fehler;;
-522000;de;Fehler;;
-523001;de;Fehler;;
-523003;de;Fehler;;
-523004;de;Fehler;;
-523005;de;Fehler;;
-523006;de;Fehler;;
-523042;de;Fehler;;
-524001;de;Fehler;;
-525001;de;Fehler;;
-525002;de;Fehler;;
-525003;de;Fehler;;
-525004;de;Fehler;;
-530002;de;Fehler;;
-531005;de;Fehler;;
-534001;de;Fehler;;
-534002;de;Fehler;;
-534003;de;Fehler;;
-534004;de;Fehler;;
-534005;de;Fehler;;
-534006;de;Fehler;;
-534007;de;Fehler;;
-534008;de;Fehler;;
-534009;de;Fehler;;
-540001;de;Fehler;;
-542002;de;Fehler;;
-542003;de;Fehler;;
-542004;de;Fehler;;
-550001;de;Fehler;;
-566100;de;Fehler;;
-5F0000;de;Fehler;;
-5F0003;de;Fehler;;
-5F0010;de;Fehler;;
-5F0011;de;Fehler;;
-5F0012;de;Fehler;;
-5F0013;de;Fehler;;
-5F0014;de;Fehler;;
-5F0015;de;Fehler;;
-5F0016;de;Fehler;;
-5F0017;de;Fehler;;
-5F0018;de;Fehler;;
-5F0019;de;Fehler;;
-5F001A;de;Fehler;;
-5F001B;de;Fehler;;
-5F001C;de;Fehler;;
-5F001D;de;Fehler;;
-5F001E;de;Fehler;;
-5F0060;de;Fehler;;
-5F0101;de;Fehler;;
-5F0200;de;Fehler;;
-610003;de;Fehler;;
-610004;de;Fehler;;
-610008;de;Fehler;;
-61000D;de;Fehler;;
-620001;de;Fehler;;
-620002;de;Fehler;;
-620003;de;Fehler;;
-620004;de;Fehler;;
-620005;de;Fehler;;
-620006;de;Fehler;;
-620007;de;Fehler;;
-620008;de;Fehler;;
-620009;de;Fehler;;
-62000A;de;Fehler;;
-62000B;de;Fehler;;
-62000C;de;Fehler;;
-62000D;de;Fehler;;
-62000E;de;Fehler;;
-62000F;de;Fehler;;
-620010;de;Fehler;;
-620011;de;Fehler;;
-620012;de;Fehler;;
-620013;de;Fehler;;
-620015;de;Fehler;;
-630001;de;Fehler;;
-630002;de;Fehler;;
-630003;de;Fehler;;
-630004;de;Fehler;;
-630005;de;Fehler;;
-630006;de;Fehler;;
-630007;de;Fehler;;
-630008;de;Fehler;;
-630009;de;Fehler;;
-63000B;de;Fehler;;
-63000D;de;Fehler;;
-63000F;de;Fehler;;
-630010;de;Fehler;;
-630011;de;Fehler;;
-630012;de;Fehler;;
-630014;de;Fehler;;
-630017;de;Fehler;;
-640001;de;Fehler;;
-640002;de;Fehler;;
-650001;de;Fehler;;
-660001;de;Fehler;;
-660002;de;Fehler;;
-660003;de;Fehler;;
-670001;de;Fehler;;
-670003;de;Fehler;;
-680001;de;Fehler;;
-680002;de;Fehler;;
-680003;de;Fehler;;
-680004;de;Fehler;;
-680005;de;Fehler;;
-680006;de;Fehler;;
-680007;de;Fehler;;
-680008;de;Fehler;;
-680009;de;Fehler;;
-68000A;de;Fehler;;
-68000B;de;Fehler;;
-68000C;de;Fehler;;
-68000D;de;Fehler;;
-68000E;de;Fehler;;
-68000F;de;Fehler;;
-680010;de;Fehler;;
-680011;de;Fehler;;
-680012;de;Fehler;;
-680013;de;Fehler;;
-680014;de;Fehler;;
-680015;de;Fehler;;
-680016;de;Fehler;;
-680017;de;Fehler;;
-680019;de;Fehler;;
-68001A;de;Fehler;;
-68001B;de;Fehler;;
-68001C;de;Fehler;;
-690001;de;Fehler;;
-690002;de;Fehler;;
-690003;de;Fehler;;
-690004;de;Fehler;;
-690005;de;Fehler;;
-690006;de;Fehler;;
-690007;de;Fehler;;
-690008;de;Fehler;;
-690009;de;Fehler;;
-69000A;de;Fehler;;
-69000B;de;Fehler;;
-69000C;de;Fehler;;
-69000D;de;Fehler;;
-69000E;de;Fehler;;
-69000F;de;Fehler;;
-690010;de;Fehler;;
-690011;de;Fehler;;
-690012;de;Fehler;;
-690013;de;Fehler;;
-690014;de;Fehler;;
-690015;de;Fehler;;
-690016;de;Fehler;;
-690017;de;Fehler;;
-690018;de;Fehler;;
-690019;de;Fehler;;
-69001C;de;Fehler;;
-69001D;de;Fehler;;
-69001E;de;Fehler;;
-69001F;de;Fehler;;
-690020;de;Fehler;;
-690021;de;Fehler;;
-690022;de;Fehler;;
-690023;de;Fehler;;
-690024;de;Fehler;;
-690025;de;Fehler;;
-690026;de;Fehler;;
-690027;de;Fehler;;
-690028;de;Fehler;;
-690029;de;Fehler;;
-690040;de;Fehler;;
-690041;de;Fehler;;
-690042;de;Fehler;;
-690043;de;Fehler;;
-690044;de;Fehler;;
-690045;de;Fehler;;
-690046;de;Fehler;;
-690047;de;Fehler;;
-690048;de;Fehler;;
-690049;de;Fehler;;
-690060;de;Fehler;;
-690061;de;Fehler;;
-690062;de;Fehler;;
-690063;de;Fehler;;
-690064;de;Fehler;;
-690065;de;Fehler;;
-690066;de;Fehler;;
-690067;de;Fehler;;
-690068;de;Fehler;;
-690069;de;Fehler;;
-690070;de;Fehler;;
-690071;de;Fehler;;
-690072;de;Fehler;;
-690073;de;Fehler;;
-690074;de;Fehler;;
-690075;de;Fehler;;
-690076;de;Fehler;;
-690077;de;Fehler;;
-690078;de;Fehler;;
-690079;de;Fehler;;
-690080;de;Fehler;;
-690300;de;Fehler;;
-6A0001;de;Fehler;;
-6A0002;de;Fehler;;
-6A0006;de;Fehler;;
-6A0007;de;Fehler;;
-6A0008;de;Fehler;;
-6F0200;de;Fehler;;
-6F0203;de;Fehler;;
-800000;de;Fehler;;
-800001;de;Fehler;;
-800002;de;Fehler;;
-800003;de;Fehler;;
-800004;de;Fehler;;
-800005;de;Fehler;;
-800007;de;Fehler;;
-810000;de;Fehler;;
-810001;de;Fehler;;
-821000;de;Fehler;;
-821001;de;Fehler;;
-822000;de;Fehler;;
-831000;de;Fehler;;
-831001;de;Fehler;;
-832000;de;Fehler;;
-851000;de;Fehler;;
-851001;de;Fehler;;
-851002;de;Fehler;;
-853201;de;Fehler;;
-860000;de;Fehler;;
-860001;de;Fehler;;
-861000;de;Fehler;;
-862000;de;Fehler;;
-870000;de;Fehler;;
-880000;de;Fehler;;
-880001;de;Fehler;;
-880003;de;Fehler;;
-880004;de;Fehler;;
-880005;de;Fehler;;
-881000;de;Fehler;;
-890001;de;Fehler;;
-90000A;de;Fehler;;
-90000B;de;Fehler;;
-902005;de;Fehler;;
-902006;de;Fehler;;
-902007;de;Fehler;;
-902008;de;Fehler;;
-902009;de;Fehler;;
-90200B;de;Fehler;;
-90200C;de;Fehler;;
-90200D;de;Fehler;;
-902010;de;Fehler;;
-902012;de;Fehler;;
-902013;de;Fehler;;
-902014;de;Fehler;;
-903001;de;Fehler;;
-903002;de;Fehler;;
-903003;de;Fehler;;
-903004;de;Fehler;;
-903005;de;Fehler;;
-903006;de;Fehler;;
-903007;de;Fehler;;
-903008;de;Fehler;;
-903009;de;Fehler;;
-90300A;de;Fehler;;
-90300B;de;Fehler;;
-90400A;de;Fehler;;
-90400B;de;Fehler;;
-90400C;de;Fehler;;
-905001;de;Fehler;;
-905002;de;Fehler;;
-905003;de;Fehler;;
-905004;de;Fehler;;
-905005;de;Fehler;;
-905006;de;Fehler;;
-905007;de;Fehler;;
-905008;de;Fehler;;
-905009;de;Fehler;;
-90500A;de;Fehler;;
-906001;de;Fehler;;
-906002;de;Fehler;;
-906003;de;Fehler;;
-906004;de;Fehler;;
-907001;de;Fehler;;
-907002;de;Fehler;;
-907003;de;Fehler;;
-9F0104;de;Fehler;;
-F10003;de;Fehler;;
-100001;de;Warnung;;
-100002;de;Warnung;;
-100003;de;Warnung;;
-100004;de;Warnung;;
-100005;de;Warnung;;
-100006;de;Warnung;;
-100007;de;Warnung;;
-100008;de;Warnung;;
-110000;de;Warnung;;
-111000;de;Warnung;;
-111001;de;Warnung;;
-111002;de;Warnung;;
-111003;de;Warnung;;
-112001;de;Warnung;;
-113000;de;Warnung;;
-113001;de;Warnung;;
-113110;de;Warnung;;
-113112;de;Warnung;;
-113121;de;Warnung;;
-113130;de;Warnung;;
-113140;de;Warnung;;
-113141;de;Warnung;;
-113142;de;Warnung;;
-113143;de;Warnung;;
-113160;de;Warnung;;
-113161;de;Warnung;;
-113162;de;Warnung;;
-113170;de;Warnung;;
-113171;de;Warnung;;
-113172;de;Warnung;;
-113173;de;Warnung;;
-113174;de;Warnung;;
-114000;de;Warnung;;
-114001;de;Warnung;;
-115000;de;Warnung;;
-120000;de;Warnung;;
-120001;de;Warnung;;
-120002;de;Warnung;;
-120003;de;Warnung;;
-120010;de;Warnung;;
-120101;de;Warnung;;
-120102;de;Warnung;;
-120103;de;Warnung;;
-120104;de;Warnung;;
-120105;de;Warnung;;
-120106;de;Warnung;;
-120108;de;Warnung;;
-120110;de;Warnung;;
-120112;de;Warnung;;
-120115;de;Warnung;;
-120402;de;Warnung;;
-120502;de;Warnung;;
-121000;de;Warnung;;
-121100;de;Warnung;;
-122000;de;Warnung;;
-122001;de;Warnung;;
-130000;de;Warnung;;
-132000;de;Warnung;;
-134000;de;Warnung;;
-136000;de;Warnung;;
-140000;de;Warnung;;
-141001;de;Warnung;;
-141002;de;Warnung;;
-141100;de;Warnung;;
-141101;de;Warnung;;
-141102;de;Warnung;;
-141103;de;Warnung;;
-141104;de;Warnung;;
-142001;de;Warnung;;
-142003;de;Warnung;Akku im eingeschalteten Zustand getrennt;Harmlose Warnung: Der Akku wurde entnommen oder hatte kurz keinen Kontakt, während das Rad an war. Akku nur bei ausgeschaltetem Rad entnehmen. Tritt sie öfter auf, Akkusitz und Kontakte prüfen.
-143000;de;Warnung;;
-143001;de;Warnung;;
-143002;de;Warnung;;
-144000;de;Warnung;;
-144011;de;Warnung;;
-144020;de;Warnung;;
-144030;de;Warnung;;
-150000;de;Warnung;;
-151001;de;Warnung;;
-151002;de;Warnung;;
-151003;de;Warnung;;
-152003;de;Warnung;;
-152012;de;Warnung;;
-153002;de;Warnung;;
-153003;de;Warnung;;
-153012;de;Warnung;;
-1B0000;de;Warnung;;
-1B0001;de;Warnung;;
-1B7203;de;Warnung;;
-1B7603;de;Warnung;;
-1B764E;de;Warnung;;
-1B764F;de;Warnung;;
-1B7650;de;Warnung;;
-1B7703;de;Warnung;;
-1B7744;de;Warnung;;
-1B774E;de;Warnung;;
-1B774F;de;Warnung;;
-1B7750;de;Warnung;;
-1B7903;de;Warnung;;
-1B7921;de;Warnung;;
-1B7922;de;Warnung;;
-1B7923;de;Warnung;;
-1B7924;de;Warnung;;
-1B7925;de;Warnung;;
-1BA000;de;Warnung;;
-1BF000;de;Warnung;;
-1BF001;de;Warnung;;
-1C7403;de;Warnung;;
-1C744E;de;Warnung;;
-1C744F;de;Warnung;;
-1C7450;de;Warnung;;
-1C7503;de;Warnung;;
-1C7544;de;Warnung;;
-1C754E;de;Warnung;;
-1C754F;de;Warnung;;
-1C7550;de;Warnung;;
-1C7603;de;Warnung;;
-1C7640;de;Warnung;;
-1C7644;de;Warnung;;
-1C7646;de;Warnung;;
-1C7647;de;Warnung;;
-1C7648;de;Warnung;;
-1C7649;de;Warnung;;
-1C7703;de;Warnung;;
-1C774E;de;Warnung;;
-1C774F;de;Warnung;;
-1C7750;de;Warnung;;
-1C7803;de;Warnung;;
-1C7903;de;Warnung;;
-1C8014;de;Warnung;;
-1C8015;de;Warnung;;
-1C8016;de;Warnung;;
-1C8040;de;Warnung;;
-1C9003;de;Warnung;;
-1C9004;de;Warnung;;
-1C9022;de;Warnung;;
-1F0040;de;Warnung;;
-1F0041;de;Warnung;;
-1F0042;de;Warnung;;
-1F0043;de;Warnung;;
-1F0100;de;Warnung;;
-1F0101;de;Warnung;;
-1F0201;de;Warnung;;
-400001;de;Warnung;;
-400002;de;Warnung;;
-400003;de;Warnung;;
-411001;de;Warnung;;
-411002;de;Warnung;;
-420001;de;Warnung;;
-420002;de;Warnung;;
-420003;de;Warnung;;
-430004;de;Warnung;;
-430005;de;Warnung;;
-430007;de;Warnung;;
-430008;de;Warnung;;
-430009;de;Warnung;;
-430010;de;Warnung;;
-430011;de;Warnung;;
-430012;de;Warnung;;
-430102;de;Warnung;;
-431003;de;Warnung;;
-431101;de;Warnung;;
-431201;de;Warnung;;
-431301;de;Warnung;;
-431401;de;Warnung;;
-431501;de;Warnung;;
-431601;de;Warnung;;
-431801;de;Warnung;;
-431901;de;Warnung;;
-431A01;de;Warnung;;
-431B01;de;Warnung;;
-431C01;de;Warnung;;
-431D01;de;Warnung;;
-431E01;de;Warnung;;
-431F01;de;Warnung;;
-432001;de;Warnung;;
-432101;de;Warnung;;
-434104;de;Warnung;;
-434404;de;Warnung;;
-434504;de;Warnung;;
-4F0040;de;Warnung;;
-4F0100;de;Warnung;;
-4F0101;de;Warnung;;
-500009;de;Warnung;;
-50000A;de;Warnung;;
-500011;de;Warnung;;
-50001A;de;Warnung;;
-50001E;de;Warnung;;
-50100A;de;Warnung;;
-503003;de;Warnung;;
-50300D;de;Warnung;;
-503010;de;Warnung;;
-50301B;de;Warnung;;
-50301C;de;Warnung;;
-50301D;de;Warnung;;
-505001;de;Warnung;;
-505021;de;Warnung;;
-505030;de;Warnung;;
-505031;de;Warnung;;
-505100;de;Warnung;;
-505110;de;Warnung;;
-505121;de;Warnung;;
-506001;de;Warnung;;
-506100;de;Warnung;;
-509001;de;Warnung;;
-509002;de;Warnung;;
-509003;de;Warnung;;
-509004;de;Warnung;;
-510007;de;Warnung;;
-510008;de;Warnung;;
-51000F;de;Warnung;;
-511005;de;Warnung;;
-511007;de;Warnung;;
-513001;de;Warnung;;
-513003;de;Warnung;;
-513006;de;Warnung;;
-513007;de;Warnung;;
-514004;de;Warnung;;
-514005;de;Warnung;;
-514006;de;Warnung;;
-514007;de;Warnung;;
-514009;de;Warnung;;
-51400A;de;Warnung;;
-514013;de;Warnung;;
-514020;de;Warnung;;
-515001;de;Warnung;;
-516001;de;Warnung;;
-518010;de;Warnung;;
-518011;de;Warnung;;
-518012;de;Warnung;;
-518014;de;Warnung;;
-518020;de;Warnung;;
-518021;de;Warnung;;
-518100;de;Warnung;;
-518101;de;Warnung;;
-518201;de;Warnung;;
-518202;de;Warnung;;
-518203;de;Warnung;;
-519001;de;Warnung;;
-519002;de;Warnung;;
-522001;de;Warnung;;
-524002;de;Warnung;;
-524101;de;Warnung;;
-524102;de;Warnung;;
-524103;de;Warnung;;
-524104;de;Warnung;;
-524105;de;Warnung;;
-524106;de;Warnung;;
-524107;de;Warnung;;
-524108;de;Warnung;;
-524109;de;Warnung;;
-530001;de;Warnung;;
-530010;de;Warnung;;
-539001;de;Warnung;;
-540002;de;Warnung;;
-540003;de;Warnung;;
-540022;de;Warnung;;
-540023;de;Warnung;;
-541000;de;Warnung;;
-542001;de;Warnung;;
-542005;de;Warnung;;
-542006;de;Warnung;;
-566001;de;Warnung;;
-566002;de;Warnung;;
-566003;de;Warnung;;
-566004;de;Warnung;;
-599000;de;Warnung;;
-599001;de;Warnung;;
-599002;de;Warnung;;
-599003;de;Warnung;;
-5F0001;de;Warnung;;
-5F0002;de;Warnung;;
-5F0040;de;Warnung;;
-5F0080;de;Warnung;;
-5F0100;de;Warnung;;
-610001;de;Warnung;;
-610002;de;Warnung;;
-610005;de;Warnung;;
-610006;de;Warnung;;
-610007;de;Warnung;;
-610009;de;Warnung;;
-61000A;de;Warnung;;
-61000B;de;Warnung;;
-61000C;de;Warnung;;
-610010;de;Warnung;;
-610011;de;Warnung;;
-610012;de;Warnung;;
-610013;de;Warnung;;
-610014;de;Warnung;;
-610015;de;Warnung;;
-610016;de;Warnung;;
-610017;de;Warnung;;
-610018;de;Warnung;;
-610019;de;Warnung;;
-61001A;de;Warnung;;
-620014;de;Warnung;;
-620016;de;Warnung;;
-620100;de;Warnung;;
-63000A;de;Warnung;;
-63000C;de;Warnung;;
-63000E;de;Warnung;;
-630013;de;Warnung;;
-630015;de;Warnung;;
-630016;de;Warnung;;
-630018;de;Warnung;;
-650002;de;Warnung;;
-670002;de;Warnung;;
-670004;de;Warnung;;
-670006;de;Warnung;;
-670007;de;Warnung;;
-670008;de;Warnung;;
-670009;de;Warnung;;
-68001D;de;Warnung;;
-68001E;de;Warnung;;
-680020;de;Warnung;;
-680021;de;Warnung;;
-680100;de;Warnung;;
-680101;de;Warnung;;
-690030;de;Warnung;;
-690031;de;Warnung;;
-690032;de;Warnung;;
-690033;de;Warnung;;
-690034;de;Warnung;;
-690035;de;Warnung;;
-690036;de;Warnung;;
-690037;de;Warnung;;
-690038;de;Warnung;;
-690039;de;Warnung;;
-690050;de;Warnung;;
-690051;de;Warnung;;
-690052;de;Warnung;;
-690053;de;Warnung;;
-690054;de;Warnung;;
-690055;de;Warnung;;
-690056;de;Warnung;;
-690057;de;Warnung;;
-690058;de;Warnung;;
-690059;de;Warnung;;
-690090;de;Warnung;;
-690091;de;Warnung;;
-690092;de;Warnung;;
-690093;de;Warnung;;
-690094;de;Warnung;;
-690095;de;Warnung;;
-690096;de;Warnung;;
-690097;de;Warnung;;
-690100;de;Warnung;;
-690101;de;Warnung;;
-690102;de;Warnung;;
-6A0003;de;Warnung;;
-6A0005;de;Warnung;;
-6D0000;de;Warnung;;
-6D0001;de;Warnung;;
-6D0002;de;Warnung;;
-6D0003;de;Warnung;;
-6F0040;de;Warnung;;
-6F0100;de;Warnung;;
-6F0101;de;Warnung;;
-6F0201;de;Warnung;;
-6F0202;de;Warnung;;
-800006;de;Warnung;;
-820000;de;Warnung;;
-822001;de;Warnung;;
-830000;de;Warnung;;
-832001;de;Warnung;;
-853200;de;Warnung;;
-853202;de;Warnung;;
-862001;de;Warnung;;
-862002;de;Warnung;;
-862003;de;Warnung;;
-870001;de;Warnung;;
-870002;de;Warnung;;
-870003;de;Warnung;;
-871000;de;Warnung;;
-880002;de;Warnung;;
-880006;de;Warnung;;
-882000;de;Warnung;;
-883000;de;Warnung;;
-884000;de;Warnung;;
-8F0100;de;Warnung;;
-8F0101;de;Warnung;;
-900000D;de;Warnung;;
-900001;de;Warnung;;
-900002;de;Warnung;;
-900003;de;Warnung;;
-900004;de;Warnung;;
-900005;de;Warnung;;
-900006;de;Warnung;;
-900008;de;Warnung;;
-90000C;de;Warnung;;
-901001;de;Warnung;;
-901002;de;Warnung;;
-901003;de;Warnung;;
-901004;de;Warnung;;
-901005;de;Warnung;;
-901006;de;Warnung;;
-902002;de;Warnung;;
-902004;de;Warnung;;
-90200E;de;Warnung;;
-90200F;de;Warnung;;
-902011;de;Warnung;;
-904001;de;Warnung;;
-904002;de;Warnung;;
-904003;de;Warnung;;
-904004;de;Warnung;;
-904005;de;Warnung;;
-904006;de;Warnung;;
-904007;de;Warnung;;
-904008;de;Warnung;;
-904009;de;Warnung;;
-90500B;de;Warnung;;
-90500C;de;Warnung;;
-90500D;de;Warnung;;
-90500E;de;Warnung;;
-90500F;de;Warnung;;
-908001;de;Warnung;;
-908002;de;Warnung;;
-908003;de;Warnung;;
-908004;de;Warnung;;
-9F0040;de;Warnung;;
-9F0100;de;Warnung;;
-9F0101;de;Warnung;;
-9F0102;de;Warnung;;
-9F0103;de;Warnung;;
-F00001;de;Warnung;;
-F00002;de;Warnung;;
-F10002;de;Warnung;;
-FFFFFF;de;Warnung;;
-144010;de;Info;;
-1B7204;de;Info;;
-1B7604;de;Info;;
-1B7651;de;Info;;
-1B7652;de;Info;;
-1B7653;de;Info;;
-1B7704;de;Info;;
-1B7745;de;Info;;
-1B7746;de;Info;;
-1B7751;de;Info;;
-1B7752;de;Info;;
-1B7753;de;Info;;
-1B7904;de;Info;;
-1C7404;de;Info;;
-1C7446;de;Info;;
-1C7447;de;Info;;
-1C7451;de;Info;;
-1C7452;de;Info;;
-1C7453;de;Info;;
-1C7504;de;Info;;
-1C7545;de;Info;;
-1C7546;de;Info;;
-1C7551;de;Info;;
-1C7552;de;Info;;
-1C7553;de;Info;;
-1C7604;de;Info;;
-1C7704;de;Info;;
-1C7745;de;Info;;
-1C7746;de;Info;;
-1C7751;de;Info;;
-1C7752;de;Info;;
-1C7753;de;Info;;
-1C7804;de;Info;;
-1C7904;de;Info;;
-1C8050;de;Info;;
-1C9023;de;Info;;
-510006;de;Info;;
-51000D;de;Info;;
-511006;de;Info;;
-515002;de;Info;;
-515003;de;Info;;
-517001;de;Info;;
-517002;de;Info;;
-517003;de;Info;;
-670005;de;Info;;
-872000;de;Info;;
-F10001;de;Info;;
+113111;de;Kritisch;Speicherfehler in der Bedieneinheit;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+120109;de;Kritisch;LEDs der Bedieneinheit ausgefallen;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7201;de;Kritisch;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+1B7601;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7654;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7701;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7740;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7754;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7901;de;Kritisch;Schwerer Fehler an der Schaltung;Schalten geht eventuell gar nicht. Tun: Classified oder Fachhändler fragen.
+1C7401;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7454;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7501;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7540;de;Kritisch;Dauerhafter Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7554;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7601;de;Kritisch;Schwerer Fehler an der Schaltung;Schalten geht eventuell gar nicht. Tun: Enviolo oder Fachhändler fragen.
+1C7701;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7740;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7754;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7801;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7901;de;Kritisch;Schwerer Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C8001;de;Kritisch;Unbekannter ABS-Fehler;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8020;de;Kritisch;Schwerer ABS-Fehler;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8080;de;Kritisch;Problem mit der ABS-Kontrollleuchte;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+6A0000;de;Kritisch;Akku-Software zu alt für zwei Akkus;Zwei Akkus funktionieren eventuell nicht zusammen. Tun: Alle Teile anschließen, Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+6A0004;de;Kritisch;Rad nicht für PowerMore ausgelegt;Tun: PowerMore-Akku abnehmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+890000;de;Kritisch;ABS-Kontrollleuchte ausgefallen;Das ABS arbeitet eventuell nicht. ABS-Fehler werden eventuell nicht angezeigt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+F10004;de;Kritisch;Software der Bauteile passt nicht zusammen;Tun: Alle Teile anschließen und Software-Update in der Flow-App machen. Hilft das nicht: Fachhändler fragen.
+F10005;de;Kritisch;Software der Bauteile passt nicht zusammen;Tun: Alle Teile anschließen und Software-Update in der Flow-App machen. Hilft das nicht: Fachhändler fragen.
+100009;de;Fehler;Sicherheitszertifikat des Motors ungültig;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+10000A;de;Fehler;Sicherheitszertifikat des Akkus ungültig;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+10000B;de;Fehler;Sicherheitszertifikat des Bordcomputers ungültig;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+10000C;de;Fehler;Sicherheitszertifikat des ConnectModule ungültig;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+10000D;de;Fehler;Sicherheitszertifikat des ABS ungültig;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+10000E;de;Fehler;Sicherheitszertifikat der Bedieneinheit ungültig;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+110001;de;Fehler;Bedieneinheit hat neu gestartet;Das Rad hat sich neu gestartet. Tun: Software-Update in der Flow-App machen. Hilft das nicht: Fachhändler fragen.
+112000;de;Fehler;Kopplung mit dem Smartphone fehlgeschlagen;Tun: In der App neu anmelden und Smartphone neu verbinden, notfalls App neu installieren. Hilft das nicht: Fachhändler fragen.
+112002;de;Fehler;Einstellungsfehler in der Bedieneinheit;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+112100;de;Fehler;Kommunikationsfehler in der Bedieneinheit;Das Rad kann sich von selbst einschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+113101;de;Fehler;Speicherfehler in der Bedieneinheit;Das Rad startet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+113102;de;Fehler;Speicherfehler in der Bedieneinheit;Das Rad kann sich von selbst einschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+113103;de;Fehler;Speicherfehler in der Bedieneinheit;Das Rad kann sich von selbst einschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+113104;de;Fehler;Speicherfehler in der Bedieneinheit;Das Rad kann sich von selbst einschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+113113;de;Fehler;Speicherfehler in der Bedieneinheit;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Das Software-Update erneut starten. Hilft das nicht: Fachhändler fragen.
+113114;de;Fehler;Speicherfehler in der Bedieneinheit;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+113120;de;Fehler;Softwarefehler in der Bedieneinheit;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+113150;de;Fehler;Datum liegt zu weit zurück;Das Datum wurde nicht übernommen. Tun: Ein Datum wählen, das höchstens eine Woche zurückliegt.
+116000;de;Fehler;ABS wird nicht erkannt;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+116001;de;Fehler;ABS passt nicht zum Rad;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+120107;de;Fehler;USB-Laden funktioniert nicht;Der USB-Anschluss liefert keinen Strom. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+120111;de;Fehler;Stromversorgung der Bedieneinheit gestört;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+120113;de;Fehler;Lichtsensor der Bedieneinheit defekt;Die automatische Helligkeit funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+131000;de;Fehler;Taste der Bedieneinheit klemmt;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Prüfen, ob eine Taste klemmt und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+133000;de;Fehler;Temperatursensor der Bedieneinheit gestört;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+133001;de;Fehler;Temperatursensor der Bedieneinheit gestört;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+133002;de;Fehler;Temperaturüberwachung der Bedieneinheit gestört;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+135000;de;Fehler;Helligkeitssensor der Bedieneinheit defekt;Die automatische Helligkeit funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+136001;de;Fehler;Interner Fehler der Bedieneinheit;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+141000;de;Fehler;Fehler am internen Akku der Bedieneinheit;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+141200;de;Fehler;Interner Akku der Bedieneinheit evtl. defekt;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+142002;de;Fehler;Stromversorgung der Bedieneinheit gestört;Die Bedieneinheit arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+144001;de;Fehler;Bedieneinheit lädt nicht (USB);Der Akku wird nicht geladen. Die Bedieneinheit lässt sich per USB nicht laden. Tun: Anderes USB-Ladegerät bzw. andere Powerbank nehmen.
+152001;de;Fehler;Bedieneinheit zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+152002;de;Fehler;Bedieneinheit zu heiß;Die LEDs werden eventuell stark gedimmt. Tun: Rad 10 Minuten im Schatten abkühlen lassen.
+153001;de;Fehler;Bedieneinheit zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+153004;de;Fehler;Bordcomputer passt nicht zur Bedieneinheit;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+1B0002;de;Fehler;Kabelloses Display nicht verbunden;Das kabellose Teil funktioniert nicht. Tun: In der Flow-App neu koppeln und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B0003;de;Fehler;Kabellose Bedieneinheit nicht verbunden;Die Bedieneinheit arbeitet eventuell nicht richtig. Das kabellose Teil funktioniert nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7202;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+1B7210;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7211;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7212;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7213;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7214;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7224;de;Fehler;Gangwechsel fehlgeschlagen;Der Gangwechsel hat nicht geklappt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7602;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7610;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7611;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7612;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7613;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7614;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7640;de;Fehler;Schaltmotor blockiert;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Schaltungshersteller oder Fachhändler fragen.
+1B7641;de;Fehler;Schaltung falsch eingestellt;Nur noch von Hand schalten möglich. Tun: Rad neu starten und Einstellungen der Schaltung prüfen. Hilft das nicht: Fachhändler fragen.
+1B7642;de;Fehler;Trittfrequenzsensor der Schaltung defekt;Nur noch von Hand schalten möglich. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7643;de;Fehler;Geschwindigkeitssensor der Schaltung defekt;Nur noch von Hand schalten möglich. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7644;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7645;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7646;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7647;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7648;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7649;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B764A;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B764B;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B764C;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B764D;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7702;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7710;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7711;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7712;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7713;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7714;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7741;de;Fehler;Sensor in der Schaltung defekt;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7742;de;Fehler;Softwarefehler der Schaltung;Schalten geht eventuell gar nicht. Tun: Prüfen, ob eine Taste klemmt. Hilft das nicht: Fachhändler fragen.
+1B7743;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7747;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7748;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7749;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B774A;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B774B;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B774C;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B774D;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7902;de;Fehler;Fehler an der Schaltung;Schalten geht eventuell gar nicht. Tun: Classified oder Fachhändler fragen.
+1B7910;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7911;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7912;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7913;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7914;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7402;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7410;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7411;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7412;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7413;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7414;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7440;de;Fehler;Schaltmotor blockiert;Der letzte Gangwechsel wurde abgebrochen. Tun: Beim Schalten weniger Druck aufs Pedal geben und erneut schalten. Hilft das nicht: Fachhändler fragen.
+1C7441;de;Fehler;Sensor in der Schaltung defekt;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7442;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7443;de;Fehler;Zu wenig Strom für die Schaltung;Schalten geht eventuell gar nicht. Tun: Akku laden und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7444;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7445;de;Fehler;Kalibrierung der Schaltung fehlgeschlagen;Es wird eventuell nicht sauber geschaltet. Tun: Kalibrierung neu starten (Hoch- und Runtertaste beim Einschalten drücken oder von Hand starten, siehe Anleitung der Schaltung). Hilft das nicht: Fachhändler fragen.
+1C7448;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7449;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C744A;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C744B;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C744C;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C744D;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7502;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7510;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7511;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7512;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7513;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7514;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7541;de;Fehler;Schaltung falsch eingestellt;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7542;de;Fehler;Vorübergehender Fehler der Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7543;de;Fehler;Batterie im Schalthebel leer;Elektronisches Schalten geht gerade nicht. Tun: Batterie laden bzw. wechseln.
+1C7547;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7548;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7549;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C754A;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C754B;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C754C;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C754D;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7602;de;Fehler;Fehler an der Schaltung;Schalten geht eventuell gar nicht. Tun: Enviolo oder Fachhändler fragen.
+1C7610;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7611;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7612;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7613;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7614;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7641;de;Fehler;Schaltung falsch eingestellt;Nur noch von Hand schalten möglich. Tun: Rad neu starten und Einstellungen der Schaltung prüfen. Hilft das nicht: Enviolo oder Fachhändler fragen.
+1C7642;de;Fehler;Trittfrequenzsensor der Schaltung defekt;Nur noch von Hand schalten möglich. Tun: Rad neu starten. Hilft das nicht: Enviolo oder Fachhändler fragen.
+1C7643;de;Fehler;Geschwindigkeitssensor der Schaltung defekt;Nur noch von Hand schalten möglich. Tun: Rad neu starten. Hilft das nicht: Enviolo oder Fachhändler fragen.
+1C7645;de;Fehler;Sensorfehler der Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Enviolo oder Fachhändler fragen.
+1C7702;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7710;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7711;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7713;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7714;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7741;de;Fehler;Sensor in der Schaltung defekt;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7742;de;Fehler;Interner Fehler der Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7743;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7744;de;Fehler;Fehler an der elektronischen Schaltung;Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7747;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7748;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7749;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C774A;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C774B;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C774C;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C774D;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7802;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7810;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7811;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7812;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7813;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7814;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7902;de;Fehler;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7910;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7911;de;Fehler;Verbindung zur Schaltung abgebrochen;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7912;de;Fehler;Keine Verbindung zur Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7913;de;Fehler;Software passt nicht zur Schaltung;Die Schaltung ist nicht nutzbar. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C7914;de;Fehler;Mehrere Schaltungen angeschlossen;Die Schaltung ist nicht nutzbar. Tun: Überzählige Schaltung abklemmen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8010;de;Fehler;Keine Verbindung zum ABS;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8011;de;Fehler;Verbindung zum ABS abgebrochen;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8012;de;Fehler;Keine Verbindung zum ABS;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8013;de;Fehler;Software passt nicht zum ABS;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8030;de;Fehler;ABS-Fehler;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8060;de;Fehler;Bedieneinheit passt nicht zum ABS;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C8070;de;Fehler;ABS meldet Verbindungsproblem;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C9000;de;Fehler;Keine Verbindung zur Sattelstütze;Die Sattelstütze arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C9001;de;Fehler;Verbindung zur Sattelstütze abgebrochen;Die Sattelstütze arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C9002;de;Fehler;Software passt nicht zur Sattelstütze;Die Sattelstütze arbeitet eventuell nicht richtig. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C9005;de;Fehler;Software der Sattelstütze zu alt;Die Sattelstütze arbeitet eventuell nicht richtig. Tun: Sattelstütze über die App ihres Herstellers aktualisieren und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C9021;de;Fehler;Fehler an der Sattelstütze;Die Sattelstütze arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1F0200;de;Fehler;Kein Bordcomputer angeschlossen;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Bordcomputer anschließen. Hilft das nicht: Fachhändler fragen.
+430006;de;Fehler;Bordcomputer zu heiß;Das Teil kann sich selbst ausschalten. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+430013;de;Fehler;eBike-Lock-Schlüssel ungültig;eBike Lock funktioniert nicht. Tun: eBike Lock in der Flow-App aus- und wieder einschalten und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+434004;de;Fehler;Softwarefehler im Bordcomputer;Der Bordcomputer verliert die Verbindung zu anderen Teilen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+434304;de;Fehler;Softwarefehler im Bordcomputer;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+440001;de;Fehler;Softwarefehler im Bordcomputer;Der Bordcomputer verliert die Verbindung zu anderen Teilen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500006;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500007;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500008;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50000B;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50000C;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+50000D;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50000E;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50000F;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500010;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500012;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500013;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500014;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500015;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500016;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500017;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500018;de;Fehler;Störung der Motorsteuerung;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+500019;de;Fehler;Störung der Motorsteuerung;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50001B;de;Fehler;Einstellungsfehler im Motor;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+50001C;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50001D;de;Fehler;Fehler in der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501000;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501001;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501002;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501003;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501004;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501005;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501006;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501007;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501008;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501009;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Akkusitz und Halterung prüfen, Kontakte an Akku und Halterung prüfen und bei Bedarf feucht reinigen, dann trocknen lassen, Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50100B;de;Fehler;Motor zu heiß;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+50100C;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50100D;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50100E;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50100F;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501010;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Kabel und Stecker prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501011;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+501012;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502000;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502001;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502002;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502003;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502004;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502005;de;Fehler;Motor zu heiß;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502006;de;Fehler;Spannung am Motor zu niedrig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502007;de;Fehler;Spannung am Motor zu niedrig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502008;de;Fehler;Spannung am Motor zu hoch;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+502009;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503000;de;Fehler;Kabelverbindung zum Motor unterbrochen;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Kabel und Stecker prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503001;de;Fehler;Motor zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+503002;de;Fehler;Motor zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad an einen wärmeren Ort bringen, Kabel und Stecker prüfen und neu starten. Hilft das nicht: Fachhändler fragen.
+503004;de;Fehler;Motor zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+503005;de;Fehler;Motor zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad an einen wärmeren Ort bringen und neu starten. Hilft das nicht: Fachhändler fragen.
+503006;de;Fehler;Motor zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+503007;de;Fehler;Motor zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad an einen wärmeren Ort bringen und neu starten. Hilft das nicht: Fachhändler fragen.
+503008;de;Fehler;Stromausgang am Motor gestört;Angeschlossenes Zubehör kann ausgehen. Tun: Angeschlossenes Zubehör und Kabel prüfen. Hilft das nicht: Fachhändler fragen.
+503009;de;Fehler;Verbindung Display–Motor gestört;Angeschlossenes Zubehör kann ausgehen. Tun: Angeschlossenes Zubehör und Kabel prüfen. Hilft das nicht: Fachhändler fragen.
+50300A;de;Fehler;Problem an einem Lichtausgang;Das Licht kann ausgehen. Tun: Lampen und Lichtkabel prüfen. Hilft das nicht: Fachhändler fragen.
+50300B;de;Fehler;Licht braucht zu viel Strom;Das Licht kann ausgehen. Tun: Lampen und Lichtkabel prüfen. Hilft das nicht: Fachhändler fragen.
+50300C;de;Fehler;12-V-Anschluss am Motor gestört;Angeschlossenes Zubehör kann ausgehen. Tun: Angeschlossenes Zubehör und Kabel prüfen. Hilft das nicht: Fachhändler fragen.
+50300E;de;Fehler;Stromversorgung des Motors gestört;Tun: Akkusitz und Halterung prüfen. Hilft das nicht: Fachhändler fragen.
+50300F;de;Fehler;Zubehör am 12-V-Anschluss braucht zu viel Strom;Angeschlossenes Zubehör kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503011;de;Fehler;Stromversorgung des Motors gestört;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Kabel und Stecker prüfen. Hilft das nicht: Fachhändler fragen.
+503012;de;Fehler;Stromversorgung des Motors gestört;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Kabel und Stecker prüfen. Hilft das nicht: Fachhändler fragen.
+503013;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503014;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503015;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503016;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503017;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503018;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503019;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50301A;de;Fehler;Stromversorgung der Anschlüsse gestört;Angeschlossenes Zubehör kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50301E;de;Fehler;Motor erreicht das ABS nicht;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: ABS-Sensor und Sensorscheibe am Rad auf Schäden, Sitz und Abstand prüfen und Kabel und Stecker prüfen. Hilft das nicht: Fachhändler fragen.
+50301F;de;Fehler;ABS-Kommunikationsfehler;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: ABS-Sensor und Sensorscheibe am Rad auf Schäden, Sitz und Abstand prüfen und Kabel und Stecker prüfen. Hilft das nicht: Fachhändler fragen.
+503020;de;Fehler;Daumengas gestört;Tun: Anschluss des Daumengases prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503021;de;Fehler;Daumengas gestört;Tun: Anschluss des Daumengases prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503022;de;Fehler;Fehler bei der Kraftmessung am Pedal;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503023;de;Fehler;Bremssignal gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+504000;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+505002;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+505003;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+505004;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+505010;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+505020;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+505120;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+506002;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+506003;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+506004;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+506101;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+506102;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+506103;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+507000;de;Fehler;Stromversorgung des Motors gestört;Angeschlossenes Zubehör kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+507001;de;Fehler;Stromversorgung des Motors gestört;Angeschlossenes Zubehör kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510001;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510002;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510003;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510004;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510005;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51000A;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51000B;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51000C;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51000E;de;Fehler;Magnetfeld stört den Motor;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Weiterfahren, bis du aus dem Magnetfeld heraus bist (nicht neu starten).
+510010;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510011;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+510012;de;Fehler;Drehmomentsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten und ein Stück fahren. Hilft das nicht: Fachhändler fragen.
+511001;de;Fehler;Beschleunigungssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+511002;de;Fehler;Beschleunigungssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+511003;de;Fehler;Beschleunigungssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+511004;de;Fehler;Beschleunigungssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+511102;de;Fehler;Lagesensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+511103;de;Fehler;Lagesensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+511104;de;Fehler;Lagesensor gestört;Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+513002;de;Fehler;Trittfrequenzsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Trittfrequenzanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+513004;de;Fehler;Trittfrequenzsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Trittfrequenzanzeige kann falsch sein. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+513005;de;Fehler;Trittfrequenzsensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Trittfrequenzanzeige kann falsch sein. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51301C;de;Fehler;Motor zu heiß;Der Motor schaltet sich zum Schutz ab. Tun: Rad ein paar Minuten im Schatten abkühlen lassen, Software-Update in der Flow-App machen (falls angeboten) und neu starten. Hilft das nicht: Fachhändler fragen.
+51301D;de;Fehler;Motor zu heiß;Der Motor schaltet sich zum Schutz ab. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+51301E;de;Fehler;Motor zu heiß;Der Motor schaltet sich zum Schutz ab. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+514001;de;Fehler;Interner Geschwindigkeitssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Speichen- bzw. Felgenmagnet auf Sitz und Abstand prüfen, Rad neu starten und Sitz des Magneten am Ventil prüfen. Hilft das nicht: Fachhändler fragen.
+514002;de;Fehler;Interner Geschwindigkeitssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Speichen- bzw. Felgenmagnet auf Sitz und Abstand prüfen, Rad neu starten und Sitz des Magneten am Ventil prüfen. Hilft das nicht: Fachhändler fragen.
+514003;de;Fehler;Interner Geschwindigkeitssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Speichen- bzw. Felgenmagnet auf Sitz und Abstand prüfen, Rad neu starten und Sitz des Magneten am Ventil prüfen. Hilft das nicht: Fachhändler fragen.
+514008;de;Fehler;Motor falsch eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+51400B;de;Fehler;Interner Geschwindigkeitssensor gestört;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51400C;de;Fehler;Beschleunigungssensor gestört;Das Anfahren kann holprig sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51400D;de;Fehler;Beschleunigungssensor gestört;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51400E;de;Fehler;Lagesensor gestört;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+51400F;de;Fehler;Lagesensor gestört;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+514010;de;Fehler;Lagesensor gestört;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+514011;de;Fehler;Lagesensor gestört;Teile des Systems arbeiten eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+514012;de;Fehler;Drehmomentsensor im Motor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Teile des Systems arbeiten eventuell nicht richtig. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+514014;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+514015;de;Fehler;Störung der Motorsteuerung;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+515004;de;Fehler;Schiebehilfe gestört;Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+518001;de;Fehler;Keine Fahrmodi vorhanden;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518013;de;Fehler;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518015;de;Fehler;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518016;de;Fehler;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518017;de;Fehler;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518018;de;Fehler;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518110;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518111;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518112;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518113;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518120;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518121;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518122;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518123;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518130;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518131;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518132;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518133;de;Fehler;Motor nicht richtig eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+522000;de;Fehler;Magnet am Pedal stört den Motor;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Magnete an Pedal oder Kurbel entfernen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+523001;de;Fehler;Geschwindigkeitssensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Tempoanzeige kann falsch sein. Tun: Speichen- bzw. Felgenmagnet auf Sitz und Abstand prüfen, Kabel und Stecker prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+523003;de;Fehler;Interner Geschwindigkeitssensor gestört;Die Tempoanzeige kann falsch sein. Tun: Speichen- bzw. Felgenmagnet auf Sitz und Abstand prüfen, Rad neu starten und Sitz des Magneten am Ventil prüfen. Hilft das nicht: Fachhändler fragen.
+523004;de;Fehler;Geschwindigkeitssensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Tempoanzeige kann falsch sein. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+523005;de;Fehler;Felgenmagnet zu schwach;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Tempoanzeige kann falsch sein. Tun: Rad neu starten und Sitz des Magneten am Ventil prüfen. Hilft das nicht: Fachhändler fragen.
+523006;de;Fehler;Geschwindigkeitssensor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Tempoanzeige kann falsch sein. Tun: Speichen- bzw. Felgenmagnet auf Sitz und Abstand prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+523042;de;Fehler;Motor nicht richtig eingestellt;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+524001;de;Fehler;Manipulation am Tempo-Signal erkannt;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad auf Manipulation prüfen und Magnete richtig einstellen. Hilft das nicht: Fachhändler fragen.
+525001;de;Fehler;Manipulation am Tempo-Signal erkannt;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad auf Manipulation prüfen und Magnete richtig einstellen. Hilft das nicht: Fachhändler fragen.
+525002;de;Fehler;Manipulation am Tempo-Signal erkannt;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad auf Manipulation prüfen und Magnete richtig einstellen. Hilft das nicht: Fachhändler fragen.
+525003;de;Fehler;Manipulation am Tempo-Signal erkannt;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad auf Manipulation prüfen und Magnete richtig einstellen. Hilft das nicht: Fachhändler fragen.
+525004;de;Fehler;Manipulation am Tempo-Signal erkannt;Das Rad fährt im Notbetrieb mit weniger Kraft. Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad auf Manipulation prüfen und Magnete richtig einstellen. Hilft das nicht: Fachhändler fragen.
+530002;de;Fehler;Motor falsch eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+531005;de;Fehler;Motor nicht richtig eingestellt;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534001;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534002;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534003;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534004;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534005;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534006;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534007;de;Fehler;Sicherheitszertifikat des Motors ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534008;de;Fehler;Produktionsfehler am Motor;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+534009;de;Fehler;Produktionsfehler am Motor;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+540001;de;Fehler;Temperaturschutz des Motors aus;Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+542002;de;Fehler;Übersetzung falsch eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Die Schiebehilfe funktioniert eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+542003;de;Fehler;Motor falsch eingestellt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+542004;de;Fehler;Motor falsch eingestellt;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+550001;de;Fehler;Licht ist aus, obwohl es an sein muss;Das Licht kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+566100;de;Fehler;Einstellungsfehler im Motor;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0000;de;Fehler;eBike-Lock-Schlüssel ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: eBike Lock in der Flow-App aus- und wieder einschalten. Hilft das nicht: Fachhändler fragen.
+5F0003;de;Fehler;eBike-Lock-Schlüssel ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: eBike Lock in der Flow-App aus- und wieder einschalten. Hilft das nicht: Fachhändler fragen.
+5F0010;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0011;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0012;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0013;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0014;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0015;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0016;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0017;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0018;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0019;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F001A;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F001B;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F001C;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F001D;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F001E;de;Fehler;eBike-Lock-Schlüssel nicht prüfbar;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0060;de;Fehler;Bedieneinheit kann kein eBike Lock;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0101;de;Fehler;Vorserien-Motor verbaut;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+5F0200;de;Fehler;Bedieneinheit passt nicht zum Rad;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+610003;de;Fehler;Akku vom Händler gesperrt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+610004;de;Fehler;Akku falsch eingestellt;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+610008;de;Fehler;Akku muss getauscht werden;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+61000D;de;Fehler;Softwarefehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Akkusitz und Halterung prüfen, Kontakte an Akku und Halterung prüfen und bei Bedarf feucht reinigen, dann trocknen lassen, Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620001;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620002;de;Fehler;Ladestrom zu hoch;Der Akku wird nicht geladen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620003;de;Fehler;Akku gibt zu viel Strom ab;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620004;de;Fehler;Akku gibt zu viel Strom ab;Der Akku wird nicht geladen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620005;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620006;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620007;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620008;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620009;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+62000A;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+62000B;de;Fehler;Ladestrom zu hoch;Der Akku wird nicht geladen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+62000C;de;Fehler;Akku gibt zu viel Strom ab;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+62000D;de;Fehler;Akku gibt zu viel Strom ab;Der Akku wird nicht geladen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+62000E;de;Fehler;Stromrichtung am Akku falsch;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+62000F;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620010;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620011;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620012;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620013;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+620015;de;Fehler;Stromfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Akkusitz und Halterung prüfen, Kontakte an Akku und Halterung prüfen und bei Bedarf feucht reinigen, dann trocknen lassen, Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630001;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630002;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630003;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630004;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630005;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630006;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630007;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630008;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630009;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+63000B;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+63000D;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+63000F;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630010;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630011;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630012;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630014;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+630017;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+640001;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+640002;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+650001;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Akkusitz und Halterung prüfen, Kontakte an Akku und Halterung prüfen und bei Bedarf feucht reinigen, dann trocknen lassen, Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+660001;de;Fehler;Kurzschluss im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Bleibt der Fehler: Akku nicht mehr laden oder benutzen und zum Fachhändler.
+660002;de;Fehler;Interner Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Akku abnehmen und mindestens 10 Sekunden ans Ladegerät. Blinken dann LED 2 und 4: Akku nicht mehr benutzen und zum Fachhändler. Zeigt er normal den Ladestand, kann er wieder rein.
+660003;de;Fehler;Kurzschluss im Akku;Das Rad startet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+670001;de;Fehler;Laden fehlgeschlagen;"Der Akku wird nicht geladen. Tun: Ladegerät ganz trennen, 5 Sekunden warten und neu anstecken; sonst anderes Ladegerät probieren und Software-Update in der Flow-App machen (falls angeboten). Hilft das nicht: Fachhändler fragen."
+670003;de;Fehler;Mehrere Akkus angeschlossen;Zwei Akkus funktionieren eventuell nicht zusammen. Tun: Alle Teile anschließen, Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680001;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680002;de;Fehler;Akku zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680003;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680004;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680005;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680006;de;Fehler;Akku zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680007;de;Fehler;Akku zu kalt;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen. Hilft das nicht: Fachhändler fragen.
+680008;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680009;de;Fehler;Akku zu heiß zum Laden;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Akku etwa 2 Stunden abkühlen lassen. Hilft das nicht: Fachhändler fragen.
+68000A;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+68000B;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+68000C;de;Fehler;Akku zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+68000D;de;Fehler;Akku zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+68000E;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+68000F;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680010;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680011;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680012;de;Fehler;Akku zu kalt;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680013;de;Fehler;Akku zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680014;de;Fehler;Akku zu kalt;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680015;de;Fehler;Akku zu kalt;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku bzw. Rad etwa 2 Stunden im Warmen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680016;de;Fehler;Akku zu heiß;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680017;de;Fehler;Akku zu heiß zum Laden;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+680019;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+68001A;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+68001B;de;Fehler;Temperaturfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+68001C;de;Fehler;Akku zu heiß;Der Motor unterstützt eventuell nicht, das Rad kann ausgehen. Tun: Akku etwa 2 Stunden abkühlen lassen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690001;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690002;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690003;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690004;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690005;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690006;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690007;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690008;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690009;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69000A;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69000B;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69000C;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69000D;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69000E;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69000F;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690010;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690011;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690012;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690013;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690014;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690015;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690016;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690017;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690018;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690019;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69001C;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69001D;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69001E;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+69001F;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690020;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690021;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690022;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690023;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690024;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690025;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690026;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690027;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690028;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690029;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690040;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690041;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690042;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690043;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690044;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690045;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690046;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690047;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690048;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690049;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690060;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690061;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690062;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690063;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690064;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690065;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690066;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690067;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690068;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690069;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690070;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690071;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690072;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690073;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690074;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690075;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690076;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Nur das Original-Ladegerät verwenden und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690077;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690078;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690079;de;Fehler;Spannungsfehler im Akku;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690080;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+690300;de;Fehler;Akku tiefentladen;Das Rad kann sich selbst ausschalten. Der Akku wird nicht geladen. Tun: Software-Update in der Flow-App machen. Hilft das nicht: Fachhändler fragen.
+6A0001;de;Fehler;Mehr als zwei Akkus angeschlossen;Tun: Überzählige Akkus abnehmen.
+6A0002;de;Fehler;Fremder Akku erkannt;Tun: Nur Original-Akkus verwenden.
+6A0006;de;Fehler;Akku-Kommunikationsfehler;Zwei Akkus funktionieren eventuell nicht zusammen. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+6A0007;de;Fehler;Zwei Akkus können nicht geladen werden;Zwei Akkus funktionieren eventuell nicht zusammen. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+6A0008;de;Fehler;Akkufehler;Das Rad kann sich selbst ausschalten. Tun: Software-Update in der Flow-App machen (falls angeboten) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+6F0200;de;Fehler;eBike-Lock-Schlüssel ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: eBike Lock in der Flow-App aus- und wieder einschalten. Hilft das nicht: Fachhändler fragen.
+6F0203;de;Fehler;eBike-Lock-Schlüssel ungültig;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: eBike Lock in der Flow-App aus- und wieder einschalten. Hilft das nicht: Fachhändler fragen.
+800000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+800001;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+800002;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+800003;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+800004;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+800005;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+800007;de;Fehler;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Nichts.
+810000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+810001;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+821000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+821001;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+822000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+831000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+831001;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+832000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+851000;de;Fehler;Ungültiges Beschleunigungssignal vom Motor;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+851001;de;Fehler;Beschleunigungssensor im Motor gestört;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+851002;de;Fehler;Beschleunigungssensor im Motor gestört;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+853201;de;Fehler;Tempo-Signale passen nicht zusammen;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+860000;de;Fehler;ABS-Stromversorgung gestört;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+860001;de;Fehler;ABS-Stromversorgung gestört;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+861000;de;Fehler;ABS-Stromversorgung gestört;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+862000;de;Fehler;ABS-Kommunikationsfehler;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+870000;de;Fehler;ABS-Kommunikationsfehler;Das ABS arbeitet eventuell nicht. Tun: Leuchtet die ABS-Lampe noch, Fachhändler fragen. Ist sie wieder aus, hat sich das ABS selbst neu eingestellt.
+880000;de;Fehler;ABS falsch eingestellt;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+880001;de;Fehler;ABS falsch eingestellt;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+880003;de;Fehler;ABS falsch eingestellt;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+880004;de;Fehler;ABS falsch eingestellt;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+880005;de;Fehler;ABS falsch eingestellt;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+881000;de;Fehler;ABS-Fehler gemeldet;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+890001;de;Fehler;ABS-Kontrollleuchte nicht verfügbar;Das ABS arbeitet eventuell nicht. ABS-Fehler werden eventuell nicht angezeigt. Tun: Meldung bestätigen. Hilft das nicht: Fachhändler fragen.
+90000A;de;Fehler;ConnectModule zu heiß;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+90000B;de;Fehler;ConnectModule zu heiß;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+902005;de;Fehler;Mobilfunk im ConnectModule gestört;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902006;de;Fehler;Mobilfunk im ConnectModule gestört;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902007;de;Fehler;Mobilfunk im ConnectModule gestört;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902008;de;Fehler;ConnectModule reagiert nicht;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902009;de;Fehler;ConnectModule reagiert nicht;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90200B;de;Fehler;ConnectModule reagiert nicht;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90200C;de;Fehler;ConnectModule reagiert nicht;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90200D;de;Fehler;Update des ConnectModule fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902010;de;Fehler;Update des ConnectModule fehlgeschlagen;Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902012;de;Fehler;Update des ConnectModule fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902013;de;Fehler;Update des ConnectModule fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+902014;de;Fehler;Update des ConnectModule fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903001;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903002;de;Fehler;ConnectModule erreicht den Server nicht;Funktionen des ConnectModule sind eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+903003;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903004;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903005;de;Fehler;ConnectModule erreicht den Server nicht;Funktionen des ConnectModule sind eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+903006;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903007;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903008;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+903009;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90300A;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90300B;de;Fehler;Datenverbindung fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90400A;de;Fehler;Temperaturüberwachung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90400B;de;Fehler;Temperaturüberwachung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90400C;de;Fehler;Temperaturüberwachung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905001;de;Fehler;Stromversorgung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905002;de;Fehler;Stromversorgung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905003;de;Fehler;Stromversorgung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905004;de;Fehler;Stromversorgung des ConnectModule gestört;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905005;de;Fehler;Akku des ConnectModule zu heiß;Das Teil kann sich selbst ausschalten. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+905006;de;Fehler;Akku des ConnectModule gestört;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+905007;de;Fehler;Akku des ConnectModule defekt;Funktionen des ConnectModule sind eingeschränkt. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905008;de;Fehler;Akku des ConnectModule gestört;Der Akku wird nicht geladen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+905009;de;Fehler;Akku des ConnectModule gestört;Der Akku wird nicht geladen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+90500A;de;Fehler;Akku des ConnectModule gestört;"Funktionen des ConnectModule sind eingeschränkt. Tun: Rad mindestens 45 Minuten eingeschaltet lassen (bei 15–35 °C), damit der Akku des ConnectModule lädt; geht das Rad aus, wieder einschalten. Hilft das nicht: Fachhändler fragen."
+906001;de;Fehler;Speicherfehler im ConnectModule;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+906002;de;Fehler;Speicherfehler im ConnectModule;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+906003;de;Fehler;Speicherfehler im ConnectModule;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+906004;de;Fehler;Speicherfehler im ConnectModule;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+907001;de;Fehler;Speicherfehler im ConnectModule;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+907002;de;Fehler;Speicherfehler im ConnectModule;Das Teil kann sich selbst ausschalten. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+907003;de;Fehler;Produktionsfehler am ConnectModule;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+9F0104;de;Fehler;Update des ConnectModule fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+F10003;de;Fehler;Software der Bauteile passt nicht zusammen;Tun: Alle Teile anschließen und Software-Update in der Flow-App machen. Hilft das nicht: Fachhändler fragen.
+100001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+100002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+100003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+100004;de;Warnung;Zertifikat des Motors abgelaufen;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+100005;de;Warnung;Zertifikat des Akkus abgelaufen;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+100006;de;Warnung;Zertifikat des Bordcomputers abgelaufen;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+100007;de;Warnung;Zertifikat des ConnectModule abgelaufen;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+100008;de;Warnung;Zertifikat des ABS abgelaufen;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+110000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+111000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+111001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+111002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+111003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+112001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113110;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113112;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113121;de;Warnung;Keine Verbindung zum Smartphone;Die Verbindung zum Smartphone ist weg. Tun: Smartphone erneut mit der Bedieneinheit verbinden.
+113130;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113140;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113141;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113142;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113143;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113160;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113161;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113162;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113170;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113171;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113172;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113173;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+113174;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+114000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+114001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+115000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120010;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120102;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120103;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120104;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120105;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120106;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120108;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120110;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120112;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120115;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120402;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+120502;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+121000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+121100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+122000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+122001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+130000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+132000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+134000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+136000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+140000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+141001;de;Warnung;Interner Akku der Bedieneinheit leer;Einige App-Funktionen (Update, eBike Lock, Alarm u. a.) gehen gerade nicht. Tun: Bedieneinheit mindestens 45 Minuten laden – am Ladegerät des Rads, per Powerbank oder einfach beim Fahren (15–35 °C). Passiert das oft, internen Akku tauschen lassen.
+141002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+141100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+141101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+141102;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+141103;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+141104;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+142001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+142003;de;Warnung;Akku im eingeschalteten Zustand getrennt;Kein Defekt. Tun: Akku nur bei ausgeschaltetem Rad entnehmen. Tritt es öfter auf, Akkusitz, Kabel und Stecker prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+143000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+143001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+143002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+144000;de;Warnung;Bedieneinheit lädt nicht (USB);Der Akku wird nicht geladen. Die Bedieneinheit lässt sich per USB nicht laden. Tun: Anderes USB-Ladegerät bzw. andere Powerbank nehmen.
+144011;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+144020;de;Warnung;USB-Anschluss überlastet;Der USB-Anschluss wurde abgeschaltet. Tun: Kabel am USB-Anschluss abziehen und Gerät sowie Anschluss auf Schäden prüfen.
+144030;de;Warnung;USB-Laden abgeschaltet;Der USB-Anschluss wurde abgeschaltet. Tun: Weniger Verbraucher betreiben (z. B. Fernlicht aus) und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+150000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+151001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+151002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+151003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+152003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+152012;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+153002;de;Warnung;Bedieneinheit zu heiß;Die LEDs werden eventuell stark gedimmt. Tun: Rad 10 Minuten im Schatten abkühlen lassen.
+153003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+153012;de;Warnung;Bedieneinheit zu heiß;Die LEDs werden eventuell stark gedimmt. Tun: Rad 10 Minuten im Schatten abkühlen lassen und nichts am USB-Anschluss laden.
+1B0000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1B0001;de;Warnung;Batterie des kabellosen Displays schwach;Verbindung und Funktion des kabellosen Displays können leiden. Tun: Batterie der kabellosen Bedieneinheit wechseln.
+1B7203;de;Warnung;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+1B7603;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B764E;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B764F;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7650;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7703;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7744;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B774E;de;Warnung;Batterie der Schaltung schwach;Schalten geht eventuell gar nicht. Tun: Batterie laden bzw. wechseln.
+1B774F;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7750;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7903;de;Warnung;Warnung der Schaltung;Schalten geht eventuell gar nicht. Tun: Classified oder Fachhändler fragen.
+1B7921;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1B7922;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1B7923;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1B7924;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1B7925;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1BA000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1BF000;de;Warnung;Batterie des Pulssensors schwach;Die Verbindung hält nicht mehr lange. Tun: Pulssensor laden bzw. Batterie wechseln.
+1BF001;de;Warnung;Pulssensor nicht verbunden;Die Verbindung zum Pulssensor ist weg. Tun: Pulssensor erneut mit der Bedieneinheit verbinden.
+1C7403;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C744E;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C744F;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7450;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7503;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7544;de;Warnung;Schaltung zu heiß;Schalten geht eventuell gar nicht. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten.
+1C754E;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C754F;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7550;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7603;de;Warnung;Warnung der Schaltung;Schalten geht eventuell gar nicht. Tun: Enviolo oder Fachhändler fragen.
+1C7640;de;Warnung;Schaltmotor blockiert;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Enviolo oder Fachhändler fragen.
+1C7644;de;Warnung;Schaltung zu heiß;Schalten geht eventuell gar nicht. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten.
+1C7646;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C7647;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C7648;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C7649;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C7703;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C774E;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C774F;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C7750;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7803;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7903;de;Warnung;Warnung der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C8014;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C8015;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C8016;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C8040;de;Warnung;ABS-Warnung;Das ABS arbeitet eventuell nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1C9003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C9004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1C9022;de;Warnung;Warnung der Sattelstütze;Die Sattelstütze arbeitet eventuell nicht richtig. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1F0040;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1F0041;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1F0042;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1F0043;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1F0100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1F0101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+1F0201;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+400001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+400002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+400003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+411001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+411002;de;Warnung;Hinweis: beim Fahren nicht ablenken lassen;Nur ein Sicherheitshinweis. Tun: Nichts.
+420001;de;Warnung;Bordcomputer zu kalt;Die Anzeige kann fehlerhaft oder träge sein. Tun: Bordcomputer bzw. Rad an einen wärmeren Ort bringen.
+420002;de;Warnung;Bordcomputer zu heiß;Die Anzeige kann fehlerhaft oder träge sein. Tun: Rad 15 Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+420003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430008;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430009;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430010;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430011;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430012;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+430102;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431201;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431301;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431401;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431501;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431601;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431801;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431901;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431A01;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431B01;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431C01;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431D01;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431E01;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+431F01;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+432001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+432101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+434104;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+434404;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+434504;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+4F0040;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+4F0100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+4F0101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+500009;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50000A;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+500011;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50001A;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50001E;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50100A;de;Warnung;Motor zu heiß;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+503003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50300D;de;Warnung;Zubehör am 12-V-Anschluss braucht zu viel Strom;Angeschlossenes Zubehör kann ausgehen. Tun: Angeschlossenes Zubehör und Kabel prüfen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+503010;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50301B;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+50301C;de;Warnung;Zubehör am 12-V-Anschluss braucht zu viel Strom;Angeschlossenes Zubehör kann ausgehen. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+50301D;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505021;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505030;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505031;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505110;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+505121;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+506001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+506100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+509001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+509002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+509003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+509004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+510007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+510008;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+51000F;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+511005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+511007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+513001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+513003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+513006;de;Warnung;Externer Trittfrequenzsensor gestört;Der Motor unterstützt eventuell nur eingeschränkt, die Trittfrequenzanzeige kann falsch sein. Tun: Kabel, Stecker und Sensorscheibe des Trittfrequenzsensors prüfen, Software-Update in der Flow-App machen (falls angeboten) und neu starten. Hilft das nicht: Fachhändler fragen.
+513007;de;Warnung;Bremsschalter gestört;Der Motor unterstützt eventuell nur eingeschränkt. Tun: Bremse, Bremsschalter und Kabel prüfen, einmal bremsen, Software-Update in der Flow-App machen (falls angeboten) und neu starten. Hilft das nicht: Fachhändler fragen.
+514004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+514005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+514006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+514007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+514009;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+51400A;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+514013;de;Warnung;Drehmomentsensor im Motor gestört;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Teile des Systems arbeiten eventuell nicht richtig. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+514020;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+515001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+516001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518010;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518011;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518012;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518014;de;Warnung;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518020;de;Warnung;Motor nicht richtig programmiert;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+518021;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518201;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518202;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+518203;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+519001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+519002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+522001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524102;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524103;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524104;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524105;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524106;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524107;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524108;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+524109;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+530001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+530010;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+539001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+540002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+540003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+540022;de;Warnung;Motor zu heiß;Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+540023;de;Warnung;Motor zu heiß;Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+541000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+542001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+542005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+542006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+566001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+566002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+566003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+566004;de;Warnung;Hinweis: beim Fahren nicht ablenken lassen;Nur ein Sicherheitshinweis. Tun: Nichts.
+599000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+599001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+599002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+599003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+5F0001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+5F0002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+5F0040;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+5F0080;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+5F0100;de;Warnung;Vorserien-Motor verbaut;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+610001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610009;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+61000A;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+61000B;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+61000C;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610010;de;Warnung;Softwarefehler im Akku;Tun: Software-Update in der Flow-App machen (falls angeboten). Hilft das nicht: Fachhändler fragen.
+610011;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610012;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610013;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610014;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610015;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610016;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610017;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610018;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+610019;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+61001A;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+620014;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+620016;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+620100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+63000A;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+63000C;de;Warnung;Ein-/Aus-Taste am Akku klemmt;Das Rad kann sich selbst ausschalten. Tun: Prüfen, ob eine Taste klemmt und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+63000E;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+630013;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+630015;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+630016;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+630018;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+650002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+670002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+670004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+670006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+670007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+670008;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+670009;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+68001D;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+68001E;de;Warnung;Akku zu heiß;Das Rad kann sich selbst ausschalten. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+680020;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+680021;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+680100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+680101;de;Warnung;Akku zu heiß;Das Rad kann sich selbst ausschalten. Tun: Rad ein paar Minuten im Schatten abkühlen lassen und neu starten. Hilft das nicht: Fachhändler fragen.
+690030;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690031;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690032;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690033;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690034;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690035;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690036;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690037;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690038;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690039;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690050;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690051;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690052;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690053;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690054;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690055;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690056;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690057;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690058;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690059;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690090;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690091;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690092;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690093;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690094;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690095;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690096;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690097;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+690100;de;Warnung;Akku fast leer;Tun: Akku bald laden.
+690101;de;Warnung;Akku sehr leer;Tun: Akku jetzt laden.
+690102;de;Warnung;Energiesparmodus aktiv;Das Rad spart Energie, um noch ein Stück zu fahren. Tun: Akku laden.
+6A0003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6A0005;de;Warnung;Rad kann keine zwei Akkus;Zwei Akkus funktionieren eventuell nicht zusammen. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+6D0000;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6D0001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6D0002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6D0003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6F0040;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6F0100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6F0101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6F0201;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+6F0202;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+800006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+820000;de;Warnung;Schwaches Signal vom ABS-Sensor vorne;Das ABS arbeitet eventuell nicht. Tun: ABS-Sensor und Sensorscheibe am Rad auf Schäden, Sitz und Abstand prüfen und Kabel und Stecker prüfen. Hilft das nicht: Fachhändler fragen.
+822001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+830000;de;Warnung;Schwaches Signal vom ABS-Sensor hinten;Das ABS arbeitet eventuell nicht. Tun: ABS-Sensor und Sensorscheibe am Rad auf Schäden, Sitz und Abstand prüfen und Kabel und Stecker prüfen. Hilft das nicht: Fachhändler fragen.
+832001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+853200;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+853202;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+862001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+862002;de;Warnung;ABS-Stromversorgung gestört;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+862003;de;Warnung;ABS-Stromversorgung gestört;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+870001;de;Warnung;ABS-Kommunikationsfehler;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+870002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+870003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+871000;de;Warnung;ABS-Moduswechsel abgeschaltet;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+880002;de;Warnung;S-Pedelec falsch eingestellt;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+880006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+882000;de;Warnung;Vorserien-ABS-Steuergerät verbaut;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+883000;de;Warnung;ABS mit Test-Software;Das ABS arbeitet eventuell nicht. Tun: Software-Update in der Flow-App machen und Rad neu starten. Hilft das nicht: Fachhändler fragen.
+884000;de;Warnung;Vorserien-ABS verbaut;Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+8F0100;de;Warnung;Vorserien-ABS verbaut;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+8F0101;de;Warnung;Vorserien-ABS verbaut;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Das ABS arbeitet eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+900000D;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+900001;de;Warnung;ConnectModule mit Test-Software;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+900002;de;Warnung;Vorserien-ConnectModule verbaut;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+900003;de;Warnung;Vorserien-ConnectModule verbaut;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+900004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+900005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+900006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+900008;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90000C;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+901001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+901002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+901003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+901004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+901005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+901006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+902002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+902004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90200E;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90200F;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+902011;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904004;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904005;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904006;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904007;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904008;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+904009;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90500B;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90500C;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90500D;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+90500E;de;Warnung;Akku des ConnectModule fast leer;Funktionen des ConnectModule (z. B. Bewegungserkennung) sind eingeschränkt. Tun: Rad etwa 2 Stunden bei Raumtemperatur lagern, dann neu starten und 30 Minuten mit Unterstützung fahren. Hilft das nicht: Fachhändler fragen.
+90500F;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+908001;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+908002;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+908003;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+908004;de;Warnung;Anmeldung des ConnectModule fehlgeschlagen;Funktionen des ConnectModule sind eingeschränkt. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+9F0040;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+9F0100;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+9F0101;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+9F0102;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+9F0103;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+F00001;de;Warnung;Vorserien-Teil erkannt;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+F00002;de;Warnung;Ein Zertifikat ist abgelaufen;Teile des Systems arbeiten eventuell nicht richtig. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+F10002;de;Warnung;Software-Verbesserung verfügbar;Tun: Meldung bestätigen, Software-Update in der Flow-App machen und Rad neu starten.
+FFFFFF;de;Warnung;Veralteter Fehlercode;Hat heute keine Bedeutung mehr. Tun: Software-Update in der Flow-App machen und Rad neu starten.
+144010;de;Info;Feuchtigkeit im USB-Anschluss;Der USB-Anschluss lädt gerade nicht. Tun: Anschluss trocknen lassen und die Kappe geschlossen halten, wenn nichts eingesteckt ist.
+1B7204;de;Info;Fehler an der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+1B7604;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7651;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7652;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7653;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+1B7704;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7745;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7746;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7751;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7752;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7753;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1B7904;de;Info;Info der Schaltung;Schalten geht eventuell gar nicht. Tun: Classified oder Fachhändler fragen.
+1C7404;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7446;de;Info;Kalibrierung der Schaltung gestartet;Nur zur Information. Tun: Nichts.
+1C7447;de;Info;Kalibrierung der Schaltung erfolgreich;Nur zur Information. Tun: Nichts.
+1C7451;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7452;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7453;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7504;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7545;de;Info;Batterie im Schalthebel fast leer;Die Schaltung funktioniert noch normal. Tun: Batterie im Schalthebel bald wechseln.
+1C7546;de;Info;Service der Schaltung fällig;Die Schaltung funktioniert noch normal. Tun: Schaltung beim Händler warten lassen.
+1C7551;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7552;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7553;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7604;de;Info;Info der Schaltung;Schalten geht eventuell gar nicht. Tun: Enviolo oder Fachhändler fragen.
+1C7704;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7745;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7746;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7751;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7752;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7753;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7804;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C7904;de;Info;Info der elektronischen Schaltung;Schalten geht eventuell gar nicht. Tun: Schaltungshersteller oder Fachhändler fragen.
+1C8050;de;Info;ABS-Info;Tun: Hersteller oder Fachhändler fragen.
+1C9023;de;Info;Info der Sattelstütze;Tun: Hersteller oder Fachhändler fragen.
+510006;de;Info;Magnetfeld stört den Motor;Der Motor unterstützt eventuell nicht. Tun: Weiterfahren, bis du aus dem Magnetfeld heraus bist.
+51000D;de;Info;Magnetfeld stört den Motor;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Weiterfahren, bis du aus dem Magnetfeld heraus bist (nicht neu starten).
+511006;de;Info;Motorunterstützung eingeschränkt;Der Motor unterstützt eventuell nicht oder nur eingeschränkt. Tun: Rad neu starten und ein Stück fahren.
+515002;de;Info;Schiebehilfe nicht freigeschaltet;Die Schiebehilfe funktioniert eventuell nicht. Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+515003;de;Info;Schiebehilfe angehalten;Die Schiebe- bzw. Anfahrhilfe wurde gestoppt, weil Kurbel oder Hinterrad blockiert. Tun: Antrieb, Pedale und Räder auf Freigängigkeit prüfen, dann erneut starten.
+517001;de;Info;Kilometerzähler am Maximum;Der Kilometerzähler zählt nicht weiter. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+517002;de;Info;Kilometerzähler am Maximum;Der Kilometerzähler zählt nicht weiter. Tun: Rad neu starten. Hilft das nicht: Fachhändler fragen.
+517003;de;Info;Glückwunsch: 200.000 km;Glückwunsch! Tun: Nichts – weiterfahren.
+670005;de;Info;Vorserien-Ladegerät;Tun: Fachhändler fragen – selbst lässt sich das nicht beheben.
+872000;de;Info;ABS wieder verfügbar;Das ABS funktioniert wieder. Tun: Nichts.
+F10001;de;Info;eBike-Update verfügbar;Tun: Alle Teile anschließen und Software-Update in der Flow-App machen.
 142003;en;Warnung;Battery disconnected while switched on;Harmless warning: the battery was removed or briefly lost contact while the bike was on. Only remove the battery with the bike switched off. If it keeps coming back, check the battery seat and contacts.

@@ -623,7 +623,9 @@ const PAGES = {
         const code = codeHex(e.code);
         // Ohne Klartext vom Server: eigener Text aus data/fault-texts.csv, sonst Einordnung (Bereich + allgemeiner Hinweis)
         const cat = describeFault(e.code);
-        return `<div class="fault"><b>${esc(info?.t || cat.title)}</b>
+        const sev = info?.s || cat.sev;
+        const sevTag = sev ? `<i class="sevtag sev-${esc(sev)}">${esc(t(`sev.${sev}`))}</i>` : '';
+        return `<div class="fault"><b>${sevTag}${esc(info?.t || cat.title)}</b>
           <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
           ${info?.t || cat.own ? `<span>${esc(`${t('fcat.label')}: ${cat.area}`)}</span>` : ''}
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
