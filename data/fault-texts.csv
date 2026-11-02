@@ -1,0 +1,6 @@
+code;lang;title;hint
+# Eigene Fehlertexte für SelfBike – selbst formuliert, KEINE kopierten Bosch-Texte (die gehören Bosch).
+# code = sechsstelliger Fehlercode (z. B. 142003), lang = de/en/… oder leer für alle Sprachen.
+# Zeilen mit # werden ignoriert. Speichern als CSV (UTF-8), Trennzeichen ; oder ,
+142003;de;Akku im eingeschalteten Zustand getrennt;Harmlose Warnung: Der Akku wurde entnommen oder hatte kurz keinen Kontakt, während das Rad an war. Akku nur bei ausgeschaltetem Rad entnehmen. Tritt sie öfter auf, Akkusitz und Kontakte prüfen.
+142003;en;Battery disconnected while switched on;Harmless warning: the battery was removed or briefly lost contact while the bike was on. Only remove the battery with the bike switched off. If it keeps coming back, check the battery seat and contacts.

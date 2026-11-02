@@ -13,6 +13,7 @@ import { readFaults } from './lib/diagnostics.js';
 import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
 import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex } from './lib/fault-categories.js';
+import { loadOwnTexts } from './lib/own-fault-texts.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
 import { LANGS, t, setLang, detectLang, applyStatic, fmtNum, fmtDate, fmtDateTime, lang } from './lib/i18n.js';
@@ -620,11 +621,11 @@ const PAGES = {
       else inner = f.faults.map((e) => {
         const info = lookupIssue(e.code ?? 0, lang());
         const code = codeHex(e.code);
-        // Ohne Klartext aus der Flow-App: eigene Einordnung (Bereich + allgemeiner Hinweis)
+        // Ohne Klartext vom Server: eigener Text aus data/fault-texts.csv, sonst Einordnung (Bereich + allgemeiner Hinweis)
         const cat = describeFault(e.code);
-        return `<div class="fault"><b>${esc(info?.t || cat.area)}</b>
+        return `<div class="fault"><b>${esc(info?.t || cat.title)}</b>
           <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
-          ${info?.t ? `<span>${esc(`${t('fcat.label')}: ${cat.area}`)}</span>` : ''}
+          ${info?.t || cat.own ? `<span>${esc(`${t('fcat.label')}: ${cat.area}`)}</span>` : ''}
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
           ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>`
             : `<span style="margin-top:4px"><b style="display:inline">${esc(t('fcat.hint'))}:</b> ${esc(cat.hint)}</span>`}</div>`;
@@ -937,7 +938,7 @@ async function changeLang(code) {
 
 // ---------- Start ----------
 
-await loadCatalog();
+await Promise.all([loadCatalog(), loadOwnTexts()]);
 await setLang(detectLang());
 $('discLang').value = $('topLang').value = lang();
 applyStatic();
