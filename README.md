@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.1.0-33A78C)
+![Version](https://img.shields.io/badge/version-1.2.0-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -49,6 +49,7 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 
 **⚙️ Change (only what the manufacturer allows)**
 - Light, service interval, start mode, display language, units, clock, walk assist on/off
+- **Power ports (beta)** — low/high power port on/off, only where the manufacturer allows it; locked ports are shown, never written
 - **Assist modes** — support, dynamics and top speed, only within the limits the bike reports for that mode, **never above 25 km/h**
 
 **💾 Data & reports**
@@ -206,6 +207,7 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 
 **⚙️ Ändern (nur was der Hersteller freigibt)**
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
+- **Power Ports (Beta)** — Low/High Power Port an/aus, nur wenn der Hersteller es freigibt; gesperrte Ports werden nur angezeigt, nie geschrieben
 - **Fahrmodi** — Unterstützung, Dynamik und Höchstgeschwindigkeit, nur innerhalb der Grenzen, die das Fahrrad für den Modus meldet, **nie über 25 km/h**
 
 **💾 Daten & Berichte**

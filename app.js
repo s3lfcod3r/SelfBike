@@ -4,7 +4,7 @@ import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
 import { hex } from './lib/messagebus.js';
 import {
-  readAll, byKey, heartbeat, planLight, planService, planDisplay, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
+  readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
 import { DemoUsb } from './lib/demo-usb.js';
 import { savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate } from './lib/care.js';
@@ -205,6 +205,7 @@ const ICONS = {
   modes: '<path d="M4 18 9 9l4 6 3-4 4 7z"/>',
   service: '<path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/>',
   display: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 17h4"/>',
+  ports: '<path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0zM12 17v4"/>',
   battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M6 10v4M9 10v4"/>',
   faults: '<path d="M12 3 2 20h20zM12 10v4M12 17v.5"/>',
   ridemodes: '<path d="M4 18 9 9l4 6 3-4 4 7z"/>',
@@ -232,6 +233,7 @@ function renderSettings() {
     navRow('modes', t('mode.title'), modeNames, '#3b82f6'),
     navRow('service', t('svc.title'), rows.length ? serviceText().n + (serviceText().unit ? ` ${serviceText().unit}` : '') : '', '#8b5cf6'),
     navRow('display', t('disp.title'), '', '#64748b'),
+    ok('portOem') ? navRow('ports', t('ports.title'), 'Beta', '#e0a020') : '',
   ].join('');
 }
 $('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
@@ -491,6 +493,32 @@ const PAGES = {
           displayUnits: Number($('dUnits').value), timeFormat: Number($('dTime').value), setClock: $('dClock').checked,
           walkAssist: ok('walkAssist') ? $('dWalk').checked : null,
         }, modes.map((m) => m.name)));
+      },
+    };
+  },
+
+  // Power Ports an/aus – nur wenn der Hersteller den Port als „änderbar“ freigibt, sonst nur Anzeige
+  ports() {
+    const oem = val('portOem') ?? {};
+    const row = (id, key, configurable) => `<label class="row"><span class="t">${esc(t(`dp.${key}`))}
+      <small class="${configurable ? 'good' : ''}">${esc(t(configurable ? 'ports.changeable' : 'ports.locked'))}</small></span>
+      <input type="checkbox" class="sw" id="${id}"${val(key) ? ' checked' : ''}${ok(key) && configurable ? '' : ' disabled'}></label>`;
+    const any = oem.lowConfigurable || oem.highConfigurable;
+    return {
+      title: t('ports.title'),
+      html: `<p class="explain">${esc(t('ports.explain'))}</p>
+        <div class="alert" style="margin-top:12px">${esc(t('ports.beta'))}</div>
+        <div class="group noico" style="margin-top:12px">
+          ${row('pLow', 'lowPortActive', oem.lowConfigurable)}
+          ${row('pHigh', 'highPortActive', oem.highConfigurable)}
+        </div>
+        <p class="foot">${esc(t('ports.hint'))}</p>
+        ${locked(!any)}${saveBtn('save', !any)}`,
+      bind() {
+        if (any) $('save').onclick = () => propose(() => planPorts(S, {
+          low: ok('lowPortActive') && oem.lowConfigurable ? $('pLow').checked : null,
+          high: ok('highPortActive') && oem.highConfigurable ? $('pHigh').checked : null,
+        }));
       },
     };
   },
