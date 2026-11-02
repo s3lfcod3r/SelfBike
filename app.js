@@ -12,7 +12,8 @@ import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBac
 import { readFaults } from './lib/diagnostics.js';
 import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
 import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
-import { describeFault, codeHex } from './lib/fault-categories.js';
+import { describeFault, codeHex, bySeverity } from './lib/fault-categories.js';
+import { withProductName } from './lib/product-names.js';
 import { loadOwnTexts } from './lib/own-fault-texts.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
@@ -536,7 +537,7 @@ const PAGES = {
         ok('batteryVoltage') && [t('more.voltage'), txt('batteryVoltage'), ok('batteryMaxCurrent') ? t('more.maxCurrent', { a: txt('batteryMaxCurrent') }) : ''],
         ok('batteryTempNow') && [t('more.tempNow'), `${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`, t('more.tempNowHint')],
         ok('batterySelfDischarge') && [t('more.selfDischarge'), txt('batterySelfDischarge'), ''],
-        [t('bat.model'), txt('batteryProduct'), ''],
+        [t('bat.model'), withProductName(txt('batteryProduct')), ''],
       ])}`,
     };
   },
@@ -618,7 +619,7 @@ const PAGES = {
       if (f.status === 'none') inner = `<div class="fault"><span>${esc(t('fault.notInstalled'))}</span></div>`;
       else if (f.status !== 'ok') inner = `<div class="fault"><span>${esc(t('fault.unreadable'))}</span></div>`;
       else if (!f.faults.length) inner = `<div class="fault"><span class="good">${esc(t('fault.none'))}</span></div>`;
-      else inner = f.faults.map((e) => {
+      else inner = bySeverity(f.faults, (e) => lookupIssue(e.code ?? 0, lang())?.s || describeFault(e.code).sev).map((e) => {
         const info = lookupIssue(e.code ?? 0, lang());
         const code = codeHex(e.code);
         // Ohne Klartext vom Server: eigener Text aus data/fault-texts.csv, sonst Einordnung (Bereich + allgemeiner Hinweis)
@@ -647,8 +648,8 @@ const PAGES = {
     const items = [
       [t('comp.bike'), `${txt('oemBrand')}${model ? ` ${model}` : ''}`, model ? '' : t('comp.modelMissing')],
       [t('comp.motor'), `${txt('motorName')} · ${txt('motorModel')}`, ver('motorFirmware', 'motorHardware', 'motorSerial')],
-      [t('comp.battery'), txt('batteryProduct'), ver('batterySoftware', 'batteryHardware', 'batterySerial')],
-      [t('comp.controller'), txt('controllerProduct'), ver('controllerSoftware', 'controllerHardware', 'controllerSerial')],
+      [t('comp.battery'), withProductName(txt('batteryProduct')), ver('batterySoftware', 'batteryHardware', 'batterySerial')],
+      [t('comp.controller'), withProductName(txt('controllerProduct')), ver('controllerSoftware', 'controllerHardware', 'controllerSerial')],
       ...(ok('absName') ? [[t('fault.ABS'), txt('absName'), `${t('abs.mode', { m: txt('absMode') })} · Software ${txt('absSoftware')}`]] : []),
       [t('check.region'), txt('region'), ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
       [dpLabel('tuning'), txt('tuning'), t('check.tuningHint'), tuning ? (tuning.flag || tuning.counter ? 'bad' : 'good') : ''],
