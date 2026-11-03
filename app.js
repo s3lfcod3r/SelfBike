@@ -561,8 +561,8 @@ const PAGES = {
     // Ladezyklen: Einstufung statt „gut/Tipp“ und die Rechnung als Hinweis (siehe fullCycles in care.js)
     const state = (c) => (c.vars.lvl ? t(`bc.cycles.lvl.${c.vars.lvl}`) : t(`bc.state.${c.state}`));
     const hint = (c) => (c.id === 'cycles' && c.vars.size
-      ? [t('bc.cycles.calc', { used: fmtNum(c.vars.used, 0), size: fmtNum(c.vars.size, 0) }),
-        c.vars.raw != null ? t('bc.cycles.raw', { n: fmtNum(c.vars.raw, 1) }) : '', t('bc.cycles.info')].filter(Boolean).join(' ')
+      ? [t('bc.cycles.calc', { used: fmtNum(c.vars.used, 0), size: fmtNum(c.vars.size, 0), n: fmtNum(c.vars.n, 1) }),
+        c.vars.raw != null ? t('bc.cycles.raw', { n: fmtNum(c.vars.raw, 1) }) : ''].filter(Boolean).join(' ')
       : t(`bc.${c.id}.${c.state}`, { v: shown[c.id](c), n: c.vars.n }));
     const cls = { ok: 'good', warn: 'warn', bad: 'bad', info: '' };
     const checks = batteryChecks(val);
@@ -644,7 +644,7 @@ const PAGES = {
           <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
           ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>`
-            : `<span style="margin-top:4px"><b style="display:inline">${esc(t('fcat.hint'))}:</b> ${esc(cat.hint)}</span>`}</div>`;
+            : `<span style="margin-top:4px">${cat.own ? '' : `<b style="display:inline">${esc(t('fcat.hint'))}:</b> `}${esc(cat.hint)}</span>`}</div>`;
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');

@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.9 · November 2026
+- 🇬🇧 **PDF report corrected**: the note no longer claims SelfBike is a read-only program – it now says that for this report the values were only read. In the battery section the calculated "battery charges used" (with the calculation) and the battery's own cycle counter now appear together, explained in simple words: "Used so far: 650 Wh. A full battery holds 802 Wh. That makes 0.8 full battery charges." The battery probably includes charging as well, which is why its own number is higher. Same explanation in the app. eBike Lock entries are named in full ("eBike Lock Enabled"), and fault tips no longer show a duplicate "Tip:" label.
+- 🇩🇪 **PDF-Bericht korrigiert**: Der Hinweis behauptet nicht mehr, SelfBike sei ein rein lesendes Programm – er sagt jetzt, dass für diesen Bericht nur gelesen wurde. Im Akku-Abschnitt stehen die berechneten „Akkuladungen verbraucht“ (mit Rechnung) und der eigene Zyklenzähler des Akkus jetzt zusammen, einfach erklärt: „Bisher verbraucht: 650 Wh. Ein voller Akku hat 802 Wh. Das sind 0,8 volle Akkuladungen.“ Der Akku rechnet vermutlich das Aufladen mit ein, darum ist seine eigene Zahl höher. Gleiche Erklärung auch in der App. Die Einträge zum eBike Lock heißen vollständig („eBike Lock aktiviert“), und bei Fehlertipps steht kein doppeltes „Hinweis:“ mehr.
+
 ## 1.4.8 · November 2026
 - 🇬🇧 **Battery usage explained**: the battery check now says "0.8 full battery charges used" instead of just a number, with an example: what counts is the energy used, not how often you charge – riding from 100 % to 30 % adds 0.7 per ride, charging in between costs nothing extra. The PDF report uses the same wording.
 - 🇩🇪 **Akku-Nutzung verständlich erklärt**: Der Akku-Check zeigt jetzt „0,8 volle Akkuladungen verbraucht“ statt nur einer Zahl, mit Beispiel: Gezählt wird die verbrauchte Energie, nicht wie oft geladen wurde – wer von 100 % auf 30 % fährt, kommt pro Fahrt auf 0,7, Zwischendurch-Laden kostet nichts extra. Der PDF-Bericht verwendet dieselbe Bezeichnung.
