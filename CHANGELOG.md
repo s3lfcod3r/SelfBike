@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.8 · November 2026
+- 🇬🇧 **Battery usage explained**: the battery check now says "0.8 full battery charges used" instead of just a number, with an example: what counts is the energy used, not how often you charge – riding from 100 % to 30 % adds 0.7 per ride, charging in between costs nothing extra. The PDF report uses the same wording.
+- 🇩🇪 **Akku-Nutzung verständlich erklärt**: Der Akku-Check zeigt jetzt „0,8 volle Akkuladungen verbraucht“ statt nur einer Zahl, mit Beispiel: Gezählt wird die verbrauchte Energie, nicht wie oft geladen wurde – wer von 100 % auf 30 % fährt, kommt pro Fahrt auf 0,7, Zwischendurch-Laden kostet nichts extra. Der PDF-Bericht verwendet dieselbe Bezeichnung.
+
 ## 1.4.7 · November 2026
 - 🇬🇧 **Exact charge cycles**: full charge cycles are now calculated from the energy the battery has delivered in total, divided by its size (capacity × 36 V) – e.g. 650 Wh ÷ 802 Wh = 0.8. The calculation is shown, plus a rating (hardly / little / well / heavily used) instead of "tip". The battery's own counter, which usually shows a higher value, is still listed. **Language menu** shows the language names when opened (e.g. "CS · Čeština"), and all drop-down lists now have light text on a dark background. Unused texts of the former Flow app import were removed.
 - 🇩🇪 **Genaue Ladezyklen**: Volle Ladezyklen werden jetzt aus der insgesamt abgegebenen Energie des Akkus geteilt durch seine Größe (Kapazität × 36 V) berechnet – z. B. 650 Wh ÷ 802 Wh = 0,8. Die Rechnung steht dabei, dazu eine Einstufung (kaum / wenig / gut / viel genutzt) statt „Tipp“. Der eigene Zähler des Akkus, der meist höher liegt, wird weiterhin genannt. Die **Sprachauswahl** zeigt beim Aufklappen die Sprachnamen (z. B. „CS · Čeština“), und alle Auswahllisten haben jetzt helle Schrift auf dunklem Grund. Ungenutzte Texte des früheren Flow-App-Imports sind entfernt.
