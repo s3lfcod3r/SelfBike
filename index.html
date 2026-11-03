@@ -37,6 +37,8 @@
   h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0; line-height: 1.2; }
   .kofihint { margin: 8px 0 0; font-size: 12px; color: var(--self-text-2); }
   .kofihint:empty { display: none; }
+  .foothelp .kofihint { flex-basis: 100%; margin: 0; text-align: center; }
+  .foothelp .kofihint a { padding: 0; }
   .sub { color: var(--self-text-2); margin: 1px 0 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   /* Kacheln */
@@ -197,6 +199,8 @@
   <footer class="foothelp">
     <button id="showLegal" data-i18n="tools.legal"></button>
     <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi"></span></a>
+    <p class="kofihint"><span data-i18n="free.kofi"></span></p>
+    <p class="kofihint"><b data-i18n="free.title"></b> <span data-i18n="free.text"></span> <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>
   </footer>
 </div>
 
@@ -239,7 +243,7 @@
     <div class="card hidden" id="progKofi" style="padding:16px">
       <p data-i18n="support.thanks" style="margin:0 0 10px"></p>
       <a class="btn-big plain" style="margin:0" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi"></span></a>
-      <p class="kofihint" data-i18n="support.kofiEn"></p>
+      <p class="kofihint"><span data-i18n="free.kofi"></span> <span data-i18n="support.kofiEn"></span></p>
     </div>
     <details><summary data-i18n="log.title"></summary><pre class="log" id="progLog"></pre></details>
     <button class="btn-big hidden" id="progDone" data-i18n="ui.done"></button>

@@ -671,7 +671,8 @@ const PAGES = {
     return {
       title: t('tools.pdf'),
       html: `<p class="explain">${esc(t('ui.pdf.ask'))}</p>
-        <div class="group" style="margin-top:12px">${choice('light', '#ffffff', '#1f7763')}${choice('dark', '#0d1117', '#43d3ad')}</div>`,
+        <div class="group" style="margin-top:12px">${choice('light', '#ffffff', '#1f7763')}${choice('dark', '#0d1117', '#43d3ad')}</div>
+        <p class="foot"><b>${esc(t('free.title'))}</b> ${esc(t('free.text'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
       bind() {
         $('sheetBody').onclick = (e) => {
           const b = e.target.closest('[data-theme]');
