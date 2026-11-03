@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.7 · November 2026
+- 🇬🇧 **Exact charge cycles**: full charge cycles are now calculated from the energy the battery has delivered in total, divided by its size (capacity × 36 V) – e.g. 650 Wh ÷ 802 Wh = 0.8. The calculation is shown, plus a rating (hardly / little / well / heavily used) instead of "tip". The battery's own counter, which usually shows a higher value, is still listed. **Language menu** shows the language names when opened (e.g. "CS · Čeština"), and all drop-down lists now have light text on a dark background. Unused texts of the former Flow app import were removed.
+- 🇩🇪 **Genaue Ladezyklen**: Volle Ladezyklen werden jetzt aus der insgesamt abgegebenen Energie des Akkus geteilt durch seine Größe (Kapazität × 36 V) berechnet – z. B. 650 Wh ÷ 802 Wh = 0,8. Die Rechnung steht dabei, dazu eine Einstufung (kaum / wenig / gut / viel genutzt) statt „Tipp“. Der eigene Zähler des Akkus, der meist höher liegt, wird weiterhin genannt. Die **Sprachauswahl** zeigt beim Aufklappen die Sprachnamen (z. B. „CS · Čeština“), und alle Auswahllisten haben jetzt helle Schrift auf dunklem Grund. Ungenutzte Texte des früheren Flow-App-Imports sind entfernt.
+
 ## 1.4.6 · November 2026
 - 🇬🇧 **Version shown in the app**: the start page now shows the SelfBike version at the bottom ("SelfBike 1.4.6 · What's new?"), linking to this list of changes. The PDF report also names the version it was created with.
 - 🇩🇪 **Version in der App sichtbar**: Unten auf der Startseite steht jetzt die SelfBike-Version („SelfBike 1.4.6 · Was ist neu?“) mit Link zu dieser Liste der Änderungen. Auch der PDF-Bericht nennt die Version, mit der er erstellt wurde.

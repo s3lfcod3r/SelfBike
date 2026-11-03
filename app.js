@@ -555,16 +555,22 @@ const PAGES = {
     const deg = (x) => `${fmtNum(x, 1)} °C`;
     const shown = {
       soh: (c) => `${c.vars.v} %`, deep: (c) => String(c.vars.n), thermal: () => txt('batteryThermal'),
-      hot: (c) => deg(c.vars.v), cold: (c) => deg(c.vars.v), charge: (c) => deg(c.vars.v), store: (c) => `${c.vars.v} %`, cycles: () => txt('batteryCycles'),
+      hot: (c) => deg(c.vars.v), cold: (c) => deg(c.vars.v), charge: (c) => deg(c.vars.v), store: (c) => `${c.vars.v} %`,
+      cycles: (c) => (c.vars.size ? fmtNum(c.vars.n, 1) : txt('batteryCycles')),
     };
+    // Ladezyklen: Einstufung statt „gut/Tipp“ und die Rechnung als Hinweis (siehe fullCycles in care.js)
+    const state = (c) => (c.vars.lvl ? t(`bc.cycles.lvl.${c.vars.lvl}`) : t(`bc.state.${c.state}`));
+    const hint = (c) => (c.id === 'cycles' && c.vars.size
+      ? [t('bc.cycles.calc', { used: fmtNum(c.vars.used, 0), size: fmtNum(c.vars.size, 0) }),
+        c.vars.raw != null ? t('bc.cycles.raw', { n: fmtNum(c.vars.raw, 1) }) : '', t('bc.cycles.info')].filter(Boolean).join(' ')
+      : t(`bc.${c.id}.${c.state}`, { v: shown[c.id](c), n: c.vars.n }));
     const cls = { ok: 'good', warn: 'warn', bad: 'bad', info: '' };
     const checks = batteryChecks(val);
     const issues = checks.filter((c) => c.state === 'warn' || c.state === 'bad').length;
     return {
       title: t('bc.title'),
       html: checks.length ? `<p class="explain ${issues ? 'warn' : 'good'}" style="font-weight:600">${esc(t(issues ? 'bc.someWarn' : 'bc.allOk', { n: issues }))}</p>
-        <div style="margin-top:10px">${infoGroup(checks.map((c) => [t(`bc.${c.id}`), `${shown[c.id](c)} · ${t(`bc.state.${c.state}`)}`,
-          t(`bc.${c.id}.${c.state}`, { v: shown[c.id](c), n: c.vars.n }), cls[c.state]]))}</div>
+        <div style="margin-top:10px">${infoGroup(checks.map((c) => [t(`bc.${c.id}`), `${shown[c.id](c)} · ${state(c)}`, hint(c), cls[c.state]]))}</div>
         <p class="foot">${esc(t('bc.note'))}</p>` : `<p class="explain">${esc(t('tile.unreadable'))}</p>`,
     };
   },
