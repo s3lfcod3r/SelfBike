@@ -14,6 +14,7 @@ import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITAB
 import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex, bySeverity } from './lib/fault-categories.js';
 import { withProductName } from './lib/product-names.js';
+import { VERSION, CHANGELOG_URL } from './lib/version.js';
 import { loadOwnTexts } from './lib/own-fault-texts.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
@@ -946,8 +947,14 @@ async function changeLang(code) {
   $('discLang').value = $('topLang').value = lang();
   // gelesene Werte neu übersetzen geht über ein erneutes Auslesen; die Oberfläche sofort
   applyStatic();
+  showVersion();
   renderAll();
   if (stack.length) drawPage();
+}
+// Version unten auf der Startseite, verlinkt auf die Liste der Änderungen
+function showVersion() {
+  $('appVersion').href = CHANGELOG_URL;
+  $('appVersion').textContent = `SelfBike ${VERSION} · ${t('ui.whatsNew')}`;
 }
 
 // ---------- Start ----------
@@ -956,6 +963,7 @@ await Promise.all([loadCatalog(), loadOwnTexts()]);
 await setLang(detectLang());
 $('discLang').value = $('topLang').value = lang();
 applyStatic();
+showVersion();
 if (!window.isSecureContext) {
   $('connect').disabled = true;
   $('insecure').textContent = t('msg.insecure', { link: `https://${location.hostname}:8094${location.pathname}` });

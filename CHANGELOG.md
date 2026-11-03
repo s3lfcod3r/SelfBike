@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.6 · November 2026
+- 🇬🇧 **Version shown in the app**: the start page now shows the SelfBike version at the bottom ("SelfBike 1.4.6 · What's new?"), linking to this list of changes. The PDF report also names the version it was created with.
+- 🇩🇪 **Version in der App sichtbar**: Unten auf der Startseite steht jetzt die SelfBike-Version („SelfBike 1.4.6 · Was ist neu?“) mit Link zu dieser Liste der Änderungen. Auch der PDF-Bericht nennt die Version, mit der er erstellt wurde.
+
 ## 1.4.5 · November 2026
 - 🇬🇧 **Clear message when the connection is lost**: if the connection to the bike drops (bike switched off, cable moved), SelfBike no longer starts a change with outdated values but shows "Connection lost. Please reconnect." Nothing is written in that case.
 - 🇩🇪 **Klare Meldung bei Verbindungsabbruch**: Bricht die Verbindung zum Rad ab (Rad aus, Kabel bewegt), startet SelfBike keine Änderung mehr mit veralteten Werten, sondern zeigt „Verbindung verloren. Bitte neu verbinden.“ Geschrieben wird dann nichts.
