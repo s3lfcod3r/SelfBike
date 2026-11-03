@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.5 · November 2026
+- 🇬🇧 **Clear message when the connection is lost**: if the connection to the bike drops (bike switched off, cable moved), SelfBike no longer starts a change with outdated values but shows "Connection lost. Please reconnect." Nothing is written in that case.
+- 🇩🇪 **Klare Meldung bei Verbindungsabbruch**: Bricht die Verbindung zum Rad ab (Rad aus, Kabel bewegt), startet SelfBike keine Änderung mehr mit veralteten Werten, sondern zeigt „Verbindung verloren. Bitte neu verbinden.“ Geschrieben wird dann nichts.
+
 ## 1.4.4 · November 2026
 - 🇬🇧 **SelfBike is free – clearly stated**: the PDF report, the PDF page and the start page now say that nobody may charge money for SelfBike (a workshop may only charge for its own work), with a contact address in case someone did. The Ko-fi link is marked as voluntary.
 - 🇩🇪 **SelfBike ist kostenlos – jetzt deutlich sichtbar**: PDF-Bericht, PDF-Seite und Startseite sagen jetzt, dass niemand Geld für SelfBike verlangen darf (eine Werkstatt darf nur ihre eigene Arbeit berechnen), mit Kontaktadresse, falls es doch passiert ist. Der Ko-fi-Link ist als freiwillig gekennzeichnet.

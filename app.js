@@ -329,6 +329,8 @@ function propose(fn) {
   try { plan = fn(); } catch (e) { return toast(e.message, 'warn'); }
   if (!plan.steps.length) return toast(t('msg.noChange'), 'ok');
   if (blocked) return toast(t('msg.abort', { error: '' }), 'err');
+  // Verbindung zwischendurch verloren (Rad aus, Kabel, Lebenszeichen): angezeigte Werte sind alt, nichts vorschlagen
+  if (!reader) return toast(t('msg.hbLost'), 'warn');
   pending = { plan, state: S };
   $('confirmPlan').textContent = plan.title;
   $('confirmList').innerHTML = plan.steps.map((s) => `<div class="row static"><span class="t">${esc(s.label ?? dpLabel(s.key))}
@@ -712,6 +714,8 @@ $('progDone').onclick = () => { $('progSheet').classList.remove('open'); closePa
 async function saveBackup(change, onStatus = () => {}) {
   if (!demo) onStatus(t('msg.backupWhere'));
   const handle = demo ? null : await pickBackupFile(backupFileName({ createdAt: new Date().toISOString() }));
+  // Während der Dateiauswahl kann die Verbindung abbrechen
+  if (!reader) throw new Error(t('msg.hbLost'));
   const fresh = await readAll(reader, (row, i, total) => onStatus(`${t('msg.backupReading')} ${i + 1}/${total}`));
   const freshState = byKey(fresh);
   const freshModes = await readAssistModes(reader, freshState.activeModes?.value ?? [], freshState.modeNames?.value ?? []);
@@ -742,6 +746,7 @@ async function refreshChanged(plan, fresh, freshModes) {
 
 $('confirmGo').onclick = async () => {
   if (!pending || busy || blocked) return;
+  if (!reader) { pending = null; $('confirmSheet').classList.remove('open'); return toast(t('msg.hbLost'), 'warn'); }
   const { plan, state: previewState } = pending;
   busy = true;
   renderHead();
@@ -898,6 +903,7 @@ async function disconnect() {
   usb = null;
   reader = null;
   pending = null;
+  $('confirmSheet').classList.remove('open');
   if (u) await u.close();
   busy = false;
   renderAll();
