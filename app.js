@@ -344,6 +344,9 @@ const PAGES = {
     const can = val('lightOem')?.configurable === true;
     const cur = val('lightMode');
     const w = ok('lightPower') ? val('lightPower') : 1;
+    // Bestätigung nur, wenn die Leistung wirklich geschrieben wird (geändert oder Licht noch nicht freigeschaltet)
+    const powerFixed = ok('lightPower') && val('lightAvailable') === true;
+    const powerChanged = () => !powerFixed || Math.round(Number($('lw').value) * 10) !== Math.round(w * 10);
     return {
       title: t('light.title'),
       html: `<p class="explain">${esc(t('ui.lightExplain'))}</p>
@@ -353,7 +356,7 @@ const PAGES = {
         <div class="group noico">
           <div class="row static"><span class="t">${esc(t('ui.watts'))}</span>
             <span class="stepper"><button data-step="-0.5" aria-label="−">−</button><input id="lw" type="number" min="1" max="18" step="0.1" value="${esc(w)}"${can ? '' : ' disabled'}><span>W</span><button data-step="0.5" aria-label="+">+</button></span></div>
-          <label class="row"><span class="t" style="font-size:15px">${esc(t('ui.lampsOk'))}</span><input type="checkbox" class="sw" id="lampsOk"${can ? '' : ' disabled'}></label>
+          <label class="row${powerFixed ? ' hidden' : ''}" id="lampsRow"><span class="t" style="font-size:15px">${esc(t('ui.lampsOk'))}</span><input type="checkbox" class="sw" id="lampsOk"${can ? '' : ' disabled'}></label>
         </div>
         <p class="foot">${esc(t('ui.lightPowerHint'))}</p>
         ${locked(!can)}${saveBtn('save', !can)}`,
@@ -367,9 +370,11 @@ const PAGES = {
         for (const b of $('sheetBody').querySelectorAll('[data-step]')) b.onclick = () => {
           const v = Math.round((Number($('lw').value) + Number(b.dataset.step)) * 10) / 10;
           $('lw').value = Math.max(1, Math.min(18, v));
+          $('lampsRow').classList.toggle('hidden', !powerChanged());
         };
+        $('lw').oninput = () => $('lampsRow').classList.toggle('hidden', !powerChanged());
         $('save').onclick = () => {
-          if (!$('lampsOk').checked) return toast(t('msg.lampsFirst'), 'warn');
+          if (powerChanged() && !$('lampsOk').checked) return toast(t('msg.lampsFirst'), 'warn');
           propose(() => planLight(S, { mode, watts: Number($('lw').value) }));
         };
       },
