@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.12 · November 2026
+- 🇬🇧 **Bike check no longer flags legal S-pedelecs**: a factory 45 km/h S-pedelec with no manipulation detected now shows "unremarkable" instead of "flagged". The check used to mark every bike with a legal limit above 25 km/h as flagged, which was a false alarm for genuine S-pedelecs. It now only flags a bike when a manipulation is detected or when the assistance reaches more than 10 % above the bike's own class limit.
+- 🇩🇪 **Fahrrad-Check meldet legale S-Pedelecs nicht mehr als auffällig**: Ein ab Werk legales 45-km/h-S-Pedelec ohne erkannte Manipulation zeigt jetzt „unauffällig" statt „auffällig". Vorher wurde jedes Rad mit einer gesetzlichen Grenze über 25 km/h als auffällig markiert — ein Fehlalarm für echte S-Pedelecs. Jetzt gilt „auffällig" nur noch bei erkannter Manipulation oder wenn die Unterstützung mehr als 10 % über der eigenen Klassengrenze liegt.
+
 ## 1.4.11 · November 2026
 - 🇬🇧 **Fixed "Invalid riding-mode identifier" error**: on bikes that don't have all four riding modes filled in, SelfBike could stop with "Connection failed: Invalid riding-mode identifier" — for example when resetting the service, because the safety backup reads every riding mode first. Empty or unused mode slots are now skipped instead of aborting the whole action. The bike was never at risk, and nothing was changed on it when this happened.
 - 🇩🇪 **Fehler „Ungültige Fahrmodus-Kennung" behoben**: Bei Rädern, die nicht alle vier Fahrmodi belegt haben, konnte SelfBike mit „Verbindung fehlgeschlagen: Ungültige Fahrmodus-Kennung" abbrechen — z. B. beim Service-Zurücksetzen, weil das Sicherheits-Backup zuvor alle Fahrmodi ausliest. Leere oder ungenutzte Modus-Slots werden jetzt übersprungen, statt die ganze Aktion abzubrechen. Das Rad war nie in Gefahr, und es wurde dabei nichts daran verstellt.

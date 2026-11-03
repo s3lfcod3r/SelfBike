@@ -102,14 +102,15 @@ function serviceText() {
 }
 // Fahrrad-Check: Region, Unterstützung bis, Tuning-Erkennung.
 // Bosch meldet „Unterstützung bis“ etwas über der gesetzlichen Grenze (Abregelbereich, z. B. 27,4 bei 25);
-// auffällig erst bei mehr als 10 % darüber, bei einer gesetzlichen Grenze über 25 km/h oder erkannter Manipulation.
+// auffällig erst, wenn die Unterstützung mehr als 10 % über der eigenen Klassengrenze liegt oder eine
+// Manipulation erkannt wurde. Ein legales S-Pedelec (gesetzlich 45) ist für sich allein nicht auffällig.
 function checkTile() {
   const tuning = val('tuning');
   if (!tuning && !ok('region')) return '';
   const suspicious = !!tuning && (tuning.flag || tuning.counter > 0);
   const speed = val('maxAssistSpeed');
   const legal = val('maxLegalSpeed') ?? 25;
-  const warn = suspicious || (speed != null && speed > legal * 1.1 + 0.2) || legal > 25.5;
+  const warn = suspicious || (speed != null && speed > legal * 1.1 + 0.2);
   return `<div class="tile"><div class="k">${esc(t('tile.check'))}</div>
     <div class="n ${warn ? 'warn' : 'good'}" style="font-size:24px">${esc(t(warn ? 'check.warn' : 'check.ok'))}</div>
     ${ok('region') ? `<div class="c">${esc(`${t('check.region')}: ${txt('region')}`)}</div>` : ''}
