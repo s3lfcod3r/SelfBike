@@ -940,7 +940,16 @@ $('showLegal').onclick = () => showDisclaimer();
 // Oben immer sichtbar (Kürzel), im Hinweis-Fenster mit vollem Namen
 $('topLang').innerHTML = Object.entries(LANGS).map(([c, n]) => `<option value="${c}" title="${esc(n)}">${esc(c.toUpperCase())}</option>`).join('');
 $('discLang').innerHTML = Object.entries(LANGS).map(([c, n]) => `<option value="${c}">${esc(n)}</option>`).join('');
-$('topLang').onchange = () => changeLang($('topLang').value);
+// Geschlossen nur das Kürzel (schmal), aufgeklappt Kürzel + Name, damit z. B. CS/DA/SV/FI verständlich sind
+const langLabels = (full) => {
+  // Breite festhalten, sonst springt die Kopfzeile beim Aufklappen
+  $('topLang').style.width = full ? `${$('topLang').offsetWidth}px` : '';
+  for (const o of $('topLang').options) o.textContent = full ? `${o.value.toUpperCase()} · ${LANGS[o.value]}` : o.value.toUpperCase();
+};
+$('topLang').addEventListener('pointerdown', () => langLabels(true));
+$('topLang').addEventListener('keydown', () => langLabels(true));
+$('topLang').addEventListener('blur', () => langLabels(false));
+$('topLang').onchange = () => { langLabels(false); changeLang($('topLang').value); };
 $('discLang').onchange = () => changeLang($('discLang').value);
 async function changeLang(code) {
   await setLang(code);
