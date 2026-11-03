@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.11 · November 2026
+- 🇬🇧 **Fixed "Invalid riding-mode identifier" error**: on bikes that don't have all four riding modes filled in, SelfBike could stop with "Connection failed: Invalid riding-mode identifier" — for example when resetting the service, because the safety backup reads every riding mode first. Empty or unused mode slots are now skipped instead of aborting the whole action. The bike was never at risk, and nothing was changed on it when this happened.
+- 🇩🇪 **Fehler „Ungültige Fahrmodus-Kennung" behoben**: Bei Rädern, die nicht alle vier Fahrmodi belegt haben, konnte SelfBike mit „Verbindung fehlgeschlagen: Ungültige Fahrmodus-Kennung" abbrechen — z. B. beim Service-Zurücksetzen, weil das Sicherheits-Backup zuvor alle Fahrmodi ausliest. Leere oder ungenutzte Modus-Slots werden jetzt übersprungen, statt die ganze Aktion abzubrechen. Das Rad war nie in Gefahr, und es wurde dabei nichts daran verstellt.
+
 ## 1.4.10 · November 2026
 - 🇬🇧 **Riding-mode speed limit per bike class**: the max-speed slider now follows the limit the bike reports for the mode (25 km/h bike → 25, 45 km/h S-pedelec → 45) instead of a fixed 25 km/h, capped absolutely at 45 km/h. This fixes a display bug on S-pedelecs where the slider jumped from 45 to 24, 23, 22… and could lower a legal 45 bike to 25 by mistake. SelfBike still never goes beyond the limit the bike itself allows, and the safety check uses only the limit read directly from the bike, never a value from the browser.
 - 🇩🇪 **Fahrmodus-Tempo je Radklasse**: Der Geschwindigkeits-Regler richtet sich jetzt nach der Grenze, die das Rad für den Modus meldet (25er → 25, 45er → 45), statt nach festen 25 km/h, absolut gedeckelt auf 45 km/h. Das behebt einen Anzeigefehler bei S-Pedelecs, bei dem der Regler von 45 auf 24, 23, 22 … sprang und ein legales 45er versehentlich auf 25 hätte senken können. SelfBike geht weiterhin nie über die Grenze hinaus, die das Rad selbst erlaubt, und die Sicherheitsprüfung nutzt nur die direkt vom Rad gelesene Grenze, nie einen Wert aus dem Browser.
