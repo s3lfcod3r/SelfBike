@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.17 · November 2026
+- 🇬🇧 **Retrofitted parts now in the PDF report too**: second battery / range extender (PowerMore 250), Connect Module (BCM3101) and the display (Kiox 500) now get their own sections in the printable report — with model and software/hardware version — just as they already appear under Components. The raw-data appendix lists their addresses as well. Bikes without these parts stay unchanged: a part that is not fitted is left out entirely instead of showing up as "unreadable".
+- 🇩🇪 **Nachgerüstete Teile jetzt auch im PDF-Bericht**: Zweitakku / Range-Extender (PowerMore 250), Connect Module (BCM3101) und das Display (Kiox 500) bekommen im druckbaren Bericht eigene Abschnitte – mit Modell und Software-/Hardware-Version – genau wie sie schon unter Bauteile erscheinen. Auch im Rohdaten-Anhang stehen ihre Adressen. Räder ohne diese Teile bleiben unverändert: Ein nicht verbautes Teil wird ganz weggelassen und nicht als „nicht lesbar" aufgeführt.
+
 ## 1.4.16 · November 2026
 - 🇬🇧 **Retrofitted parts now recognised**: second battery / range extender (PowerMore 250), Connect Module (BCM3101) and a second display (Kiox 500) are now read and shown under Components, including their model and software/hardware version — they sit in address ranges SelfBike did not read before. Diagnostics / Export also gained matching component buttons (second battery ~600–760, Connect Module ~2800–2900, display ~3300–3480), so a missing part can be scanned directly.
 - 🇩🇪 **Nachgerüstete Teile werden jetzt erkannt**: Zweitakku / Range-Extender (PowerMore 250), Connect Module (BCM3101) und ein zweites Display (Kiox 500) werden jetzt ausgelesen und unter Bauteile angezeigt – mit Modell und Software-/Hardware-Version. Sie liegen in Adressbereichen, die SelfBike vorher nicht gelesen hat. Diagnose / Export hat dazu passende Bauteil-Knöpfe bekommen (Zusatzakku ~600–760, Connect Module ~2800–2900, Display ~3300–3480), damit man ein fehlendes Teil gezielt scannen kann.
