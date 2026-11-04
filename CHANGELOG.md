@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.13 · November 2026
+- 🇬🇧 **New "Diagnostics / Export" (read only)**: under SafeBike you can now read out your bike and save the result as a text file to send to the developer — for example when a retrofitted part (range extender, Connect module) is shown on the display and the Flow app but not yet in SelfBike. It reads the known addresses and can optionally scan an address range to capture unknown devices. Nothing is written to the bike, and personal data (serial numbers, IDs, frame number) is deliberately left out of the file.
+- 🇩🇪 **Neu „Diagnose / Export" (nur lesen)**: Unter SafeBike kannst du dein Rad jetzt auslesen und das Ergebnis als Textdatei speichern, um sie dem Entwickler zu schicken — z. B. wenn ein nachgerüstetes Teil (Zusatz-Akku, Connect-Modul) zwar auf Display und in der Flow-App, aber noch nicht in SelfBike erscheint. Es liest die bekannten Adressen und kann zusätzlich einen Adressbereich scannen, um unbekannte Geräte zu erfassen. Es wird nichts ans Rad geschrieben, und persönliche Daten (Seriennummern, IDs, Rahmennummer) bleiben bewusst aus der Datei heraus.
+
 ## 1.4.12 · November 2026
 - 🇬🇧 **Bike check no longer flags legal S-pedelecs**: a factory 45 km/h S-pedelec with no manipulation detected now shows "unremarkable" instead of "flagged". The check used to mark every bike with a legal limit above 25 km/h as flagged, which was a false alarm for genuine S-pedelecs. It now only flags a bike when a manipulation is detected or when the assistance reaches more than 10 % above the bike's own class limit.
 - 🇩🇪 **Fahrrad-Check meldet legale S-Pedelecs nicht mehr als auffällig**: Ein ab Werk legales 45-km/h-S-Pedelec ohne erkannte Manipulation zeigt jetzt „unauffällig" statt „auffällig". Vorher wurde jedes Rad mit einer gesetzlichen Grenze über 25 km/h als auffällig markiert — ein Fehlalarm für echte S-Pedelecs. Jetzt gilt „auffällig" nur noch bei erkannter Manipulation oder wenn die Unterstützung mehr als 10 % über der eigenen Klassengrenze liegt.

@@ -2,7 +2,7 @@
 import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
-import { hex } from './lib/messagebus.js';
+import { hex, pbSummary } from './lib/messagebus.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
@@ -44,6 +44,11 @@ const val = (key) => (ok(key) ? S[key].value : null);
 const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key].text ? S[key].text : fallback);
 const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
 const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); };
+
+// Diagnose-Export: Adressen mit persönlichen Daten werden beim Export ausgelassen
+const PRIVATE_ADDR = new Set(READ_PLAN.filter((p) => p.private).map((p) => p.address));
+const ADDR_LABEL = new Map(READ_PLAN.map((p) => [p.address, p.label]));
+const diag = { map: new Map(), busy: false, stop: false };
 
 // ---------- Meldungen ----------
 
@@ -225,6 +230,7 @@ const ICONS = {
   classic: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/>',
   kofi: '<path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM17 9h1.5a2.5 2.5 0 0 1 0 5H17"/>',
   refresh: '<path d="M20 11A8 8 0 0 0 5.6 6.6L4 8M4 4v4h4M4 13a8 8 0 0 0 14.4 4.4L20 16M20 20v-4h-4"/>',
+  export: '<path d="M12 3v12M8 11l4 4 4-4M5 21h14"/>',
 };
 const icon = (name, color = '') => `<span class="ico"${color ? ` style="background:${color}"` : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg></span>`;
 const navRow = (key, label, value = '', color = '') =>
@@ -261,6 +267,7 @@ function renderMore() {
     <p class="gh">${esc(t('ui.groupSafe'))}</p><div class="group">
       <button class="row" data-act="backup">${icon('backup', '#0ea5e9')}<span class="t">${esc(t('backup.btn'))}</span></button>
       <button class="row" data-act="pdf">${icon('pdf', '#0ea5e9')}<span class="t">${esc(t('tools.pdf'))}</span></button>
+      <button class="row" data-act="diagnose">${icon('export', '#0ea5e9')}<span class="t">${esc(t('diag.title'))}</span></button>
       <label class="row">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('restore.title'))}</span><span class="chev">›</span>
         <input type="file" id="restoreFile" accept=".json,application/json" class="hidden"></label>
       <button class="row" data-act="refresh">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('ui.refresh'))}</span></button>
@@ -273,6 +280,7 @@ $('moreList').addEventListener('click', async (e) => {
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (act === 'legal') showDisclaimer();
   else if (act === 'pdf') openPage('pdf');
+  else if (act === 'diagnose') openPage('diagnose');
   else if (act === 'backup') manualBackup();
   else if (act === 'refresh') { try { await refresh(); } catch (err) { await disconnect(); toast(t('msg.readError', { error: err.message }), 'err'); } }
   else if (act === 'disconnect') { await disconnect(); toast(t('msg.disconnected')); }
@@ -698,6 +706,39 @@ const PAGES = {
   },
   ridemodes() { return { title: t('ride.modesTitle'), html: rideHtml().modes }; },
   stats() { return { title: t('ride.statsTitle'), html: rideHtml().stats }; },
+  diagnose() {
+    const n = diag.map.size;
+    const btn = (id, label, cls = '') => `<button class="row${cls ? ' ' + cls : ''}" id="${id}"><span class="t">${esc(label)}</span></button>`;
+    return {
+      title: t('diag.title'),
+      html: `<p class="explain">${esc(t('diag.explain'))}</p>
+        <div class="group noico" style="margin-top:12px">
+          <button class="btn-big" id="diagRun"${diag.busy ? ' disabled' : ''}>${esc(t('diag.run'))}</button>
+        </div>
+        <p class="gh">${esc(t('diag.scanTitle'))}</p>
+        <div class="group noico">
+          <div class="row static"><span class="t">${esc(t('diag.range'))}</span>
+            <span class="stepper"><input id="diagFrom" type="number" min="0" max="65535" value="0" style="width:74px"><span>–</span><input id="diagTo" type="number" min="0" max="65535" value="300" style="width:74px"></span></div>
+          ${btn('diagScan', t('diag.scan'))}
+          <button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button>
+        </div>
+        <p id="diagStatus" class="foot">${n ? esc(t('diag.have', { n })) : ''}</p>
+        <div class="group noico" id="diagActions"${n ? '' : ' style="display:none"'}>
+          ${btn('diagSave', t('diag.save'))}
+          ${btn('diagCopy', t('diag.copy'))}
+          ${btn('diagClear', t('diag.clear'), 'danger')}
+        </div>
+        <p class="foot">${esc(t('diag.send'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
+      bind() {
+        $('diagRun').onclick = diagRunKnown;
+        $('diagScan').onclick = diagRunScan;
+        $('diagStop').onclick = () => { diag.stop = true; };
+        const save = $('diagSave'); if (save) save.onclick = () => downloadTextFile(`selfbike-diagnose-${VERSION}.txt`, diagText());
+        const copy = $('diagCopy'); if (copy) copy.onclick = async () => { try { await navigator.clipboard.writeText(diagText()); toast(t('diag.copied'), 'ok'); } catch { toast(t('diag.copyFail'), 'warn'); } };
+        const clear = $('diagClear'); if (clear) clear.onclick = () => { diag.map.clear(); redrawDiag(); };
+      },
+    };
+  },
 };
 
 // ---------- Ändern: Backup → prüfen → schreiben → zurücklesen ----------
@@ -833,6 +874,78 @@ async function manualBackup() {
   } catch (e) {
     toast(e.name === 'AbortError' ? t('msg.noLocation') : t('msg.backupFailed', { error: e.message }), 'warn');
   } finally { busy = false; renderHead(); }
+}
+
+// ---------- Diagnose / Export (nur lesen) ----------
+// Liest Roh-Adressen aus und erstellt eine Textdatei für den Entwickler (z. B. für nicht erkannte
+// Zusatzgeräte). Persönliche Daten (Seriennummern, IDs, Rahmennummer) werden nicht mit ausgelesen.
+async function diagReadAddr(address, timeoutMs = 1800) {
+  const row = { address, status: 'error', hex: '', fields: '', error: '', code: null };
+  if (PRIVATE_ADDR.has(address)) { row.status = 'private'; row.fields = t('diag.hidden'); return row; }
+  try {
+    const r = await reader.read(address, timeoutMs);
+    row.hex = hex(r.payload);
+    row.fields = pbSummary(r.payload);
+    if (r.status === 0) row.status = 'ok';
+    else { row.status = 'rejected'; row.code = r.status; row.error = r.statusName; }
+  } catch (e) { row.status = e.timeout ? 'timeout' : 'error'; row.error = e.message; }
+  return row;
+}
+function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textContent = text; }
+function diagSetBusy(on) {
+  diag.busy = on; if (on) diag.stop = false;
+  for (const id of ['diagRun', 'diagScan']) { const el = $(id); if (el) el.disabled = on; }
+  const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
+}
+function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
+async function diagRunKnown() {
+  if (!reader || diag.busy) return;
+  diag.map.clear(); diagSetBusy(true);
+  for (const [i, p] of READ_PLAN.entries()) {
+    if (diag.stop) break;
+    diag.map.set(p.address, await diagReadAddr(p.address));
+    diagStatusLine(t('diag.progress', { n: i + 1, total: READ_PLAN.length }));
+  }
+  diagSetBusy(false); redrawDiag();
+}
+async function diagRunScan() {
+  if (!reader || diag.busy) return;
+  let from = Math.max(0, parseInt($('diagFrom').value, 10) || 0);
+  let to = Math.min(65535, parseInt($('diagTo').value, 10) || 0);
+  if (to < from) [from, to] = [to, from];
+  to = Math.min(to, from + 599);
+  diagSetBusy(true);
+  let hits = 0;
+  for (let a = from; a <= to; a++) {
+    if (diag.stop) break;
+    const r = await diagReadAddr(a, 450);
+    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
+    diagStatusLine(t('diag.scanProgress', { a, to, hits }));
+  }
+  diagSetBusy(false); redrawDiag();
+}
+function diagText() {
+  const name = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim();
+  const list = [...diag.map.values()].sort((a, b) => a.address - b.address);
+  const header = [
+    'SelfBike Diagnose-Export',
+    `Version ${VERSION}`,
+    new Date().toISOString(),
+    name ? `Rad: ${name}` : null,
+    t('diag.fileNote'),
+    '',
+    ['Adresse', 'Name', 'Status', 'Hex', 'Felder'].join('\t'),
+  ].filter((l) => l !== null);
+  const body = list.map((r) => [r.address, ADDR_LABEL.get(r.address) || '',
+    r.status + (r.code != null ? ' ' + r.code : ''), r.hex, r.fields || r.error].join('\t'));
+  return [...header, ...body].join('\n');
+}
+function downloadTextFile(fileName, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = fileName;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 // ---------- Verbinden und Auslesen ----------
