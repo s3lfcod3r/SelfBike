@@ -52,7 +52,10 @@ const diag = { map: new Map(), busy: false, stop: false };
 // Die bekannten Adressen liegen in Blöcken je Bauteil – ein Knopf pro Block, damit man gezielt scannen kann
 const DIAG_BANDS = [
   { key: 'battery', from: 0, to: 300 },
+  { key: 'battery2', from: 600, to: 760 },
   { key: 'abs', from: 2300, to: 2400 },
+  { key: 'connect', from: 2800, to: 2900 },
+  { key: 'display', from: 3300, to: 3480 },
   { key: 'drive', from: 6100, to: 6400 },
   { key: 'control', from: 8200, to: 8600 },
 ];
@@ -679,7 +682,10 @@ const PAGES = {
       [t('comp.bike'), `${txt('oemBrand')}${model ? ` ${model}` : ''}`, model ? '' : t('comp.modelMissing')],
       [t('comp.motor'), `${txt('motorName')} · ${txt('motorModel')}`, ver('motorFirmware', 'motorHardware', 'motorSerial')],
       [t('comp.battery'), withProductName(txt('batteryProduct')), ver('batterySoftware', 'batteryHardware', 'batterySerial')],
+      ...(ok('battery2Product') ? [[t('comp.battery2'), withProductName(txt('battery2Product')), `${t('versions', { sw: txt('battery2Software'), hw: txt('battery2Hardware') })}${ok('battery2Soc') ? ` · ${t('comp.soc', { v: txt('battery2Soc') })}` : ''}`]] : []),
       [t('comp.controller'), withProductName(txt('controllerProduct')), ver('controllerSoftware', 'controllerHardware', 'controllerSerial')],
+      ...(ok('headProduct') ? [[t('comp.display'), withProductName(txt('headProduct')), t('versions', { sw: txt('headSoftware'), hw: txt('headHardware') })]] : []),
+      ...(ok('connectProduct') ? [[t('comp.connect'), withProductName(txt('connectProduct')), t('versions', { sw: txt('connectSoftware'), hw: txt('connectHardware') })]] : []),
       ...(ok('absName') ? [[t('fault.ABS'), txt('absName'), `${t('abs.mode', { m: txt('absMode') })} · Software ${txt('absSoftware')}`]] : []),
       [t('check.region'), txt('region'), ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
       [dpLabel('tuning'), txt('tuning'), t('check.tuningHint'), tuning ? (tuning.flag || tuning.counter ? 'bad' : 'good') : ''],

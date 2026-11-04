@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.16 · November 2026
+- 🇬🇧 **Retrofitted parts now recognised**: second battery / range extender (PowerMore 250), Connect Module (BCM3101) and a second display (Kiox 500) are now read and shown under Components, including their model and software/hardware version — they sit in address ranges SelfBike did not read before. Diagnostics / Export also gained matching component buttons (second battery ~600–760, Connect Module ~2800–2900, display ~3300–3480), so a missing part can be scanned directly.
+- 🇩🇪 **Nachgerüstete Teile werden jetzt erkannt**: Zweitakku / Range-Extender (PowerMore 250), Connect Module (BCM3101) und ein zweites Display (Kiox 500) werden jetzt ausgelesen und unter Bauteile angezeigt – mit Modell und Software-/Hardware-Version. Sie liegen in Adressbereichen, die SelfBike vorher nicht gelesen hat. Diagnose / Export hat dazu passende Bauteil-Knöpfe bekommen (Zusatzakku ~600–760, Connect Module ~2800–2900, Display ~3300–3480), damit man ein fehlendes Teil gezielt scannen kann.
+
 ## 1.4.15 · November 2026
 - 🇬🇧 **Diagnostics / Export easier to understand**: instead of a bare "0–300" field, there are now clearly named buttons per component, each with its address range shown — Battery (0–300), Brakes / ABS (2300–2400), Motor, riding modes & light (6100–6400), Control unit & service (8200–8600). So if a certain part is missing you scan exactly that one instead of guessing. The known read is marked as step 1, the full scan is for unknown/retrofitted parts, and a manual range stays available for experts.
 - 🇩🇪 **Diagnose / Export verständlicher**: Statt eines nackten „0–300"-Feldes gibt es jetzt klar benannte Knöpfe pro Bauteil mit angezeigtem Adressbereich — Akku (0–300), Bremsen / ABS (2300–2400), Motor, Fahrmodi & Licht (6100–6400), Bedieneinheit & Service (8200–8600). Fehlt ein bestimmtes Teil, scannt man gezielt genau dieses, statt zu raten. Das bekannte Auslesen ist als Schritt 1 markiert, der komplette Scan ist für unbekannte/nachgerüstete Teile, und ein eigener Bereich bleibt für Profis.
