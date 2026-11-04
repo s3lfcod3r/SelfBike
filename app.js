@@ -687,6 +687,7 @@ const PAGES = {
       ...(ok('headProduct') ? [[t('comp.display'), withProductName(txt('headProduct')), t('versions', { sw: txt('headSoftware'), hw: txt('headHardware') })]] : []),
       ...(ok('connectProduct') ? [[t('comp.connect'), withProductName(txt('connectProduct')), t('versions', { sw: txt('connectSoftware'), hw: txt('connectHardware') })]] : []),
       ...(ok('absName') ? [[t('fault.ABS'), txt('absName'), `${t('abs.mode', { m: txt('absMode') })} · Software ${txt('absSoftware')}`]] : []),
+      ...(ok('gearCount') ? [[t('comp.shift'), t('comp.shiftVal'), `${t('comp.gears', { n: txt('gearCount') })}${ok('gearNow') ? ` · ${t('more.gearNow', { g: txt('gearNow') })}` : ''}`]] : []),
       [t('check.region'), txt('region'), ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
       [dpLabel('tuning'), txt('tuning'), t('check.tuningHint'), tuning ? (tuning.flag || tuning.counter ? 'bad' : 'good') : ''],
       [t('comp.bikeId'), t(idOk ? 'comp.idOk' : 'comp.idConflict'), '', idOk ? 'good' : 'bad'],

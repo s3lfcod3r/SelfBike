@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.18 · November 2026
+- 🇬🇧 **Electronic shifting (eShift / Di2) now shown under Components and in the report**: if the bike has electronic shifting, it now appears in the component list and the PDF report with the number of gears (and the current gear / target cadence where available). It was already read under "More details" before, but was missing from Components and the report. Bikes with a mechanical derailleur are unchanged.
+- 🇩🇪 **Elektronische Schaltung (eShift / Di2) jetzt unter Bauteile und im Bericht**: Hat das Rad eine elektronische Schaltung, erscheint sie jetzt in der Bauteilliste und im PDF-Bericht mit der Gangzahl (und aktuellem Gang / Ziel-Trittfrequenz, soweit vorhanden). Gelesen wurde das vorher schon unter „Mehr Details", in Bauteilen und im Bericht fehlte es aber. Räder mit mechanischer Schaltung bleiben unverändert.
+
 ## 1.4.17 · November 2026
 - 🇬🇧 **Retrofitted parts now in the PDF report too**: second battery / range extender (PowerMore 250), Connect Module (BCM3101) and the display (Kiox 500) now get their own sections in the printable report — with model and software/hardware version — just as they already appear under Components. The raw-data appendix lists their addresses as well. Bikes without these parts stay unchanged: a part that is not fitted is left out entirely instead of showing up as "unreadable".
 - 🇩🇪 **Nachgerüstete Teile jetzt auch im PDF-Bericht**: Zweitakku / Range-Extender (PowerMore 250), Connect Module (BCM3101) und das Display (Kiox 500) bekommen im druckbaren Bericht eigene Abschnitte – mit Modell und Software-/Hardware-Version – genau wie sie schon unter Bauteile erscheinen. Auch im Rohdaten-Anhang stehen ihre Adressen. Räder ohne diese Teile bleiben unverändert: Ein nicht verbautes Teil wird ganz weggelassen und nicht als „nicht lesbar" aufgeführt.
