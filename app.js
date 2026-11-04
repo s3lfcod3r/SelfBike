@@ -419,27 +419,31 @@ const PAGES = {
     const m = modes.find((x) => x.id === id);
     const can = canEdit(m);
     const shown = (k, raw) => (k === 'maximumBikeSpeed' ? raw / 100 : raw);
+    const UNIT = { maximumBikeSpeed: 'km/h', maximumMotorTorque: 'Nm', maximumMotorPower: 'W' };
+    const STEP = { maximumBikeSpeed: 0.5, maximumMotorPower: 10 };
+    const dec = (k) => (k === 'maximumBikeSpeed' ? 1 : 0);
     const sliders = can ? EDITABLE.map((k) => {
       const { min, max } = bounds(m, k);
-      const lo = shown(k, min ?? 0);
-      const hi = shown(k, max ?? 0);
-      const unit = k === 'maximumBikeSpeed' ? 'km/h' : '%';
-      const step = k === 'maximumBikeSpeed' ? 0.5 : 1;
+      // Slider nur, wenn das Rad für dieses Feld einen Wert und Grenzen meldet (z. B. Drehmoment/Leistung je Motor)
+      if (m.udam[k] == null || min == null || max == null) return '';
+      const d = dec(k);
+      const lo = shown(k, min);
+      const hi = shown(k, max);
+      const unit = UNIT[k] ?? '%';
+      const step = STEP[k] ?? 1;
       return `<div class="slider">
-        <div class="top"><span>${esc(t(`mode.${k}`))}</span><span class="val"><span data-out="${k}">${esc(fmtNum(shown(k, m.udam[k]), k === 'maximumBikeSpeed' ? 1 : 0))}</span> ${unit}</span></div>
+        <div class="top"><span>${esc(t(`mode.${k}`))}</span><span class="val"><span data-out="${k}">${esc(fmtNum(shown(k, m.udam[k]), d))}</span> ${unit}</span></div>
         <input type="range" data-key="${k}" min="${lo}" max="${hi}" step="${step}" value="${shown(k, m.udam[k])}">
-        <div class="ends"><span>${esc(fmtNum(lo, k === 'maximumBikeSpeed' ? 1 : 0))} ${unit}</span><span>${esc(fmtNum(hi, k === 'maximumBikeSpeed' ? 1 : 0))} ${unit}</span></div>
+        <div class="ends"><span>${esc(fmtNum(lo, d))} ${unit}</span><span>${esc(fmtNum(hi, d))} ${unit}</span></div>
         <div class="hint">${esc(t(`ui.hint.${k}`))}</div></div>`;
-    }).join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>') : '';
+    }).filter(Boolean).join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>') : '';
     // Weitere Modus-Werte nur zur Ansicht (Leistung/Drehmoment bewusst nicht editierbar – nur was die Flow-App freigibt, ist oben einstellbar)
     const u = m?.udam || {};
     const flag = (v) => (v === 0 || v === 1 ? t(v ? 'mode.on' : 'mode.off') : String(v));
     const info = (label, v) => `<div class="row static"><span class="t">${esc(label)}</span><span class="v">${esc(v)}</span></div>`;
     const extraRows = [
-      u.maximumMotorTorque != null ? info(t('mode.torque'), `${u.maximumMotorTorque} Nm`) : '',
-      u.maximumMotorPower != null ? info(t('mode.power'), `${u.maximumMotorPower} W`) : '',
-      u.extendedBoost != null ? info(t('mode.boost'), flag(u.extendedBoost)) : '',
-      u.tractionControl != null ? info(t('mode.traction'), flag(u.tractionControl)) : '',
+      u.extendedBoost != null ? info(t('mode.boost'), String(u.extendedBoost)) : '',
+      u.tractionControl != null ? info(t('mode.traction'), t('mode.level', { n: u.tractionControl })) : '',
       u.driveTrainTensioner != null ? info(t('mode.tensioner'), flag(u.driveTrainTensioner)) : '',
     ].filter(Boolean).join('');
     const extra = extraRows ? `<p class="gh">${esc(t('mode.readonly'))}</p><div class="group noico">${extraRows}</div><p class="foot">${esc(t('mode.readonlyHint'))}</p>` : '';

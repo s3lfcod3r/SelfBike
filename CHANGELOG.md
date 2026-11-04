@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.20 · November 2026
+- 🇬🇧 **Max. torque and max. motor power now adjustable**: in each riding mode you can now also set max. torque (Nm) and max. motor power (W) – the same values the Flow app exposes under "Custom riding modes", and adjustable on every Smart System motor. The bike itself caps them to its own limits (speed and region stay untouched). A note warns that high torque can increase drivetrain wear. Extended Boost, traction control and drivetrain tensioner stay view-only for now (motor-dependent).
+- 🇩🇪 **Max. Drehmoment und max. Motorleistung jetzt einstellbar**: In jedem Fahrmodus lassen sich nun auch max. Drehmoment (Nm) und max. Motorleistung (W) einstellen – dieselben Werte, die die Flow-App unter „Individuelle Fahrmodi“ freigibt, und bei jedem Smart-System-Motor einstellbar. Das Rad deckelt sie auf seine eigenen Grenzen (Tempo und Region bleiben unberührt). Ein Hinweis warnt, dass hohes Drehmoment den Verschleiß erhöhen kann. Extended Boost, Traktionskontrolle und Kettenspanner bleiben vorerst nur zur Ansicht (motorabhängig).
+
 ## 1.4.19 · November 2026
 - 🇬🇧 **More riding-mode values shown (view only)**: each riding mode now also shows max. torque, max. motor power, Extended Boost, traction control and drivetrain tensioner. These are read-only on purpose — adjustable are still only the same three the Flow app exposes under "Custom riding modes" (assistance, dynamics, top speed).
 - 🇩🇪 **Mehr Fahrmodi-Werte sichtbar (nur Ansicht)**: Jeder Fahrmodus zeigt jetzt zusätzlich max. Drehmoment, max. Motorleistung, Extended Boost, Traktionskontrolle und Kettenspanner. Die sind bewusst nur zum Ansehen – einstellbar bleiben nur dieselben drei wie in der Flow-App unter „Individuelle Fahrmodi“ (Unterstützung, Dynamik, Höchstgeschwindigkeit).
