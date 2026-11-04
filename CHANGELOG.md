@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.22 · November 2026
+- 🇬🇧 **Traction control, Extended Boost and drivetrain tensioner now adjustable too**: in each riding mode these three can now be set as well (where the motor offers them) – the same as in the Flow app's "Advanced" tab. Traction control as a level (Off / Low / Medium / High), Extended Boost as a value, drivetrain tensioner off / on. The bike caps all of them to its own limits.
+- 🇩🇪 **Traktionskontrolle, Extended Boost und Kettenspanner jetzt auch einstellbar**: In jedem Fahrmodus lassen sich nun auch diese drei einstellen (sofern der Motor sie bietet) – genau wie im „Erweitert“-Tab der Flow-App. Traktionskontrolle als Stufe (Aus / Niedrig / Mittel / Hoch), Extended Boost als Wert, Kettenspanner aus / an. Das Rad deckelt alle auf seine eigenen Grenzen.
+
 ## 1.4.21 · November 2026
 - 🇬🇧 **Two more batteries recognised by name**: PowerPack 400 (BBP3340) and PowerPack 500 (BBP3350) are now shown with their sales name instead of the bare part number. Thanks to the forum for the hint.
 - 🇩🇪 **Zwei weitere Akkus mit Namen erkannt**: PowerPack 400 (BBP3340) und PowerPack 500 (BBP3350) werden jetzt mit ihrem Verkaufsnamen statt der nackten Teilenummer angezeigt. Danke ans Forum für den Hinweis.

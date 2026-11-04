@@ -419,43 +419,42 @@ const PAGES = {
     const m = modes.find((x) => x.id === id);
     const can = canEdit(m);
     const shown = (k, raw) => (k === 'maximumBikeSpeed' ? raw / 100 : raw);
-    const UNIT = { maximumBikeSpeed: 'km/h', maximumMotorTorque: 'Nm', maximumMotorPower: 'W' };
     const STEP = { maximumBikeSpeed: 0.5, maximumMotorPower: 10 };
-    const dec = (k) => (k === 'maximumBikeSpeed' ? 1 : 0);
+    // Anzeige je Feld: Einheit, Stufenname oder Aus/An – genau wie die Flow-App es zeigt
+    const fmtVal = (k, raw) => {
+      if (raw == null) return '–';
+      switch (k) {
+        case 'maximumBikeSpeed': return `${fmtNum(raw / 100, 1)} km/h`;
+        case 'maximumMotorTorque': return `${fmtNum(raw, 0)} Nm`;
+        case 'maximumMotorPower': return `${fmtNum(raw, 0)} W`;
+        case 'tractionControl': return raw >= 0 && raw <= 3 ? t(`mode.tc.${raw}`) : t('mode.level', { n: raw });
+        case 'extendedBoost': return raw === 0 ? t('mode.tc.0') : fmtNum(raw, 0);
+        case 'driveTrainTensioner': return t(raw ? 'mode.on2' : 'mode.tc.0');
+        default: return `${fmtNum(raw, 0)} %`;
+      }
+    };
     const sliders = can ? EDITABLE.map((k) => {
       const { min, max } = bounds(m, k);
-      // Slider nur, wenn das Rad für dieses Feld einen Wert und Grenzen meldet (z. B. Drehmoment/Leistung je Motor)
+      // Slider nur, wenn das Rad für dieses Feld einen Wert und Grenzen meldet (Drehmoment/Leistung/Erweitert je Motor)
       if (m.udam[k] == null || min == null || max == null) return '';
-      const d = dec(k);
-      const lo = shown(k, min);
-      const hi = shown(k, max);
-      const unit = UNIT[k] ?? '%';
       const step = STEP[k] ?? 1;
       return `<div class="slider">
-        <div class="top"><span>${esc(t(`mode.${k}`))}</span><span class="val"><span data-out="${k}">${esc(fmtNum(shown(k, m.udam[k]), d))}</span> ${unit}</span></div>
-        <input type="range" data-key="${k}" min="${lo}" max="${hi}" step="${step}" value="${shown(k, m.udam[k])}">
-        <div class="ends"><span>${esc(fmtNum(lo, d))} ${unit}</span><span>${esc(fmtNum(hi, d))} ${unit}</span></div>
+        <div class="top"><span>${esc(t(`mode.${k}`))}</span><span class="val"><span data-out="${k}">${esc(fmtVal(k, m.udam[k]))}</span></span></div>
+        <input type="range" data-key="${k}" min="${shown(k, min)}" max="${shown(k, max)}" step="${step}" value="${shown(k, m.udam[k])}">
+        <div class="ends"><span>${esc(fmtVal(k, min))}</span><span>${esc(fmtVal(k, max))}</span></div>
         <div class="hint">${esc(t(`ui.hint.${k}`))}</div></div>`;
     }).filter(Boolean).join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>') : '';
-    // Weitere Modus-Werte nur zur Ansicht (Leistung/Drehmoment bewusst nicht editierbar – nur was die Flow-App freigibt, ist oben einstellbar)
-    const u = m?.udam || {};
-    const flag = (v) => (v === 0 || v === 1 ? t(v ? 'mode.on' : 'mode.off') : String(v));
-    const info = (label, v) => `<div class="row static"><span class="t">${esc(label)}</span><span class="v">${esc(v)}</span></div>`;
-    const extraRows = [
-      u.extendedBoost != null ? info(t('mode.boost'), String(u.extendedBoost)) : '',
-      u.tractionControl != null ? info(t('mode.traction'), t('mode.level', { n: u.tractionControl })) : '',
-      u.driveTrainTensioner != null ? info(t('mode.tensioner'), flag(u.driveTrainTensioner)) : '',
-    ].filter(Boolean).join('');
-    const extra = extraRows ? `<p class="gh">${esc(t('mode.readonly'))}</p><div class="group noico">${extraRows}</div><p class="foot">${esc(t('mode.readonlyHint'))}</p>` : '';
     return {
       title: m?.name ?? t('mode.title'),
       html: `${can ? `<div class="group">${sliders}</div>` : locked(true)}
         ${saveBtn('save', !can)}
-        ${m?.defaults ? `<button class="btn-text" id="reset">${esc(t('ui.factory'))}</button>` : ''}
-        ${extra}`,
+        ${m?.defaults ? `<button class="btn-text" id="reset">${esc(t('ui.factory'))}</button>` : ''}`,
       bind() {
         for (const r of $('sheetBody').querySelectorAll('input[type=range]')) {
-          r.oninput = () => { $('sheetBody').querySelector(`[data-out="${r.dataset.key}"]`).textContent = fmtNum(Number(r.value), r.dataset.key === 'maximumBikeSpeed' ? 1 : 0); };
+          r.oninput = () => {
+            const raw = r.dataset.key === 'maximumBikeSpeed' ? Number(r.value) * 100 : Number(r.value);
+            $('sheetBody').querySelector(`[data-out="${r.dataset.key}"]`).textContent = fmtVal(r.dataset.key, raw);
+          };
         }
         if (can) $('save').onclick = () => {
           const values = {};
