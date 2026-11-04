@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.19 · November 2026
+- 🇬🇧 **More riding-mode values shown (view only)**: each riding mode now also shows max. torque, max. motor power, Extended Boost, traction control and drivetrain tensioner. These are read-only on purpose — adjustable are still only the same three the Flow app exposes under "Custom riding modes" (assistance, dynamics, top speed).
+- 🇩🇪 **Mehr Fahrmodi-Werte sichtbar (nur Ansicht)**: Jeder Fahrmodus zeigt jetzt zusätzlich max. Drehmoment, max. Motorleistung, Extended Boost, Traktionskontrolle und Kettenspanner. Die sind bewusst nur zum Ansehen – einstellbar bleiben nur dieselben drei wie in der Flow-App unter „Individuelle Fahrmodi“ (Unterstützung, Dynamik, Höchstgeschwindigkeit).
+
 ## 1.4.18 · November 2026
 - 🇬🇧 **Electronic shifting (eShift / Di2) now shown under Components and in the report**: if the bike has electronic shifting, it now appears in the component list and the PDF report with the number of gears (and the current gear / target cadence where available). It was already read under "More details" before, but was missing from Components and the report. Bikes with a mechanical derailleur are unchanged.
 - 🇩🇪 **Elektronische Schaltung (eShift / Di2) jetzt unter Bauteile und im Bericht**: Hat das Rad eine elektronische Schaltung, erscheint sie jetzt in der Bauteilliste und im PDF-Bericht mit der Gangzahl (und aktuellem Gang / Ziel-Trittfrequenz, soweit vorhanden). Gelesen wurde das vorher schon unter „Mehr Details", in Bauteilen und im Bericht fehlte es aber. Räder mit mechanischer Schaltung bleiben unverändert.

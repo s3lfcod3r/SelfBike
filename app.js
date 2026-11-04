@@ -431,11 +431,24 @@ const PAGES = {
         <div class="ends"><span>${esc(fmtNum(lo, k === 'maximumBikeSpeed' ? 1 : 0))} ${unit}</span><span>${esc(fmtNum(hi, k === 'maximumBikeSpeed' ? 1 : 0))} ${unit}</span></div>
         <div class="hint">${esc(t(`ui.hint.${k}`))}</div></div>`;
     }).join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>') : '';
+    // Weitere Modus-Werte nur zur Ansicht (Leistung/Drehmoment bewusst nicht editierbar – nur was die Flow-App freigibt, ist oben einstellbar)
+    const u = m?.udam || {};
+    const flag = (v) => (v === 0 || v === 1 ? t(v ? 'mode.on' : 'mode.off') : String(v));
+    const info = (label, v) => `<div class="row static"><span class="t">${esc(label)}</span><span class="v">${esc(v)}</span></div>`;
+    const extraRows = [
+      u.maximumMotorTorque != null ? info(t('mode.torque'), `${u.maximumMotorTorque} Nm`) : '',
+      u.maximumMotorPower != null ? info(t('mode.power'), `${u.maximumMotorPower} W`) : '',
+      u.extendedBoost != null ? info(t('mode.boost'), flag(u.extendedBoost)) : '',
+      u.tractionControl != null ? info(t('mode.traction'), flag(u.tractionControl)) : '',
+      u.driveTrainTensioner != null ? info(t('mode.tensioner'), flag(u.driveTrainTensioner)) : '',
+    ].filter(Boolean).join('');
+    const extra = extraRows ? `<p class="gh">${esc(t('mode.readonly'))}</p><div class="group noico">${extraRows}</div><p class="foot">${esc(t('mode.readonlyHint'))}</p>` : '';
     return {
       title: m?.name ?? t('mode.title'),
       html: `${can ? `<div class="group">${sliders}</div>` : locked(true)}
         ${saveBtn('save', !can)}
-        ${m?.defaults ? `<button class="btn-text" id="reset">${esc(t('ui.factory'))}</button>` : ''}`,
+        ${m?.defaults ? `<button class="btn-text" id="reset">${esc(t('ui.factory'))}</button>` : ''}
+        ${extra}`,
       bind() {
         for (const r of $('sheetBody').querySelectorAll('input[type=range]')) {
           r.oninput = () => { $('sheetBody').querySelector(`[data-out="${r.dataset.key}"]`).textContent = fmtNum(Number(r.value), r.dataset.key === 'maximumBikeSpeed' ? 1 : 0); };
