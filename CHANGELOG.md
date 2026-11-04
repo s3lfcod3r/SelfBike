@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.21 · November 2026
+- 🇬🇧 **Two more batteries recognised by name**: PowerPack 400 (BBP3340) and PowerPack 500 (BBP3350) are now shown with their sales name instead of the bare part number. Thanks to the forum for the hint.
+- 🇩🇪 **Zwei weitere Akkus mit Namen erkannt**: PowerPack 400 (BBP3340) und PowerPack 500 (BBP3350) werden jetzt mit ihrem Verkaufsnamen statt der nackten Teilenummer angezeigt. Danke ans Forum für den Hinweis.
+
 ## 1.4.20 · November 2026
 - 🇬🇧 **Max. torque and max. motor power now adjustable**: in each riding mode you can now also set max. torque (Nm) and max. motor power (W) – the same values the Flow app exposes under "Custom riding modes", and adjustable on every Smart System motor. The bike itself caps them to its own limits (speed and region stay untouched). A note warns that high torque can increase drivetrain wear. Extended Boost, traction control and drivetrain tensioner stay view-only for now (motor-dependent).
 - 🇩🇪 **Max. Drehmoment und max. Motorleistung jetzt einstellbar**: In jedem Fahrmodus lassen sich nun auch max. Drehmoment (Nm) und max. Motorleistung (W) einstellen – dieselben Werte, die die Flow-App unter „Individuelle Fahrmodi“ freigibt, und bei jedem Smart-System-Motor einstellbar. Das Rad deckelt sie auf seine eigenen Grenzen (Tempo und Region bleiben unberührt). Ein Hinweis warnt, dass hohes Drehmoment den Verschleiß erhöhen kann. Extended Boost, Traktionskontrolle und Kettenspanner bleiben vorerst nur zur Ansicht (motorabhängig).
