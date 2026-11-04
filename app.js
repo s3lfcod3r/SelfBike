@@ -722,6 +722,11 @@ const PAGES = {
           ${btn('diagScan', t('diag.scan'))}
           <button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button>
         </div>
+        <p class="gh">${esc(t('diag.fullTitle'))}</p>
+        <div class="group noico">
+          ${btn('diagFull', t('diag.full'))}
+        </div>
+        <p class="foot">${esc(t('diag.fullHint'))}</p>
         <p id="diagStatus" class="foot">${n ? esc(t('diag.have', { n })) : ''}</p>
         <div class="group noico" id="diagActions"${n ? '' : ' style="display:none"'}>
           ${btn('diagSave', t('diag.save'))}
@@ -732,6 +737,7 @@ const PAGES = {
       bind() {
         $('diagRun').onclick = diagRunKnown;
         $('diagScan').onclick = diagRunScan;
+        $('diagFull').onclick = diagRunFull;
         $('diagStop').onclick = () => { diag.stop = true; };
         const save = $('diagSave'); if (save) save.onclick = () => downloadTextFile(`selfbike-diagnose-${VERSION}.txt`, diagText());
         const copy = $('diagCopy'); if (copy) copy.onclick = async () => { try { await navigator.clipboard.writeText(diagText()); toast(t('diag.copied'), 'ok'); } catch { toast(t('diag.copyFail'), 'warn'); } };
@@ -894,7 +900,7 @@ async function diagReadAddr(address, timeoutMs = 1800) {
 function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textContent = text; }
 function diagSetBusy(on) {
   diag.busy = on; if (on) diag.stop = false;
-  for (const id of ['diagRun', 'diagScan']) { const el = $(id); if (el) el.disabled = on; }
+  for (const id of ['diagRun', 'diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
 }
 function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
@@ -921,6 +927,21 @@ async function diagRunScan() {
     const r = await diagReadAddr(a, 450);
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
     diagStatusLine(t('diag.scanProgress', { a, to, hits }));
+  }
+  diagSetBusy(false); redrawDiag();
+}
+// Kompletter Scan über den ganzen gültigen Adressraum (0–32767). Dauert lange, jederzeit per Stopp abbrechbar.
+async function diagRunFull() {
+  if (!reader || diag.busy) return;
+  if (!confirm(t('diag.fullConfirm'))) return;
+  diagSetBusy(true);
+  const MAX = 0x7fff;
+  let hits = 0;
+  for (let a = 0; a <= MAX; a++) {
+    if (diag.stop) break;
+    const r = await diagReadAddr(a, 400);
+    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
+    if ((a & 0x1f) === 0) diagStatusLine(t('diag.fullProgress', { a, max: MAX, hits }));
   }
   diagSetBusy(false); redrawDiag();
 }

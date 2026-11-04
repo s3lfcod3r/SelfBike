@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.14 · November 2026
+- 🇬🇧 **Full scan in Diagnostics / Export**: in addition to the known addresses and a manual range, there is now a "Full scan" button that checks every address (0–32767), so even unknown retrofitted devices (Connect module, range extender) are found. A clear notice explains that this takes several hours and that the bike and cable must stay connected; it can be stopped at any time and everything read so far is kept. Still read only, personal data stays out of the file.
+- 🇩🇪 **Kompletter Scan in Diagnose / Export**: Zusätzlich zu den bekannten Adressen und einem manuellen Bereich gibt es jetzt einen Knopf „Kompletter Scan", der jede Adresse abfragt (0–32767) – so werden auch unbekannte nachgerüstete Geräte (Connect-Modul, Zusatz-Akku) gefunden. Ein deutlicher Hinweis erklärt, dass das mehrere Stunden dauert und Rad und Kabel verbunden bleiben müssen; man kann jederzeit stoppen, das bereits Gelesene bleibt erhalten. Weiterhin nur lesen, persönliche Daten bleiben aus der Datei.
+
 ## 1.4.13 · November 2026
 - 🇬🇧 **New "Diagnostics / Export" (read only)**: under SafeBike you can now read out your bike and save the result as a text file to send to the developer — for example when a retrofitted part (range extender, Connect module) is shown on the display and the Flow app but not yet in SelfBike. It reads the known addresses and can optionally scan an address range to capture unknown devices. Nothing is written to the bike, and personal data (serial numbers, IDs, frame number) is deliberately left out of the file.
 - 🇩🇪 **Neu „Diagnose / Export" (nur lesen)**: Unter SafeBike kannst du dein Rad jetzt auslesen und das Ergebnis als Textdatei speichern, um sie dem Entwickler zu schicken — z. B. wenn ein nachgerüstetes Teil (Zusatz-Akku, Connect-Modul) zwar auf Display und in der Flow-App, aber noch nicht in SelfBike erscheint. Es liest die bekannten Adressen und kann zusätzlich einen Adressbereich scannen, um unbekannte Geräte zu erfassen. Es wird nichts ans Rad geschrieben, und persönliche Daten (Seriennummern, IDs, Rahmennummer) bleiben bewusst aus der Datei heraus.
