@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.15 · November 2026
+- 🇬🇧 **Diagnostics / Export easier to understand**: instead of a bare "0–300" field, there are now clearly named buttons per component, each with its address range shown — Battery (0–300), Brakes / ABS (2300–2400), Motor, riding modes & light (6100–6400), Control unit & service (8200–8600). So if a certain part is missing you scan exactly that one instead of guessing. The known read is marked as step 1, the full scan is for unknown/retrofitted parts, and a manual range stays available for experts.
+- 🇩🇪 **Diagnose / Export verständlicher**: Statt eines nackten „0–300"-Feldes gibt es jetzt klar benannte Knöpfe pro Bauteil mit angezeigtem Adressbereich — Akku (0–300), Bremsen / ABS (2300–2400), Motor, Fahrmodi & Licht (6100–6400), Bedieneinheit & Service (8200–8600). Fehlt ein bestimmtes Teil, scannt man gezielt genau dieses, statt zu raten. Das bekannte Auslesen ist als Schritt 1 markiert, der komplette Scan ist für unbekannte/nachgerüstete Teile, und ein eigener Bereich bleibt für Profis.
+
 ## 1.4.14 · November 2026
 - 🇬🇧 **Full scan in Diagnostics / Export**: in addition to the known addresses and a manual range, there is now a "Full scan" button that checks every address (0–32767), so even unknown retrofitted devices (Connect module, range extender) are found. A clear notice explains that this takes several hours and that the bike and cable must stay connected; it can be stopped at any time and everything read so far is kept. Still read only, personal data stays out of the file.
 - 🇩🇪 **Kompletter Scan in Diagnose / Export**: Zusätzlich zu den bekannten Adressen und einem manuellen Bereich gibt es jetzt einen Knopf „Kompletter Scan", der jede Adresse abfragt (0–32767) – so werden auch unbekannte nachgerüstete Geräte (Connect-Modul, Zusatz-Akku) gefunden. Ein deutlicher Hinweis erklärt, dass das mehrere Stunden dauert und Rad und Kabel verbunden bleiben müssen; man kann jederzeit stoppen, das bereits Gelesene bleibt erhalten. Weiterhin nur lesen, persönliche Daten bleiben aus der Datei.

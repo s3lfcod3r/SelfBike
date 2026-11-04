@@ -49,6 +49,13 @@ const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); 
 const PRIVATE_ADDR = new Set(READ_PLAN.filter((p) => p.private).map((p) => p.address));
 const ADDR_LABEL = new Map(READ_PLAN.map((p) => [p.address, p.label]));
 const diag = { map: new Map(), busy: false, stop: false };
+// Die bekannten Adressen liegen in Blöcken je Bauteil – ein Knopf pro Block, damit man gezielt scannen kann
+const DIAG_BANDS = [
+  { key: 'battery', from: 0, to: 300 },
+  { key: 'abs', from: 2300, to: 2400 },
+  { key: 'drive', from: 6100, to: 6400 },
+  { key: 'control', from: 8200, to: 8600 },
+];
 
 // ---------- Meldungen ----------
 
@@ -712,21 +719,28 @@ const PAGES = {
     return {
       title: t('diag.title'),
       html: `<p class="explain">${esc(t('diag.explain'))}</p>
-        <div class="group noico" style="margin-top:12px">
+        <p class="gh">${esc(t('diag.step1'))}</p>
+        <div class="group noico">
           <button class="btn-big" id="diagRun"${diag.busy ? ' disabled' : ''}>${esc(t('diag.run'))}</button>
         </div>
-        <p class="gh">${esc(t('diag.scanTitle'))}</p>
-        <div class="group noico">
-          <div class="row static"><span class="t">${esc(t('diag.range'))}</span>
-            <span class="stepper"><input id="diagFrom" type="number" min="0" max="65535" value="0" style="width:74px"><span>–</span><input id="diagTo" type="number" min="0" max="65535" value="300" style="width:74px"></span></div>
-          ${btn('diagScan', t('diag.scan'))}
-          <button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button>
+        <p class="foot">${esc(t('diag.runHint'))}</p>
+        <p class="gh">${esc(t('diag.partsTitle'))}</p>
+        <p class="explain" style="margin-top:0">${esc(t('diag.partsHint'))}</p>
+        <div class="group noico" id="diagBands">
+          ${DIAG_BANDS.map((b) => `<button class="row" data-band="${b.key}"><span class="t">${esc(t('diag.band.' + b.key))}<small>${esc(t('diag.bandRange', { from: b.from, to: b.to }))}</small></span></button>`).join('')}
         </div>
         <p class="gh">${esc(t('diag.fullTitle'))}</p>
         <div class="group noico">
           ${btn('diagFull', t('diag.full'))}
         </div>
         <p class="foot">${esc(t('diag.fullHint'))}</p>
+        <p class="gh">${esc(t('diag.manualTitle'))}</p>
+        <div class="group noico">
+          <div class="row static"><span class="t">${esc(t('diag.range'))}</span>
+            <span class="stepper"><input id="diagFrom" type="number" min="0" max="32767" value="0" style="width:74px"><span>–</span><input id="diagTo" type="number" min="0" max="32767" value="300" style="width:74px"></span></div>
+          ${btn('diagScan', t('diag.scan'))}
+        </div>
+        <div class="group noico"><button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button></div>
         <p id="diagStatus" class="foot">${n ? esc(t('diag.have', { n })) : ''}</p>
         <div class="group noico" id="diagActions"${n ? '' : ' style="display:none"'}>
           ${btn('diagSave', t('diag.save'))}
@@ -738,6 +752,9 @@ const PAGES = {
         $('diagRun').onclick = diagRunKnown;
         $('diagScan').onclick = diagRunScan;
         $('diagFull').onclick = diagRunFull;
+        for (const b of document.querySelectorAll('#diagBands button')) {
+          b.onclick = () => { const band = DIAG_BANDS.find((x) => x.key === b.dataset.band); if (band) diagScanRange(band.from, band.to); };
+        }
         $('diagStop').onclick = () => { diag.stop = true; };
         const save = $('diagSave'); if (save) save.onclick = () => downloadTextFile(`selfbike-diagnose-${VERSION}.txt`, diagText());
         const copy = $('diagCopy'); if (copy) copy.onclick = async () => { try { await navigator.clipboard.writeText(diagText()); toast(t('diag.copied'), 'ok'); } catch { toast(t('diag.copyFail'), 'warn'); } };
@@ -901,6 +918,7 @@ function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textConte
 function diagSetBusy(on) {
   diag.busy = on; if (on) diag.stop = false;
   for (const id of ['diagRun', 'diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
+  for (const el of document.querySelectorAll('#diagBands button')) el.disabled = on;
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
 }
 function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
@@ -914,10 +932,11 @@ async function diagRunKnown() {
   }
   diagSetBusy(false); redrawDiag();
 }
-async function diagRunScan() {
+// Einen Adressbereich scannen (höchstens 600 Adressen pro Lauf). Von Bauteil-Knöpfen und vom eigenen Bereich genutzt.
+async function diagScanRange(from, to) {
   if (!reader || diag.busy) return;
-  let from = Math.max(0, parseInt($('diagFrom').value, 10) || 0);
-  let to = Math.min(65535, parseInt($('diagTo').value, 10) || 0);
+  from = Math.max(0, from | 0);
+  to = Math.min(0x7fff, to | 0);
   if (to < from) [from, to] = [to, from];
   to = Math.min(to, from + 599);
   diagSetBusy(true);
@@ -929,6 +948,9 @@ async function diagRunScan() {
     diagStatusLine(t('diag.scanProgress', { a, to, hits }));
   }
   diagSetBusy(false); redrawDiag();
+}
+async function diagRunScan() {
+  await diagScanRange(parseInt($('diagFrom').value, 10) || 0, parseInt($('diagTo').value, 10) || 0);
 }
 // Kompletter Scan über den ganzen gültigen Adressraum (0–32767). Dauert lange, jederzeit per Stopp abbrechbar.
 async function diagRunFull() {
