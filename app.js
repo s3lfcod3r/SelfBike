@@ -1051,7 +1051,7 @@ async function connectWith(u, isDemo) {
     toast(`${t('msg.connectFailed', { error: e.message })}${/claim/i.test(e.message) ? ' ' + t('msg.busyHint') : ''}`, 'err');
   }
   busy = false;
-  $('connect').disabled = !window.isSecureContext;
+  $('connect').disabled = !usbUsable();
   renderAll();
 }
 
@@ -1060,6 +1060,10 @@ async function connectWith(u, isDemo) {
 const isIos = () =>
   /iphone|ipad|ipod/i.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+// Verbinden-Button nur freigeben, wenn der Browser WebUSB wirklich nutzen kann
+// (nicht iOS, navigator.usb vorhanden – z. B. fehlt es in Firefox –, und sicherer Kontext).
+const usbUsable = () => !isIos() && 'usb' in navigator && window.isSecureContext;
 
 $('connect').onclick = async () => {
   if (!discAccepted()) return showDisclaimer();
@@ -1169,6 +1173,11 @@ showVersion();
 if (isIos()) {
   $('connect').disabled = true;
   $('insecure').textContent = t('msg.iosBlocked');
+  $('insecure').classList.remove('hidden');
+} else if (!('usb' in navigator)) {
+  // Browser ohne WebUSB (z. B. Firefox) gleich beim Laden informieren – nicht erst beim Klick.
+  $('connect').disabled = true;
+  $('insecure').textContent = t('msg.noWebusb');
   $('insecure').classList.remove('hidden');
 } else if (!window.isSecureContext) {
   $('connect').disabled = true;

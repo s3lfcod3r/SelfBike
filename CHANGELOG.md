@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.24 · November 2026
+- 🇬🇧 **Browser without WebUSB flagged right away**: browsers that can't do WebUSB at all (e.g. Firefox and anything on its engine, on Windows, Linux, Android or macOS) now show the hint on load with the connect button disabled – the same as the iPhone/iPad case – instead of only after tapping "Connect". Thanks to the forum for the suggestion.
+- 🇩🇪 **Browser ohne WebUSB sofort erkannt**: Browser, die kein WebUSB können (z. B. Firefox und alles mit seiner Engine, unter Windows, Linux, Android oder macOS), zeigen den Hinweis jetzt schon beim Laden mit gesperrtem Verbinden-Button – genau wie bei iPhone/iPad – statt erst nach dem Tippen auf „Verbinden". Danke ans Forum für den Vorschlag.
+
 ## 1.4.23 · November 2026
 - 🇬🇧 **Clear message on iPhone and iPad**: SelfBike now detects iOS/iPadOS and says plainly that USB read-out is impossible there – Apple blocks USB in every iOS browser, Chrome and Edge included. Instead of the misleading "use Chrome or Edge" it now points to a computer (Windows, Mac, Linux, ChromeOS) or an Android phone. Thanks to the forum for the hint.
 - 🇩🇪 **Klare Meldung auf iPhone und iPad**: SelfBike erkennt jetzt iOS/iPadOS und sagt direkt, dass das Auslesen per USB dort nicht geht – Apple sperrt USB in jedem iOS-Browser, auch in Chrome und Edge. Statt des irreführenden „bitte Chrome oder Edge" verweist es nun auf einen Computer (Windows, Mac, Linux, ChromeOS) oder ein Android-Handy. Danke ans Forum für den Hinweis.
