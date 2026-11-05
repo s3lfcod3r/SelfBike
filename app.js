@@ -1055,8 +1055,15 @@ async function connectWith(u, isDemo) {
   renderAll();
 }
 
+// iOS/iPadOS erlaubt keinem Browser WebUSB (auch Chrome/Edge nicht, da alle auf WebKit laufen).
+// iPad ab iPadOS 13 meldet sich als „MacIntel“ – über Touchpunkte vom echten Mac unterscheiden (Mac = 0).
+const isIos = () =>
+  /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
 $('connect').onclick = async () => {
   if (!discAccepted()) return showDisclaimer();
+  if (isIos()) return toast(t('msg.iosBlocked'), 'err');
   if (!('usb' in navigator)) return toast(t('msg.noWebusb'), 'err');
   let device;
   try {
@@ -1159,7 +1166,11 @@ await setLang(detectLang());
 $('discLang').value = $('topLang').value = lang();
 applyStatic();
 showVersion();
-if (!window.isSecureContext) {
+if (isIos()) {
+  $('connect').disabled = true;
+  $('insecure').textContent = t('msg.iosBlocked');
+  $('insecure').classList.remove('hidden');
+} else if (!window.isSecureContext) {
   $('connect').disabled = true;
   $('insecure').textContent = t('msg.insecure', { link: `https://${location.hostname}:8094${location.pathname}` });
   $('insecure').classList.remove('hidden');

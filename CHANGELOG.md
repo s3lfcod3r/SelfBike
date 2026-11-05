@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.23 · November 2026
+- 🇬🇧 **Clear message on iPhone and iPad**: SelfBike now detects iOS/iPadOS and says plainly that USB read-out is impossible there – Apple blocks USB in every iOS browser, Chrome and Edge included. Instead of the misleading "use Chrome or Edge" it now points to a computer (Windows, Mac, Linux, ChromeOS) or an Android phone. Thanks to the forum for the hint.
+- 🇩🇪 **Klare Meldung auf iPhone und iPad**: SelfBike erkennt jetzt iOS/iPadOS und sagt direkt, dass das Auslesen per USB dort nicht geht – Apple sperrt USB in jedem iOS-Browser, auch in Chrome und Edge. Statt des irreführenden „bitte Chrome oder Edge" verweist es nun auf einen Computer (Windows, Mac, Linux, ChromeOS) oder ein Android-Handy. Danke ans Forum für den Hinweis.
+
 ## 1.4.22 · November 2026
 - 🇬🇧 **Traction control, Extended Boost and drivetrain tensioner now adjustable too**: in each riding mode these three can now be set as well (where the motor offers them) – the same as in the Flow app's "Advanced" tab. Traction control as a level (Off / Low / Medium / High), Extended Boost as a value, drivetrain tensioner off / on. The bike caps all of them to its own limits.
 - 🇩🇪 **Traktionskontrolle, Extended Boost und Kettenspanner jetzt auch einstellbar**: In jedem Fahrmodus lassen sich nun auch diese drei einstellen (sofern der Motor sie bietet) – genau wie im „Erweitert“-Tab der Flow-App. Traktionskontrolle als Stufe (Aus / Niedrig / Mittel / Hoch), Extended Boost als Wert, Kettenspanner aus / an. Das Rad deckelt alle auf seine eigenen Grenzen.
