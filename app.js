@@ -10,7 +10,6 @@ import { DemoUsb } from './lib/demo-usb.js';
 import { savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate } from './lib/care.js';
 import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
 import { readFaults } from './lib/diagnostics.js';
-import { readAssistModes, planModeChange, planModeReset, canEdit, bounds, EDITABLE, modeSummary } from './lib/assist-modes.js';
 import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex, bySeverity } from './lib/fault-categories.js';
 import { withProductName } from './lib/product-names.js';
@@ -29,7 +28,6 @@ let reader = null;
 let rows = [];
 let S = {};
 let faults = [];
-let modes = [];
 let busy = false;
 let blocked = false;   // nach unklarem Schreibversuch
 let demo = false;
@@ -165,20 +163,8 @@ function renderHome() {
   renderPending();
 }
 
-// Strecke pro Fahrmodus (mit Reichweite) und Fahrstatistik – Inhalt der beiden Unterseiten unter „Dein Rad“
-function rideHtml() {
-  const maxDist = Math.max(1, ...modes.map((m) => m.distance ?? 0));
-  const sumDist = modes.reduce((n, m) => n + (m.distance ?? 0), 0);
-  // Reichweite pro Modus: Restenergie ÷ (Energie ÷ Strecke)
-  const remainingWh = val('batteryRiderWh') ?? val('batteryRemainingWh');
-  const range = (m) => (remainingWh && m.distance > 0 && m.energy > 0 ? Math.round(remainingWh / (m.energy / (m.distance / 1000))) : null);
-  const modeRows = modes.map((m) => `<div class="slider">
-      <div class="top"><span style="font-weight:600">${esc(m.name)}</span>
-        <span>${m.distance == null ? '–' : esc(km(m.distance, 1))}${sumDist && m.distance != null ? ` <span style="color:var(--self-text-3)">${esc(fmtNum((m.distance / sumDist) * 100))} %</span>` : ''}</span></div>
-      <div class="meter"><i style="width:${((m.distance ?? 0) / maxDist) * 100}%;background:var(--self-teal-bright)"></i></div>
-      <div class="hint" style="margin-top:6px">${esc(modeSummary(m.udam))}${range(m) ? ` · ${esc(t('ride.rangeKm', { km: range(m) }))}` : ''}</div></div>`)
-    .join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>');
-
+// Fahrstatistik – Inhalt der Unterseite „Statistik“ unter „Dein Rad“ (allgemeine Daten, keine Fahrmodi)
+function statsHtml() {
   const rs = val('rideStats');
   const hours = val('powerOnHours');
   const motorHours = val('motorHours');
@@ -192,13 +178,9 @@ function rideHtml() {
   if (hours != null) stats.push([t('ride.hours'), `${fmtNum(hours)} h`, motorHours != null ? t('ride.hoursMotor', { h: fmtNum(motorHours) }) : '']);
   if (ok('cadence')) stats.push([t('ride.cadence'), txt('cadence'), t('ride.cadenceHint')]);
 
-  return {
-    modes: modes.length ? `<div class="group">${modeRows}</div><p class="foot">${esc(t('ride.modesFoot'))}</p>`
-      : `<p class="explain">${esc(t('ride.noModes'))}</p>`,
-    stats: stats.length ? `<div class="group noico">${stats.map(([k, v, hint]) =>
-      `<div class="row static"><span class="t">${esc(k)}${hint ? `<small>${esc(hint)}</small>` : ''}</span><span class="kvv" style="color:var(--self-text);font-weight:600">${esc(v)}</span></div>`).join('')}</div>`
-      : `<p class="explain">${esc(t('ride.noStats'))}</p>`,
-  };
+  return stats.length ? `<div class="group noico">${stats.map(([k, v, hint]) =>
+    `<div class="row static"><span class="t">${esc(k)}${hint ? `<small>${esc(hint)}</small>` : ''}</span><span class="kvv" style="color:var(--self-text);font-weight:600">${esc(v)}</span></div>`).join('')}</div>`
+    : `<p class="explain">${esc(t('ride.noStats'))}</p>`;
 }
 
 // Unterbrochene Änderung (Kabel/Browser weg): zeigen, welcher Schritt im Rad angekommen ist
@@ -221,13 +203,11 @@ $('tiles').addEventListener('click', (e) => { const b = e.target.closest('[data-
 
 const ICONS = {
   light: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.4 1 1.1 1 1.9V16h5v-.2c0-.8.4-1.5 1-1.9A6 6 0 0 0 12 3z"/>',
-  modes: '<path d="M4 18 9 9l4 6 3-4 4 7z"/>',
   service: '<path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/>',
   display: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 17h4"/>',
   ports: '<path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0zM12 17v4"/>',
   battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M6 10v4M9 10v4"/>',
   faults: '<path d="M12 3 2 20h20zM12 10v4M12 17v.5"/>',
-  ridemodes: '<path d="M4 18 9 9l4 6 3-4 4 7z"/>',
   stats: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
   batterycheck: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M7 12l2 2 4-4"/>',
   range: '<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2"/>',
@@ -247,10 +227,8 @@ const navRow = (key, label, value = '', color = '') =>
   `<button class="row" data-open="${key}">${icon(key, color)}<span class="t">${esc(label)}</span><span class="v">${esc(value)}</span><span class="chev">›</span></button>`;
 
 function renderSettings() {
-  const modeNames = modes.map((m) => m.name).join(', ');
   $('settingsList').innerHTML = [
     navRow('light', t('light.title'), ok('lightMode') ? (val('lightMode') === 0 ? t('lightMode.0') : LIGHT_MODES[val('lightMode')] ?? '') : '', '#e0a020'),
-    navRow('modes', t('mode.title'), modeNames, '#3b82f6'),
     navRow('service', t('svc.title'), rows.length ? serviceText().n + (serviceText().unit ? ` ${serviceText().unit}` : '') : '', '#8b5cf6'),
     navRow('display', t('disp.title'), '', '#64748b'),
     ok('portOem') ? navRow('ports', t('ports.title'), 'Beta', '#e0a020') : '',
@@ -266,7 +244,6 @@ function renderMore() {
       ${navRow('range', t('rg.title'), '', '#22a35a')}
     </div>
     <p class="gh">${esc(t('nav.ride'))}</p><div class="group">
-      ${navRow('ridemodes', t('ride.modesTitle'), '', '#3b82f6')}
       ${navRow('stats', t('ride.statsTitle'), '', '#3b82f6')}
     </div>
     <p class="gh">${esc(t('ui.groupBike'))}</p><div class="group">
@@ -304,7 +281,7 @@ $('moreList').addEventListener('change', async (e) => {
   let b;
   try { b = parseBackup(await file.text()); } catch (err) { return toast(t('restore.unreadable', { error: err.message }), 'warn'); }
   if (!b.bikeId || b.bikeId !== val('motorBikeId')) return toast(t('restore.other'), 'err');
-  propose(() => planRestore(S, b, modes));
+  propose(() => planRestore(S, b, val('modeNames') ?? []));
 });
 
 function renderAll() {
@@ -403,71 +380,6 @@ const PAGES = {
     };
   },
 
-  modes() {
-    return {
-      title: t('mode.title'),
-      html: `<p class="explain">${esc(t('ui.modesExplain'))}</p>
-        <div class="group noico" style="margin-top:12px">${modes.map((m) =>
-          `<button class="row" data-mode="${esc(m.id)}"><span class="t">${esc(m.name)}<small>${esc(m.udam ? `${m.udam.assistLevel ?? '–'} % · ${fmtNum((m.udam.maximumBikeSpeed ?? 0) / 100, 0)} km/h` : '')}</small></span><span class="chev">›</span></button>`).join('')}</div>`,
-      bind() {
-        $('sheetBody').onclick = (e) => { const b = e.target.closest('[data-mode]'); if (b) { stack.push({ name: 'mode', arg: b.dataset.mode }); drawPage(); } };
-      },
-    };
-  },
-
-  mode(id) {
-    const m = modes.find((x) => x.id === id);
-    const can = canEdit(m);
-    const shown = (k, raw) => (k === 'maximumBikeSpeed' ? raw / 100 : raw);
-    const STEP = { maximumBikeSpeed: 0.5, maximumMotorPower: 10 };
-    // Anzeige je Feld: Einheit, Stufenname oder Aus/An – genau wie die Flow-App es zeigt
-    const fmtVal = (k, raw) => {
-      if (raw == null) return '–';
-      switch (k) {
-        case 'maximumBikeSpeed': return `${fmtNum(raw / 100, 1)} km/h`;
-        case 'maximumMotorTorque': return `${fmtNum(raw, 0)} Nm`;
-        case 'maximumMotorPower': return `${fmtNum(raw, 0)} W`;
-        case 'tractionControl': return raw >= 0 && raw <= 3 ? t(`mode.tc.${raw}`) : t('mode.level', { n: raw });
-        case 'extendedBoost': return raw === 0 ? t('mode.tc.0') : fmtNum(raw, 0);
-        case 'driveTrainTensioner': return t(raw ? 'mode.on2' : 'mode.tc.0');
-        default: return `${fmtNum(raw, 0)} %`;
-      }
-    };
-    const sliders = can ? EDITABLE.map((k) => {
-      const { min, max } = bounds(m, k);
-      // Slider nur, wenn das Rad für dieses Feld einen Wert und Grenzen meldet (Drehmoment/Leistung/Erweitert je Motor)
-      if (m.udam[k] == null || min == null || max == null) return '';
-      const step = STEP[k] ?? 1;
-      return `<div class="slider">
-        <div class="top"><span>${esc(t(`mode.${k}`))}</span><span class="val"><span data-out="${k}">${esc(fmtVal(k, m.udam[k]))}</span></span></div>
-        <input type="range" data-key="${k}" min="${shown(k, min)}" max="${shown(k, max)}" step="${step}" value="${shown(k, m.udam[k])}">
-        <div class="ends"><span>${esc(fmtVal(k, min))}</span><span>${esc(fmtVal(k, max))}</span></div>
-        <div class="hint">${esc(t(`ui.hint.${k}`))}</div></div>`;
-    }).filter(Boolean).join('<div style="border-top:1px solid var(--self-line);margin:0 14px"></div>') : '';
-    return {
-      title: m?.name ?? t('mode.title'),
-      html: `${can ? `<div class="group">${sliders}</div>` : locked(true)}
-        ${saveBtn('save', !can)}
-        ${m?.defaults ? `<button class="btn-text" id="reset">${esc(t('ui.factory'))}</button>` : ''}`,
-      bind() {
-        for (const r of $('sheetBody').querySelectorAll('input[type=range]')) {
-          r.oninput = () => {
-            const raw = r.dataset.key === 'maximumBikeSpeed' ? Number(r.value) * 100 : Number(r.value);
-            $('sheetBody').querySelector(`[data-out="${r.dataset.key}"]`).textContent = fmtVal(r.dataset.key, raw);
-          };
-        }
-        if (can) $('save').onclick = () => {
-          const values = {};
-          for (const r of $('sheetBody').querySelectorAll('input[type=range]')) {
-            values[r.dataset.key] = r.dataset.key === 'maximumBikeSpeed' ? Math.round(Number(r.value) * 100) : Math.round(Number(r.value));
-          }
-          propose(() => planModeChange(m, values));
-        };
-        if ($('reset')) $('reset').onclick = () => propose(() => planModeReset(m));
-      },
-    };
-  },
-
   service() {
     return {
       title: t('svc.title'),
@@ -522,7 +434,7 @@ const PAGES = {
       title: t('disp.title'),
       html: `<p class="explain">${esc(t('ui.dispExplain'))}</p>
         <div class="group noico" style="margin-top:12px">
-          <label class="row"><span class="t">${esc(t('disp.start'))}</span><select id="dStart"${startLocked ? ' disabled' : ''}>${opts(startModeOptions(modes.map((m) => m.name)), val('startMode'))}</select></label>
+          <label class="row"><span class="t">${esc(t('disp.start'))}</span><select id="dStart"${startLocked ? ' disabled' : ''}>${opts(startModeOptions(val('modeNames') ?? []), val('startMode'))}</select></label>
           <label class="row"><span class="t">${esc(t('disp.lang'))}</span><select id="dLang">${opts(DISPLAY_LANGUAGES.map((c) => ({ value: c, text: LANGS[c] })), val('displayLanguage'))}</select></label>
           <label class="row"><span class="t">${esc(t('disp.units'))}</span><select id="dUnits">${opts([{ value: 0, text: t('disp.metric') }, { value: 1, text: t('disp.imperial') }], val('displayUnits'))}</select></label>
           <label class="row"><span class="t">${esc(t('disp.timeFormat'))}</span><select id="dTime">${opts([{ value: 0, text: t('disp.h24') }, { value: 1, text: t('disp.h12') }], val('timeFormat'))}</select></label>
@@ -537,7 +449,7 @@ const PAGES = {
           startMode: Number($('dStart').value), language: $('dLang').value,
           displayUnits: Number($('dUnits').value), timeFormat: Number($('dTime').value), setClock: $('dClock').checked,
           walkAssist: ok('walkAssist') ? $('dWalk').checked : null,
-        }, modes.map((m) => m.name)));
+        }, val('modeNames') ?? []));
       },
     };
   },
@@ -734,8 +646,7 @@ const PAGES = {
       },
     };
   },
-  ridemodes() { return { title: t('ride.modesTitle'), html: rideHtml().modes }; },
-  stats() { return { title: t('ride.statsTitle'), html: rideHtml().stats }; },
+  stats() { return { title: t('ride.statsTitle'), html: statsHtml() }; },
   diagnose() {
     const n = diag.map.size;
     const btn = (id, label, cls = '') => `<button class="row${cls ? ' ' + cls : ''}" id="${id}"><span class="t">${esc(label)}</span></button>`;
@@ -812,18 +723,16 @@ async function saveBackup(change, onStatus = () => {}) {
   // Während der Dateiauswahl kann die Verbindung abbrechen
   if (!reader) throw new Error(t('msg.hbLost'));
   const fresh = await readAll(reader, (row, i, total) => onStatus(`${t('msg.backupReading')} ${i + 1}/${total}`));
-  const freshState = byKey(fresh);
-  const freshModes = await readAssistModes(reader, freshState.activeModes?.value ?? [], freshState.modeNames?.value ?? []);
-  const backup = createBackup(fresh, change, freshModes);
-  if (demo) return { backup, fresh, freshModes, saved: { name: t('demo.backupName'), method: 'demo' } };
+  const backup = createBackup(fresh, change);
+  if (demo) return { backup, fresh, saved: { name: t('demo.backupName'), method: 'demo' } };
   const saved = await writeBackupFile(backup, handle);
   if (saved.method === 'download' && !confirm(t('msg.backupConfirmDownload', { name: saved.name }))) throw new Error(t('msg.backupNotConfirmed'));
-  return { backup, fresh, freshModes, saved };
+  return { backup, fresh, saved };
 }
 
 // Nach einer Änderung nicht alles neu auslesen: Grundlage ist der frische Stand aus dem Backup,
-// neu gelesen werden nur die geänderten Werte (und die Fahrmodi, falls einer geändert wurde).
-async function refreshChanged(plan, fresh, freshModes) {
+// neu gelesen werden nur die geänderten Werte.
+async function refreshChanged(plan, fresh) {
   rows = fresh.slice();
   for (const key of new Set(plan.steps.filter((s) => !s.write).map((s) => s.key))) {
     const i = rows.findIndex((r) => r.key === key);
@@ -832,9 +741,6 @@ async function refreshChanged(plan, fresh, freshModes) {
     if (i >= 0) rows[i] = row;
   }
   S = byKey(rows);
-  modes = plan.steps.some((s) => s.write)
-    ? await readAssistModes(reader, val('activeModes') ?? [], val('modeNames') ?? [])
-    : freshModes;
   renderAll();
   if (stack.length) drawPage();
 }
@@ -884,7 +790,7 @@ $('confirmGo').onclick = async () => {
     plog(`FERTIG: ${plan.title}`);
     const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ` ${t('msg.restart')}` : '';
     const changed = t('ui.changed') + restart;
-    try { await refreshChanged(plan, result.fresh, result.freshModes); } catch (e) {
+    try { await refreshChanged(plan, result.fresh); } catch (e) {
       await disconnect();
       progStatus(`${changed} ${t('msg.readError', { error: e.message })}`, 'warn');
       return progDone('warn');
@@ -1023,8 +929,6 @@ async function refresh() {
   S = byKey(rows);
   $('pageSub').textContent = t('msg.readingFaults');
   faults = await readFaults(reader);
-  $('pageSub').textContent = t('msg.readingModes');
-  modes = await readAssistModes(reader, val('activeModes') ?? [], val('modeNames') ?? []);
   busy = false;
   if (!demo) addSnapshot(snapshotFromRows(rows, new Date()));
   renderAll();

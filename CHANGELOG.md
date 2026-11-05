@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.25 · November 2026
+- 🇬🇧 **Riding-mode editing removed**: changing riding modes (assistance, power, dynamics, speed) is gone – the bike reports these as read-only and blocks writing them, so the setting never actually worked. SelfBike stays a read-out and maintenance tool, not a replacement for the Flow app. The general ride statistics (total distance, riding without motor, operating hours) stay.
+- 🇩🇪 **Fahrmodus-Einstellungen entfernt**: Das Ändern der Fahrmodi (Unterstützung, Leistung, Dynamik, Tempo) ist raus – das Rad meldet diese Werte schreibgeschützt und lässt das Schreiben nicht zu, das Einstellen hat also nie wirklich funktioniert. SelfBike bleibt ein Auslese- und Wartungswerkzeug, kein Ersatz für die Flow-App. Die allgemeine Fahrstatistik (Gesamtstrecke, Fahren ohne Motor, Betriebszeit) bleibt erhalten.
+
 ## 1.4.24 · November 2026
 - 🇬🇧 **Browser without WebUSB flagged right away**: browsers that can't do WebUSB at all (e.g. Firefox and anything on its engine, on Windows, Linux, Android or macOS) now show the hint on load with the connect button disabled – the same as the iPhone/iPad case – instead of only after tapping "Connect". Thanks to the forum for the suggestion.
 - 🇩🇪 **Browser ohne WebUSB sofort erkannt**: Browser, die kein WebUSB können (z. B. Firefox und alles mit seiner Engine, unter Windows, Linux, Android oder macOS), zeigen den Hinweis jetzt schon beim Laden mit gesperrtem Verbinden-Button – genau wie bei iPhone/iPad – statt erst nach dem Tippen auf „Verbinden". Danke ans Forum für den Vorschlag.
