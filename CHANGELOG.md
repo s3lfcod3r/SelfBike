@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.47 · November 2026
+- 🇬🇧 **ABS is clearable after all**: on the bike, ABS (2337) answered the clear channel (status "ok"/no entries, not "no receiver"), so it now joins the clearable control units. The missing 1.2.3 message-bus entry was a tool gap, not proof – the parameter class is generic, payload `[08 02]` with block/unblock like the others. Only the ConnectModule stays non-clearable. The "no receiver" (none) vs "no entries" (ok) distinction is now load-bearing for the clearable flag.
+- 🇩🇪 **ABS ist doch löschbar**: Am Rad hat ABS (2337) den Löschkanal beantwortet (Status „ok"/keine Einträge, nicht „kein Empfänger"), also gehört es jetzt zu den löschbaren Steuergeräten. Der fehlende 1.2.3-MessageBus-Eintrag war eine Tool-Lücke, kein Beweis – die Parameterklasse ist generisch, Nutzlast `[08 02]` mit Block/Unblock wie überall. Nur das ConnectModule bleibt nicht löschbar. Die Unterscheidung „kein Empfänger" (none) gegen „keine Einträge" (ok) ist jetzt tragend für das Löschbar-Kennzeichen.
+
 ## 1.4.46 · November 2026
 - 🇬🇧 **More read-only diagnostics**: added (read-only) the regio-speed application required/available (6204/6205, showing the region identifier e.g. "25kmh_EU-AU"), the eBike-Lock configuration (6197, shown conservatively without over-interpreting the Gen5 structure) and the available assist modes, kept as two separate upper/lower lists (6159/6248).
 - 🇩🇪 **Mehr Nur-Lese-Diagnose**: neu (nur lesend) die benötigte/verfügbare Regio-Speed-Anwendung (6204/6205, zeigt die Regionskennung z. B. „25kmh_EU-AU"), die eBike-Lock-Konfiguration (6197, bewusst ohne Überdeutung der Gen5-Struktur) und die verfügbaren Fahrmodi als zwei getrennte Listen oben/unten (6159/6248).

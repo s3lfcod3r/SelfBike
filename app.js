@@ -353,9 +353,10 @@ $('confirmCancel').onclick = () => { pending = null; $('confirmSheet').classList
 // Fehlerspeicher löschen (Beta): verifizierter Befehl (DELETE_ALL_ISSUES), Sequenz je ECU, nur Geräte mit Einträgen.
 function saveFaultSnapshot() {
   // clearable wird GEPRÜFT, nicht gesetzt: nur true, wenn das Steuergerät das Löschen unterstützt (isClearable –
-  // ABS/ConnectModule haben keinen IM-Kanal → false) UND tatsächlich lesbar antwortet (status 'ok'). Ein nicht
-  // verbautes/nicht lesbares Gerät (z. B. Display status 'none') ist damit nicht fälschlich „löschbar".
-  // Alle Geräte kommen mit in den Export – nicht löschbare sind markiert, nicht weggelassen.
+  // ConnectModule hat keinen IM-Kanal → false) UND tatsächlich antwortet (status 'ok'). Die Unterscheidung
+  // 'none' (kein Empfänger/nicht verbaut) vs 'ok' (antwortet, auch ohne Einträge) ist dabei TRAGEND und darf nicht
+  // verwischt werden: ABS 'ok' ohne Einträge ist löschbar, ein Display 'none' nicht. Alle Geräte kommen mit in den
+  // Export – nicht löschbare sind markiert, nicht weggelassen.
   const snap = { tool: 'SelfBike', createdAt: new Date().toISOString(),
     faults: faults.map((e) => ({ component: e.component, address: e.address, status: e.status, clearable: isClearable(e.address) && e.status === 'ok', faults: e.faults })) };
   const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
