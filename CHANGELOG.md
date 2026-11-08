@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.33 · November 2026
+- 🇬🇧 **Fault delete: only where supported** (beta): ABS and the ConnectModule have no clear command (verified from the official diagnostic data, v1.2.3), so their faults no longer get a checkbox – they show "deleting not supported for this control unit" instead of silently doing nothing. Clearing now targets only the control units that actually support it (battery, motor, display, control unit). Also corrected the fault return-code texts to match the official enum (`NO_ACCESS` = the operation-level gate, separate from the transport status).
+- 🇩🇪 **Fehler löschen: nur wo unterstützt** (Beta): ABS und das ConnectModule haben keinen Löschbefehl (verifiziert aus den offiziellen Diagnosedaten, v1.2.3) – ihre Fehler bekommen kein Häkchen mehr und zeigen „Löschen für dieses Steuergerät nicht unterstützt", statt stumm nichts zu tun. Gelöscht wird nur noch an Steuergeräten, die es wirklich können (Akku, Motor, Display, Bedieneinheit). Außerdem die Rückgabe-Code-Texte an die offizielle Enum angeglichen (`NO_ACCESS` = Gate auf Operationsebene, getrennt vom Transport-Status).
+
 ## 1.4.32 · November 2026
 - 🇬🇧 **Simpler fault deletion** (beta): the fault memory page now works by selection – tick the faults you want gone (or "Select all"), then one button "Delete N" with a quick two-tap confirm. Replaces the old mix of an acknowledgement checkbox plus separate all/single buttons. Snapshot is still saved first; active faults still come back.
 - 🇩🇪 **Einfacheres Fehler-Löschen** (Beta): Die Fehler-Seite läuft jetzt über Auswahl – Häkchen bei den Fehlern setzen, die weg sollen (oder „Alle auswählen"), dann ein Knopf „X löschen" mit kurzer Doppel-Tipp-Bestätigung. Ersetzt die alte Mischung aus Bestätigungshaken plus getrennten Alle-/Einzel-Knöpfen. Gesichert wird weiterhin vorher; aktive Fehler kommen weiterhin zurück.

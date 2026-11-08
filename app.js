@@ -3,7 +3,7 @@ import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
 import { hex, pbSummary, RPC } from './lib/messagebus.js';
-import { CLEAR_TARGETS, CLEAR_SEQUENCE, CMD, STATUS, enableClear, disableClear, clearPayload, deleteIssuePayload } from './lib/fault-actions.js';
+import { CLEAR_TARGETS, CMD, enableClear, disableClear, clearPayload, deleteIssuePayload, isClearable } from './lib/fault-actions.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
@@ -669,14 +669,14 @@ const PAGES = {
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
           ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>`
             : `<span style="margin-top:4px">${cat.own ? '' : `<b style="display:inline">${esc(t('fcat.hint'))}:</b> `}${esc(cat.hint)}</span>`}`;
-        // Mit Verbindung: ganze Zeile zum Auswählen (Häkchen); ohne Verbindung nur Anzeige
-        return reader
+        // Häkchen nur, wenn das Steuergerät den Löschbefehl unterstützt (verifiziert). Sonst Anzeige + Hinweis.
+        return reader && isClearable(f.address)
           ? `<label class="fault" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" class="fsel" data-addr="${f.address}" data-code="${e.code}" style="width:auto;margin-top:3px"><span style="display:flex;flex-direction:column;flex:1">${inner2}</span></label>`
-          : `<div class="fault">${inner2}</div>`;
+          : `<div class="fault">${inner2}${reader ? `<span style="color:var(--self-text-dim,#8a9cab);font-size:.85rem;margin-top:4px">${esc(t('clr.notSupported'))}</span>` : ''}</div>`;
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
-    const canClear = !!reader && faultCount() > 0;
+    const canClear = !!reader && faults.some((f) => isClearable(f.address) && f.status === 'ok' && f.faults.length);
     return {
       title: t('ui.faults'),
       html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}` + (canClear ? `
