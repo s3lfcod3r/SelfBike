@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.4.67-33A78C)
+![Version](https://img.shields.io/badge/version-1.4.68-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -209,7 +209,6 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - Änderungen sind **flag-gesteuert, nicht pauschal gesperrt**: Wo das Hersteller-„änderbar"-Flag `true` meldet, funktioniert das Schreiben nachweislich (am Rad belegt: Licht geschrieben und zurückgelesen, Performance Line CX Gen5 / BDU3843 über IBD ohne Zertifikat). Gesperrt sind **einzelne** Felder (z. B. High-Power-Port, Geschwindigkeitsquelle), die dann nur angezeigt werden. Jede Einstellung wirkt erst, wenn du das E-Bike einmal aus- und wieder einschaltest.
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
 - **Power Ports (Beta)** — Low/High Power Port an/aus, nur wenn der Hersteller es freigibt; gesperrte Ports werden nur angezeigt, nie geschrieben
-- **Ladefenster / Akkuschonung (Beta)** — verschiebt die System­bewertung „voll" (SoC-Grenzen 162/163). Auf der getesteten Hardware (Performance Line CX Gen5) verweigert das Rad schon das **Lesen** der Grenzen und liefert keine Freigabe-Rückmeldung: SelfBike sendet die Werte dann **nur schreibend, ohne Bestätigung** und meldet das Ergebnis ehrlich als „gesendet, nicht bestätigt". Die Obergrenze muss über dem aktuellen Ladestand liegen, sonst bleibt sie wirkungslos. Ob dadurch auch das Ladegerät früher abschaltet, ist nicht bestätigt.
 
 **💾 Daten & Berichte**
 - **Backup vor jeder Änderung** — als JSON-Datei plus Kopie im Browser (letzte 20); jederzeit wiederherstellbar
