@@ -2,7 +2,7 @@
 import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
-import { hex, pbSummary, RPC } from './lib/messagebus.js';
+import { hex, pbSummary, RPC, WRITE, encodeCharging } from './lib/messagebus.js';
 import { CLEAR_TARGETS, CMD, enableClear, disableClear, clearPayload, deleteIssuePayload, isClearable } from './lib/fault-actions.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
@@ -30,6 +30,7 @@ let rows = [];
 let S = {};
 let faults = [];
 let busy = false;
+let chargingLocked = false; // Akkuschonung (229): true, sobald das Rad einen Schreibversuch mit Status 6 (DENIED) ablehnt
 let blocked = false;   // nach unklarem Schreibversuch
 let demo = false;
 let tab = 'home';
@@ -214,6 +215,7 @@ const ICONS = {
   ports: '<path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0zM12 17v4"/>',
   battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M6 10v4M9 10v4"/>',
   soc: '<rect x="3" y="8" width="14" height="8" rx="2"/><path d="M20 11v2"/><path d="M6 12h8"/>',
+  charging: '<rect x="3" y="8" width="14" height="8" rx="2"/><path d="M20 11v2"/><path d="M10 10.5c1.3-1.4 3.2-.2 0 2.5-3.2-2.7-1.3-3.9 0-2.5z"/>',
   faults: '<path d="M12 3 2 20h20zM12 10v4M12 17v.5"/>',
   stats: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
   batterycheck: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M7 12l2 2 4-4"/>',
@@ -240,6 +242,7 @@ function renderSettings() {
     navRow('display', t('disp.title'), '', '#64748b'),
     ok('portOem') ? navRow('ports', t('ports.title'), 'Beta', '#e0a020') : '',
     (ok('socMin') || ok('socMax') || denied('socMin') || denied('socMax')) ? navRow('soc', t('soc.title'), 'Beta', '#22a35a') : '',
+    (ok('chargingSettings') || denied('chargingSettings')) ? navRow('charging', t('charge.title'), 'Beta', '#16a34a') : '',
   ].join('');
 }
 $('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
@@ -492,6 +495,54 @@ async function selfTest(addr) {
   }
 }
 
+// Akkuschonung an ChargingSettings 229 senden. fields = {mode?, soc?} – nur gesetzte Felder (proto-optional).
+// KEIN Rücklesen (229 ist am Rad nicht lesbar) → die allgemeine Rücklese-Erfolgsprüfung greift hier bewusst nicht;
+// ein angenommener Schreibvorgang (Status 0) meldet ehrlich „gesendet, Wirkung unbestätigt – in Flow prüfen“.
+// Status getrennt auswerten: 6 DENIED = Gate zu (Feature gesperrt), 7 INVALID_VALUE = Wertebereich, 8 MALFORMED = voller Rahmen nötig.
+async function sendCharging(fields) {
+  if (!reader || busy) return;
+  if (fields.soc != null && (!Number.isInteger(fields.soc) || fields.soc < 50 || fields.soc > 100)) return toast(t('charge.errRange'), 'err');
+  if (fields.mode != null && fields.mode !== 0 && fields.mode !== 1) return toast(t('charge.errMode'), 'err');
+  const desc = [
+    fields.mode != null ? (fields.mode === 1 ? t('charge.lifetime') : t('charge.time')) : null,
+    fields.soc != null ? `${fields.soc} %` : null,
+  ].filter(Boolean).join(' · ');
+  if (!confirm(t('charge.confirm', { what: desc }))) return;
+  try {
+    await heartbeat(reader);
+    const payload = encodeCharging(fields);
+    log(`Akkuschonung 229 schreiben: ${desc} [${hex(payload)}]`);
+    const reply = await reader.request(229, WRITE, payload);
+    log(`Akkuschonung 229 → Status ${reply.status} (${reply.statusName})`);
+    switch (reply.status) {
+      case 0: chargingLocked = false; toast(t('charge.sent'), 'ok'); break;
+      case 6: chargingLocked = true; toast(t('charge.denied'), 'warn'); break;
+      case 7: toast(t('charge.invalid'), 'err'); break;
+      case 8: toast(t('charge.malformed'), 'warn'); break;
+      default: toast(t('charge.rejected', { s: reply.statusName }), 'err');
+    }
+    if (stack.length && stack[stack.length - 1].name === 'charging') drawPage();
+  } catch (e) { toast(t('msg.readError', { error: e.message }), 'err'); }
+}
+
+// Akkuschonung auf Werk zurücksetzen (RESET_SETTINGS 230, leere Nutzlast). Gleiche ehrliche, rücklesefreie Logik.
+async function resetCharging() {
+  if (!reader || busy) return;
+  if (!confirm(t('charge.resetConfirm'))) return;
+  try {
+    await heartbeat(reader);
+    log('Akkuschonung 230 zurücksetzen');
+    const reply = await reader.request(230, WRITE, []);
+    log(`Akkuschonung 230 → Status ${reply.status} (${reply.statusName})`);
+    switch (reply.status) {
+      case 0: chargingLocked = false; toast(t('charge.resetSent'), 'ok'); break;
+      case 6: chargingLocked = true; toast(t('charge.denied'), 'warn'); break;
+      default: toast(t('charge.rejected', { s: reply.statusName }), 'err');
+    }
+    if (stack.length && stack[stack.length - 1].name === 'charging') drawPage();
+  } catch (e) { toast(t('msg.readError', { error: e.message }), 'err'); }
+}
+
 const PAGES = {
   light() {
     const can = val('lightOem')?.configurable === true;
@@ -667,6 +718,48 @@ const PAGES = {
           if (!$('socAck').checked) return toast(t('soc.ackFirst'), 'warn');
           propose(() => planSoc(S, { min: Number($('socMin').value), max: Number($('socMax').value) }));
         };
+      },
+    };
+  },
+
+  // Akkuschonung (ChargingSettings 229). Am echten Rad schon beim Lesen verweigert → „nicht lesbar“, die Felder
+  // bleiben bedienbar (Werte aus Flow bekannt). Kein Rücklesen: ein Schreibversuch meldet ehrlich „gesendet, unbestätigt“.
+  charging() {
+    const read = ok('chargingSettings') ? val('chargingSettings') : null;
+    const readDenied = !read && denied('chargingSettings');
+    const curMode = read?.mode ?? 1; // Vorauswahl Akku-Lebensdauer
+    const curSoc = read?.soc ?? 80;
+    return {
+      title: t('charge.title'),
+      html: `<p class="explain">${esc(t('charge.explain'))}</p>
+        <div class="alert" style="margin-top:12px">${esc(t('charge.beta'))}</div>
+        ${readDenied ? `<div class="alert">${esc(t('charge.readDenied'))}</div>` : ''}
+        ${chargingLocked ? `<div class="alert">${esc(t('charge.locked'))}</div>` : ''}
+        <div class="group noico" style="margin-top:12px">
+          <label class="row static"><span class="t">${esc(t('charge.mode'))}<small>${esc(t('charge.modeHint'))}</small></span>
+            <select id="chMode">
+              <option value="1"${curMode === 1 ? ' selected' : ''}>${esc(t('charge.lifetime'))}</option>
+              <option value="0"${curMode === 0 ? ' selected' : ''}>${esc(t('charge.time'))}</option>
+            </select></label>
+          <div class="row static"><span class="t">${esc(t('charge.limit'))}<small>${esc(t('charge.limitHint'))}</small></span>
+            <input class="numin" id="chSoc" type="number" min="50" max="100" step="1" value="${esc(curSoc)}"></div>
+        </div>
+        <label class="row" id="chBothRow"><span class="t" style="font-size:15px">${esc(t('charge.both'))}</span><input type="checkbox" class="sw" id="chBoth"></label>
+        <p class="foot">${esc(t('charge.bothHint'))}</p>
+        <div class="group noico" style="margin-top:12px">
+          <div class="row static"><button class="btn-big" id="chSendMode">${esc(t('charge.sendMode'))}</button></div>
+          <div class="row static"><button class="btn-big" id="chSendLimit">${esc(t('charge.sendLimit'))}</button></div>
+          <div class="row static"><button class="btn-text" id="chReset">${esc(t('charge.reset'))}</button></div>
+        </div>
+        <p class="foot">${esc(t('charge.hint'))}</p>`,
+      bind() {
+        const both = () => $('chBoth').checked;
+        const mode = () => Number($('chMode').value);
+        const soc = () => Number($('chSoc').value);
+        // Nur das geänderte Feld senden – außer der Schalter „beide Felder“ ist an (ECU verlangt ggf. den vollen Rahmen).
+        $('chSendMode').onclick = () => sendCharging(both() ? { mode: mode(), soc: soc() } : { mode: mode() });
+        $('chSendLimit').onclick = () => sendCharging(both() ? { mode: mode(), soc: soc() } : { soc: soc() });
+        $('chReset').onclick = () => resetCharging();
       },
     };
   },
