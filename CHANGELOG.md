@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.35 · November 2026
+- 🇬🇧 **Fault deletion: always unblocks** (beta fix): if a delete is interrupted (timeout/abort), the control unit is now reliably unblocked again in a cleanup step – so the bike never silently stops recording new faults. Deleting targets a fault by its stable id, so re-ordering of entries can't misfire.
+- 🇩🇪 **Fehler-Löschen: entblockt immer** (Beta-Fix): Wird ein Löschvorgang unterbrochen (Timeout/Abbruch), wird das Steuergerät jetzt zuverlässig in einem Aufräumschritt wieder entblockt – das Rad hört also nie heimlich auf, neue Fehler aufzuzeichnen. Gelöscht wird über die stabile Fehler-ID, Verschiebungen der Einträge können daher nicht danebengreifen.
+
 ## 1.4.34 · November 2026
 - 🇬🇧 **More reliable fault deletion** (beta): the result is now checked while reporting is still blocked (block → delete → read back blocked → unblock), so a fault that was really deleted but comes straight back as "active" is reported as that, not as a failure. The message now distinguishes deleted, active-again, refused and encoding error.
 - 🇩🇪 **Zuverlässigeres Fehler-Löschen** (Beta): Das Ergebnis wird jetzt im noch blockierten Zustand geprüft (Block → Löschen → blockiert rücklesen → Unblock), damit ein wirklich gelöschter, aber sofort wieder „aktiv" meldender Fehler als genau das angezeigt wird und nicht als Fehlschlag. Die Meldung unterscheidet jetzt gelöscht, wieder aktiv, verweigert und Kodierungsfehler.

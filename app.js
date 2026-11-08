@@ -365,11 +365,13 @@ async function deleteSelectedFaults(items) {
   const addrs = [...byEcu.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
   enableClear(addrs);
   const blockedPresent = {}; // addr → Set(Codes, die im blockierten Zustand noch da sind)
+  const blocked = new Set(); // welche ECU gerade blockiert ist (für sicheres Entblocken in finally)
   let gate = false; let encErr = false; // NO_ACCESS(op 5)/DENIED(transp 6) · INVALID_VALUE(7)/MALFORMED(8)
   try {
     for (const addr of addrs) {
       const src = FAULT_SOURCES.find((s) => s.address === addr) || { component: '', address: addr };
       await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING));
+      blocked.add(addr);
       for (const code of byEcu.get(addr)) {
         try {
           const r = await reader.request(addr, RPC, deleteIssuePayload(code));
@@ -382,6 +384,7 @@ async function deleteSelectedFaults(items) {
       const after = await readFaultSource(reader, src); // Wahrheit: im blockierten Zustand
       blockedPresent[addr] = new Set((after.faults || []).map((f) => f.code));
       await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING));
+      blocked.delete(addr);
     }
     faults = await readFaults(reader); // Finalblick (entblockt)
     renderAll();
@@ -398,6 +401,12 @@ async function deleteSelectedFaults(items) {
   } catch (e) {
     toast(t('msg.readError', { error: e.message }), 'err');
   } finally {
+    // Jede noch blockierte ECU MUSS entblockt werden (Timeout/Abbruch), sonst zeichnet das Rad keine
+    // neuen Fehler mehr auf. Vor disableClear(), solange der Guard den Befehl noch durchlässt.
+    for (const addr of blocked) {
+      try { await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); }
+      catch (e) { log(`UNBLOCK ${addr} fehlgeschlagen: ${e.message}`); }
+    }
     disableClear();
   }
 }
