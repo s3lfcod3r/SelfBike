@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.54 · November 2026
+- 🇬🇧 **Display marked as a latent clear target**: the display is present in the code and on the same clear channel as motor and control unit, but on this bike a Kiox runs as the control unit and there is no separate head unit, so the display reads "not installed". The docs now say so, so it no longer reads like an available, confirmed target – it only applies to bikes with a second display/head unit.
+- 🇩🇪 **Display als latentes Löschziel gekennzeichnet**: Das Display ist im Code vorhanden und auf demselben Löschkanal wie Motor und Bedieneinheit, auf diesem Rad läuft aber ein Kiox als Bedieneinheit und es gibt keine separate HeadUnit, also meldet das Display „nicht verbaut". Die Doku sagt das jetzt, damit es sich nicht wie ein verfügbares, bestätigtes Ziel liest – es gilt nur für Räder mit zweitem Display/HeadUnit.
+
 ## 1.4.53 · November 2026
 - 🇬🇧 **ABS removed from the clear targets (checked and dropped)**: after answering the clear channel once, ABS stayed "not readable" across a bike restart, riding and a direct retry, so the channel is unreliable here. ABS is no longer a clear target – no checkbox, no self-test link – but stays in the fault list for viewing. Its "not readable" line is now marked as a known state, not an acute fault, and the demo rejects an ABS clear again so demo and reality match. Clearable units: battery, motor, control unit and display.
 - 🇩🇪 **ABS aus den Löschzielen entfernt (geprüft und verworfen)**: Nach einer einmaligen Antwort blieb ABS über Rad-Neustart, Radbewegung und direkten Wiederholversuch „nicht lesbar", der Kanal ist hier also nicht zuverlässig. ABS ist kein Löschziel mehr – kein Häkchen, kein Selbsttest-Link – bleibt aber zur Ansicht in der Fehlerliste. Die „nicht lesbar"-Zeile ist jetzt als bekannter Zustand gekennzeichnet, nicht als akuter Fehler, und die Demo lehnt einen ABS-Clear wieder ab, damit Demo und Realität übereinstimmen. Löschbar: Akku, Motor, Bedieneinheit und Display.
