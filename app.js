@@ -702,7 +702,9 @@ const PAGES = {
           ? `<label class="fault" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" class="fsel" data-addr="${f.address}" data-code="${e.code}" style="width:auto;margin-top:3px"><span style="display:flex;flex-direction:column;flex:1">${inner2}</span></label>`
           : `<div class="fault">${inner2}${reader ? `<span style="color:var(--self-text-dim,#8a9cab);font-size:.85rem;margin-top:4px">${esc(t('clr.notSupported'))}</span>` : ''}</div>`;
       }).join('');
-      return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
+      // Bedieneinheit (RemoteControl 8485): Löschen trifft auch die Visualisierungsereignisse → LED-Hinweis.
+      const ledWarn = reader && f.address === 8485 && f.status === 'ok' && f.faults.length ? `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('clr.ledWarn'))}</p>` : '';
+      return `<p class="gh">${esc(t(`fault.${f.component}`))}</p>${ledWarn}<div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
     const canClear = !!reader && faults.some((f) => isClearable(f.address) && f.status === 'ok' && f.faults.length);
     return {

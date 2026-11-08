@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.37 · November 2026
+- 🇬🇧 **Clearer fault-delete feedback** (beta): faults deleted on the control unit now carry a note that this also clears the LED fault display. The result message distinguishes a fault that was actually deleted but comes straight back as active. (Demo now models the real block/unblock behaviour so this is visible.)
+- 🇩🇪 **Klareres Feedback beim Fehler-Löschen** (Beta): Fehler an der Bedieneinheit tragen jetzt den Hinweis, dass dabei auch die LED-Fehleranzeige gelöscht wird. Die Ergebnismeldung unterscheidet einen wirklich gelöschten, aber sofort wieder aktiven Fehler. (Der Demo-Modus bildet das Block-/Unblock-Verhalten jetzt echt ab, damit das sichtbar ist.)
+
 ## 1.4.36 · November 2026
 - 🇬🇧 **Speed-manipulation status shown** (read-only): the components page now also shows the bike's own speed-manipulation flag (SPEED_MANIPULATION_STATUS) next to the tuning detection, instead of only inferring "no tuning".
 - 🇩🇪 **Geschwindigkeits-Manipulations-Status angezeigt** (nur lesen): Die Komponenten-Seite zeigt jetzt zusätzlich das herstellereigene Manipulations-Flag des Rads (SPEED_MANIPULATION_STATUS) neben der Tuning-Erkennung, statt nur „kein Tuning" abzuleiten.
