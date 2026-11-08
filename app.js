@@ -3,7 +3,7 @@ import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
 import { hex, pbSummary, RPC } from './lib/messagebus.js';
-import { CLEAR_TARGETS, CLEAR_SEQUENCE, CMD, STATUS, enableClear, disableClear, clearPayload } from './lib/fault-actions.js';
+import { CLEAR_TARGETS, CLEAR_SEQUENCE, CMD, STATUS, enableClear, disableClear, clearPayload, deleteIssuePayload } from './lib/fault-actions.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
@@ -352,6 +352,26 @@ function saveFaultSnapshot() {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
+// Einzelnen Fehler löschen (DELETE_ISSUE): BLOCK → DELETE_ISSUE(code) → UNBLOCK an der ECU-Adresse.
+async function deleteSingleFault(addr, code) {
+  if (!reader) return;
+  saveFaultSnapshot();
+  enableClear([addr]);
+  try {
+    await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING));
+    const r = await reader.request(addr, RPC, deleteIssuePayload(code));
+    await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING));
+    faults = await readFaults(reader);
+    renderAll();
+    if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
+    toast(r.status === 0 ? t('clr.oneDone') : t('clr.oneFail', { status: r.statusName || r.status }), r.status === 0 ? 'ok' : 'warn');
+  } catch (e) {
+    toast(t('msg.readError', { error: e.message }), 'err');
+  } finally {
+    disableClear();
+  }
+}
+
 async function clearFaultMemory() {
   if (!reader || !faultCount()) return;
   saveFaultSnapshot(); // Historie zuerst sichern
@@ -661,7 +681,7 @@ const PAGES = {
           <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
           ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>`
-            : `<span style="margin-top:4px">${cat.own ? '' : `<b style="display:inline">${esc(t('fcat.hint'))}:</b> `}${esc(cat.hint)}</span>`}</div>`;
+            : `<span style="margin-top:4px">${cat.own ? '' : `<b style="display:inline">${esc(t('fcat.hint'))}:</b> `}${esc(cat.hint)}</span>`}${reader ? `<button class="btn-text red fdel" data-addr="${f.address}" data-code="${e.code}">${esc(t('clr.one'))}</button>` : ''}</div>`;
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
@@ -676,6 +696,12 @@ const PAGES = {
         <button class="btn-big" id="clrBtn" style="background:var(--self-danger,#c62828)">${esc(t('clr.btn'))}</button>
         <p class="foot">${esc(t('clr.hint'))}</p>` : ''),
       bind() {
+        // Einzelnen Fehler löschen – Haken (clrAck) muss gesetzt sein
+        for (const b of $('sheetBody').querySelectorAll('.fdel')) b.onclick = async () => {
+          if (!$('clrAck')?.checked) return toast(t('clr.ackFirst'), 'warn');
+          b.disabled = true;
+          await deleteSingleFault(Number(b.dataset.addr), Number(b.dataset.code));
+        };
         if (!canClear) return;
         $('clrBtn').onclick = async () => {
           if (!$('clrAck').checked) return toast(t('clr.ackFirst'), 'warn');

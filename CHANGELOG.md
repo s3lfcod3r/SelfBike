@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.31 · November 2026
+- 🇬🇧 **Delete a single fault** (beta): every entry on the fault memory page now has a "Delete" button that removes just that one code (verified `DELETE_ISSUE` command with the issue id, wrapped in block→delete→unblock), instead of clearing everything. Uses the same confirmation checkbox and saves a snapshot first. Active/permanent faults come back.
+- 🇩🇪 **Einzelnen Fehler löschen** (Beta): Jeder Eintrag auf der Fehler-Seite hat jetzt einen „Löschen"-Knopf, der nur diesen einen Code entfernt (verifizierter `DELETE_ISSUE`-Befehl mit der Issue-ID, umschlossen von Block→Löschen→Unblock), statt alles zu löschen. Nutzt denselben Bestätigungshaken und sichert vorher. Aktive/permanente Fehler kommen zurück.
+
 ## 1.4.30 · November 2026
 - 🇬🇧 **Clear fault memory, now in the app** (beta): the fault memory page has a button to clear the stored messages of all control units (battery first, motor last), with a confirmation checkbox and a saved snapshot first. Verified against the real bike. Only control units with entries are touched; active/permanent faults come back, and a unit that refuses simply keeps its entries.
 - 🇩🇪 **Fehlerspeicher löschen, jetzt in der App** (Beta): Die Fehler-Seite hat einen Knopf, der die gespeicherten Meldungen aller Steuergeräte löscht (Akku zuerst, Motor zuletzt), mit Bestätigungshaken und vorheriger Sicherung. Am echten Rad bestätigt. Nur Geräte mit Einträgen werden angefasst; aktive/permanente Fehler kommen zurück, und ein Steuergerät, das verweigert, behält einfach seine Einträge.
