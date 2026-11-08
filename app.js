@@ -501,10 +501,35 @@ async function selfTest(addr) {
 // UdamParams {F1 Unterstützung, F2 Drehmoment, F3 Ansprechen, F4 Höchstgeschwindigkeit} → {feld: wert}
 const udamFlat = (bytes) => Object.fromEntries(pbFields(bytes).filter((f) => f.wire === 0).map((f) => [f.field, f.value]));
 
-// Reine Lese-Prüfung je aktivem Fahrmodus (ConfigId), KEIN Schreibvorgang:
-//   4246 ASSIST_MODE_IS_OEM_ADJUSTABLE → Boolean (gibt der Hersteller das Ändern frei?)
-//   4242 READ_UDAM_LIMITS → Grenzen (Prüfstein für die ConfigId-Kodierung: plausible min/max = Payload stimmt,
-//        leerer/unsinniger Rücklauf = ConfigId falsch kodiert, dann ist ein „nein" oben nur ein Artefakt).
+// UdamParams-Felder (alle 8, Reihenfolge/Semantik aus Flow.apk belegt). Die Bereiche sind FLOW-ABGELEITET
+// (aus Flow-Screenshots), NICHT vom Rad gemeldet – 4242 liefert auf Gen5 nur die Tempo-Grenze. So markiert.
+// kind: offset (Versatz, Rohwert 100=Standard, 10 je Stufe) · num (Einheit/Faktor) · bool · raw (nur Anzeige).
+// edit: true nur für die Felder, die der Low-Level-Guard (isSafeUdamSet: UDAM_EDITABLE = 1,3,4) überhaupt ändern
+// lässt – und davon vorerst nur die beiden Versatz-Felder (1 Unterstützung, 3 Dynamik), ohne Tempo-Risiko.
+// Tempo/Drehmoment/Leistung/Boost/Traktion/Spanner werden angezeigt (zum Abgleich mit Flow), aber nicht geändert.
+const MODE_FIELDS = [
+  { n: 1, key: 'assist', de: 'Unterstützung', en: 'Assistance', kind: 'offset', rawMin: 50, rawMax: 150, edit: true },
+  { n: 3, key: 'dyn', de: 'Dynamik', en: 'Dynamics', kind: 'offset', rawMin: 50, rawMax: 150, edit: true },
+  { n: 2, key: 'torque', de: 'Max. Drehmoment', en: 'Max. torque', kind: 'num', unit: 'Nm', factor: 10, rawMin: 100, rawMax: 850, edit: false },
+  { n: 5, key: 'power', de: 'Max. Leistung', en: 'Max. power', kind: 'num', unit: 'W', factor: 1, rawMin: 100, rawMax: 750, edit: false },
+  { n: 4, key: 'speed', de: 'Max. Tempo', en: 'Max. speed', kind: 'num', unit: 'km/h', factor: 100, rawMin: 1000, rawMax: 2500, edit: false },
+  { n: 6, key: 'boost', de: 'Extended Boost', en: 'Extended boost', kind: 'raw', edit: false },
+  { n: 7, key: 'traction', de: 'Traktionskontrolle', en: 'Traction control', kind: 'raw', edit: false },
+  { n: 8, key: 'tensioner', de: 'Kettenspanner', en: 'Chain tensioner', kind: 'bool', edit: false },
+];
+const mfLabel = (f) => (lang() === 'en' ? f.en : f.de);
+// Rohwert → Anzeige (nie roh): Versatz mit Vorzeichen, Zahl mit Einheit, bool An/Aus, sonst „Stufe N".
+function mfShow(f, raw) {
+  if (raw == null) return '–';
+  if (f.kind === 'offset') return withSign(assistStep(raw));
+  if (f.kind === 'num') return `${fmtNum(raw / f.factor, f.factor > 1 ? 1 : 0)} ${f.unit}`;
+  if (f.kind === 'bool') return t(raw ? 'word.on' : 'word.off');
+  return t('modes.step', { n: raw });
+}
+
+// Reine Lese-Prüfung je aktivem Fahrmodus (ConfigId), KEIN Schreibvorgang. Liest 4246 (OEM-Hinweis) und vor allem
+// ALLE Felder aus 4240 (READ_UDAM_VALUES). Vollständig = alle acht Felder präsent; nur dann darf geschrieben werden,
+// damit ein SET nicht die ungelesenen Felder mit Nullen überschreibt.
 async function probeModes() {
   if (!reader) return;
   const ids = val('activeModes') || [];
@@ -514,78 +539,65 @@ async function probeModes() {
     for (const id of ids) {
       const a = await reader.request(UDAM.OEM_ADJUSTABLE, RPC, encodeConfigId(id));
       const adjustable = a.status === 0 ? decoders.bool(a.payload).value : null;
-      const l = await reader.request(UDAM.LIMITS, RPC, encodeConfigId(id));
-      let limits = null;
-      if (l.status === 0) {
-        const f = Object.fromEntries(pbFields(l.payload).filter((x) => x.wire === 2).map((x) => [x.field, x.value]));
-        const max = f[1] ? udamFlat(f[1]) : {}; const min = f[2] ? udamFlat(f[2]) : {};
-        // Plausibel, wenn die Höchstgeschwindigkeit (F4, 0,01 km/h) sinnvoll zurückkommt
-        if (max[4] || min[4]) limits = { speedMin: (min[4] ?? 0) / 100, speedMax: (max[4] ?? 0) / 100, assistMin: min[1] ?? 0, assistMax: max[1] ?? 100 };
-      }
-      // Ist-Werte lesen (4240), damit beim späteren Schreibversuch das Delta sichtbar ist (und der Guard den Stand kennt)
       const c = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
       const current = c.status === 0 ? udamFlat(c.payload) : null;
-      log(`Fahrmodus ${id}: OEM-änderbar ${adjustable ?? 'n/a'} · Grenzen ${limits ? `${limits.speedMin}–${limits.speedMax} km/h` : 'leer/nicht lesbar'} · Unterstützung ${current?.[1] ?? '?'} %`);
-      results.push({ id, adjustable, limits, current });
+      // proto3 lässt 0-Felder weg; „vollständig" = alle acht Feldnummern kamen zurück (Schreiben nur dann freigeben)
+      const complete = !!current && MODE_FIELDS.every((f) => current[f.n] != null);
+      log(`Fahrmodus ${id}: OEM-Hinweis ${adjustable ?? 'n/a'} · gelesene Felder ${current ? Object.keys(current).join(',') : '–'}${complete ? '' : ' (unvollständig → Schreiben gesperrt)'}`);
+      results.push({ id, adjustable, current, complete });
     }
     modeAdjustable = results;
-    const plausible = results.some((x) => x.limits);
-    const anyYes = results.some((x) => x.adjustable === true);
-    toast(!plausible ? t('modes.badConfigId') : anyYes ? t('modes.someAdjustable') : t('modes.noneAdjustable'),
-      !plausible ? 'err' : anyYes ? 'ok' : 'warn');
+    const anyRead = results.some((x) => x.current);
+    toast(anyRead ? t('modes.readOk') : t('modes.badConfigId'), anyRead ? 'ok' : 'err');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
   } catch (e) {
     toast(t('msg.readError', { error: e.message }), 'err');
   }
 }
 
-// EINZELNER, vorsichtiger Schreibversuch auf GENAU einem Fahrmodus (ECO+). Nur assistLevel (Feld 1), geklemmt
-// auf die direkt vom Rad gelesenen Grenzen (4242); Höchstgeschwindigkeit (Feld 4) und alle übrigen Felder bleiben
-// unverändert. Ablauf: 4240 frisch lesen (füllt den Guard-Stand) → 4242 (füllt die Guard-Grenze) → 4243 schreiben
-// → 4240 zurücklesen. Das Rücklesen beweist nur das SPEICHERN, nicht die Wirkung (wie bei 6210) – danach fahren.
-// SetUdamValuesParameters {F1 ConfigId, F2 UdamParams}; alle gelesenen Felder übernehmen, nur Feld 1 ändern.
-// Belegt aus Flow.apk (DefaultSetAssistModeParams): genau diese Struktur an SET_UDAM_VALUES_PARAMETERS (4243),
-// UdamParams auf Gen5 erweitert (8 Felder), aber Felder 1–4 immer dabei – unser assistLevel-Weg ist korrekt.
+// SetUdamValuesParameters {F1 ConfigId, F2 UdamParams}; schreibt ALLE übergebenen Felder (belegt aus Flow.apk).
 function encodeUdamSet(id, params) {
   const cfg = encodeConfigId(id);
   const body = [];
   for (const n of Object.keys(params).map(Number).sort((a, b) => a - b)) body.push((n << 3) | 0, ...encodeVarint(params[n]));
   return [0x0a, cfg.length, ...cfg, 0x12, body.length, ...body];
 }
-// Einzelner, geklemmter Schreibversuch je Fahrmodus (ConfigId). Nur assistLevel (Feld 1), Tempo/Rest unverändert.
-async function writeModeAssist(id, newAssist) {
+// Schreibversuch je Fahrmodus. edits = {feldNr: neuer Rohwert}. SICHERHEIT: frisch ALLE Felder lesen (4240),
+// die Edits (geklemmt auf die Spec-Bereiche) daraufsetzen, ALLE gelesenen Felder zurückschreiben – so überschreibt
+// ein SET kein ungelesenes Feld mit Null. Nur erlaubt, wenn alle acht Felder gelesen wurden. Danach zurücklesen;
+// das beweist nur das Speichern, nicht die Wirkung (wie bei 6210) – danach im Modus fahren.
+async function writeMode(id, edits) {
   if (!reader) return;
   try {
     const cur = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
-    const lim = await reader.request(UDAM.LIMITS, RPC, encodeConfigId(id));
-    if (cur.status !== 0 || lim.status !== 0) return toast(t('modes.readFail'), 'err');
+    if (cur.status !== 0) return toast(t('modes.readFail'), 'err');
     const params = udamFlat(cur.payload);
-    const lf = Object.fromEntries(pbFields(lim.payload).filter((x) => x.wire === 2).map((x) => [x.field, x.value]));
-    const lo = (lf[2] ? udamFlat(lf[2])[1] : 0) ?? 0;
-    const hi = (lf[1] ? udamFlat(lf[1])[1] : 100) ?? 100;
-    const before = params[1];
-    const clamped = Math.max(lo, Math.min(hi, Math.round(newAssist)));
-    params[1] = clamped; // nur assistLevel; Feld 4 (Tempo) und alle anderen bleiben unverändert
-    log(`${id} Schreibversuch: Unterstützung ${before} → ${clamped} (Grenze ${lo}–${hi}, Tempo ${params[4] ?? '?'} unverändert)`);
+    if (!MODE_FIELDS.every((f) => params[f.n] != null)) return toast(t('modes.incomplete'), 'err');
+    const changes = [];
+    for (const [n, raw] of Object.entries(edits)) {
+      const f = MODE_FIELDS.find((x) => x.n === Number(n)); if (!f || !f.edit) continue;
+      const clamped = f.rawMin != null ? Math.max(f.rawMin, Math.min(f.rawMax, Math.round(raw))) : Math.round(raw);
+      if (clamped !== params[f.n]) { changes.push(`${f.key} ${params[f.n]}→${clamped}`); params[f.n] = clamped; }
+    }
+    if (!changes.length) return toast(t('modes.noChangeMode'), 'ok');
+    log(`${id} Schreibversuch: ${changes.join(', ')} · alle Felder erhalten (${Object.keys(params).join(',')})`);
     const w = await reader.request(UDAM.SET, RPC, encodeUdamSet(id, params));
     if (w.status !== 0) return toast(t('modes.writeRejected', { s: w.statusName || w.status }), 'warn');
     await new Promise((r) => setTimeout(r, 450));
     const back = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
-    const now = back.status === 0 ? udamFlat(back.payload)[1] : null;
-    log(`${id} zurückgelesen: Unterstützung roh ${now ?? '?'} (Versatz ${now != null ? withSign(assistStep(now)) : '?'})`);
-    modeAdjustable = null; // alte Prüfanzeige ist jetzt veraltet
-    toast(t('modes.writeDone', { v: now != null ? withSign(assistStep(now)) : '?' }), now === clamped ? 'ok' : 'warn');
+    log(`${id} zurückgelesen: ${back.status === 0 ? Object.entries(udamFlat(back.payload)).map(([n, v]) => `${n}=${v}`).join(' ') : 'nicht lesbar'}`);
+    modeAdjustable = null; // Anzeige ist jetzt veraltet
+    toast(t('modes.writeDone'), 'ok');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
   } catch (e) { toast(t('msg.readError', { error: e.message }), 'err'); }
 }
-async function resetModeAssist(id) {
+async function resetMode(id) {
   if (!reader) return;
   try {
     const r = await reader.request(UDAM.RESET, RPC, encodeConfigId(id));
     if (r.status !== 0) return toast(t('modes.resetFail', { s: r.statusName || r.status }), 'err');
     await new Promise((res) => setTimeout(res, 450));
-    const back = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
-    log(`${id} Werkseinstellung: Unterstützung ${back.status === 0 ? udamFlat(back.payload)[1] : '?'}`);
+    await reader.request(UDAM.READ, RPC, encodeConfigId(id));
     modeAdjustable = null;
     toast(t('modes.resetDone'), 'ok');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
@@ -876,35 +888,41 @@ const PAGES = {
         reader && (val('activeModes') || []).length ? `<p class="gh">${esc(t('modes.oemTitle'))}</p>
           <p class="foot">${esc(t('modes.oemHint'))}</p>
           ${ok('udamModPossible') ? infoGroup([[t('modes.modPossible'), t(val('udamModPossible') ? 'word.yes' : 'word.no'), '', val('udamModPossible') ? 'good' : 'warn']]) : ''}
-          ${modeAdjustable ? infoGroup(modeAdjustable.map((m) => [m.id,
-            `${m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable')} · ${
-              m.limits ? t('modes.limits', { lo: fmtNum(m.limits.speedMin, 1), hi: fmtNum(m.limits.speedMax, 1) }) : t('modes.limitsEmpty')}`,
-            '', m.adjustable === true ? 'good' : m.limits ? '' : 'warn'])) : ''}
           <button class="btn-text" id="probeModes" style="margin-top:8px">${esc(t('modes.oemCheck'))}</button>
-          ${(() => {
-            // Schreibblock je Fahrmodus, SOBALD Grenzen (4242) vorliegen – UNABHÄNGIG vom OEM-Flag (4246).
-            // Flow prüft 4246 im Schreibpfad nicht; es ist nur ein Hinweis, kein Gate (belegt aus Flow.apk).
-            const editable = (modeAdjustable || []).filter((m) => m.limits && m.current && m.current[1] != null);
-            return editable.length ? `<p class="gh" style="margin-top:14px">${esc(t('modes.ecoTitle'))}</p>
-              <p class="foot">${esc(t('modes.effectNote'))}</p>
-              ${editable.map((m) => `<div class="group noico" style="margin-top:8px">
-                <div class="row static"><span class="t">${esc(m.id)}<small>${esc(t('modes.oemHintFlag', {
-                  f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</small></span>
-                  <span style="font-weight:600">${esc(withSign(assistStep(m.current[1])))}</span></div>
-                <div class="row static"><span class="t">${esc(t('modes.ecoNew'))}<small>${esc(t('modes.ecoRange', { lo: withSign(assistStep(m.limits.assistMin)), hi: withSign(assistStep(m.limits.assistMax)) }))}</small></span>
-                  <input class="numin maw" data-id="${esc(m.id)}" type="number" min="${assistStep(m.limits.assistMin)}" max="${assistStep(m.limits.assistMax)}" step="1" value="${assistStep(m.current[1])}"></div>
-                <div class="row static"><button class="btn-text mawWrite" data-id="${esc(m.id)}">${esc(t('modes.ecoWrite'))}</button>
-                  <button class="btn-text mawReset" data-id="${esc(m.id)}">${esc(t('modes.ecoReset'))}</button></div>
-              </div>`).join('')}` : '';
-          })()}` : '',
+          ${modeAdjustable ? `<p class="foot">${esc(t('modes.effectNote'))}</p>
+            ${modeAdjustable.map((m) => `<div class="group noico" style="margin-top:8px">
+              <div class="row static"><span class="t" style="font-weight:600">${esc(m.id)}</span>
+                <span style="color:var(--self-text-2);font-size:.85rem">${esc(t('modes.oemHintFlag', {
+                  f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</span></div>
+              ${MODE_FIELDS.map((f) => {
+                const raw = m.current ? m.current[f.n] : null;
+                if (!m.complete || !f.edit || raw == null) return `<div class="row static"><span class="t">${esc(mfLabel(f))}</span><span>${esc(mfShow(f, raw))}</span></div>`;
+                if (f.kind === 'bool') return `<label class="row"><span class="t">${esc(mfLabel(f))}</span><input type="checkbox" class="sw mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="bool"${raw ? ' checked' : ''}></label>`;
+                if (f.kind === 'offset') return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(withSign(assistStep(f.rawMin)))} … ${esc(withSign(assistStep(f.rawMax)))} (0 = Standard)</small></span>
+                  <input class="numin mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="offset" type="number" min="${assistStep(f.rawMin)}" max="${assistStep(f.rawMax)}" step="1" value="${assistStep(raw)}"></div>`;
+                return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(fmtNum(f.rawMin / f.factor, f.factor > 1 ? 1 : 0))}–${esc(fmtNum(f.rawMax / f.factor, f.factor > 1 ? 1 : 0))} ${esc(f.unit)}</small></span>
+                  <input class="numin mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="num" data-factor="${f.factor}" type="number" min="${f.rawMin / f.factor}" max="${f.rawMax / f.factor}" step="${f.factor >= 100 ? 0.1 : 1}" value="${raw / f.factor}"></div>`;
+              }).join('')}
+              ${m.complete ? `<div class="row static"><button class="btn-big modeWrite" data-id="${esc(m.id)}" style="background:#e0a020;color:#1a2230">${esc(t('modes.ecoWrite'))}</button></div>
+                <div class="row static"><button class="btn-text modeReset" data-id="${esc(m.id)}">${esc(t('modes.ecoReset'))}</button></div>`
+                : `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('modes.incompleteHint'))}</p>`}
+            </div>`).join('')}` : ''}` : '',
       ].join(''),
       bind() {
         if ($('probeModes')) $('probeModes').onclick = () => probeModes();
-        $('sheetBody').querySelectorAll('.mawWrite').forEach((b) => {
-          // Eingabe ist der Versatz in Stufen → in Rohwert umrechnen (Standard 100 + Stufe×10)
-          b.onclick = () => { const inp = $('sheetBody').querySelector(`.maw[data-id="${b.dataset.id}"]`); writeModeAssist(b.dataset.id, assistRaw(Number(inp.value))); };
+        $('sheetBody').querySelectorAll('.modeWrite').forEach((b) => {
+          b.onclick = () => {
+            const edits = {};
+            $('sheetBody').querySelectorAll(`.mf[data-id="${b.dataset.id}"]`).forEach((inp) => {
+              const n = Number(inp.dataset.n);
+              if (inp.dataset.kind === 'bool') edits[n] = inp.checked ? 1 : 0;
+              else if (inp.dataset.kind === 'offset') edits[n] = assistRaw(Number(inp.value));
+              else edits[n] = Math.round(Number(inp.value) * Number(inp.dataset.factor));
+            });
+            writeMode(b.dataset.id, edits);
+          };
         });
-        $('sheetBody').querySelectorAll('.mawReset').forEach((b) => { b.onclick = () => resetModeAssist(b.dataset.id); });
+        $('sheetBody').querySelectorAll('.modeReset').forEach((b) => { b.onclick = () => resetMode(b.dataset.id); });
       },
     };
   },
