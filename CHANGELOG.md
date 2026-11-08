@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.40 · November 2026
+- 🇬🇧 **Honest units + more OEM read-outs**: motor cut-off distance and speed-display tolerance have no documented scale in the 1.2.3 data, so they now show the raw value marked "unit unknown" instead of a made-up unit. Bike category falls back to the raw number for values newer firmware may report (Gen5). Added the read-only manufacturer speed-source flag (configurable by IBD). The existing light / walk-assist / power-port read-outs already carry their "configurable" flags.
+- 🇩🇪 **Ehrliche Einheiten + mehr OEM-Auslesewerte**: Motor-Abschaltdistanz und Tempo-Anzeige-Toleranz haben im 1.2.3-Datensatz keine belegte Skalierung – sie zeigen jetzt den Rohwert mit „Einheit unbekannt" statt einer erfundenen Einheit. Die Fahrradklasse fällt auf die Rohzahl zurück, falls neuere Firmware (Gen5) unbekannte Werte liefert. Neu: das Nur-Lese-Herstellerflag für die Geschwindigkeitsquelle (per IBD änderbar). Die vorhandenen Licht-/Schiebehilfe-/Power-Port-Werte führen ihre „änderbar"-Flags bereits mit.
+
 ## 1.4.39 · November 2026
 - 🇬🇧 **Motor generation corrected + more read-outs**: the motor is **Performance Line CX Gen5 (BDU3840)**, not Gen 4 – corrected in docs and the in-code note (clearing stays verified; reading/clearing and configuration are separate – configuration can still be gated). The components/details view now also reads bike category, max. gear ratio, motor cut-off distance and speed-display tolerance. ABS faults in the fault-memory export are marked "not clearable" instead of being dropped.
 - 🇩🇪 **Motor-Generation korrigiert + mehr Auslesewerte**: Der Motor ist **Performance Line CX Gen5 (BDU3840)**, nicht Gen 4 – in Doku und Code-Hinweis richtiggestellt (Löschen bleibt verifiziert; Lesen/Löschen und Konfiguration sind getrennt – Konfiguration kann weiter gesperrt sein). Die Komponenten-/Details-Ansicht liest jetzt zusätzlich Fahrradklasse, max. Übersetzung, Motor-Abschaltdistanz und Tempo-Anzeige-Toleranz. ABS-Fehler im Fehlerspeicher-Export sind als „nicht löschbar" markiert statt weggelassen.
