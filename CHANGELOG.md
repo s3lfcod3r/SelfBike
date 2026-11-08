@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.59 · November 2026
+- 🇬🇧 **Assist shown as an offset, not a raw value + more read-outs**: the write confirmed on the bike (Flow reads back the value, no gate). Assistance is an offset, not a percent – raw 100 = standard, 10 raw points per step, so the UI now shows and takes steps (e.g. 0, +1, −5), clamped to the bike's range, instead of a raw number that tempted writing to the edge. Added read-only: whether assist-mode change is possible at all (6214), and the motor power and torque limits (6277/6278).
+- 🇩🇪 **Unterstützung als Versatz statt Rohwert + mehr Auslesewerte**: Der Schreibvorgang ist am Rad bestätigt (Flow liest den Wert zurück, kein Gate). Die Unterstützung ist ein Versatz, kein Prozent – Rohwert 100 = Standard, 10 Rohpunkte je Stufe; die UI zeigt und nimmt jetzt Stufen (z. B. 0, +1, −5), geklemmt auf den Bereich des Rades, statt eines Rohwerts, der zum Schreiben an die Kante verleitet. Neu nur lesend: ob eine Fahrmodi-Änderung grundsätzlich möglich ist (6214) sowie die Motor-Leistungs- und Drehmomentgrenze (6277/6278).
+
 ## 1.4.58 · November 2026
 - 🇬🇧 **Assist-mode write block now shows per mode with limits (not gated on the flag)**: the write block now appears for every active mode whose limits came back, independent of the "manufacturer-adjustable" flag – the flag is shown only as a hint. Confirmed by decompiling the Flow app: on Gen5 UDAM is alive (same addresses 4240/4242/4243/4244/4246), the message is just extended, the config id is encoded the same way, and Flow does not check that flag before writing. So the flag is not a write gate.
 - 🇩🇪 **Fahrmodus-Schreibblock erscheint jetzt je Modus mit Grenzen (nicht am Flag gekoppelt)**: Der Schreibblock erscheint jetzt für jeden aktiven Modus, dessen Grenzen zurückkamen – unabhängig vom „vom Hersteller änderbar"-Flag, das nur noch als Hinweis danebensteht. Belegt durch Zerlegen der Flow-App: Auf Gen5 ist UDAM aktiv (gleiche Adressen 4240/4242/4243/4244/4246), die Nachricht ist nur erweitert, die ConfigId wird genauso kodiert, und Flow prüft das Flag vor dem Schreiben nicht. Das Flag ist also kein Schreib-Gate.

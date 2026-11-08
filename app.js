@@ -48,6 +48,11 @@ const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ
 // „1 Eintrag" / „N Einträge" – Singular/Plural für Zähltexte
 const entries = (n) => (n === 1 ? t('clr.entry1') : t('clr.entryN', { n }));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+// Unterstützung ist ein VERSATZ, kein Prozent (belegt aus Flow.apk): Rohwert 100 = Standard, 10 Rohpunkte je Stufe.
+// Flow zeigt (raw-100)/10, z. B. raw 50 → -5, raw 110 → +1. In der UI als Stufen anzeigen, nicht als Rohwert.
+const assistStep = (raw) => Math.round((raw - 100) / 10);
+const assistRaw = (step) => 100 + step * 10;
+const withSign = (n) => (n > 0 ? `+${n}` : String(n));
 const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); };
 
 // Diagnose-Export: Adressen mit persönlichen Daten werden beim Export ausgelassen
@@ -567,9 +572,9 @@ async function writeModeAssist(id, newAssist) {
     await new Promise((r) => setTimeout(r, 450));
     const back = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
     const now = back.status === 0 ? udamFlat(back.payload)[1] : null;
-    log(`${id} zurückgelesen: Unterstützung ${now ?? '?'}`);
+    log(`${id} zurückgelesen: Unterstützung roh ${now ?? '?'} (Versatz ${now != null ? withSign(assistStep(now)) : '?'})`);
     modeAdjustable = null; // alte Prüfanzeige ist jetzt veraltet
-    toast(t('modes.writeDone', { v: now ?? '?' }), now === clamped ? 'ok' : 'warn');
+    toast(t('modes.writeDone', { v: now != null ? withSign(assistStep(now)) : '?' }), now === clamped ? 'ok' : 'warn');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
   } catch (e) { toast(t('msg.readError', { error: e.message }), 'err'); }
 }
@@ -857,6 +862,8 @@ const PAGES = {
           ok('maxGearRatio') && [dpLabel('maxGearRatio'), txt('maxGearRatio'), ''],
           ok('motorCutOff') && [dpLabel('motorCutOff'), txt('motorCutOff'), ''],
           ok('speedTolerance') && [dpLabel('speedTolerance'), txt('speedTolerance'), ''],
+          ok('motorPowerLimit') && [dpLabel('motorPowerLimit'), txt('motorPowerLimit'), ''],
+          ok('motorTorqueLimit') && [dpLabel('motorTorqueLimit'), txt('motorTorqueLimit'), ''],
           ok('regioRequired') && [dpLabel('regioRequired'), txt('regioRequired'), ''],
           ok('regioAvailable') && [dpLabel('regioAvailable'), txt('regioAvailable'), ''],
           ok('componentLock') && [dpLabel('componentLock'), txt('componentLock'), ''],
@@ -868,6 +875,7 @@ const PAGES = {
         // Fahrmodi – Hersteller-Änderbarkeit (reine Lese-Prüfung, kein Schreibvorgang)
         reader && (val('activeModes') || []).length ? `<p class="gh">${esc(t('modes.oemTitle'))}</p>
           <p class="foot">${esc(t('modes.oemHint'))}</p>
+          ${ok('udamModPossible') ? infoGroup([[t('modes.modPossible'), t(val('udamModPossible') ? 'word.yes' : 'word.no'), '', val('udamModPossible') ? 'good' : 'warn']]) : ''}
           ${modeAdjustable ? infoGroup(modeAdjustable.map((m) => [m.id,
             `${m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable')} · ${
               m.limits ? t('modes.limits', { lo: fmtNum(m.limits.speedMin, 1), hi: fmtNum(m.limits.speedMax, 1) }) : t('modes.limitsEmpty')}`,
@@ -879,12 +887,12 @@ const PAGES = {
             const editable = (modeAdjustable || []).filter((m) => m.limits && m.current && m.current[1] != null);
             return editable.length ? `<p class="gh" style="margin-top:14px">${esc(t('modes.ecoTitle'))}</p>
               <p class="foot">${esc(t('modes.effectNote'))}</p>
-              ${editable.map((m, i) => `<div class="group noico" style="margin-top:8px">
+              ${editable.map((m) => `<div class="group noico" style="margin-top:8px">
                 <div class="row static"><span class="t">${esc(m.id)}<small>${esc(t('modes.oemHintFlag', {
                   f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</small></span>
-                  <span style="font-weight:600">${esc(String(m.current[1]))}</span></div>
-                <div class="row static"><span class="t">${esc(t('modes.ecoNew'))}<small>${esc(t('modes.ecoRange', { lo: m.limits.assistMin, hi: m.limits.assistMax }))}</small></span>
-                  <input class="numin maw" data-id="${esc(m.id)}" type="number" min="${m.limits.assistMin}" max="${m.limits.assistMax}" step="1" value="${esc(String(m.current[1]))}"></div>
+                  <span style="font-weight:600">${esc(withSign(assistStep(m.current[1])))}</span></div>
+                <div class="row static"><span class="t">${esc(t('modes.ecoNew'))}<small>${esc(t('modes.ecoRange', { lo: withSign(assistStep(m.limits.assistMin)), hi: withSign(assistStep(m.limits.assistMax)) }))}</small></span>
+                  <input class="numin maw" data-id="${esc(m.id)}" type="number" min="${assistStep(m.limits.assistMin)}" max="${assistStep(m.limits.assistMax)}" step="1" value="${assistStep(m.current[1])}"></div>
                 <div class="row static"><button class="btn-text mawWrite" data-id="${esc(m.id)}">${esc(t('modes.ecoWrite'))}</button>
                   <button class="btn-text mawReset" data-id="${esc(m.id)}">${esc(t('modes.ecoReset'))}</button></div>
               </div>`).join('')}` : '';
@@ -893,7 +901,8 @@ const PAGES = {
       bind() {
         if ($('probeModes')) $('probeModes').onclick = () => probeModes();
         $('sheetBody').querySelectorAll('.mawWrite').forEach((b) => {
-          b.onclick = () => { const inp = $('sheetBody').querySelector(`.maw[data-id="${b.dataset.id}"]`); writeModeAssist(b.dataset.id, Number(inp.value)); };
+          // Eingabe ist der Versatz in Stufen → in Rohwert umrechnen (Standard 100 + Stufe×10)
+          b.onclick = () => { const inp = $('sheetBody').querySelector(`.maw[data-id="${b.dataset.id}"]`); writeModeAssist(b.dataset.id, assistRaw(Number(inp.value))); };
         });
         $('sheetBody').querySelectorAll('.mawReset').forEach((b) => { b.onclick = () => resetModeAssist(b.dataset.id); });
       },
