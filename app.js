@@ -901,30 +901,40 @@ const PAGES = {
     ];
     return { title: t('comp.title'), html: infoGroup(items) };
   },
-  // Protokoll: was geändert wurde und ob das Rad es übernommen hat – aus den gespeicherten Backups (letzte 20,
-  // nur im Browser). Jeder Eintrag: Titel + Zeit, Schritte (vorher → nachher) und das Ergebnis (angenommen/
-  // nicht übernommen/abgebrochen). Reine Backups ohne geplante Änderung werden übersprungen.
+  // Protokoll: das rohe technische Sitzungs-Log (logLines) wie eine Kommandozeile – jede Aktion mit Zeit,
+  // Schreib- und Rücklese-Zeilen („SCHREIBE … → …“, „OK … zurückgelesen …“, „FERTIG …“ / „ABBRUCH …“).
+  // Zum Kopieren (z. B. für eine Rückfrage). Lebt nur im Browser-Speicher dieser Sitzung.
   protocol() {
-    const list = changeLog();
-    const entry = (c) => {
-      const o = c.outcome;
-      let badge; let cls; let reason = '';
-      if (!o) { badge = t('prot.aborted'); cls = 'warn'; }
-      else if (o.ok) {
-        const unconf = (o.done || []).some((d) => d.unconfirmed);
-        badge = unconf ? t('prot.unconfirmed') : t('prot.accepted');
-        cls = unconf ? 'warn' : 'good';
-      } else { badge = t('prot.notApplied'); cls = 'bad'; reason = o.error ? t('prot.reason', { error: o.error }) : ''; }
-      const steps = c.steps.map((s) => `<div class="row static"><span class="t">${esc(s.label ?? dpLabel(s.key))}</span><span style="text-align:right">${esc(s.before)} → <b>${esc(s.after)}</b></span></div>`).join('');
-      return `<div class="row static"><span class="t" style="font-weight:600">${esc(c.title)}<small>${esc(fmtDateTime(new Date(c.createdAt)))}</small></span><span class="${cls}" style="font-weight:600">${esc(badge)}</span></div>
-        ${steps}
-        ${reason ? `<div class="row static"><span class="t" style="color:var(--self-text-2);font-weight:400">${esc(reason)}</span></div>` : ''}`;
-    };
+    const text = logLines.join('\n');
     return {
       title: t('prot.title'),
-      html: `<p class="explain">${esc(t('prot.hint'))}</p>` + (list.length
-        ? list.map((c) => `<div class="group noico" style="margin-top:12px">${entry(c)}</div>`).join('')
+      html: `<p class="explain">${esc(t('prot.hint'))}</p>` + (logLines.length
+        ? `<div style="display:flex;gap:8px;margin:0 0 10px"><button class="btn-text" id="protCopy">${esc(t('prot.copy'))}</button></div>
+          <pre id="protLog" style="font:12px/1.55 ui-monospace,'SF Mono',Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;padding:12px;max-height:62vh;overflow:auto;background:var(--self-bg-2,#161b22);border:1px solid var(--self-line,rgba(157,189,208,.18));border-radius:10px;color:var(--self-text,#eef4f7)">${esc(text)}</pre>`
         : `<p class="explain">${esc(t('prot.empty'))}</p>`),
+      bind() {
+        const btn = $('protCopy');
+        if (!btn) return;
+        btn.onclick = async () => {
+          const out = logLines.join('\n');
+          try {
+            await navigator.clipboard.writeText(out);
+            toast(t('prot.copied'), 'ok');
+          } catch {
+            // Fallback ohne Clipboard-API (z. B. ohne Fokus/HTTPS): Text markieren und per execCommand kopieren.
+            try {
+              const range = document.createRange();
+              range.selectNode($('protLog'));
+              const sel = getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+              const done = document.execCommand('copy');
+              if (done) { sel.removeAllRanges(); toast(t('prot.copied'), 'ok'); }
+              else toast(t('prot.copyFail'), 'warn'); // Selektion stehen lassen, damit man von Hand kopieren kann
+            } catch { toast(t('prot.copyFail'), 'warn'); }
+          }
+        };
+      },
     };
   },
 
