@@ -1,7 +1,7 @@
 // SelfBike – Startseite (index.html). Eigene Datei statt Inline-Skript, damit die CSP kein 'unsafe-inline' braucht.
 import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
-import { READ_PLAN } from './lib/datapoints.js';
+import { READ_PLAN, CORE_PLAN, DIAG_PLAN } from './lib/datapoints.js';
 import { hex, pbSummary, RPC } from './lib/messagebus.js';
 import { CLEAR_TARGETS, CMD, enableClear, disableClear, clearPayload, deleteIssuePayload, isClearable } from './lib/fault-actions.js';
 import {
@@ -299,6 +299,48 @@ function renderAll() {
 
 // ---------- Blätter (Unterseiten) ----------
 
+// ---------- Lazy-Nachladen der DIAG-Detailwerte, je Seite ----------
+// Jede Seite nennt die lazy Keys, die sie zeigt. Beim Öffnen werden die davon noch nicht geladenen nachgelesen
+// (gemeinsamer Cache S; ein schon laufender Request wird geteilt), danach die Seite neu gezeichnet. Der Kern ist
+// der einzige automatische Teil beim Verbinden; ein Nachladen blockiert ihn nicht (es läuft erst nach dem Öffnen).
+const PAGE_LAZY = {
+  battery: ['batteryCapacityAh', 'batteryDeliveredAh', 'batteryEnergy', 'batteryVoltage', 'batteryMaxCurrent', 'batteryTempNow', 'batteryFetTemp', 'batteryThermal', 'batteryDeepDischarge', 'batterySelfDischarge', 'batteryTempMax', 'batteryTempMin', 'batteryCycles', 'batteryRemainingWh'],
+  // Reichweite nutzt lib/care.js (rangeEstimate + Akku-Werte) – dieselben Akku-Detailwerte, geteilter Cache.
+  range: ['rideStats', 'batteryCapacityAh', 'batteryEnergy', 'batteryRemainingWh', 'batteryCycles', 'batteryTempMax', 'batteryTempMin', 'batteryTempNow', 'batteryThermal', 'batteryDeepDischarge'],
+  stats: ['rideStats', 'powerOnHours', 'motorHours', 'cadence'],
+  details: ['motorMade', 'batteryMade', 'controllerMade', 'absMade', 'absName', 'absMode', 'absSoftware', 'absModes', 'absDisc', 'absUpdates', 'gearCount', 'gearNow', 'gearCadence', 'gearCadenceLimits', 'rangeExtender', 'wheelOem', 'wheelUser', 'maxGearRatio', 'motorCutOff', 'speedTolerance', 'bikeCategory', 'regioRequired', 'regioAvailable', 'componentLock', 'assistModesUpper', 'assistModesLower', 'udamModPossible', 'motorPowerLimit', 'motorTorqueLimit'],
+  components: ['absName', 'absMode', 'absSoftware', 'battery2Product', 'battery2Software', 'battery2Hardware', 'battery2Soc', 'headProduct', 'headSoftware', 'headHardware', 'connectProduct', 'connectSoftware', 'connectHardware', 'speedManip', 'gearCount', 'gearNow'],
+};
+const DIAG_BY_KEY = new Map(DIAG_PLAN.map((p) => [p.key, p]));
+const ALL_LAZY = DIAG_PLAN.map((p) => p.key);
+const lazyInFlight = new Map(); // key -> Promise, damit kein Doppel-Request läuft
+// Selbsttest beim Start: jeder lazy Key muss von mindestens einer Seite abgedeckt sein – sonst hinge er ohne Trigger.
+(() => {
+  const covered = new Set(Object.values(PAGE_LAZY).flat());
+  const orphan = ALL_LAZY.filter((k) => !covered.has(k));
+  if (orphan.length && typeof console !== 'undefined') console.error(`[SelfBike] lazy Keys ohne auslösende Seite: ${orphan.join(', ')}`);
+})();
+// Lädt die noch fehlenden lazy Keys nach (nur DIAG, nur wenn nicht schon in S). Teilt laufende Requests.
+async function ensureLazy(keys) {
+  if (!reader || !keys?.length) return;
+  const jobs = keys.filter((k) => DIAG_BY_KEY.has(k) && S[k] === undefined).map((k) => {
+    if (lazyInFlight.has(k)) return lazyInFlight.get(k);
+    const pr = reader.readPoint(DIAG_BY_KEY.get(k))
+      .then((row) => { S[k] = row; })
+      .catch((e) => { log(`lazy ${k}: ${e.message}`); })
+      .finally(() => lazyInFlight.delete(k));
+    lazyInFlight.set(k, pr);
+    return pr;
+  });
+  if (jobs.length) await Promise.all(jobs);
+}
+// Nachladen für die zuletzt geöffnete Seite auslösen und sie danach neu zeichnen (nicht blockierend; Cache: zweiter Aufruf liest nicht neu).
+function triggerLazy(name) {
+  const keys = PAGE_LAZY[name];
+  if (!keys || !reader || !keys.some((k) => S[k] === undefined)) return;
+  ensureLazy(keys).then(() => { if (stack.length && stack[stack.length - 1].name === name) drawPage(); });
+}
+
 // Stapel: Fahrmodi → einzelner Modus; „Zurück“ geht eine Ebene hoch
 const stack = [];
 function openPage(name, arg) {
@@ -306,13 +348,16 @@ function openPage(name, arg) {
   stack.push({ name, arg });
   drawPage();
   $('sheet').classList.add('open');
+  triggerLazy(name); // DIAG-Detailwerte dieser Seite nachladen (falls noch nicht im Cache)
 }
 function drawPage() {
   const { name, arg } = stack[stack.length - 1];
   const page = PAGES[name](arg);
   $('sheetTitle').textContent = page.title;
   $('sheetBack').textContent = stack.length > 1 ? `‹ ${t('ui.back')}` : t('ui.close');
-  $('sheetBody').innerHTML = page.html;
+  // Eigener Fortschritt: solange lazy Werte dieser Seite noch laden, einen Hinweis zeigen (nach dem Laden neu gezeichnet).
+  const loadingLazy = reader && (PAGE_LAZY[name] || []).some((k) => S[k] === undefined);
+  $('sheetBody').innerHTML = page.html + (loadingLazy ? `<p class="foot" id="lazyNote">${esc(t('ui.loadingDetails'))}</p>` : '');
   $('sheetBody').scrollTop = 0;
   page.bind?.();
 }
@@ -845,10 +890,13 @@ const PAGES = {
         <div class="group" style="margin-top:12px">${choice('light', '#ffffff', '#1f7763')}${choice('dark', '#0d1117', '#43d3ad')}</div>
         <p class="foot"><b>${esc(t('free.title'))}</b> ${esc(t('free.text'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
       bind() {
-        $('sheetBody').onclick = (e) => {
+        $('sheetBody').onclick = async (e) => {
           const b = e.target.closest('[data-theme]');
           if (!b) return;
-          const html = buildReportHtml(rows, { maskIds: false, name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(), faults, theme: b.dataset.theme });
+          // Vollständiger Bericht: erst alle lazy Detailwerte nachladen, dann die kompletten Zeilen aus dem Cache bauen.
+          if (reader && ALL_LAZY.some((k) => S[k] === undefined)) { toast(t('ui.loadingDetails')); await ensureLazy(ALL_LAZY); }
+          const fullRows = READ_PLAN.map((p) => S[p.key]).filter(Boolean);
+          const html = buildReportHtml(fullRows, { maskIds: false, name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(), faults, theme: b.dataset.theme });
           const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
           if (!window.open(url, '_blank')) toast(t('msg.popup'), 'warn');
           setTimeout(() => URL.revokeObjectURL(url), 60000);
@@ -1137,7 +1185,10 @@ function downloadTextFile(fileName, text) {
 async function refresh() {
   busy = true;
   renderHead();
-  rows = await readAll(reader, (row, i) => { $('pageSub').textContent = t('msg.reading', { n: i + 1, total: READ_PLAN.length }); });
+  // Beim Verbinden nur den Kern lesen (CORE_PLAN); die Diagnose-/Detailwerte (DIAG_PLAN) laden die Seiten
+  // beim Öffnen selbst nach (ensureLazy). Der Fortschritt zählt nur den Kern.
+  rows = await readAll(reader, (row, i) => { $('pageSub').textContent = t('msg.reading', { n: i + 1, total: CORE_PLAN.length }); }, CORE_PLAN);
+  lazyInFlight.clear();
   S = byKey(rows);
   $('pageSub').textContent = t('msg.readingFaults');
   faults = await readFaults(reader);
