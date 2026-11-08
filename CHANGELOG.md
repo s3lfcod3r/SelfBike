@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.30 · November 2026
+- 🇬🇧 **Clear fault memory, now in the app** (beta): the fault memory page has a button to clear the stored messages of all control units (battery first, motor last), with a confirmation checkbox and a saved snapshot first. Verified against the real bike. Only control units with entries are touched; active/permanent faults come back, and a unit that refuses simply keeps its entries.
+- 🇩🇪 **Fehlerspeicher löschen, jetzt in der App** (Beta): Die Fehler-Seite hat einen Knopf, der die gespeicherten Meldungen aller Steuergeräte löscht (Akku zuerst, Motor zuletzt), mit Bestätigungshaken und vorheriger Sicherung. Am echten Rad bestätigt. Nur Geräte mit Einträgen werden angefasst; aktive/permanente Fehler kommen zurück, und ein Steuergerät, das verweigert, behält einfach seine Einträge.
+
 ## 1.4.29 · November 2026
 - 🇬🇧 **Fault-clear now covers all control units** (`fault-clear.html`, beta): after the battery confirmed the bike accepts the command, the clear now sweeps every control unit that has entries – battery first, motor last – each with the block→delete→unblock sequence, and sorts every code into done / still present / rejected per unit. Only units with stored faults are touched; a snapshot is still saved first and the confirmation is still mandatory.
 - 🇩🇪 **Fehlerspeicher-Löschen jetzt für alle Steuergeräte** (`fault-clear.html`, Beta): nachdem der Akku bestätigt hat, dass das Rad den Befehl annimmt, löscht die Funktion jetzt jedes Steuergerät mit Einträgen – Akku zuerst, Motor zuletzt – je mit der Sequenz Block→Löschen→Unblock, und sortiert jeden Code je Gerät in erledigt / weiterhin vorhanden / abgelehnt. Nur Geräte mit gespeicherten Fehlern werden angefasst; vorher wird weiterhin gesichert und die Bestätigung bleibt Pflicht.

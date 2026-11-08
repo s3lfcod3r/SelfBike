@@ -2,7 +2,8 @@
 import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
-import { hex, pbSummary } from './lib/messagebus.js';
+import { hex, pbSummary, RPC } from './lib/messagebus.js';
+import { CLEAR_TARGETS, CLEAR_SEQUENCE, CMD, STATUS, enableClear, disableClear, clearPayload } from './lib/fault-actions.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
@@ -340,6 +341,41 @@ function propose(fn) {
 }
 $('confirmCancel').onclick = () => { pending = null; $('confirmSheet').classList.remove('open'); toast(t('msg.cancelled')); };
 
+// Fehlerspeicher löschen (Beta): verifizierter Befehl (DELETE_ALL_ISSUES), Sequenz je ECU, nur Geräte mit Einträgen.
+function saveFaultSnapshot() {
+  const snap = { tool: 'SelfBike', createdAt: new Date().toISOString(),
+    faults: faults.map((e) => ({ component: e.component, address: e.address, status: e.status, faults: e.faults })) };
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `selfbike-fehlerspeicher-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+async function clearFaultMemory() {
+  if (!reader || !faultCount()) return;
+  saveFaultSnapshot(); // Historie zuerst sichern
+  enableClear(CLEAR_TARGETS.map((x) => x.address));
+  try {
+    for (const { address: addr } of CLEAR_TARGETS) { // Akku zuerst, Motor zuletzt
+      const ecu = faults.find((e) => e.address === addr);
+      if (!ecu || ecu.status !== 'ok' || !ecu.faults.length) continue;
+      for (const cmd of CLEAR_SEQUENCE) { // BLOCK → DELETE → UNBLOCK
+        try { await reader.request(addr, RPC, clearPayload(cmd)); }
+        catch (e) { log(`Clear ${addr} ${cmd}: ${e.message}`); }
+      }
+    }
+    faults = await readFaults(reader);
+    renderAll();
+    if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
+    toast(faultCount() ? t('clr.someLeft') : t('clr.done'), faultCount() ? 'warn' : 'ok');
+  } catch (e) {
+    toast(t('msg.readError', { error: e.message }), 'err');
+  } finally {
+    disableClear();
+  }
+}
+
 const PAGES = {
   light() {
     const can = val('lightOem')?.configurable === true;
@@ -629,9 +665,24 @@ const PAGES = {
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
+    const canClear = !!reader && faultCount() > 0;
     return {
       title: t('ui.faults'),
-      html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}`,
+      html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}` + (canClear ? `
+        <p class="gh">${esc(t('clr.title'))}</p>
+        <div class="group noico"><div class="alert">${esc(t('clr.warn'))}</div>
+          <label class="row"><span class="t" style="font-size:15px">${esc(t('clr.ack'))}</span><input type="checkbox" class="sw" id="clrAck"></label>
+        </div>
+        <button class="btn-big" id="clrBtn" style="background:var(--self-danger,#c62828)">${esc(t('clr.btn'))}</button>
+        <p class="foot">${esc(t('clr.hint'))}</p>` : ''),
+      bind() {
+        if (!canClear) return;
+        $('clrBtn').onclick = async () => {
+          if (!$('clrAck').checked) return toast(t('clr.ackFirst'), 'warn');
+          $('clrBtn').disabled = true;
+          try { await clearFaultMemory(); } finally { if ($('clrBtn')) $('clrBtn').disabled = false; }
+        };
+      },
     };
   },
 
