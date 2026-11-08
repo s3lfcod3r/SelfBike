@@ -10,7 +10,7 @@ import {
 import { DemoUsb } from './lib/demo-usb.js';
 import { savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate } from './lib/care.js';
 import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
-import { readFaults } from './lib/diagnostics.js';
+import { readFaults, readFaultSource, FAULT_SOURCES, decodeFaultReply } from './lib/diagnostics.js';
 import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex, bySeverity } from './lib/fault-categories.js';
 import { withProductName } from './lib/product-names.js';
@@ -352,7 +352,10 @@ function saveFaultSnapshot() {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
-// Ausgewählte Fehler löschen: je ECU (Akku zuerst, Motor zuletzt) BLOCK → DELETE_ISSUE je Code → UNBLOCK.
+// Ausgewählte Fehler löschen. Ablauf je ECU zwingend:
+//   BLOCK_REPORTING (0) → DELETE_ISSUE je Code → IM BLOCKIERTEN Zustand zurücklesen → UNBLOCK_REPORTING (1).
+// Das Rücklesen muss vor UNBLOCK passieren: aktive Fehler melden sich sonst sofort wieder und ein
+// funktionierender Clear sähe wie ein Fehlschlag aus. Danach Finalblick (entblockt) → wieder aktive Codes.
 async function deleteSelectedFaults(items) {
   if (!reader || !items.length) return;
   saveFaultSnapshot(); // Historie zuerst sichern
@@ -361,21 +364,37 @@ async function deleteSelectedFaults(items) {
   for (const it of items) { if (!byEcu.has(it.addr)) byEcu.set(it.addr, []); byEcu.get(it.addr).push(it.code); }
   const addrs = [...byEcu.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
   enableClear(addrs);
-  const before = faultCount();
+  const blockedPresent = {}; // addr → Set(Codes, die im blockierten Zustand noch da sind)
+  let gate = false; let encErr = false; // NO_ACCESS(op 5)/DENIED(transp 6) · INVALID_VALUE(7)/MALFORMED(8)
   try {
     for (const addr of addrs) {
+      const src = FAULT_SOURCES.find((s) => s.address === addr) || { component: '', address: addr };
       await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING));
       for (const code of byEcu.get(addr)) {
-        try { await reader.request(addr, RPC, deleteIssuePayload(code)); }
-        catch (e) { log(`Clear ${addr} ${code}: ${e.message}`); }
+        try {
+          const r = await reader.request(addr, RPC, deleteIssuePayload(code));
+          if (r.status === 6) gate = true;                 // Transport DENIED
+          if (r.status === 7 || r.status === 8) encErr = true; // Transport INVALID_VALUE/MALFORMED
+          const rv = r.payload ? decodeFaultReply(Array.from(r.payload)).returnValue : 0;
+          if (rv === 5) gate = true;                        // Operation NO_ACCESS = Gate
+        } catch (e) { log(`Clear ${addr} ${code}: ${e.message}`); }
       }
+      const after = await readFaultSource(reader, src); // Wahrheit: im blockierten Zustand
+      blockedPresent[addr] = new Set((after.faults || []).map((f) => f.code));
       await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING));
     }
-    faults = await readFaults(reader);
+    faults = await readFaults(reader); // Finalblick (entblockt)
     renderAll();
     if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
-    const removed = Math.max(before - faultCount(), 0);
-    toast(faultCount() === 0 ? t('clr.allGone') : t('clr.selDone', { n: removed }), 'ok');
+    const finalByAddr = Object.fromEntries(faults.map((f) => [f.address, new Set((f.faults || []).map((x) => x.code))]));
+    let deleted = 0; let reappeared = 0;
+    for (const it of items) {
+      if (!blockedPresent[it.addr]?.has(it.code)) { deleted++; if (finalByAddr[it.addr]?.has(it.code)) reappeared++; }
+    }
+    if (encErr) toast(t('clr.encErr'), 'err');
+    else if (!deleted && gate) toast(t('clr.denied'), 'err');
+    else if (!deleted) toast(t('clr.none'), 'warn');
+    else toast(reappeared ? t('clr.doneActive', { n: deleted, a: reappeared }) : t('clr.selDone', { n: deleted }), 'ok');
   } catch (e) {
     toast(t('msg.readError', { error: e.message }), 'err');
   } finally {
