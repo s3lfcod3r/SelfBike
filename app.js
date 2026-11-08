@@ -510,21 +510,22 @@ const udamFlat = (bytes) => Object.fromEntries(pbFields(bytes).filter((f) => f.w
 const MODE_FIELDS = [
   { n: 1, key: 'assist', de: 'Unterstützung', en: 'Assistance', kind: 'offset', rawMin: 50, rawMax: 150, edit: true },
   { n: 3, key: 'dyn', de: 'Dynamik', en: 'Dynamics', kind: 'offset', rawMin: 50, rawMax: 150, edit: true },
-  { n: 2, key: 'torque', de: 'Max. Drehmoment', en: 'Max. torque', kind: 'num', unit: 'Nm', factor: 10, rawMin: 100, rawMax: 850, edit: false },
+  { n: 2, key: 'torque', de: 'Max. Drehmoment', en: 'Max. torque', kind: 'num', unit: 'Nm', factor: 10, rawMin: 100, rawMax: 1200, edit: false },
   { n: 5, key: 'power', de: 'Max. Leistung', en: 'Max. power', kind: 'num', unit: 'W', factor: 1, rawMin: 100, rawMax: 750, edit: false },
   { n: 4, key: 'speed', de: 'Max. Tempo', en: 'Max. speed', kind: 'num', unit: 'km/h', factor: 100, rawMin: 1000, rawMax: 2500, edit: false },
-  { n: 6, key: 'boost', de: 'Extended Boost', en: 'Extended boost', kind: 'raw', edit: false },
-  { n: 7, key: 'traction', de: 'Traktionskontrolle', en: 'Traction control', kind: 'raw', edit: false },
+  { n: 6, key: 'boost', de: 'Extended Boost', en: 'Extended boost', kind: 'count', rawMin: 0, rawMax: 10, edit: false },
+  { n: 7, key: 'traction', de: 'Traktionskontrolle', en: 'Traction control', kind: 'enum', rawMin: 0, rawMax: 3, enumKey: 'traction', edit: false },
   { n: 8, key: 'tensioner', de: 'Kettenspanner', en: 'Chain tensioner', kind: 'bool', edit: false },
 ];
 const mfLabel = (f) => (lang() === 'en' ? f.en : f.de);
-// Rohwert → Anzeige (nie roh): Versatz mit Vorzeichen, Zahl mit Einheit, bool An/Aus, sonst „Stufe N".
+// Rohwert → Anzeige (nie roh): Versatz mit Vorzeichen, Zahl mit Einheit/Faktor, Zähler als Stufe, Enum als Label, bool An/Aus.
 function mfShow(f, raw) {
   if (raw == null) return '–';
   if (f.kind === 'offset') return withSign(assistStep(raw));
-  if (f.kind === 'num') return `${fmtNum(raw / f.factor, f.factor > 1 ? 1 : 0)} ${f.unit}`;
+  if (f.kind === 'num') return `${fmtNum(raw / f.factor, f.factor >= 100 ? 1 : 0)} ${f.unit}`; // Drehmoment ×10 → ganze Nm
   if (f.kind === 'bool') return t(raw ? 'word.on' : 'word.off');
-  return t('modes.step', { n: raw });
+  if (f.kind === 'enum') return t(`${f.enumKey}.${raw}`) !== `${f.enumKey}.${raw}` ? t(`${f.enumKey}.${raw}`) : t('modes.step', { n: raw });
+  return t('modes.step', { n: raw }); // count
 }
 
 // Reine Lese-Prüfung je aktivem Fahrmodus (ConfigId), KEIN Schreibvorgang. Liest 4246 (OEM-Hinweis) und vor allem
