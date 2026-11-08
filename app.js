@@ -1,8 +1,8 @@
 // SelfBike – Startseite (index.html). Eigene Datei statt Inline-Skript, damit die CSP kein 'unsafe-inline' braucht.
 import { McspUsb } from './lib/mcsp-usb.js';
-import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
+import { BikeReader, DISPLAY_LANGUAGES, UDAM } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
-import { hex, pbSummary, RPC } from './lib/messagebus.js';
+import { hex, pbSummary, RPC, encodeConfigId, decoders } from './lib/messagebus.js';
 import { CLEAR_TARGETS, CMD, enableClear, disableClear, clearPayload, deleteIssuePayload, isClearable } from './lib/fault-actions.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
@@ -29,6 +29,7 @@ let reader = null;
 let rows = [];
 let S = {};
 let faults = [];
+let modeAdjustable = null; // Ergebnis der reinen Lese-Prüfung 4246 (OEM-Änderbarkeit je Fahrmodus) oder null
 let busy = false;
 let blocked = false;   // nach unklarem Schreibversuch
 let demo = false;
@@ -492,6 +493,30 @@ async function selfTest(addr) {
   }
 }
 
+// Reine Lese-Prüfung: für jeden aktiven Fahrmodus (ConfigId) 4246 ASSIST_MODE_IS_OEM_ADJUSTABLE aufrufen und
+// das zurückgegebene Boolean sammeln. KEIN Schreibvorgang – zeigt nur, ob der Hersteller das Ändern irgendwo
+// freigibt. Erst wenn hier irgendwo „ja" steht, lohnt sich ein (späterer) Schreibpfad.
+async function probeModes() {
+  if (!reader) return;
+  const ids = val('activeModes') || [];
+  if (!ids.length) return toast(t('modes.noModes'), 'warn');
+  const results = [];
+  try {
+    for (const id of ids) {
+      const r = await reader.request(UDAM.OEM_ADJUSTABLE, RPC, encodeConfigId(id));
+      const adjustable = r.status === 0 ? decoders.bool(r.payload).value : null;
+      log(`Fahrmodus ${id}: OEM-änderbar ${adjustable === null ? `nicht lesbar (${r.statusName || r.status})` : adjustable}`);
+      results.push({ id, adjustable });
+    }
+    modeAdjustable = results;
+    const anyYes = results.some((x) => x.adjustable === true);
+    toast(anyYes ? t('modes.someAdjustable') : t('modes.noneAdjustable'), anyYes ? 'ok' : 'warn');
+    if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
+  } catch (e) {
+    toast(t('msg.readError', { error: e.message }), 'err');
+  }
+}
+
 const PAGES = {
   light() {
     const can = val('lightOem')?.configurable === true;
@@ -770,7 +795,17 @@ const PAGES = {
           ok('walkAssist') && [t('disp.walk'), txt('walkAssist'), ''],
           ok('oemBikeNumber') && txt('oemBikeNumber', '') && [t('more.bikeNumber'), txt('oemBikeNumber').trim(), t('more.bikeNumberHint')],
         ]),
+        // Fahrmodi – Hersteller-Änderbarkeit (reine Lese-Prüfung, kein Schreibvorgang)
+        reader && (val('activeModes') || []).length ? `<p class="gh">${esc(t('modes.oemTitle'))}</p>
+          <p class="foot">${esc(t('modes.oemHint'))}</p>
+          ${modeAdjustable ? infoGroup(modeAdjustable.map((m) => [m.id,
+            m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable'),
+            '', m.adjustable === true ? 'good' : ''])) : ''}
+          <button class="btn-text" id="probeModes" style="margin-top:8px">${esc(t('modes.oemCheck'))}</button>` : '',
       ].join(''),
+      bind() {
+        if ($('probeModes')) $('probeModes').onclick = () => probeModes();
+      },
     };
   },
 

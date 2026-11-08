@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.55 · November 2026
+- 🇬🇧 **Assist modes: read-only "manufacturer-adjustable?" check**: a new read-only button (under "More") asks the bike, per active assist mode, whether the manufacturer allows changing it (ASSIST_MODE_IS_OEM_ADJUSTABLE) and shows the yes/no per mode – nothing is written. This replaces the earlier assumption: editing assist modes probably works via the proper path (UDAM), not by writing the mode address directly; whether to build the edit feature depends on this check. The plain assist-mode read-out stays regardless.
+- 🇩🇪 **Fahrmodi: Nur-Lese-Prüfung „vom Hersteller änderbar?"**: Ein neuer Nur-Lese-Knopf (unter „Mehr") fragt das Rad pro aktivem Fahrmodus, ob der Hersteller das Ändern freigibt (ASSIST_MODE_IS_OEM_ADJUSTABLE), und zeigt je Modus ja/nein – es wird nichts geschrieben. Das löst die frühere Annahme ab: Fahrmodi ändern geht vermutlich über den richtigen Weg (UDAM), nicht durch direktes Schreiben der Modus-Adresse; ob die Bearbeitung gebaut wird, hängt von dieser Prüfung ab. Die reine Anzeige der Fahrmodi bleibt in jedem Fall.
+
 ## 1.4.54 · November 2026
 - 🇬🇧 **Display marked as a latent clear target**: the display is present in the code and on the same clear channel as motor and control unit, but on this bike a Kiox runs as the control unit and there is no separate head unit, so the display reads "not installed". The docs now say so, so it no longer reads like an available, confirmed target – it only applies to bikes with a second display/head unit.
 - 🇩🇪 **Display als latentes Löschziel gekennzeichnet**: Das Display ist im Code vorhanden und auf demselben Löschkanal wie Motor und Bedieneinheit, auf diesem Rad läuft aber ein Kiox als Bedieneinheit und es gibt keine separate HeadUnit, also meldet das Display „nicht verbaut". Die Doku sagt das jetzt, damit es sich nicht wie ein verfügbares, bestätigtes Ziel liest – es gilt nur für Räder mit zweitem Display/HeadUnit.
