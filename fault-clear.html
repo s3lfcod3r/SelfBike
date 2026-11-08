@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fehlerspeicher löschen (Experiment)</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
+    --line: #dde1e6; --accent: #1f5fd1; --ok: #1a7f37; --warn: #9a6700; --err: #c62828;
+    --code: #f0f2f5; --danger: #b42318;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1e24; --text: #e6e9ed; --muted: #9aa4b1;
+      --line: #2c323a; --accent: #6ea2ff; --ok: #56d364; --warn: #e3b341; --err: #ff7b72;
+      --code: #0d1014; --danger: #f97066;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  p.lead { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+            padding: 16px; margin-bottom: 16px; }
+  section.locked { opacity: .55; pointer-events: none; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .grid { display: grid; grid-template-columns: max-content 1fr; gap: 8px 12px; align-items: center; }
+  button, input, select { font: inherit; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line);
+           background: var(--card); color: var(--text); }
+  input[type=checkbox] { width: auto; padding: 0; }
+  input[type=number] { width: 10em; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  label.check { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  code { font: 12.5px/1.4 ui-monospace, Consolas, monospace; background: var(--code); padding: 1px 5px; border-radius: 5px; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  .hint { color: var(--muted); font-size: .9rem; margin: 8px 0 0; }
+  .box { border: 2px solid var(--accent); }
+  .alert { border-left: 4px solid var(--warn); padding: 8px 12px; background: color-mix(in srgb, var(--warn) 12%, transparent);
+           border-radius: 6px; margin: 8px 0; }
+  .alert.red { border-left-color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
+  progress { width: 100%; height: 8px; margin-top: 10px; accent-color: var(--accent); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+        overflow-x: auto; font: 12.5px/1.45 ui-monospace, Consolas, monospace; margin: 0; max-height: 280px; }
+  .pill { font-size: .8rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); }
+  .pill.done { color: var(--ok); border-color: var(--ok); }
+  .pill.remain { color: var(--warn); border-color: var(--warn); }
+  .pill.rej { color: var(--err); border-color: var(--err); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Fehlerspeicher löschen <span class="pill" style="color:var(--warn);border-color:var(--warn)">BETA · in Arbeit</span></h1>
+  <p class="lead">Expertseite, nicht Teil der Haupt-App. <b>Beta – wird noch daran gearbeitet, Nutzung auf eigene
+    Gefahr.</b> Löschen läuft über <code>EXECUTE_INFORMATION_MANAGER_COMMAND</code> (IBD-Kanal). Der genaue
+    Aufruf ist <b>nicht gegen echte Hardware bestätigt</b> – im Demo-Modus läuft alles, gegen ein echtes Rad
+    ist das Senden gesperrt, bis die verifizierten Werte eingetragen sind.</p>
+  <div class="alert red">⚠️ <b>Beta / auf eigene Gefahr:</b> Diese Seite ist in Entwicklung. Löschen des
+    Fehlerspeichers ist eine Händler-Aktion – aktive Fehler kommen zurück, die Historie geht verloren. Alles
+    geschieht auf dein eigenes Risiko.</div>
+
+  <section>
+    <h2>1 · Verbindung</h2>
+    <div class="row">
+      <button class="primary" id="connect">Mit Rad verbinden &amp; lesen</button>
+      <button id="demo">Demo ohne Rad</button>
+      <button id="disconnect" disabled>Trennen</button>
+    </div>
+    <p id="status" style="margin:12px 0 0">Nicht verbunden.</p>
+    <progress id="progress" value="0" max="1" hidden></progress>
+  </section>
+
+  <section id="faultsSec" class="locked">
+    <h2>2 · Fehlerspeicher (alle Steuergeräte)</h2>
+    <div id="faultsTable"><p class="hint">Noch nicht gelesen.</p></div>
+  </section>
+
+  <section id="clearSec" class="locked">
+    <h2>3 · Löschbefehl</h2>
+    <div class="alert red" id="verifyNote"></div>
+    <div class="grid">
+      <span>IBD-Kanaladresse</span>
+      <span><input id="chanAddr" type="number" min="0" max="32767" step="1" placeholder="unbekannt">
+        <span class="hint">Nicht die Leseadresse – der IBD-Kanal liegt woanders. Muss in der Freigabeliste stehen.</span></span>
+      <span>Befehlsnummer</span>
+      <span><input id="cmdNum" type="number" min="0" max="255" step="1" placeholder="unbekannt">
+        <span class="hint">Wert aus <code>InformationManagerCommand</code> – öffentlich nicht dokumentiert.</span></span>
+    </div>
+    <label class="check"><input id="consent" type="checkbox">
+      <span>Ich sende einen <b>unverifizierten</b> Aufruf an mein <b>eigenes</b> Rad und habe verstanden,
+        dass das Ergebnis eine Ablehnung sein kann. Probelauf-Ziel ist der Akku.</span></label>
+    <div class="row">
+      <button class="danger" id="clear" disabled>Vorher sichern &amp; löschen …</button>
+    </div>
+    <p class="hint" id="clearReason"></p>
+  </section>
+
+  <section id="resultSec" hidden>
+    <h2>4 · Ergebnis</h2>
+    <div id="resultBody"></div>
+    <p class="hint">Getrennt geführt: <span class="pill done">erledigt</span> (historisch, weg) ·
+      <span class="pill remain">weiterhin vorhanden</span> (aktiv/permanent, kommt zurück) ·
+      <span class="pill rej">abgelehnt</span> (Steuergerät verweigert den Befehl).</p>
+  </section>
+
+  <section>
+    <h2>Protokoll</h2>
+    <pre id="log"></pre>
+  </section>
+</main>
+
+<script type="module">
+import { McspUsb } from './lib/mcsp-usb.js';
+import { DemoUsb } from './lib/demo-usb.js';
+import { BikeReader } from './lib/bike-reader.js';
+import { RPC } from './lib/messagebus.js';
+import { readFaults } from './lib/diagnostics.js';
+import { FAULT_ECUS, KNOWN_CLEAR_TARGETS, DEMO_CLEAR_COMMAND, VERIFIED, setClear, clearPayload } from './lib/fault-actions.js';
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const hex = (n) => '0x' + Number(n).toString(16).toUpperCase().padStart(6, '0');
+const dt = (ts) => (ts ? new Date(ts * 1000).toLocaleString('de-DE') : '–');
+
+// Reihenfolge der Ziel-ECUs: Akku zuerst, Motor zuletzt (nur die, die der Lesepfad kennt)
+const ORDER = [169, 8485, 3092, 2337, 4226];
+const LABEL = Object.fromEntries(FAULT_ECUS.map((e) => [e.readAddress, e.label]));
+
+let usb = null;
+let reader = null;
+let mode = null;      // 'real' | 'demo'
+let before = null;    // letzte gelesene Fehlerliste (readFaults-Ergebnis)
+let busy = false;
+const logLines = [];
+
+function log(m) {
+  logLines.push(`${new Date().toLocaleTimeString('de-DE')}  ${m}`);
+  $('log').textContent = logLines.slice(-300).join('\n');
+  $('log').scrollTop = $('log').scrollHeight;
+}
+function setStatus(t, cls = '') { $('status').textContent = t; $('status').className = cls; }
+function key(e) { return `${e.code}@${e.timestamp}`; }
+
+function setBusy(on) {
+  busy = on;
+  const ready = !!reader && !on;
+  $('faultsSec').classList.toggle('locked', !ready);
+  $('clearSec').classList.toggle('locked', !ready);
+  $('connect').disabled = !!reader || on;
+  $('demo').disabled = !!reader || on;
+  $('disconnect').disabled = !reader || on;
+  updateClearButton();
+}
+
+// ---------- Verbindung ----------
+
+async function start(newUsb, label) {
+  setBusy(true);
+  try {
+    usb = newUsb;
+    await usb.open();
+    reader = new BikeReader(usb);
+    await refresh(label);
+    setStatus(`${label} verbunden.`, 'ok');
+  } catch (e) {
+    log(`Fehler: ${e.message}`);
+    await disconnect(`Fehler: ${e.message}`);
+    $('status').className = 'err';
+    return;
+  }
+  // Demo bekommt den erfundenen Befehl vorbefüllt, damit es sofort testbar ist
+  if (mode === 'demo') { $('cmdNum').value = String(DEMO_CLEAR_COMMAND); $('chanAddr').value = '169'; }
+  updateVerifyNote();
+  setBusy(false);
+}
+
+$('connect').onclick = async () => {
+  if (!('usb' in navigator)) return setStatus('WebUSB fehlt – bitte Chrome oder Edge verwenden.', 'err');
+  let device;
+  try { device = await McspUsb.request(); }
+  catch (e) { return setStatus(e.name === 'NotFoundError' ? 'Kein Gerät ausgewählt.' : `${e.name}: ${e.message}`, 'warn'); }
+  mode = 'real';
+  await start(new McspUsb(device, log), 'Rad');
+};
+$('demo').onclick = async () => { mode = 'demo'; await start(new DemoUsb(log), 'Demo'); };
+
+async function refresh(label) {
+  const bar = $('progress'); bar.hidden = false; bar.max = 5; bar.value = 0;
+  before = await readFaults(reader, (t) => { bar.value = Math.min(bar.value + 1, 5); setStatus(`${label}: ${t} …`); });
+  bar.hidden = true;
+  renderFaults();
+}
+
+function renderFaults() {
+  const rows = before.map((ecu) => {
+    const list = ecu.status === 'ok' && ecu.faults.length
+      ? ecu.faults.map((f) => `<code>${esc(hex(f.code))}</code> <span class="hint">×${esc(f.count ?? 1)} · ${esc(dt(f.timestamp))}</span>`).join('<br>')
+      : `<span class="hint">${esc(ecu.status === 'ok' ? 'kein Eintrag' : (ecu.reason || ecu.status))}</span>`;
+    return `<tr><th>${esc(ecu.component)}</th><td>${list}</td></tr>`;
+  }).join('');
+  $('faultsTable').innerHTML = `<table>${rows}</table>`;
+}
+
+async function disconnect(reason) {
+  const u = usb; usb = null; reader = null; before = null;
+  if (u) await u.close();
+  $('progress').hidden = true;
+  $('resultSec').hidden = true;
+  setStatus(reason || 'Getrennt.');
+  log(reason || 'Verbindung getrennt.');
+  setBusy(false);
+}
+$('disconnect').onclick = () => disconnect();
+navigator.usb?.addEventListener('disconnect', (e) => { if (usb && usb.device && e.device === usb.device) disconnect('USB-Kabel getrennt.'); });
+
+// ---------- Freigabe des Löschen-Knopfs ----------
+
+function updateVerifyNote() {
+  if (mode === 'demo') {
+    $('verifyNote').className = 'alert';
+    $('verifyNote').innerHTML = 'Demo-Modus: erfundener Befehl, alle Steuergeräte. Hier lässt sich der ganze Ablauf gefahrlos durchspielen.';
+  } else {
+    $('verifyNote').className = 'alert red';
+    $('verifyNote').innerHTML = VERIFIED
+      ? 'Der Aufruf ist als verifiziert hinterlegt.'
+      : '<b>Nicht gegen echte Hardware bestätigt.</b> Trage IBD-Kanaladresse und Befehlsnummer ein und bestätige, um einen Probelauf gegen den Akku zu senden. Adressen außerhalb der Freigabeliste werden abgewiesen.';
+  }
+}
+
+function clearAllowed() {
+  const cmd = Number($('cmdNum').value);
+  if (!Number.isInteger(cmd) || $('cmdNum').value === '') return { ok: false, reason: 'Befehlsnummer fehlt.' };
+  if (mode === 'demo') return { ok: true };
+  const addr = Number($('chanAddr').value);
+  if (!$('consent').checked) return { ok: false, reason: 'Zustimmung fehlt.' };
+  if (!Number.isInteger(addr) || $('chanAddr').value === '') return { ok: false, reason: 'Kanaladresse fehlt.' };
+  if (!KNOWN_CLEAR_TARGETS.has(addr)) return { ok: false, reason: `Adresse ${addr} ist nicht in der Freigabeliste – gesperrt.` };
+  return { ok: true };
+}
+function updateClearButton() {
+  if (!reader || busy) { $('clear').disabled = true; $('clearReason').textContent = ''; return; }
+  const a = clearAllowed();
+  $('clear').disabled = !a.ok;
+  $('clearReason').textContent = a.ok ? '' : `Gesperrt: ${a.reason}`;
+}
+for (const id of ['cmdNum', 'chanAddr', 'consent']) $(id).addEventListener('input', updateClearButton);
+for (const id of ['cmdNum', 'chanAddr', 'consent']) $(id).addEventListener('change', updateClearButton);
+
+// ---------- Löschen ----------
+
+function saveSnapshot() {
+  const snap = { tool: 'SelfBike fault-clear', createdAt: new Date().toISOString(), mode,
+    faults: before.map((e) => ({ component: e.component, address: e.address, status: e.status, reason: e.reason, faults: e.faults })) };
+  const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `selfbike-fehlerspeicher-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  log(`Sicherung des Fehlerspeichers angeboten: ${a.download}`);
+}
+
+$('clear').onclick = async () => {
+  const a = clearAllowed();
+  if (!a.ok || !reader || busy) return;
+  const command = Number($('cmdNum').value);
+  const targets = mode === 'demo' ? ORDER.slice() : [Number($('chanAddr').value)];
+  setClear(command, targets);              // Guard: nur diese Adressen + dieser Befehl
+  setBusy(true);
+  try {
+    saveSnapshot();                        // Historie zuerst sichern
+    const beforeMap = Object.fromEntries(before.map((e) => [e.address, new Map((e.faults || []).map((f) => [key(f), f]))]));
+    const outcome = {};                    // address -> { rejected, statusName }
+    for (const addr of targets) {
+      if (!beforeMap[addr] || beforeMap[addr].size === 0) { outcome[addr] = { skipped: true }; continue; }
+      setStatus(`Löschen: ${LABEL[addr] ?? addr} …`);
+      log(`CLEAR ${addr} (${LABEL[addr] ?? addr}): Befehl ${command}`);
+      let r;
+      try { r = await reader.request(addr, RPC, clearPayload(command)); }
+      catch (e) { outcome[addr] = { rejected: true, statusName: e.message }; log(`  Fehler: ${e.message}`); continue; }
+      outcome[addr] = { rejected: r.status !== 0, statusName: r.statusName };
+      log(`  Antwort: Status ${r.status}${r.status ? ` (${r.statusName})` : ' OK'}`);
+    }
+    // Gegenlesen und je Code einordnen
+    setStatus('Gegenlesen …');
+    const after = await readFaults(reader);
+    const afterMap = Object.fromEntries(after.map((e) => [e.address, new Map((e.faults || []).map((f) => [key(f), f]))]));
+    renderResult(beforeMap, afterMap, outcome, targets);
+    before = after; renderFaults();
+    setStatus('Fertig.', 'ok');
+  } catch (e) {
+    log(`Abbruch: ${e.message}`);
+    setStatus(`Abbruch: ${e.message}`, 'err');
+  } finally {
+    setClear(null, []);                    // Guard sofort wieder schließen
+    setBusy(false);
+  }
+};
+
+function renderResult(beforeMap, afterMap, outcome, targets) {
+  const blocks = targets.map((addr) => {
+    const o = outcome[addr] || {};
+    if (o.skipped) return `<tr><th>${esc(LABEL[addr] ?? addr)}</th><td><span class="hint">kein Eintrag – übersprungen</span></td></tr>`;
+    const bset = beforeMap[addr] ?? new Map();
+    const aset = afterMap[addr] ?? new Map();
+    const done = [...bset.keys()].filter((k) => !aset.has(k));
+    const remain = [...bset.keys()].filter((k) => aset.has(k));
+    const parts = [];
+    if (o.rejected) parts.push(`<span class="pill rej">abgelehnt</span> <span class="hint">${esc(o.statusName || '')}</span>`);
+    if (done.length) parts.push(`<span class="pill done">erledigt</span> ${done.map((k) => `<code>${esc(hex(bset.get(k).code))}</code>`).join(' ')}`);
+    if (remain.length && !o.rejected) parts.push(`<span class="pill remain">weiterhin vorhanden</span> ${remain.map((k) => `<code>${esc(hex(bset.get(k).code))}</code>`).join(' ')}`);
+    if (!parts.length) parts.push('<span class="hint">—</span>');
+    return `<tr><th>${esc(LABEL[addr] ?? addr)}</th><td>${parts.join('<br>')}</td></tr>`;
+  }).join('');
+  $('resultBody').innerHTML = `<table>${blocks}</table>`;
+  $('resultSec').hidden = false;
+  $('resultSec').scrollIntoView({ behavior: 'smooth' });
+}
+
+log('Bereit.');
+setBusy(false);
+</script>
+</body>
+</html>
