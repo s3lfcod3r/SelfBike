@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.44 · November 2026
+- 🇬🇧 **Write chain confirmed + restart note everywhere**: writing was tested on the bike in the *allow* direction too – light power 6177/6178 written and read back as 2.0 W on Gen5 / BDU3843 over IBD without a certificate. So configuration is **flag-controlled, not blanket-gated**: where the manufacturer's "configurable" flag is true, writing demonstrably works; only individual fields stay locked (here high power port, speed source). Every write screen now notes that a value takes effect only after switching the e-bike off and on, and the verified-hardware references read BDU3843.
+- 🇩🇪 **Schreibkette bestätigt + Neustart-Hinweis überall**: Schreiben ist am Rad auch in *Erlaubnisrichtung* getestet – Lichtleistung 6177/6178 geschrieben und als 2,0 W zurückgelesen, auf Gen5 / BDU3843 über IBD ohne Zertifikat. Konfiguration ist damit **flag-gesteuert, nicht pauschal gesperrt**: wo das Hersteller-„änderbar"-Flag true ist, funktioniert Schreiben nachweislich; nur einzelne Felder bleiben gesperrt (hier High-Power-Port, Geschwindigkeitsquelle). Jede Schreib-UI weist jetzt darauf hin, dass ein Wert erst nach Aus- und Einschalten greift; die Verifiziert-Angaben nennen BDU3843.
+
 ## 1.4.43 · November 2026
 - 🇬🇧 **Self-test hardened**: the write-guard self-test now collects every offending address at once and reports each in plain text (address + what's missing) via `console.error` before it stops the app, instead of a bare stack trace, so a misconfiguration can't start silently. A runnable `tools/selftest.mjs` checks the guard (and that every flag reference points at a real data point) and is wired as a pre-commit check.
 - 🇩🇪 **Selbsttest gehärtet**: Der Schreib-Guard-Selbsttest sammelt jetzt alle betroffenen Adressen auf einmal und meldet jede im Klartext (Adresse + was fehlt) über `console.error`, bevor er die App stoppt – kein nackter Stacktrace mehr, keine unbemerkte Fehlkonfiguration. Ein ausführbares `tools/selftest.mjs` prüft den Guard (und dass jede Flag-Referenz auf einen echten Datenpunkt zeigt) und läuft als Pre-Commit-Prüfung.

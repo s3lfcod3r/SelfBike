@@ -337,7 +337,10 @@ function propose(fn) {
   $('confirmPlan').textContent = plan.title;
   $('confirmList').innerHTML = plan.steps.map((s) => `<div class="row static"><span class="t">${esc(s.label ?? dpLabel(s.key))}
     <span class="chg"><span class="b">${esc(s.before)}</span><span class="a">${esc(s.after)}</span></span></span></div>`).join('');
-  $('confirmWarn').innerHTML = plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
+  // Neustart-Hinweis bei JEDER Schreibaktion: der Wert steht sofort im Speicher, wirkt aber erst nach Aus/Ein
+  // (am Rad bestätigt bei Licht 6177/6178). Zuerst anzeigen, dann die planeigenen Warnungen.
+  $('confirmWarn').innerHTML = `<div class="alert">${esc(t('ui.restartNote'))}</div>`
+    + plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
   $('confirmText').textContent = t(demo ? 'ui.confirmDemo' : 'ui.confirmText');
   $('confirmSheet').classList.add('open');
 }
@@ -973,7 +976,8 @@ $('confirmGo').onclick = async () => {
     recordOutcome(backup.createdAt, { ok: true, at: new Date().toISOString(), done: applied.done });
     pending = null;
     plog(`FERTIG: ${plan.title}`);
-    const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ` ${t('msg.restart')}` : '';
+    // Jede geschriebene Einstellung wirkt erst nach Aus/Ein (am Rad bestätigt) – Hinweis nach jeder Änderung.
+    const restart = applied.done.length ? ` ${t('msg.restart')}` : '';
     // Schritte, die geschrieben, aber nicht zurückgelesen werden konnten (z. B. SoC-Grenzen) – ehrlich als unbestätigt melden
     const unconfirmed = applied.done.some((d) => d.unconfirmed) ? ` ${t('ui.changedUnconfirmed')}` : '';
     const changed = t('ui.changed') + unconfirmed + restart;

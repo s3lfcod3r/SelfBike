@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.4.43-33A78C)
+![Version](https://img.shields.io/badge/version-1.4.44-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -154,7 +154,7 @@ No build step, no dependencies — edit the files and reload. Start the local se
 - `data/fault-texts.csv` — own fault-code texts (`code;lang;title;hint`), loaded automatically; write them yourself, never copy Bosch texts
 - `lib/i18n/<lang>*.js` — translations, German is the source; missing keys fall back to German
 - `bike-read.html`, `bike-write.html`, `usb-check.html` — simple expert/test pages for reading, writing and checking the USB connection
-- `fault-clear.html` — expert page for clearing the fault memory. **Verified on the bike** (Bosch Smart System, Performance Line CX Gen5 / BDU3840, protocol 1.2.3): a fault is deleted by its issue id (`DELETE_ISSUE`, wrapped block→delete→unblock), covering the control units that support it (battery, motor, display, control unit — ABS and the ConnectModule have no clear command). A readable fault-memory snapshot is downloaded first. The main app's fault page offers the same, selection-based
+- `fault-clear.html` — expert page for clearing the fault memory. **Verified on the bike** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, protocol 1.2.3): a fault is deleted by its issue id (`DELETE_ISSUE`, wrapped block→delete→unblock), covering the control units that support it (battery, motor, display, control unit — ABS and the ConnectModule have no clear command). A readable fault-memory snapshot is downloaded first. The main app's fault page offers the same, selection-based
 - Without a bike: demo mode (`lib/demo-usb.js` + `lib/demo-data.js`) runs the full app including the safety guard
 
 <a id="en-roadmap"></a>
@@ -208,6 +208,7 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - **Fehlerspeicher** — nur lesen; jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“)
 
 **⚙️ Ändern (nur was der Hersteller freigibt)**
+- Änderungen sind **flag-gesteuert, nicht pauschal gesperrt**: Wo das Hersteller-„änderbar"-Flag `true` meldet, funktioniert das Schreiben nachweislich (am Rad belegt: Licht geschrieben und zurückgelesen, Performance Line CX Gen5 / BDU3843 über IBD ohne Zertifikat). Gesperrt sind **einzelne** Felder (z. B. High-Power-Port, Geschwindigkeitsquelle), die dann nur angezeigt werden. Jede Einstellung wirkt erst, wenn du das E-Bike einmal aus- und wieder einschaltest.
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
 - **Power Ports (Beta)** — Low/High Power Port an/aus, nur wenn der Hersteller es freigibt; gesperrte Ports werden nur angezeigt, nie geschrieben
 - **Ladefenster / Akkuschonung (Beta)** — verschiebt die System­bewertung „voll" (SoC-Grenzen 162/163). Auf der getesteten Hardware (Performance Line CX Gen5) verweigert das Rad schon das **Lesen** der Grenzen und liefert keine Freigabe-Rückmeldung: SelfBike sendet die Werte dann **nur schreibend, ohne Bestätigung** und meldet das Ergebnis ehrlich als „gesendet, nicht bestätigt". Die Obergrenze muss über dem aktuellen Ladestand liegen, sonst bleibt sie wirkungslos. Ob dadurch auch das Ladegerät früher abschaltet, ist nicht bestätigt.
@@ -316,7 +317,7 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 - `data/fault-texts.csv` — eigene Fehlertexte (`code;lang;title;hint`), werden automatisch geladen; selbst formulieren, keine Bosch-Texte kopieren
 - `lib/i18n/<sprache>*.js` — Übersetzungen, Deutsch ist die Quelle; fehlende Texte fallen auf Deutsch zurück
 - `bike-read.html`, `bike-write.html`, `usb-check.html` — einfache Experten-/Testseiten zum Lesen, Schreiben und Prüfen der USB-Verbindung
-- `fault-clear.html` — Expertseite zum Löschen des Fehlerspeichers. **Am Rad verifiziert** (Bosch Smart System, Performance Line CX Gen5 / BDU3840, Protokoll 1.2.3): ein Fehler wird über seine Issue-ID gelöscht (`DELETE_ISSUE`, umschlossen von Block→Löschen→Unblock), für die Steuergeräte, die es unterstützen (Akku, Motor, Display, Bedieneinheit – ABS und das ConnectModule haben keinen Löschbefehl). Vorher wird ein lesbarer Fehlerspeicher-Export heruntergeladen. Die Haupt-App bietet dasselbe per Auswahl
+- `fault-clear.html` — Expertseite zum Löschen des Fehlerspeichers. **Am Rad verifiziert** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, Protokoll 1.2.3): ein Fehler wird über seine Issue-ID gelöscht (`DELETE_ISSUE`, umschlossen von Block→Löschen→Unblock), für die Steuergeräte, die es unterstützen (Akku, Motor, Display, Bedieneinheit – ABS und das ConnectModule haben keinen Löschbefehl). Vorher wird ein lesbarer Fehlerspeicher-Export heruntergeladen. Die Haupt-App bietet dasselbe per Auswahl
 - Ohne Fahrrad: Demo-Modus (`lib/demo-usb.js` + `lib/demo-data.js`) fährt die ganze App samt Sicherheits-Guard
 
 <a id="de-roadmap"></a>
