@@ -4,7 +4,7 @@ import { BikeReader, DISPLAY_LANGUAGES } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
 import { hex, pbSummary } from './lib/messagebus.js';
 import {
-  readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
+  readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
 } from './lib/bike-writer.js';
 import { DemoUsb } from './lib/demo-usb.js';
 import { savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate } from './lib/care.js';
@@ -207,6 +207,7 @@ const ICONS = {
   display: '<rect x="6" y="3" width="12" height="18" rx="2"/><path d="M10 17h4"/>',
   ports: '<path d="M9 3v5M15 3v5M7 8h10v4a5 5 0 0 1-10 0zM12 17v4"/>',
   battery: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M6 10v4M9 10v4"/>',
+  soc: '<rect x="3" y="8" width="14" height="8" rx="2"/><path d="M20 11v2"/><path d="M6 12h8"/>',
   faults: '<path d="M12 3 2 20h20zM12 10v4M12 17v.5"/>',
   stats: '<path d="M5 20V10M12 20V4M19 20v-7"/>',
   batterycheck: '<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2M7 12l2 2 4-4"/>',
@@ -232,6 +233,7 @@ function renderSettings() {
     navRow('service', t('svc.title'), rows.length ? serviceText().n + (serviceText().unit ? ` ${serviceText().unit}` : '') : '', '#8b5cf6'),
     navRow('display', t('disp.title'), '', '#64748b'),
     ok('portOem') ? navRow('ports', t('ports.title'), 'Beta', '#e0a020') : '',
+    (ok('socMin') || ok('socMax')) ? navRow('soc', t('soc.title'), 'Beta', '#22a35a') : '',
   ].join('');
 }
 $('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
@@ -476,6 +478,38 @@ const PAGES = {
           low: ok('lowPortActive') && oem.lowConfigurable ? $('pLow').checked : null,
           high: ok('highPortActive') && oem.highConfigurable ? $('pHigh').checked : null,
         }));
+      },
+    };
+  },
+
+  // Akku-Ladefenster (SoC-Grenzen) – Beta. Verschiebt nur, wo die Software „leer"/„voll" ansetzt.
+  // Vor dem Speichern müssen die Hinweise ausdrücklich bestätigt werden.
+  soc() {
+    const canRead = ok('socMin') && ok('socMax');
+    const curMin = ok('socMin') ? val('socMin') : 5;
+    const curMax = ok('socMax') ? val('socMax') : 100;
+    return {
+      title: t('soc.title'),
+      html: `<p class="explain">${esc(t('soc.explain'))}</p>
+        <div class="alert" style="margin-top:12px">${esc(t('soc.beta'))}</div>
+        <div class="group noico" style="margin-top:12px">
+          <div class="row static"><span class="t">${esc(t('soc.max'))}<small>${esc(t('soc.maxHint'))}</small></span>
+            <input class="numin" id="socMax" type="number" min="0" max="100" step="1" value="${esc(curMax)}"${canRead ? '' : ' disabled'}></div>
+          <div class="row static"><span class="t">${esc(t('soc.min'))}<small>${esc(t('soc.minHint'))}</small></span>
+            <input class="numin" id="socMin" type="number" min="0" max="100" step="1" value="${esc(curMin)}"${canRead ? '' : ' disabled'}></div>
+        </div>
+        <p class="gh">${esc(t('soc.tipsTitle'))}</p>
+        <div class="group noico"><div class="row static"><span class="t" style="font-weight:400">${t('soc.tips')}</span></div></div>
+        ${canRead ? `<label class="row" id="socAckRow"><span class="t" style="font-size:15px">${esc(t('soc.ack'))}</span><input type="checkbox" class="sw" id="socAck"></label>`
+          : `<div class="alert">${esc(t('soc.unavailable'))}</div>`}
+        <p class="foot">${esc(t('soc.hint'))}</p>
+        ${saveBtn('save', !canRead)}`,
+      bind() {
+        if (!canRead) return;
+        $('save').onclick = () => {
+          if (!$('socAck').checked) return toast(t('soc.ackFirst'), 'warn');
+          propose(() => planSoc(S, { min: Number($('socMin').value), max: Number($('socMax').value) }));
+        };
       },
     };
   },

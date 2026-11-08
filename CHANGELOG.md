@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.26 · November 2026
+- 🇬🇧 **Battery charge window (SoC limits, beta)**: a new settings page lets you shift where the system treats the battery as "full" and "empty" (lower/upper limit in %) – e.g. charge only to 80 % to protect the battery, or back to 100 % before a long ride. It comes with care tips (storage at 30–60 %, never store full or deeply discharged) and requires you to confirm you've read the notes before writing. As always: backup first, read-back after, and if the bike doesn't accept the values it aborts cleanly. No tuning, no speed or region changes.
+- 🇩🇪 **Akku-Ladefenster (SoC-Grenzen, Beta)**: Eine neue Einstellseite verschiebt, wo das System „voll" und „leer" ansetzt (Unter-/Obergrenze in %) – z. B. nur bis 80 % laden zum Schonen, oder vor einer langen Tour wieder auf 100 %. Mit Pflege-Tipps (Lagerung bei 30–60 %, nie voll oder tiefentladen lagern) und einer Pflichtbestätigung, dass die Hinweise gelesen wurden, bevor geschrieben wird. Wie immer: erst Backup, danach Rücklesen, und nimmt das Rad die Werte nicht an, bricht SelfBike sauber ab. Kein Tuning, keine Tempo- oder Region-Änderung.
+
 ## 1.4.25 · November 2026
 - 🇬🇧 **Riding-mode editing removed**: changing riding modes (assistance, power, dynamics, speed) is gone – the bike reports these as read-only and blocks writing them, so the setting never actually worked. SelfBike stays a read-out and maintenance tool, not a replacement for the Flow app. The general ride statistics (total distance, riding without motor, operating hours) stay.
 - 🇩🇪 **Fahrmodus-Einstellungen entfernt**: Das Ändern der Fahrmodi (Unterstützung, Leistung, Dynamik, Tempo) ist raus – das Rad meldet diese Werte schreibgeschützt und lässt das Schreiben nicht zu, das Einstellen hat also nie wirklich funktioniert. SelfBike bleibt ein Auslese- und Wartungswerkzeug, kein Ersatz für die Flow-App. Die allgemeine Fahrstatistik (Gesamtstrecke, Fahren ohne Motor, Betriebszeit) bleibt erhalten.
