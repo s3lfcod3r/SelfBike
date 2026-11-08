@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.56 · November 2026
+- 🇬🇧 **Assist-mode check now also reads the limits (sanity check)**: since the Flow app can change modes, "none adjustable" alone isn't conclusive. The read-only check now also reads each mode's limits (READ_UDAM_LIMITS) and shows them – plausible min/max (e.g. 10–25 km/h) confirms the ConfigId is encoded correctly, empty/garbage would mean it is not (and the "no" would be an artifact). Still read-only, nothing is written.
+- 🇩🇪 **Fahrmodi-Prüfung liest jetzt auch die Grenzen (Plausibilitätstest)**: Da die Flow-App Modi ändern kann, ist „keiner änderbar" allein nicht aussagekräftig. Die Nur-Lese-Prüfung liest jetzt zusätzlich die Grenzen jedes Modus (READ_UDAM_LIMITS) und zeigt sie – plausible min/max (z. B. 10–25 km/h) bestätigen, dass die ConfigId korrekt kodiert ist, leere/unsinnige würden das Gegenteil heißen (dann wäre das „nein" ein Artefakt). Weiterhin nur lesend, es wird nichts geschrieben.
+
 ## 1.4.55 · November 2026
 - 🇬🇧 **Assist modes: read-only "manufacturer-adjustable?" check**: a new read-only button (under "More") asks the bike, per active assist mode, whether the manufacturer allows changing it (ASSIST_MODE_IS_OEM_ADJUSTABLE) and shows the yes/no per mode – nothing is written. This replaces the earlier assumption: editing assist modes probably works via the proper path (UDAM), not by writing the mode address directly; whether to build the edit feature depends on this check. The plain assist-mode read-out stays regardless.
 - 🇩🇪 **Fahrmodi: Nur-Lese-Prüfung „vom Hersteller änderbar?"**: Ein neuer Nur-Lese-Knopf (unter „Mehr") fragt das Rad pro aktivem Fahrmodus, ob der Hersteller das Ändern freigibt (ASSIST_MODE_IS_OEM_ADJUSTABLE), und zeigt je Modus ja/nein – es wird nichts geschrieben. Das löst die frühere Annahme ab: Fahrmodi ändern geht vermutlich über den richtigen Weg (UDAM), nicht durch direktes Schreiben der Modus-Adresse; ob die Bearbeitung gebaut wird, hängt von dieser Prüfung ab. Die reine Anzeige der Fahrmodi bleibt in jedem Fall.

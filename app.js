@@ -2,7 +2,7 @@
 import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader, DISPLAY_LANGUAGES, UDAM } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
-import { hex, pbSummary, RPC, encodeConfigId, decoders } from './lib/messagebus.js';
+import { hex, pbSummary, RPC, encodeConfigId, decoders, pbFields } from './lib/messagebus.js';
 import { CLEAR_TARGETS, CMD, enableClear, disableClear, clearPayload, deleteIssuePayload, isClearable } from './lib/fault-actions.js';
 import {
   readAll, byKey, heartbeat, planLight, planService, planDisplay, planPorts, planSoc, planRestore, startModeOptions, applyPlan, guardedKeys, LIGHT_MODES,
@@ -493,9 +493,13 @@ async function selfTest(addr) {
   }
 }
 
-// Reine Lese-Prüfung: für jeden aktiven Fahrmodus (ConfigId) 4246 ASSIST_MODE_IS_OEM_ADJUSTABLE aufrufen und
-// das zurückgegebene Boolean sammeln. KEIN Schreibvorgang – zeigt nur, ob der Hersteller das Ändern irgendwo
-// freigibt. Erst wenn hier irgendwo „ja" steht, lohnt sich ein (späterer) Schreibpfad.
+// UdamParams {F1 Unterstützung, F2 Drehmoment, F3 Ansprechen, F4 Höchstgeschwindigkeit} → {feld: wert}
+const udamFlat = (bytes) => Object.fromEntries(pbFields(bytes).filter((f) => f.wire === 0).map((f) => [f.field, f.value]));
+
+// Reine Lese-Prüfung je aktivem Fahrmodus (ConfigId), KEIN Schreibvorgang:
+//   4246 ASSIST_MODE_IS_OEM_ADJUSTABLE → Boolean (gibt der Hersteller das Ändern frei?)
+//   4242 READ_UDAM_LIMITS → Grenzen (Prüfstein für die ConfigId-Kodierung: plausible min/max = Payload stimmt,
+//        leerer/unsinniger Rücklauf = ConfigId falsch kodiert, dann ist ein „nein" oben nur ein Artefakt).
 async function probeModes() {
   if (!reader) return;
   const ids = val('activeModes') || [];
@@ -503,14 +507,24 @@ async function probeModes() {
   const results = [];
   try {
     for (const id of ids) {
-      const r = await reader.request(UDAM.OEM_ADJUSTABLE, RPC, encodeConfigId(id));
-      const adjustable = r.status === 0 ? decoders.bool(r.payload).value : null;
-      log(`Fahrmodus ${id}: OEM-änderbar ${adjustable === null ? `nicht lesbar (${r.statusName || r.status})` : adjustable}`);
-      results.push({ id, adjustable });
+      const a = await reader.request(UDAM.OEM_ADJUSTABLE, RPC, encodeConfigId(id));
+      const adjustable = a.status === 0 ? decoders.bool(a.payload).value : null;
+      const l = await reader.request(UDAM.LIMITS, RPC, encodeConfigId(id));
+      let limits = null;
+      if (l.status === 0) {
+        const f = Object.fromEntries(pbFields(l.payload).filter((x) => x.wire === 2).map((x) => [x.field, x.value]));
+        const max = f[1] ? udamFlat(f[1]) : {}; const min = f[2] ? udamFlat(f[2]) : {};
+        // Plausibel, wenn die Höchstgeschwindigkeit (F4, 0,01 km/h) sinnvoll zurückkommt
+        if (max[4] || min[4]) limits = { speedMin: (min[4] ?? 0) / 100, speedMax: (max[4] ?? 0) / 100, assistMin: min[1] ?? null, assistMax: max[1] ?? null };
+      }
+      log(`Fahrmodus ${id}: OEM-änderbar ${adjustable ?? 'n/a'} · Grenzen ${limits ? `${limits.speedMin}–${limits.speedMax} km/h` : 'leer/nicht lesbar'}`);
+      results.push({ id, adjustable, limits });
     }
     modeAdjustable = results;
+    const plausible = results.some((x) => x.limits);
     const anyYes = results.some((x) => x.adjustable === true);
-    toast(anyYes ? t('modes.someAdjustable') : t('modes.noneAdjustable'), anyYes ? 'ok' : 'warn');
+    toast(!plausible ? t('modes.badConfigId') : anyYes ? t('modes.someAdjustable') : t('modes.noneAdjustable'),
+      !plausible ? 'err' : anyYes ? 'ok' : 'warn');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
   } catch (e) {
     toast(t('msg.readError', { error: e.message }), 'err');
@@ -799,8 +813,9 @@ const PAGES = {
         reader && (val('activeModes') || []).length ? `<p class="gh">${esc(t('modes.oemTitle'))}</p>
           <p class="foot">${esc(t('modes.oemHint'))}</p>
           ${modeAdjustable ? infoGroup(modeAdjustable.map((m) => [m.id,
-            m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable'),
-            '', m.adjustable === true ? 'good' : ''])) : ''}
+            `${m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable')} · ${
+              m.limits ? t('modes.limits', { lo: fmtNum(m.limits.speedMin, 1), hi: fmtNum(m.limits.speedMax, 1) }) : t('modes.limitsEmpty')}`,
+            '', m.adjustable === true ? 'good' : m.limits ? '' : 'warn'])) : ''}
           <button class="btn-text" id="probeModes" style="margin-top:8px">${esc(t('modes.oemCheck'))}</button>` : '',
       ].join(''),
       bind() {
