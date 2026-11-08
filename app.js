@@ -9,7 +9,7 @@ import {
 } from './lib/bike-writer.js';
 import { DemoUsb } from './lib/demo-usb.js';
 import { savePending, loadPending, clearPending, checkPending, batteryChecks, rangeEstimate } from './lib/care.js';
-import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome } from './lib/backup.js';
+import { createBackup, backupFileName, pickBackupFile, writeBackupFile, parseBackup, recordOutcome, storedBackups } from './lib/backup.js';
 import { readFaults, readFaultSource, FAULT_SOURCES, decodeFaultReply } from './lib/diagnostics.js';
 import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex, bySeverity } from './lib/fault-categories.js';
@@ -34,6 +34,12 @@ let blocked = false;   // nach unklarem Schreibversuch
 let demo = false;
 let tab = 'home';
 let pending = null;    // { plan, state }
+// Protokoll dieser Sitzung (auch im Demo, wo Backups bewusst nicht gespeichert werden): {createdAt, title, steps, outcome}.
+// Die Protokoll-Seite mischt das mit den gespeicherten Backups (echte Änderungen bleiben über Sitzungen erhalten).
+const sessionChanges = [];
+const logChange = (createdAt, title, steps, outcome) => sessionChanges.push({
+  createdAt, title, steps: steps.map(({ key, before, after, label }) => ({ key, before, after, label })), outcome,
+});
 let hbTimer = null;
 let hbFailures = 0;
 const logLines = [];
@@ -220,6 +226,7 @@ const ICONS = {
   details: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/>',
   components: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9zM9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>',
   backup: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
+  protocol: '<path d="M9 4h6a1 1 0 0 1 1 1v1h2v14H6V6h2V5a1 1 0 0 1 1-1zM8 10h8M8 14h8M8 18h5"/>',
   pdf: '<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>',
   lang: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/>',
   legal: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/>',
@@ -260,6 +267,7 @@ function renderMore() {
     </div>
     <p class="gh">${esc(t('ui.groupSafe'))}</p><div class="group">
       <button class="row" data-act="backup">${icon('backup', '#0ea5e9')}<span class="t">${esc(t('backup.btn'))}</span></button>
+      <button class="row" data-act="protocol">${icon('protocol', '#0ea5e9')}<span class="t">${esc(t('prot.title'))}</span><span class="v">${changeLog().length || ''}</span></button>
       <button class="row" data-act="pdf">${icon('pdf', '#0ea5e9')}<span class="t">${esc(t('tools.pdf'))}</span></button>
       <button class="row" data-act="diagnose">${icon('export', '#0ea5e9')}<span class="t">${esc(t('diag.title'))}</span></button>
       <label class="row">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('restore.title'))}</span><span class="chev">›</span>
@@ -273,6 +281,7 @@ $('moreList').addEventListener('click', async (e) => {
   if (open) return openPage(open.dataset.open);
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (act === 'legal') showDisclaimer();
+  else if (act === 'protocol') openPage('protocol');
   else if (act === 'pdf') openPage('pdf');
   else if (act === 'diagnose') openPage('diagnose');
   else if (act === 'backup') manualBackup();
@@ -534,6 +543,18 @@ async function selfTest(addr) {
     disableClear();
     try { faults = await readFaults(reader); renderAll(); if (atFaults()) drawPage(); } catch (e) { log(`Rescan: ${e.message}`); }
   }
+}
+
+// Protokoll-Einträge: diese Sitzung (sessionChanges, auch Demo) gemischt mit den gespeicherten Backups (echte,
+// dauerhafte Änderungen). Nach createdAt dedupliziert, neueste zuerst; nur Einträge mit tatsächlichen Schritten.
+function changeLog() {
+  const out = sessionChanges.map((c) => ({ ...c }));
+  for (const b of storedBackups()) {
+    if (!out.some((o) => o.createdAt === b.createdAt)) {
+      out.push({ createdAt: b.createdAt, title: b.plannedChange?.title, steps: b.plannedChange?.steps, outcome: b.outcome });
+    }
+  }
+  return out.filter((c) => c.title && c.steps?.length).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
 const PAGES = {
@@ -880,6 +901,33 @@ const PAGES = {
     ];
     return { title: t('comp.title'), html: infoGroup(items) };
   },
+  // Protokoll: was geändert wurde und ob das Rad es übernommen hat – aus den gespeicherten Backups (letzte 20,
+  // nur im Browser). Jeder Eintrag: Titel + Zeit, Schritte (vorher → nachher) und das Ergebnis (angenommen/
+  // nicht übernommen/abgebrochen). Reine Backups ohne geplante Änderung werden übersprungen.
+  protocol() {
+    const list = changeLog();
+    const entry = (c) => {
+      const o = c.outcome;
+      let badge; let cls; let reason = '';
+      if (!o) { badge = t('prot.aborted'); cls = 'warn'; }
+      else if (o.ok) {
+        const unconf = (o.done || []).some((d) => d.unconfirmed);
+        badge = unconf ? t('prot.unconfirmed') : t('prot.accepted');
+        cls = unconf ? 'warn' : 'good';
+      } else { badge = t('prot.notApplied'); cls = 'bad'; reason = o.error ? t('prot.reason', { error: o.error }) : ''; }
+      const steps = c.steps.map((s) => `<div class="row static"><span class="t">${esc(s.label ?? dpLabel(s.key))}</span><span style="text-align:right">${esc(s.before)} → <b>${esc(s.after)}</b></span></div>`).join('');
+      return `<div class="row static"><span class="t" style="font-weight:600">${esc(c.title)}<small>${esc(fmtDateTime(new Date(c.createdAt)))}</small></span><span class="${cls}" style="font-weight:600">${esc(badge)}</span></div>
+        ${steps}
+        ${reason ? `<div class="row static"><span class="t" style="color:var(--self-text-2);font-weight:400">${esc(reason)}</span></div>` : ''}`;
+    };
+    return {
+      title: t('prot.title'),
+      html: `<p class="explain">${esc(t('prot.hint'))}</p>` + (list.length
+        ? list.map((c) => `<div class="group noico" style="margin-top:12px">${entry(c)}</div>`).join('')
+        : `<p class="explain">${esc(t('prot.empty'))}</p>`),
+    };
+  },
+
   // PDF-Bericht: hell (zum Ausdrucken) oder dunkel (Self-Stil)
   pdf() {
     const choice = (theme, bg, fg) => `<button class="row" data-theme="${theme}">
@@ -1047,6 +1095,7 @@ $('confirmGo').onclick = async () => {
     const applied = await applyPlan(reader, plan, now, plog);
     clearPending();
     recordOutcome(backup.createdAt, { ok: true, at: new Date().toISOString(), done: applied.done });
+    logChange(backup.createdAt, plan.title, plan.steps, { ok: true, done: applied.done });
     pending = null;
     plog(`FERTIG: ${plan.title}`);
     // Konfigurationswerte wirken erst nach Aus/Ein (am Rad bestätigt) – Hinweis nur bei Konfig-Schreibvorgängen.
@@ -1072,6 +1121,7 @@ $('confirmGo').onclick = async () => {
       progDone('warn');
     }
     if (backup) recordOutcome(backup.createdAt, { ok: false, at: new Date().toISOString(), error: e.message, attempted: e.attempted ?? [] });
+    logChange(backup?.createdAt ?? new Date().toISOString(), plan.title, plan.steps, { ok: false, error: e.message, attempted: e.attempted ?? [] });
   } finally {
     busy = false;
     renderAll();
