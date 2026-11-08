@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.62 · November 2026
+- 🇬🇧 **Diagnostic: raw value shown next to each mode field**: to pin down the scaling against the bike, each read-only mode field now shows its raw value in parentheses, and the read logs the full raw bytes of the UDAM values. Nothing changed in the write path – this is read-only diagnostics so the torque and speed scaling can be confirmed against Flow before any write.
+- 🇩🇪 **Diagnose: Rohwert neben jedem Modus-Feld**: Um die Skalierung am Rad festzumachen, zeigt jedes Nur-Lese-Modus-Feld jetzt seinen Rohwert in Klammern, und das Lesen protokolliert die vollständigen Rohbytes der UDAM-Werte. Am Schreibpfad ändert sich nichts – reine Lese-Diagnose, damit die Drehmoment- und Tempo-Skalierung vor jedem Schreiben gegen Flow bestätigt werden kann.
+
 ## 1.4.61 · November 2026
 - 🇬🇧 **Corrected mode-field ranges and units**: max. torque now shows whole Newton-metres (÷10 on the wire, e.g. raw 850 = 85 Nm) with the range 10–120 Nm; extended boost is a 0–10 counter (not a yes/no); traction control is 0–3 (off/low/medium/high). A read → write-unchanged → read round-trip keeps every field identical. Ranges stay Flow-derived and marked as such.
 - 🇩🇪 **Modus-Feld-Bereiche und Einheiten korrigiert**: Max. Drehmoment zeigt jetzt ganze Newtonmeter (÷10 auf der Leitung, z. B. roh 850 = 85 Nm) mit dem Bereich 10–120 Nm; Extended Boost ist ein Zähler 0–10 (kein Ja/Nein); Traktionskontrolle 0–3 (Aus/Niedrig/Mittel/Hoch). Ein Round-Trip lesen → unverändert schreiben → lesen lässt jedes Feld identisch. Die Bereiche bleiben Flow-abgeleitet und sind so markiert.

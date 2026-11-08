@@ -544,7 +544,8 @@ async function probeModes() {
       const current = c.status === 0 ? udamFlat(c.payload) : null;
       // proto3 lässt 0-Felder weg; „vollständig" = alle acht Feldnummern kamen zurück (Schreiben nur dann freigeben)
       const complete = !!current && MODE_FIELDS.every((f) => current[f.n] != null);
-      log(`Fahrmodus ${id}: OEM-Hinweis ${adjustable ?? 'n/a'} · gelesene Felder ${current ? Object.keys(current).join(',') : '–'}${complete ? '' : ' (unvollständig → Schreiben gesperrt)'}`);
+      // Diagnose: komplette Rohbytes + Feld=Rohwert, damit die Skalierung am echten Rad festgemacht werden kann
+      log(`Fahrmodus ${id}: 4240 roh [${c.status === 0 ? hex(c.payload) : c.statusName || c.status}] → ${current ? Object.entries(current).map(([n, v]) => `F${n}=${v}`).join(' ') : '–'}${complete ? '' : ' (unvollständig → Schreiben gesperrt)'}`);
       results.push({ id, adjustable, current, complete });
     }
     modeAdjustable = results;
@@ -897,7 +898,7 @@ const PAGES = {
                   f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</span></div>
               ${MODE_FIELDS.map((f) => {
                 const raw = m.current ? m.current[f.n] : null;
-                if (!m.complete || !f.edit || raw == null) return `<div class="row static"><span class="t">${esc(mfLabel(f))}</span><span>${esc(mfShow(f, raw))}</span></div>`;
+                if (!m.complete || !f.edit || raw == null) return `<div class="row static"><span class="t">${esc(mfLabel(f))}</span><span>${esc(mfShow(f, raw))} <small style="color:var(--self-text-2)">${esc(t('modes.rawDiag', { raw: raw ?? '–' }))}</small></span></div>`;
                 if (f.kind === 'bool') return `<label class="row"><span class="t">${esc(mfLabel(f))}</span><input type="checkbox" class="sw mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="bool"${raw ? ' checked' : ''}></label>`;
                 if (f.kind === 'offset') return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(withSign(assistStep(f.rawMin)))} … ${esc(withSign(assistStep(f.rawMax)))} (0 = Standard)</small></span>
                   <input class="numin mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="offset" type="number" min="${assistStep(f.rawMin)}" max="${assistStep(f.rawMax)}" step="1" value="${assistStep(raw)}"></div>`;
