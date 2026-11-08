@@ -39,6 +39,8 @@ let hbFailures = 0;
 const logLines = [];
 
 const ok = (key) => S[key]?.status === 'ok';
+// Feld vorhanden, aber vom Rad abgelehnt (Status 6/2 beim Lesen) – unterscheidet „verweigert“ von „kein Empfänger“
+const denied = (key) => S[key]?.status === 'rejected';
 const val = (key) => (ok(key) ? S[key].value : null);
 const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key].text ? S[key].text : fallback);
 const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
@@ -234,7 +236,7 @@ function renderSettings() {
     navRow('service', t('svc.title'), rows.length ? serviceText().n + (serviceText().unit ? ` ${serviceText().unit}` : '') : '', '#8b5cf6'),
     navRow('display', t('disp.title'), '', '#64748b'),
     ok('portOem') ? navRow('ports', t('ports.title'), 'Beta', '#e0a020') : '',
-    (ok('socMin') || ok('socMax')) ? navRow('soc', t('soc.title'), 'Beta', '#22a35a') : '',
+    (ok('socMin') || ok('socMax') || denied('socMin') || denied('socMax')) ? navRow('soc', t('soc.title'), 'Beta', '#22a35a') : '',
   ].join('');
 }
 $('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
@@ -585,26 +587,30 @@ const PAGES = {
   // Vor dem Speichern müssen die Hinweise ausdrücklich bestätigt werden.
   soc() {
     const canRead = ok('socMin') && ok('socMax');
+    // Rad verweigert das Lesen (Status 6/2), aber das Feld gibt es laut Protokoll → Schreibversuch erlauben, Ergebnis unbestätigt
+    const readDenied = !canRead && (denied('socMin') || denied('socMax'));
+    const usable = canRead || readDenied;
     const curMin = ok('socMin') ? val('socMin') : 5;
     const curMax = ok('socMax') ? val('socMax') : 100;
     return {
       title: t('soc.title'),
       html: `<p class="explain">${esc(t('soc.explain'))}</p>
         <div class="alert" style="margin-top:12px">${esc(t('soc.beta'))}</div>
+        ${readDenied ? `<div class="alert">${esc(t('soc.readDenied'))}</div>` : ''}
         <div class="group noico" style="margin-top:12px">
           <div class="row static"><span class="t">${esc(t('soc.max'))}<small>${esc(t('soc.maxHint'))}</small></span>
-            <input class="numin" id="socMax" type="number" min="0" max="100" step="1" value="${esc(curMax)}"${canRead ? '' : ' disabled'}></div>
+            <input class="numin" id="socMax" type="number" min="0" max="100" step="1" value="${esc(curMax)}"${usable ? '' : ' disabled'}></div>
           <div class="row static"><span class="t">${esc(t('soc.min'))}<small>${esc(t('soc.minHint'))}</small></span>
-            <input class="numin" id="socMin" type="number" min="0" max="100" step="1" value="${esc(curMin)}"${canRead ? '' : ' disabled'}></div>
+            <input class="numin" id="socMin" type="number" min="0" max="100" step="1" value="${esc(curMin)}"${usable ? '' : ' disabled'}></div>
         </div>
         <p class="gh">${esc(t('soc.tipsTitle'))}</p>
         <div class="group noico"><div class="row static"><span class="t" style="font-weight:400">${t('soc.tips')}</span></div></div>
-        ${canRead ? `<label class="row" id="socAckRow"><span class="t" style="font-size:15px">${esc(t('soc.ack'))}</span><input type="checkbox" class="sw" id="socAck"></label>`
+        ${usable ? `<label class="row" id="socAckRow"><span class="t" style="font-size:15px">${esc(t('soc.ack'))}</span><input type="checkbox" class="sw" id="socAck"></label>`
           : `<div class="alert">${esc(t('soc.unavailable'))}</div>`}
         <p class="foot">${esc(t('soc.hint'))}</p>
-        ${saveBtn('save', !canRead)}`,
+        ${saveBtn('save', !usable)}`,
       bind() {
-        if (!canRead) return;
+        if (!usable) return;
         $('save').onclick = () => {
           if (!$('socAck').checked) return toast(t('soc.ackFirst'), 'warn');
           propose(() => planSoc(S, { min: Number($('socMin').value), max: Number($('socMax').value) }));
@@ -967,7 +973,9 @@ $('confirmGo').onclick = async () => {
     pending = null;
     plog(`FERTIG: ${plan.title}`);
     const restart = plan.steps.some((s) => s.key.startsWith('light')) ? ` ${t('msg.restart')}` : '';
-    const changed = t('ui.changed') + restart;
+    // Schritte, die geschrieben, aber nicht zurückgelesen werden konnten (z. B. SoC-Grenzen) – ehrlich als unbestätigt melden
+    const unconfirmed = applied.done.some((d) => d.unconfirmed) ? ` ${t('ui.changedUnconfirmed')}` : '';
+    const changed = t('ui.changed') + unconfirmed + restart;
     try { await refreshChanged(plan, result.fresh); } catch (e) {
       await disconnect();
       progStatus(`${changed} ${t('msg.readError', { error: e.message })}`, 'warn');
