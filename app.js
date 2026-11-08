@@ -44,6 +44,8 @@ const denied = (key) => S[key]?.status === 'rejected';
 const val = (key) => (ok(key) ? S[key].value : null);
 const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key].text ? S[key].text : fallback);
 const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
+// „1 Eintrag" / „N Einträge" – Singular/Plural für Zähltexte
+const entries = (n) => (n === 1 ? t('clr.entry1') : t('clr.entryN', { n }));
 const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); };
 
 // Diagnose-Export: Adressen mit persönlichen Daten werden beim Export ausgelassen
@@ -449,9 +451,11 @@ async function selfTest(addr) {
     log(`  Stand vor Löschen: ${before.status}, ${before.faults.length} Eintrag/Einträge`);
     if (before.status !== 'ok') { toast(t('clr.selfTestUnread', { ecu }), 'err'); return; }
     if (before.faults.length > 0) {
-      // Speicher NICHT leer → hier wird NICHT gelöscht. Anzeige war veraltet; aktualisieren.
-      log('  → nicht leer, kein Löschen (echte Fehler, kein Test)');
-      toast(t('clr.selfTestNotEmpty', { ecu, n: before.faults.length }), 'warn');
+      // Speicher NICHT leer → hier wird NICHT gelöscht, nur gelesen. Anzeige war veraltet; aktualisieren.
+      // Zum echten Löschen gibt es die Auswahl-Löschfunktion (gleicher Ablauf mit Sicherung).
+      log('  → nicht leer, kein Löschen (echte Fehler, kein Test) – Verweis auf echten Clear');
+      try { faults = await readFaults(reader); renderAll(); if (atFaults()) drawPage(); } catch (e) { log(`Rescan: ${e.message}`); }
+      toast(t('clr.selfTestNotEmpty', { ecu, entries: entries(before.faults.length) }), 'warn');
       return;
     }
     // Leer → DELETE_ALL ist folgenlos und prüft nur, ob die ECU den Befehl annimmt
@@ -463,7 +467,7 @@ async function selfTest(addr) {
     const gate = d.returnValue === 5 || r.status === 6;
     // Erfolg aus RETURN_VALUE (Operation) + konsistentem Rücklesen – NICHT aus dem Transport allein
     const okResult = r.status === 0 && d.returnValue === 0 && after.status === 'ok' && after.faults.length === 0;
-    if (okResult) toast(t('clr.selfTestOk', { ecu }), 'ok');
+    if (okResult) toast(t('clr.selfTestOk', { ecu, entries: entries(before.faults.length) }), 'ok');
     else if (gate) toast(t('clr.selfTestGate', { ecu }), 'warn');
     else if (after.status !== 'ok') toast(t('clr.selfTestUnread', { ecu }), 'err');
     else toast(t('clr.selfTestFail', { ecu, s: `${r.statusName || r.status} / rv ${d.returnValue ?? '?'}` }), 'err');
