@@ -238,6 +238,7 @@ function renderSettings() {
     navRow('service', t('svc.title'), rows.length ? serviceText().n + (serviceText().unit ? ` ${serviceText().unit}` : '') : '', '#8b5cf6'),
     navRow('display', t('disp.title'), '', '#64748b'),
     ok('portOem') ? navRow('ports', t('ports.title'), 'Beta', '#e0a020') : '',
+    navRow('faults', t('ui.faults'), faultCount() ? String(faultCount()) : t('ui.faultsNone'), '#e5534b'),
   ].join('');
 }
 $('settingsList').addEventListener('click', (e) => { const b = e.target.closest('[data-open]'); if (b) openPage(b.dataset.open); });
@@ -1013,6 +1014,7 @@ $('confirmGo').onclick = async () => {
   $('confirmSheet').classList.remove('open');
   $('progTitle').textContent = plan.title;
   $('progLog').textContent = '';
+  $('progLog').classList.remove('hidden'); // Schreib-/Backup-Ablauf zeigt das Log (beim Verbinden ist es ausgeblendet)
   $('progKofi').classList.add('hidden');
   $('progDone').classList.add('hidden');
   progStatus(t('msg.backupReading'));
@@ -1185,17 +1187,40 @@ function downloadTextFile(fileName, text) {
 async function refresh() {
   busy = true;
   renderHead();
-  // Beim Verbinden nur den Kern lesen (CORE_PLAN); die Diagnose-/Detailwerte (DIAG_PLAN) laden die Seiten
-  // beim Öffnen selbst nach (ensureLazy). Der Fortschritt zählt nur den Kern.
-  rows = await readAll(reader, (row, i) => { $('pageSub').textContent = t('msg.reading', { n: i + 1, total: CORE_PLAN.length }); }, CORE_PLAN);
-  lazyInFlight.clear();
-  S = byKey(rows);
-  $('pageSub').textContent = t('msg.readingFaults');
-  faults = await readFaults(reader);
+  // Verbinden / Neu auslesen: runder 0–100%-Fortschritt im selben Popup wie beim Speichern, am Ende automatisch weiter.
+  // Gelesen wird nur der Kern (CORE_PLAN); die Diagnose-/Detailwerte (DIAG_PLAN) laden die Seiten beim Öffnen selbst nach.
+  $('progTitle').textContent = t('msg.connectTitle');
+  $('progLog').textContent = '';
+  $('progLog').classList.add('hidden'); // beim Verbinden kein Log, nur der Kreis
+  $('progKofi').classList.add('hidden');
+  $('progDone').classList.add('hidden');
+  ring(0);
+  progStatus(t('msg.reading', { n: 0, total: CORE_PLAN.length }));
+  $('progSheet').classList.add('open');
+  const total = CORE_PLAN.length + 1; // Kern-Datenpunkte + Fehlerspeicher als letzter Schritt
+  try {
+    rows = await readAll(reader, (row, i) => {
+      ring((i + 1) / total);
+      progStatus(t('msg.reading', { n: i + 1, total: CORE_PLAN.length }));
+    }, CORE_PLAN);
+    lazyInFlight.clear();
+    S = byKey(rows);
+    progStatus(t('msg.readingFaults'));
+    faults = await readFaults(reader);
+    ring(1);
+    progStatus(t('msg.connected'), 'ok');
+  } catch (e) {
+    $('progSheet').classList.remove('open');
+    $('progLog').classList.remove('hidden');
+    busy = false;
+    throw e;
+  }
   busy = false;
   if (!demo) addSnapshot(snapshotFromRows(rows, new Date()));
   renderAll();
   if (stack.length) drawPage();
+  // kurz „Verbunden“ zeigen, dann automatisch schließen (kein OK-Klick nötig)
+  setTimeout(() => { $('progSheet').classList.remove('open'); $('progLog').classList.remove('hidden'); }, 800);
 }
 
 async function connectWith(u, isDemo) {
