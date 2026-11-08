@@ -29,7 +29,8 @@ let reader = null;
 let rows = [];
 let S = {};
 let faults = [];
-let modeAdjustable = null; // Ergebnis der reinen Lese-Prüfung 4246 (OEM-Änderbarkeit je Fahrmodus) oder null
+let modeAdjustable = null; // Ergebnis der reinen Lese-Prüfung je Fahrmodus (userAdjustable, OEM-Hinweis, Werte) oder null
+let modeSupported = {}; // welche optionalen UDAM-Felder das Rad unterstützt (aus 6272): power/boost/traction/tensioner
 let busy = false;
 let blocked = false;   // nach unklarem Schreibversuch
 let demo = false;
@@ -500,6 +501,14 @@ async function selfTest(addr) {
 
 // UdamParams {F1 Unterstützung, F2 Drehmoment, F3 Ansprechen, F4 Höchstgeschwindigkeit} → {feld: wert}
 const udamFlat = (bytes) => Object.fromEntries(pbFields(bytes).filter((f) => f.wire === 0).map((f) => [f.field, f.value]));
+const pbField = (bytes, n) => pbFields(bytes).find((f) => f.field === n)?.value;
+// AssistModeInformation.userAdjustable = Feld 6. Antwort evtl. in …Nullable gewrappt (F1 bitField, F2 Nachricht).
+function readUserAdjustable(payload) {
+  const top = pbField(payload, 6);
+  if (top != null) return !!top;
+  for (const n of [2, 1]) { const inner = pbField(payload, n); if (inner instanceof Uint8Array) { const v = pbField(inner, 6); if (v != null) return !!v; } }
+  return null;
+}
 
 // UdamParams-Felder (alle 8, Reihenfolge/Semantik aus Flow.apk belegt). Die Bereiche sind FLOW-ABGELEITET
 // (aus Flow-Screenshots), NICHT vom Rad gemeldet – 4242 liefert auf Gen5 nur die Tempo-Grenze. So markiert.
@@ -540,18 +549,24 @@ async function probeModes() {
   if (!ids.length) return toast(t('modes.noModes'), 'warn');
   const results = [];
   try {
+    // DriveUnitStaticFeatureProperties (6272) einmal: welche OPTIONALEN Felder sind im UDAM unterstützt
+    // (16 Power, 25 Boost, 34 Traktion, 35 Spanner) – belegt aus Flow.apk.
+    let supp = {};
+    try { const sp = await reader.read(6272); if (sp.status === 0) { const f = udamFlat(sp.payload); supp = { power: !!f[16], boost: !!f[25], traction: !!f[34], tensioner: !!f[35] }; } } catch (e) { log(`6272: ${e.message}`); }
     for (const id of ids) {
       const a = await reader.request(UDAM.OEM_ADJUSTABLE, RPC, encodeConfigId(id));
       const adjustable = a.status === 0 ? decoders.bool(a.payload).value : null;
+      // DER ehrliche Guard: AssistModeInformation.userAdjustable (Feld 6) über 4235 – nicht 4246.
+      const info = await reader.request(UDAM.INFO, RPC, encodeConfigId(id));
+      const userAdjustable = info.status === 0 ? readUserAdjustable(info.payload) : null;
       const c = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
       const current = c.status === 0 ? udamFlat(c.payload) : null;
-      // proto3 lässt 0-Felder weg; „vollständig" = alle acht Feldnummern kamen zurück (Schreiben nur dann freigeben)
       const complete = !!current && MODE_FIELDS.every((f) => current[f.n] != null);
-      // Diagnose: komplette Rohbytes + Feld=Rohwert, damit die Skalierung am echten Rad festgemacht werden kann
-      log(`Fahrmodus ${id}: 4240 roh [${c.status === 0 ? hex(c.payload) : c.statusName || c.status}] → ${current ? Object.entries(current).map(([n, v]) => `F${n}=${v}`).join(' ') : '–'}${complete ? '' : ' (unvollständig → Schreiben gesperrt)'}`);
-      results.push({ id, adjustable, current, complete });
+      log(`Fahrmodus ${id}: userAdjustable=${userAdjustable ?? 'n/a'} · OEM-Hinweis ${adjustable ?? 'n/a'} · 4240 [${c.status === 0 ? hex(c.payload) : c.statusName || c.status}] → ${current ? Object.entries(current).map(([n, v]) => `F${n}=${v}`).join(' ') : '–'}`);
+      results.push({ id, adjustable, userAdjustable, current, complete });
     }
     modeAdjustable = results;
+    modeSupported = supp;
     const anyRead = results.some((x) => x.current);
     toast(anyRead ? t('modes.readOk') : t('modes.badConfigId'), anyRead ? 'ok' : 'err');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
@@ -574,15 +589,19 @@ function encodeUdamSet(id, params) {
 async function writeMode(id, edits) {
   if (!reader) return;
   try {
+    // Gate: der ehrliche Freigabe-Pfad – AssistModeInformation.userAdjustable (4235, Feld 6) muss true sein.
+    const info = await reader.request(UDAM.INFO, RPC, encodeConfigId(id));
+    const userAdjustable = info.status === 0 ? readUserAdjustable(info.payload) : null;
+    if (userAdjustable !== true) return toast(t('modes.notAdjustable', { v: userAdjustable === false ? t('word.no') : '?' }), 'warn');
     const cur = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
     if (cur.status !== 0) return toast(t('modes.readFail'), 'err');
     const params = udamFlat(cur.payload);
     if (!MODE_FIELDS.every((f) => params[f.n] != null)) return toast(t('modes.incomplete'), 'err');
-    const changes = [];
+    const want = {}; const changes = [];
     for (const [n, raw] of Object.entries(edits)) {
       const f = MODE_FIELDS.find((x) => x.n === Number(n)); if (!f || !f.edit) continue;
       const clamped = f.rawMin != null ? Math.max(f.rawMin, Math.min(f.rawMax, Math.round(raw))) : Math.round(raw);
-      if (clamped !== params[f.n]) { changes.push(`${f.key} ${params[f.n]}→${clamped}`); params[f.n] = clamped; }
+      if (clamped !== params[f.n]) { changes.push(`${f.key} ${params[f.n]}→${clamped}`); params[f.n] = clamped; want[f.n] = clamped; }
     }
     if (!changes.length) return toast(t('modes.noChangeMode'), 'ok');
     log(`${id} Schreibversuch: ${changes.join(', ')} · alle Felder erhalten (${Object.keys(params).join(',')})`);
@@ -590,9 +609,13 @@ async function writeMode(id, edits) {
     if (w.status !== 0) return toast(t('modes.writeRejected', { s: w.statusName || w.status }), 'warn');
     await new Promise((r) => setTimeout(r, 450));
     const back = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
-    log(`${id} zurückgelesen: ${back.status === 0 ? Object.entries(udamFlat(back.payload)).map(([n, v]) => `${n}=${v}`).join(' ') : 'nicht lesbar'}`);
+    const now = back.status === 0 ? udamFlat(back.payload) : null;
+    log(`${id} zurückgelesen: ${now ? Object.entries(now).map(([n, v]) => `F${n}=${v}`).join(' ') : 'nicht lesbar'}`);
     modeAdjustable = null; // Anzeige ist jetzt veraltet
-    toast(t('modes.writeDone'), 'ok');
+    // ERFOLG nur, wenn die geänderten Felder auch WIRKLICH so zurückkommen – sonst Selbstecho (SET akzeptiert, ignoriert)
+    const applied = now && Object.entries(want).every(([n, v]) => now[n] === v);
+    if (applied) toast(t('modes.writeDone'), 'ok');
+    else toast(t('modes.writeNotApplied'), 'warn');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
   } catch (e) { toast(t('msg.readError', { error: e.message }), 'err'); }
 }
@@ -897,8 +920,8 @@ const PAGES = {
           ${modeAdjustable ? `<p class="foot">${esc(t('modes.effectNote'))}</p>
             ${modeAdjustable.map((m) => `<div class="group noico" style="margin-top:8px">
               <div class="row static"><span class="t" style="font-weight:600">${esc(modeName(m.id))}${modeName(m.id) !== m.id ? `<small>${esc(m.id)}</small>` : ''}</span>
-                <span style="color:var(--self-text-2);font-size:.85rem">${esc(t('modes.oemHintFlag', {
-                  f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</span></div>
+                <span style="font-size:.85rem;color:${m.userAdjustable === true ? 'var(--self-teal-deep,#43d3ad)' : 'var(--self-text-2)'}">${esc(t('modes.adjustable', {
+                  v: m.userAdjustable === true ? t('word.yes') : m.userAdjustable === false ? t('word.no') : t('fault.unreadable') }))}</span></div>
               ${MODE_FIELDS.map((f) => {
                 const raw = m.current ? m.current[f.n] : null;
                 if (!m.complete || !f.edit || raw == null) return `<div class="row static"><span class="t">${esc(mfLabel(f))}</span><span>${esc(mfShow(f, raw))} <small style="color:var(--self-text-2)">${esc(t('modes.rawDiag', { raw: raw ?? '–' }))}</small></span></div>`;
@@ -908,9 +931,10 @@ const PAGES = {
                 return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(fmtNum(f.rawMin / f.factor, f.factor > 1 ? 1 : 0))}–${esc(fmtNum(f.rawMax / f.factor, f.factor > 1 ? 1 : 0))} ${esc(f.unit)}</small></span>
                   <input class="numin mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="num" data-factor="${f.factor}" type="number" min="${f.rawMin / f.factor}" max="${f.rawMax / f.factor}" step="${f.factor >= 100 ? 0.1 : 1}" value="${raw / f.factor}"></div>`;
               }).join('')}
-              ${m.complete ? `<div class="row static"><button class="btn-big modeWrite" data-id="${esc(m.id)}" style="background:#e0a020;color:#1a2230">${esc(t('modes.ecoWrite'))}</button></div>
-                <div class="row static"><button class="btn-text modeReset" data-id="${esc(m.id)}">${esc(t('modes.ecoReset'))}</button></div>`
-                : `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('modes.incompleteHint'))}</p>`}
+              ${!m.complete ? `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('modes.incompleteHint'))}</p>`
+                : m.userAdjustable !== true ? `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('modes.lockedHint'))}</p>`
+                : `<div class="row static"><button class="btn-big modeWrite" data-id="${esc(m.id)}" style="background:#e0a020;color:#1a2230">${esc(t('modes.ecoWrite'))}</button></div>
+                <div class="row static"><button class="btn-text modeReset" data-id="${esc(m.id)}">${esc(t('modes.ecoReset'))}</button></div>`}
             </div>`).join('')}` : ''}` : '',
       ].join(''),
       bind() {
