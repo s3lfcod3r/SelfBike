@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.32 · November 2026
+- 🇬🇧 **Simpler fault deletion** (beta): the fault memory page now works by selection – tick the faults you want gone (or "Select all"), then one button "Delete N" with a quick two-tap confirm. Replaces the old mix of an acknowledgement checkbox plus separate all/single buttons. Snapshot is still saved first; active faults still come back.
+- 🇩🇪 **Einfacheres Fehler-Löschen** (Beta): Die Fehler-Seite läuft jetzt über Auswahl – Häkchen bei den Fehlern setzen, die weg sollen (oder „Alle auswählen"), dann ein Knopf „X löschen" mit kurzer Doppel-Tipp-Bestätigung. Ersetzt die alte Mischung aus Bestätigungshaken plus getrennten Alle-/Einzel-Knöpfen. Gesichert wird weiterhin vorher; aktive Fehler kommen weiterhin zurück.
+
 ## 1.4.31 · November 2026
 - 🇬🇧 **Delete a single fault** (beta): every entry on the fault memory page now has a "Delete" button that removes just that one code (verified `DELETE_ISSUE` command with the issue id, wrapped in block→delete→unblock), instead of clearing everything. Uses the same confirmation checkbox and saves a snapshot first. Active/permanent faults come back.
 - 🇩🇪 **Einzelnen Fehler löschen** (Beta): Jeder Eintrag auf der Fehler-Seite hat jetzt einen „Löschen"-Knopf, der nur diesen einen Code entfernt (verifizierter `DELETE_ISSUE`-Befehl mit der Issue-ID, umschlossen von Block→Löschen→Unblock), statt alles zu löschen. Nutzt denselben Bestätigungshaken und sichert vorher. Aktive/permanente Fehler kommen zurück.

@@ -352,43 +352,30 @@ function saveFaultSnapshot() {
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
-// Einzelnen Fehler löschen (DELETE_ISSUE): BLOCK → DELETE_ISSUE(code) → UNBLOCK an der ECU-Adresse.
-async function deleteSingleFault(addr, code) {
-  if (!reader) return;
-  saveFaultSnapshot();
-  enableClear([addr]);
-  try {
-    await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING));
-    const r = await reader.request(addr, RPC, deleteIssuePayload(code));
-    await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING));
-    faults = await readFaults(reader);
-    renderAll();
-    if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
-    toast(r.status === 0 ? t('clr.oneDone') : t('clr.oneFail', { status: r.statusName || r.status }), r.status === 0 ? 'ok' : 'warn');
-  } catch (e) {
-    toast(t('msg.readError', { error: e.message }), 'err');
-  } finally {
-    disableClear();
-  }
-}
-
-async function clearFaultMemory() {
-  if (!reader || !faultCount()) return;
+// Ausgewählte Fehler löschen: je ECU (Akku zuerst, Motor zuletzt) BLOCK → DELETE_ISSUE je Code → UNBLOCK.
+async function deleteSelectedFaults(items) {
+  if (!reader || !items.length) return;
   saveFaultSnapshot(); // Historie zuerst sichern
-  enableClear(CLEAR_TARGETS.map((x) => x.address));
+  const order = CLEAR_TARGETS.map((x) => x.address);
+  const byEcu = new Map();
+  for (const it of items) { if (!byEcu.has(it.addr)) byEcu.set(it.addr, []); byEcu.get(it.addr).push(it.code); }
+  const addrs = [...byEcu.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  enableClear(addrs);
+  const before = faultCount();
   try {
-    for (const { address: addr } of CLEAR_TARGETS) { // Akku zuerst, Motor zuletzt
-      const ecu = faults.find((e) => e.address === addr);
-      if (!ecu || ecu.status !== 'ok' || !ecu.faults.length) continue;
-      for (const cmd of CLEAR_SEQUENCE) { // BLOCK → DELETE → UNBLOCK
-        try { await reader.request(addr, RPC, clearPayload(cmd)); }
-        catch (e) { log(`Clear ${addr} ${cmd}: ${e.message}`); }
+    for (const addr of addrs) {
+      await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING));
+      for (const code of byEcu.get(addr)) {
+        try { await reader.request(addr, RPC, deleteIssuePayload(code)); }
+        catch (e) { log(`Clear ${addr} ${code}: ${e.message}`); }
       }
+      await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING));
     }
     faults = await readFaults(reader);
     renderAll();
     if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
-    toast(faultCount() ? t('clr.someLeft') : t('clr.done'), faultCount() ? 'warn' : 'ok');
+    const removed = Math.max(before - faultCount(), 0);
+    toast(faultCount() === 0 ? t('clr.allGone') : t('clr.selDone', { n: removed }), 'ok');
   } catch (e) {
     toast(t('msg.readError', { error: e.message }), 'err');
   } finally {
@@ -677,11 +664,15 @@ const PAGES = {
         const cat = describeFault(e.code);
         const sev = info?.s || cat.sev;
         const sevTag = sev ? `<i class="sevtag sev-${esc(sev)}">${esc(t(`sev.${sev}`))}</i>` : '';
-        return `<div class="fault"><b>${sevTag}${esc(info?.t || cat.title)}</b>
+        const inner2 = `<b>${sevTag}${esc(info?.t || cat.title)}</b>
           <span>${esc(`${t('fault.code', { code })} · ${e.count ?? '?'}× · ${e.timestamp > 0 ? t('fault.last', { date: fmtDateTime(e.timestamp * 1000) }) : t('fault.noTime')}`)}</span>
           ${info?.d ? `<span style="margin-top:4px">${esc(info.d)}</span>` : ''}
           ${info?.m ? `<span style="margin-top:4px"><b style="display:inline">${esc(t('issues.measures'))}:</b> ${esc(info.m)}</span>`
-            : `<span style="margin-top:4px">${cat.own ? '' : `<b style="display:inline">${esc(t('fcat.hint'))}:</b> `}${esc(cat.hint)}</span>`}${reader ? `<button class="btn-text red fdel" data-addr="${f.address}" data-code="${e.code}">${esc(t('clr.one'))}</button>` : ''}</div>`;
+            : `<span style="margin-top:4px">${cat.own ? '' : `<b style="display:inline">${esc(t('fcat.hint'))}:</b> `}${esc(cat.hint)}</span>`}`;
+        // Mit Verbindung: ganze Zeile zum Auswählen (Häkchen); ohne Verbindung nur Anzeige
+        return reader
+          ? `<label class="fault" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" class="fsel" data-addr="${f.address}" data-code="${e.code}" style="width:auto;margin-top:3px"><span style="display:flex;flex-direction:column;flex:1">${inner2}</span></label>`
+          : `<div class="fault">${inner2}</div>`;
       }).join('');
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p><div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
@@ -690,24 +681,34 @@ const PAGES = {
       title: t('ui.faults'),
       html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}` + (canClear ? `
         <p class="gh">${esc(t('clr.title'))}</p>
-        <div class="group noico"><div class="alert">${esc(t('clr.warn'))}</div>
-          <label class="row"><span class="t" style="font-size:15px">${esc(t('clr.ack'))}</span><input type="checkbox" class="sw" id="clrAck"></label>
+        <div class="group noico">
+          <label class="row"><span class="t" style="font-size:15px">${esc(t('clr.selAll'))}</span><input type="checkbox" class="sw" id="selAll"></label>
         </div>
-        <button class="btn-big" id="clrBtn" style="background:var(--self-danger,#c62828)">${esc(t('clr.btn'))}</button>
+        <button class="btn-big" id="clrBtn" disabled style="background:#c62828;color:#fff">${esc(t('clr.btnNone'))}</button>
         <p class="foot">${esc(t('clr.hint'))}</p>` : ''),
       bind() {
-        // Einzelnen Fehler löschen – Haken (clrAck) muss gesetzt sein
-        for (const b of $('sheetBody').querySelectorAll('.fdel')) b.onclick = async () => {
-          if (!$('clrAck')?.checked) return toast(t('clr.ackFirst'), 'warn');
-          b.disabled = true;
-          await deleteSingleFault(Number(b.dataset.addr), Number(b.dataset.code));
-        };
         if (!canClear) return;
-        $('clrBtn').onclick = async () => {
-          if (!$('clrAck').checked) return toast(t('clr.ackFirst'), 'warn');
-          $('clrBtn').disabled = true;
-          try { await clearFaultMemory(); } finally { if ($('clrBtn')) $('clrBtn').disabled = false; }
+        const sels = () => [...$('sheetBody').querySelectorAll('.fsel')];
+        const checked = () => sels().filter((c) => c.checked);
+        let armed = false; // zweiter Klick bestätigt
+        const upd = () => {
+          const n = checked().length;
+          const btn = $('clrBtn');
+          if (!btn) return;
+          btn.disabled = n === 0;
+          btn.textContent = armed && n ? t('clr.confirm', { n }) : (n ? t('clr.btnN', { n }) : t('clr.btnNone'));
+          if ($('selAll')) $('selAll').checked = sels().length > 0 && n === sels().length;
         };
+        for (const c of sels()) c.onchange = () => { armed = false; upd(); };
+        $('selAll').onchange = () => { for (const c of sels()) c.checked = $('selAll').checked; armed = false; upd(); };
+        $('clrBtn').onclick = async () => {
+          const items = checked().map((c) => ({ addr: Number(c.dataset.addr), code: Number(c.dataset.code) }));
+          if (!items.length) return;
+          if (!armed) { armed = true; upd(); setTimeout(() => { armed = false; upd(); }, 4000); return; }
+          $('clrBtn').disabled = true;
+          await deleteSelectedFaults(items);
+        };
+        upd();
       },
     };
   },
