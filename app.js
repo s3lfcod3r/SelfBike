@@ -46,6 +46,7 @@ const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key]
 const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
 // „1 Eintrag" / „N Einträge" – Singular/Plural für Zähltexte
 const entries = (n) => (n === 1 ? t('clr.entry1') : t('clr.entryN', { n }));
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); };
 
 // Diagnose-Export: Adressen mit persönlichen Daten werden beim Export ausgelassen
@@ -446,8 +447,10 @@ async function selfTest(addr) {
   try {
     const b = await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING)); blocked = true;
     log(`SELBSTTEST ${ecu} (${addr}): BLOCK → Transport ${b.statusName || b.status}`);
-    // Zustand VOR dem Löschen im blockierten Zustand prüfen – echte Leere, nicht die evtl. veraltete Anzeige
-    const before = await readFaultSource(reader, src);
+    // Zustand VOR dem Löschen im blockierten Zustand prüfen – echte Leere, nicht die evtl. veraltete Anzeige.
+    // Auch hier ein Wiederholversuch, falls die ECU direkt nach BLOCK kurz weg ist ('none' = nicht verbaut, kein Retry).
+    let before = await readFaultSource(reader, src);
+    if (before.status !== 'ok' && before.status !== 'none') { await sleep(1500); before = await readFaultSource(reader, src); }
     log(`  Stand vor Löschen: ${before.status}, ${before.faults.length} Eintrag/Einträge`);
     if (before.status !== 'ok') { toast(t('clr.selfTestUnread', { ecu }), 'err'); return; }
     if (before.faults.length > 0) {
@@ -462,8 +465,15 @@ async function selfTest(addr) {
     const r = await reader.request(addr, RPC, clearPayload(CMD.DELETE_ALL_ISSUES));
     const d = r.payload ? decodeFaultReply(Array.from(r.payload)) : {};
     log(`  DELETE_ALL [08 02] → Transport ${r.statusName || r.status}, RETURN_VALUE ${d.returnValue ?? '?'}`);
-    const after = await readFaultSource(reader, src); // Rücklesen noch blockiert
-    log(`  Rücklesen: ${after.status}, ${after.faults.length} Einträge`);
+    // NICHT sofort zurücklesen: manche ECUs (z. B. ABS) sind direkt nach dem Befehl kurz weg und antworten erst
+    // mit einem leeren Rahmen – das sah wie „nicht lesbar" aus. Daher ~1,5 s Pause und ein Wiederholversuch.
+    let after = null;
+    for (let i = 0; i < 2; i++) {
+      await sleep(1500);
+      after = await readFaultSource(reader, src); // Rücklesen noch blockiert
+      log(`  Rücklesen${i ? ' (Wiederholung)' : ''} nach ${(i + 1) * 1.5} s: ${after.status}, ${after.faults.length} Einträge`);
+      if (after.status === 'ok') break;
+    }
     const gate = d.returnValue === 5 || r.status === 6;
     // Erfolg aus RETURN_VALUE (Operation) + konsistentem Rücklesen – NICHT aus dem Transport allein
     const okResult = r.status === 0 && d.returnValue === 0 && after.status === 'ok' && after.faults.length === 0;

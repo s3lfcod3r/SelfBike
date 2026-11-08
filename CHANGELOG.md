@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.51 · November 2026
+- 🇬🇧 **Self-test read-back now waits and retries**: some control units (e.g. ABS) go briefly quiet right after the clear command and then answer with an empty frame – reading back immediately looked like "not readable". The read-back now waits ~1.5 s and retries once (the pre-read retries too), so a short absence is no longer mistaken for an unreachable channel. ABS stays a target for now; if it still reads "not readable" even in a fresh session, its channel is unusable there and it should be dropped.
+- 🇩🇪 **Selbsttest-Rücklesen wartet und wiederholt**: Manche Steuergeräte (z. B. ABS) sind direkt nach dem Löschbefehl kurz still und antworten dann mit einem leeren Rahmen – sofortiges Rücklesen sah wie „nicht lesbar" aus. Das Rücklesen wartet jetzt ~1,5 s und wiederholt einmal (auch das Vorab-Lesen), sodass eine kurze Abwesenheit nicht mehr für einen unerreichbaren Kanal gehalten wird. ABS bleibt vorerst Ziel; meldet es auch in einer neuen Sitzung weiter „nicht lesbar", ist der Kanal dort unbrauchbar und sollte entfernt werden.
+
 ## 1.4.50 · November 2026
 - 🇬🇧 **Self-test wording refined**: on a non-empty memory the self-test is now clearly just a read – it deletes nothing and points to the normal (selection-based) clear instead. Count wording is back where it helps, with correct singular/plural ("one entry" / "N entries"). The transport already distinguishes "frame received" from "no answer" (a missing answer is a timeout at the root), so the proto3 default of return value 0 stays correct and the read-back remains the second safety.
 - 🇩🇪 **Selbsttest-Formulierung geschärft**: Bei nicht leerem Speicher ist der Selbsttest jetzt klar nur ein Lesevorgang – er löscht nichts und verweist stattdessen auf die normale (auswahlbasierte) Löschfunktion. Die Zahl steht wieder da, wo sie hilft, mit korrektem Singular/Plural („ein Eintrag" / „N Einträge"). Der Transport unterscheidet „Rahmen angekommen" von „keine Antwort" (fehlende Antwort ist ein Timeout an der Wurzel) bereits sauber, also bleibt der proto3-Default von Rückgabewert 0 richtig und das Rücklesen die zweite Sicherung.
