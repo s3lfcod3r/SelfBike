@@ -428,30 +428,51 @@ async function deleteSelectedFaults(items) {
 // Akku-Pipeline-Selbsttest (ohne Sperre, alle Ziele bleiben frei): DELETE_ALL gegen den LEEREN Akku-Speicher
 // muss SUCCESS liefern (ENTRY_COUNT 0). Bestätigt die Befehls-Pipeline dort und schließt eine versteckte
 // Vorbedingung aus. NO_ACCESS = der Akku gatet anders. Nur anbieten, wenn der Akku keine Einträge hat (no-op).
-// Pipeline-Selbsttest für EIN löschbares Steuergerät mit leerem Speicher: BLOCK → DELETE_ALL (gegen leer) →
-// UNBLOCK. SUCCESS mit 0 Einträgen belegt, dass die ECU den Löschbefehl annimmt – ohne auf einen echten Fehler
-// zu warten (so wird z. B. ABS belegbar). Gilt für jedes Ziel aus CLEAR_TARGETS, nicht nur den Akku.
+// Pipeline-Selbsttest für EIN löschbares Steuergerät. Belegt, dass die ECU den Löschbefehl annimmt, OHNE echte
+// Fehler zu löschen: Ablauf BLOCK → Stand prüfen → (nur wenn leer) DELETE_ALL → im blockierten Zustand
+// zurücklesen → UNBLOCK (im finally). Löscht NIE einen gefüllten Speicher (das wäre ein echter Löschvorgang,
+// kein Test) und meldet Erfolg NUR, wenn die Operation (RETURN_VALUE) ok ist UND das Rücklesen weiter lesbar und
+// leer ist – ein „nicht lesbar" nach dem Lauf ist kein Erfolg. Jeder Schritt wird mit Status protokolliert (log).
 async function selfTest(addr) {
   if (!reader) return;
-  const ecu = t(`fault.${faults.find((f) => f.address === addr)?.component ?? ''}`);
+  const src = FAULT_SOURCES.find((s) => s.address === addr) || { component: '', address: addr };
+  const ecu = t(`fault.${src.component || ''}`);
+  const atFaults = () => stack.length && stack[stack.length - 1].name === 'faults';
   saveFaultSnapshot();
   enableClear([addr]);
   let blocked = false;
   try {
-    await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING)); blocked = true;
+    const b = await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING)); blocked = true;
+    log(`SELBSTTEST ${ecu} (${addr}): BLOCK → Transport ${b.statusName || b.status}`);
+    // Zustand VOR dem Löschen im blockierten Zustand prüfen – echte Leere, nicht die evtl. veraltete Anzeige
+    const before = await readFaultSource(reader, src);
+    log(`  Stand vor Löschen: ${before.status}, ${before.faults.length} Eintrag/Einträge`);
+    if (before.status !== 'ok') { toast(t('clr.selfTestUnread', { ecu }), 'err'); return; }
+    if (before.faults.length > 0) {
+      // Speicher NICHT leer → hier wird NICHT gelöscht. Anzeige war veraltet; aktualisieren.
+      log('  → nicht leer, kein Löschen (echte Fehler, kein Test)');
+      toast(t('clr.selfTestNotEmpty', { ecu, n: before.faults.length }), 'warn');
+      return;
+    }
+    // Leer → DELETE_ALL ist folgenlos und prüft nur, ob die ECU den Befehl annimmt
     const r = await reader.request(addr, RPC, clearPayload(CMD.DELETE_ALL_ISSUES));
     const d = r.payload ? decodeFaultReply(Array.from(r.payload)) : {};
-    await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); blocked = false;
-    faults = await readFaults(reader); renderAll();
-    if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
-    if (r.status === 0 && d.returnValue === 0) toast(t('clr.selfTestOk', { ecu, n: d.entryCount ?? 0 }), 'ok');
-    else if (d.returnValue === 5 || r.status === 6) toast(t('clr.selfTestGate', { ecu }), 'warn');
+    log(`  DELETE_ALL [08 02] → Transport ${r.statusName || r.status}, RETURN_VALUE ${d.returnValue ?? '?'}`);
+    const after = await readFaultSource(reader, src); // Rücklesen noch blockiert
+    log(`  Rücklesen: ${after.status}, ${after.faults.length} Einträge`);
+    const gate = d.returnValue === 5 || r.status === 6;
+    // Erfolg aus RETURN_VALUE (Operation) + konsistentem Rücklesen – NICHT aus dem Transport allein
+    const okResult = r.status === 0 && d.returnValue === 0 && after.status === 'ok' && after.faults.length === 0;
+    if (okResult) toast(t('clr.selfTestOk', { ecu }), 'ok');
+    else if (gate) toast(t('clr.selfTestGate', { ecu }), 'warn');
+    else if (after.status !== 'ok') toast(t('clr.selfTestUnread', { ecu }), 'err');
     else toast(t('clr.selfTestFail', { ecu, s: `${r.statusName || r.status} / rv ${d.returnValue ?? '?'}` }), 'err');
   } catch (e) {
     toast(t('msg.readError', { error: e.message }), 'err');
   } finally {
-    if (blocked) { try { await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); } catch (e) { log(`UNBLOCK ${addr}: ${e.message}`); } }
+    if (blocked) { try { await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); log('  UNBLOCK'); } catch (e) { log(`UNBLOCK ${addr}: ${e.message}`); } }
     disableClear();
+    try { faults = await readFaults(reader); renderAll(); if (atFaults()) drawPage(); } catch (e) { log(`Rescan: ${e.message}`); }
   }
 }
 
