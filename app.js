@@ -518,6 +518,9 @@ const MODE_FIELDS = [
   { n: 8, key: 'tensioner', de: 'Kettenspanner', en: 'Chain tensioner', kind: 'bool', edit: false },
 ];
 const mfLabel = (f) => (lang() === 'en' ? f.en : f.de);
+// Name eines Fahrmodus: 6157 (ASSIST_MODE_LONG_NAMES) ist parallel zu 6222 (ACTIVE_ASSIST_MODES); über den Index
+// der ConfigId den Namen holen. Fehlt der Name, die ID zeigen.
+const modeName = (id) => { const i = (val('activeModes') || []).indexOf(id); const nm = (val('modeNames') || [])[i]; return nm || id; };
 // Rohwert → Anzeige (nie roh): Versatz mit Vorzeichen, Zahl mit Einheit/Faktor, Zähler als Stufe, Enum als Label, bool An/Aus.
 function mfShow(f, raw) {
   if (raw == null) return '–';
@@ -893,14 +896,14 @@ const PAGES = {
           <button class="btn-text" id="probeModes" style="margin-top:8px">${esc(t('modes.oemCheck'))}</button>
           ${modeAdjustable ? `<p class="foot">${esc(t('modes.effectNote'))}</p>
             ${modeAdjustable.map((m) => `<div class="group noico" style="margin-top:8px">
-              <div class="row static"><span class="t" style="font-weight:600">${esc(m.id)}</span>
+              <div class="row static"><span class="t" style="font-weight:600">${esc(modeName(m.id))}${modeName(m.id) !== m.id ? `<small>${esc(m.id)}</small>` : ''}</span>
                 <span style="color:var(--self-text-2);font-size:.85rem">${esc(t('modes.oemHintFlag', {
                   f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</span></div>
               ${MODE_FIELDS.map((f) => {
                 const raw = m.current ? m.current[f.n] : null;
                 if (!m.complete || !f.edit || raw == null) return `<div class="row static"><span class="t">${esc(mfLabel(f))}</span><span>${esc(mfShow(f, raw))} <small style="color:var(--self-text-2)">${esc(t('modes.rawDiag', { raw: raw ?? '–' }))}</small></span></div>`;
                 if (f.kind === 'bool') return `<label class="row"><span class="t">${esc(mfLabel(f))}</span><input type="checkbox" class="sw mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="bool"${raw ? ' checked' : ''}></label>`;
-                if (f.kind === 'offset') return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(withSign(assistStep(f.rawMin)))} … ${esc(withSign(assistStep(f.rawMax)))} (0 = Standard)</small></span>
+                if (f.kind === 'offset') return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(t('modes.offsetRange', { lo: withSign(assistStep(f.rawMin)), hi: withSign(assistStep(f.rawMax)) }))}</small></span>
                   <input class="numin mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="offset" type="number" min="${assistStep(f.rawMin)}" max="${assistStep(f.rawMax)}" step="1" value="${assistStep(raw)}"></div>`;
                 return `<div class="row static"><span class="t">${esc(mfLabel(f))}<small>${esc(fmtNum(f.rawMin / f.factor, f.factor > 1 ? 1 : 0))}–${esc(fmtNum(f.rawMax / f.factor, f.factor > 1 ? 1 : 0))} ${esc(f.unit)}</small></span>
                   <input class="numin mf" data-id="${esc(m.id)}" data-n="${f.n}" data-kind="num" data-factor="${f.factor}" type="number" min="${f.rawMin / f.factor}" max="${f.rawMax / f.factor}" step="${f.factor >= 100 ? 0.1 : 1}" value="${raw / f.factor}"></div>`;

@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.63 · November 2026
+- 🇬🇧 **Mode names instead of IDs + tidier range text**: assist modes now show their name (from the long-names list), with the technical ID as a small subtitle, instead of only the config id. The read path is confirmed correct against Flow – the earlier torque/speed "mismatch" was simply ECO+ genuinely having lower values on the bike, no scaling bug. The offset range hint now reads cleanly as "−5 to +5 · 0 = standard".
+- 🇩🇪 **Modus-Namen statt IDs + aufgeräumter Bereichstext**: Fahrmodi zeigen jetzt ihren Namen (aus der Langnamen-Liste), mit der technischen ID als kleiner Unterzeile, statt nur der Config-ID. Der Lesepfad ist gegen Flow bestätigt – die vermeintliche Drehmoment-/Tempo-Abweichung war nur, dass ECO+ am Rad wirklich niedrigere Werte hat, kein Skalierungsfehler. Der Versatz-Bereich steht jetzt sauber als „−5 bis +5 · 0 = Standard".
+
 ## 1.4.62 · November 2026
 - 🇬🇧 **Diagnostic: raw value shown next to each mode field**: to pin down the scaling against the bike, each read-only mode field now shows its raw value in parentheses, and the read logs the full raw bytes of the UDAM values. Nothing changed in the write path – this is read-only diagnostics so the torque and speed scaling can be confirmed against Flow before any write.
 - 🇩🇪 **Diagnose: Rohwert neben jedem Modus-Feld**: Um die Skalierung am Rad festzumachen, zeigt jedes Nur-Lese-Modus-Feld jetzt seinen Rohwert in Klammern, und das Lesen protokolliert die vollständigen Rohbytes der UDAM-Werte. Am Schreibpfad ändert sich nichts – reine Lese-Diagnose, damit die Drehmoment- und Tempo-Skalierung vor jedem Schreiben gegen Flow bestätigt werden kann.
