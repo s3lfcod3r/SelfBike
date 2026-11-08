@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.4.66-33A78C)
+![Version](https://img.shields.io/badge/version-1.4.67-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -50,7 +50,6 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 **⚙️ Change (only what the manufacturer allows)**
 - Light, service interval, start mode, display language, units, clock, walk assist on/off
 - **Power ports (beta)** — low/high power port on/off, only where the manufacturer allows it; locked ports are shown, never written
-- **Battery care (beta)** — charging mode (battery-lifetime vs. charge-time) and a charge limit (SoC %) via ChargingSettings (229); the bike refuses to read it back, so it is sent write-only and the effect is checked in the Flow app
 
 **💾 Data & reports**
 - **Backup before every change** — as a JSON file plus a copy in the browser (last 20); restore at any time
@@ -211,7 +210,6 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
 - **Power Ports (Beta)** — Low/High Power Port an/aus, nur wenn der Hersteller es freigibt; gesperrte Ports werden nur angezeigt, nie geschrieben
 - **Ladefenster / Akkuschonung (Beta)** — verschiebt die System­bewertung „voll" (SoC-Grenzen 162/163). Auf der getesteten Hardware (Performance Line CX Gen5) verweigert das Rad schon das **Lesen** der Grenzen und liefert keine Freigabe-Rückmeldung: SelfBike sendet die Werte dann **nur schreibend, ohne Bestätigung** und meldet das Ergebnis ehrlich als „gesendet, nicht bestätigt". Die Obergrenze muss über dem aktuellen Ladestand liegen, sonst bleibt sie wirkungslos. Ob dadurch auch das Ladegerät früher abschaltet, ist nicht bestätigt.
-- **Akkuschonung – Lademodus & Ladelimit (Beta)** — Lademodus (Akku-Lebensdauer statt Ladezeit) und ein Ladelimit (SoC %) über ChargingSettings (229), Zurücksetzen über 230. Das Rad verweigert hier schon das **Lesen**, daher wird der Schreibversuch **nur gesendet, ohne Rücklesen** und die Wirkung in der Flow-App geprüft. Nur das geänderte Feld wird gesendet; ein Schalter sendet beide Felder, falls die ECU den vollständigen Rahmen verlangt.
 
 **💾 Daten & Berichte**
 - **Backup vor jeder Änderung** — als JSON-Datei plus Kopie im Browser (letzte 20); jederzeit wiederherstellbar
