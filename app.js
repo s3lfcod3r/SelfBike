@@ -343,8 +343,9 @@ $('confirmCancel').onclick = () => { pending = null; $('confirmSheet').classList
 
 // Fehlerspeicher löschen (Beta): verifizierter Befehl (DELETE_ALL_ISSUES), Sequenz je ECU, nur Geräte mit Einträgen.
 function saveFaultSnapshot() {
+  // clearable=false (ABS, ConnectModule) kommt mit in den Export, markiert als „nicht löschbar" – nicht weglassen.
   const snap = { tool: 'SelfBike', createdAt: new Date().toISOString(),
-    faults: faults.map((e) => ({ component: e.component, address: e.address, status: e.status, faults: e.faults })) };
+    faults: faults.map((e) => ({ component: e.component, address: e.address, status: e.status, clearable: isClearable(e.address), faults: e.faults })) };
   const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -699,6 +700,10 @@ const PAGES = {
           ok('rangeExtender') && [t('more.powerMore'), t(val('rangeExtender') ? 'word.yes' : 'word.no'), t('more.powerMoreHint')],
           ok('wheelOem') && [t('more.wheel'), `${txt('wheelUser')} · ${t(wheelSame ? 'more.factory' : 'more.changed')}`, t('more.wheelHint', { w: txt('wheelOem') }), wheelSame ? '' : 'warn'],
           ok('startMode') && [t('more.startMode'), txt('startMode'), ''],
+          ok('bikeCategory') && [dpLabel('bikeCategory'), txt('bikeCategory'), ''],
+          ok('maxGearRatio') && [dpLabel('maxGearRatio'), txt('maxGearRatio'), ''],
+          ok('motorCutOff') && [dpLabel('motorCutOff'), txt('motorCutOff'), ''],
+          ok('speedTolerance') && [dpLabel('speedTolerance'), txt('speedTolerance'), ''],
           ok('walkAssist') && [t('disp.walk'), txt('walkAssist'), ''],
           ok('oemBikeNumber') && txt('oemBikeNumber', '') && [t('more.bikeNumber'), txt('oemBikeNumber').trim(), t('more.bikeNumberHint')],
         ]),

@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.39 · November 2026
+- 🇬🇧 **Motor generation corrected + more read-outs**: the motor is **Performance Line CX Gen5 (BDU3840)**, not Gen 4 – corrected in docs and the in-code note (clearing stays verified; reading/clearing and configuration are separate – configuration can still be gated). The components/details view now also reads bike category, max. gear ratio, motor cut-off distance and speed-display tolerance. ABS faults in the fault-memory export are marked "not clearable" instead of being dropped.
+- 🇩🇪 **Motor-Generation korrigiert + mehr Auslesewerte**: Der Motor ist **Performance Line CX Gen5 (BDU3840)**, nicht Gen 4 – in Doku und Code-Hinweis richtiggestellt (Löschen bleibt verifiziert; Lesen/Löschen und Konfiguration sind getrennt – Konfiguration kann weiter gesperrt sein). Die Komponenten-/Details-Ansicht liest jetzt zusätzlich Fahrradklasse, max. Übersetzung, Motor-Abschaltdistanz und Tempo-Anzeige-Toleranz. ABS-Fehler im Fehlerspeicher-Export sind als „nicht löschbar" markiert statt weggelassen.
+
 ## 1.4.38 · November 2026
 - 🇬🇧 **Fault clearing confirmed verified on the bike**: documentation and the in-code note now say "verified on the bike" (Bosch Smart System / Gen 4, protocol 1.2.3, delete by issue id, ABS and ConnectModule excluded), after real deletion on motor and control unit. New optional battery pipeline self-test: when the battery has no faults, a clear against its empty memory must return SUCCESS – confirming the command path without touching anything.
 - 🇩🇪 **Fehler-Löschen als am Rad verifiziert dokumentiert**: Doku und der Hinweis im Code sagen jetzt „am Rad verifiziert" (Bosch Smart System / Gen 4, Protokoll 1.2.3, Löschen per Issue-ID, ABS und ConnectModule ausgenommen), nach echtem Löschen an Motor und Bedieneinheit. Neuer optionaler Akku-Pipeline-Selbsttest: hat der Akku keine Fehler, muss ein Löschen gegen den leeren Speicher SUCCESS liefern – bestätigt den Befehlsweg, ohne etwas anzufassen.
