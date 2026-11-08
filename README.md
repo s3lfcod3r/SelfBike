@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.4.47-33A78C)
+![Version](https://img.shields.io/badge/version-1.4.48-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -154,7 +154,7 @@ No build step, no dependencies — edit the files and reload. Start the local se
 - `data/fault-texts.csv` — own fault-code texts (`code;lang;title;hint`), loaded automatically; write them yourself, never copy Bosch texts
 - `lib/i18n/<lang>*.js` — translations, German is the source; missing keys fall back to German
 - `bike-read.html`, `bike-write.html`, `usb-check.html` — simple expert/test pages for reading, writing and checking the USB connection
-- `fault-clear.html` — expert page for clearing the fault memory. **Verified on the bike** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, protocol 1.2.3): a fault is deleted by its issue id (`DELETE_ISSUE`, wrapped block→delete→unblock), covering the control units that answer the clear channel (battery, motor, display, control unit and ABS — only the ConnectModule has no clear command). A readable fault-memory snapshot is downloaded first. The main app's fault page offers the same, selection-based
+- `fault-clear.html` — expert page for clearing the fault memory. **Verified on the bike** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, protocol 1.2.3): a fault is deleted by its issue id (`DELETE_ISSUE`, wrapped block→delete→unblock), covering the control units that answer the clear channel (motor and control unit proven by real deletes, battery confirmed by a self-test, ABS derived from its count reply and provable via the per-unit self-test — only the ConnectModule has no clear channel). A readable fault-memory snapshot is downloaded first. The main app's fault page offers the same, selection-based
 - Without a bike: demo mode (`lib/demo-usb.js` + `lib/demo-data.js`) runs the full app including the safety guard
 
 <a id="en-roadmap"></a>
@@ -317,7 +317,7 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 - `data/fault-texts.csv` — eigene Fehlertexte (`code;lang;title;hint`), werden automatisch geladen; selbst formulieren, keine Bosch-Texte kopieren
 - `lib/i18n/<sprache>*.js` — Übersetzungen, Deutsch ist die Quelle; fehlende Texte fallen auf Deutsch zurück
 - `bike-read.html`, `bike-write.html`, `usb-check.html` — einfache Experten-/Testseiten zum Lesen, Schreiben und Prüfen der USB-Verbindung
-- `fault-clear.html` — Expertseite zum Löschen des Fehlerspeichers. **Am Rad verifiziert** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, Protokoll 1.2.3): ein Fehler wird über seine Issue-ID gelöscht (`DELETE_ISSUE`, umschlossen von Block→Löschen→Unblock), für die Steuergeräte, die den Löschkanal beantworten (Akku, Motor, Display, Bedieneinheit und ABS – nur das ConnectModule hat keinen Löschbefehl). Vorher wird ein lesbarer Fehlerspeicher-Export heruntergeladen. Die Haupt-App bietet dasselbe per Auswahl
+- `fault-clear.html` — Expertseite zum Löschen des Fehlerspeichers. **Am Rad verifiziert** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, Protokoll 1.2.3): ein Fehler wird über seine Issue-ID gelöscht (`DELETE_ISSUE`, umschlossen von Block→Löschen→Unblock), für die Steuergeräte, die den Löschkanal beantworten (Motor und Bedieneinheit durch echtes Löschen bewiesen, Akku per Selbsttest bestätigt, ABS aus der Zählantwort abgeleitet und über den Selbsttest je Gerät belegbar – nur das ConnectModule hat keinen Löschkanal). Vorher wird ein lesbarer Fehlerspeicher-Export heruntergeladen. Die Haupt-App bietet dasselbe per Auswahl
 - Ohne Fahrrad: Demo-Modus (`lib/demo-usb.js` + `lib/demo-data.js`) fährt die ganze App samt Sicherheits-Guard
 
 <a id="de-roadmap"></a>
