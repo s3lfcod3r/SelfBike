@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.53 · November 2026
+- 🇬🇧 **ABS removed from the clear targets (checked and dropped)**: after answering the clear channel once, ABS stayed "not readable" across a bike restart, riding and a direct retry, so the channel is unreliable here. ABS is no longer a clear target – no checkbox, no self-test link – but stays in the fault list for viewing. Its "not readable" line is now marked as a known state, not an acute fault, and the demo rejects an ABS clear again so demo and reality match. Clearable units: battery, motor, control unit and display.
+- 🇩🇪 **ABS aus den Löschzielen entfernt (geprüft und verworfen)**: Nach einer einmaligen Antwort blieb ABS über Rad-Neustart, Radbewegung und direkten Wiederholversuch „nicht lesbar", der Kanal ist hier also nicht zuverlässig. ABS ist kein Löschziel mehr – kein Häkchen, kein Selbsttest-Link – bleibt aber zur Ansicht in der Fehlerliste. Die „nicht lesbar"-Zeile ist jetzt als bekannter Zustand gekennzeichnet, nicht als akuter Fehler, und die Demo lehnt einen ABS-Clear wieder ab, damit Demo und Realität übereinstimmen. Löschbar: Akku, Motor, Bedieneinheit und Display.
+
 ## 1.4.52 · November 2026
 - 🇬🇧 **Self-test link where it's needed**: the clear-path self-test now appears for every clearable control unit whose status isn't "not installed" – including one that reads "not readable" (e.g. ABS). That's exactly where the test helps, and it now reports itself: a unit that doesn't answer is reported as "not readable / no success" instead of a generic error. Button label is neutral now ("Check clear path").
 - 🇩🇪 **Selbsttest-Link dort, wo er gebraucht wird**: Der Löschpfad-Selbsttest erscheint jetzt bei jedem löschbaren Steuergerät, dessen Status nicht „nicht verbaut" ist – auch bei einem, das „nicht lesbar" meldet (z. B. ABS). Genau da hilft der Test, und er berichtet jetzt selbst: Ein Gerät, das nicht antwortet, wird als „nicht lesbar / kein Erfolg" gemeldet statt als allgemeiner Fehler. Die Beschriftung ist jetzt neutral („Löschpfad prüfen").

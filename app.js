@@ -778,6 +778,8 @@ const PAGES = {
     const body = faults.map((f) => {
       let inner;
       if (f.status === 'none') inner = `<div class="fault"><span>${esc(t('fault.notInstalled'))}</span></div>`;
+      // ABS antwortet auf diesem System nicht auf den Löschkanal – bekannter Zustand, kein akuter Fehler.
+      else if (f.status !== 'ok' && f.address === 2337) inner = `<div class="fault"><span style="color:var(--self-text-dim,#8a9cab)">${esc(t('clr.absKnown'))}</span></div>`;
       else if (f.status !== 'ok') inner = `<div class="fault"><span>${esc(t('fault.unreadable'))}</span></div>`;
       else if (!f.faults.length) inner = `<div class="fault"><span class="good">${esc(t('fault.none'))}</span></div>`;
       else inner = bySeverity(f.faults, (e) => lookupIssue(e.code ?? 0, lang())?.s || describeFault(e.code).sev).map((e) => {
