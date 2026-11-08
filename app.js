@@ -538,19 +538,21 @@ async function probeModes() {
 // auf die direkt vom Rad gelesenen Grenzen (4242); Höchstgeschwindigkeit (Feld 4) und alle übrigen Felder bleiben
 // unverändert. Ablauf: 4240 frisch lesen (füllt den Guard-Stand) → 4242 (füllt die Guard-Grenze) → 4243 schreiben
 // → 4240 zurücklesen. Das Rücklesen beweist nur das SPEICHERN, nicht die Wirkung (wie bei 6210) – danach fahren.
-const ECO_PLUS = 'A100ECOP38';
-// SetUdamValuesParameters {F1 ConfigId, F2 UdamParams}; alle gelesenen Felder übernehmen, nur Feld 1 ändern
+// SetUdamValuesParameters {F1 ConfigId, F2 UdamParams}; alle gelesenen Felder übernehmen, nur Feld 1 ändern.
+// Belegt aus Flow.apk (DefaultSetAssistModeParams): genau diese Struktur an SET_UDAM_VALUES_PARAMETERS (4243),
+// UdamParams auf Gen5 erweitert (8 Felder), aber Felder 1–4 immer dabei – unser assistLevel-Weg ist korrekt.
 function encodeUdamSet(id, params) {
   const cfg = encodeConfigId(id);
   const body = [];
   for (const n of Object.keys(params).map(Number).sort((a, b) => a - b)) body.push((n << 3) | 0, ...encodeVarint(params[n]));
   return [0x0a, cfg.length, ...cfg, 0x12, body.length, ...body];
 }
-async function writeEcoAssist(newAssist) {
+// Einzelner, geklemmter Schreibversuch je Fahrmodus (ConfigId). Nur assistLevel (Feld 1), Tempo/Rest unverändert.
+async function writeModeAssist(id, newAssist) {
   if (!reader) return;
   try {
-    const cur = await reader.request(UDAM.READ, RPC, encodeConfigId(ECO_PLUS));
-    const lim = await reader.request(UDAM.LIMITS, RPC, encodeConfigId(ECO_PLUS));
+    const cur = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
+    const lim = await reader.request(UDAM.LIMITS, RPC, encodeConfigId(id));
     if (cur.status !== 0 || lim.status !== 0) return toast(t('modes.readFail'), 'err');
     const params = udamFlat(cur.payload);
     const lf = Object.fromEntries(pbFields(lim.payload).filter((x) => x.wire === 2).map((x) => [x.field, x.value]));
@@ -559,26 +561,26 @@ async function writeEcoAssist(newAssist) {
     const before = params[1];
     const clamped = Math.max(lo, Math.min(hi, Math.round(newAssist)));
     params[1] = clamped; // nur assistLevel; Feld 4 (Tempo) und alle anderen bleiben unverändert
-    log(`ECO+ Schreibversuch: Unterstützung ${before} → ${clamped} % (Grenze ${lo}–${hi}, Tempo ${params[4] ?? '?'} unverändert)`);
-    const w = await reader.request(UDAM.SET, RPC, encodeUdamSet(ECO_PLUS, params));
+    log(`${id} Schreibversuch: Unterstützung ${before} → ${clamped} (Grenze ${lo}–${hi}, Tempo ${params[4] ?? '?'} unverändert)`);
+    const w = await reader.request(UDAM.SET, RPC, encodeUdamSet(id, params));
     if (w.status !== 0) return toast(t('modes.writeRejected', { s: w.statusName || w.status }), 'warn');
     await new Promise((r) => setTimeout(r, 450));
-    const back = await reader.request(UDAM.READ, RPC, encodeConfigId(ECO_PLUS));
+    const back = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
     const now = back.status === 0 ? udamFlat(back.payload)[1] : null;
-    log(`ECO+ zurückgelesen: Unterstützung ${now ?? '?'} %`);
-    modeAdjustable = null; // alte Prüfanzeige verwerfen, sie ist jetzt veraltet
+    log(`${id} zurückgelesen: Unterstützung ${now ?? '?'}`);
+    modeAdjustable = null; // alte Prüfanzeige ist jetzt veraltet
     toast(t('modes.writeDone', { v: now ?? '?' }), now === clamped ? 'ok' : 'warn');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
   } catch (e) { toast(t('msg.readError', { error: e.message }), 'err'); }
 }
-async function resetEcoAssist() {
+async function resetModeAssist(id) {
   if (!reader) return;
   try {
-    const r = await reader.request(UDAM.RESET, RPC, encodeConfigId(ECO_PLUS));
+    const r = await reader.request(UDAM.RESET, RPC, encodeConfigId(id));
     if (r.status !== 0) return toast(t('modes.resetFail', { s: r.statusName || r.status }), 'err');
     await new Promise((res) => setTimeout(res, 450));
-    const back = await reader.request(UDAM.READ, RPC, encodeConfigId(ECO_PLUS));
-    log(`ECO+ Werkseinstellung: Unterstützung ${back.status === 0 ? udamFlat(back.payload)[1] : '?'} %`);
+    const back = await reader.request(UDAM.READ, RPC, encodeConfigId(id));
+    log(`${id} Werkseinstellung: Unterstützung ${back.status === 0 ? udamFlat(back.payload)[1] : '?'}`);
     modeAdjustable = null;
     toast(t('modes.resetDone'), 'ok');
     if (stack.length && stack[stack.length - 1].name === 'details') drawPage();
@@ -872,22 +874,28 @@ const PAGES = {
             '', m.adjustable === true ? 'good' : m.limits ? '' : 'warn'])) : ''}
           <button class="btn-text" id="probeModes" style="margin-top:8px">${esc(t('modes.oemCheck'))}</button>
           ${(() => {
-            const eco = modeAdjustable && modeAdjustable.find((m) => m.id === ECO_PLUS && m.limits && m.current);
-            return eco ? `<p class="gh" style="margin-top:14px">${esc(t('modes.ecoTitle'))}</p>
+            // Schreibblock je Fahrmodus, SOBALD Grenzen (4242) vorliegen – UNABHÄNGIG vom OEM-Flag (4246).
+            // Flow prüft 4246 im Schreibpfad nicht; es ist nur ein Hinweis, kein Gate (belegt aus Flow.apk).
+            const editable = (modeAdjustable || []).filter((m) => m.limits && m.current && m.current[1] != null);
+            return editable.length ? `<p class="gh" style="margin-top:14px">${esc(t('modes.ecoTitle'))}</p>
               <p class="foot">${esc(t('modes.effectNote'))}</p>
-              <div class="group noico">
-                <div class="row static"><span class="t">${esc(t('modes.ecoNow'))}</span><span style="font-weight:600">${esc(String(eco.current[1]))} %</span></div>
-                <div class="row static"><span class="t">${esc(t('modes.ecoNew'))}<small>${esc(t('modes.ecoRange', { lo: eco.limits.assistMin, hi: eco.limits.assistMax }))}</small></span>
-                  <input class="numin" id="ecoAssist" type="number" min="${eco.limits.assistMin}" max="${eco.limits.assistMax}" step="1" value="${esc(String(eco.current[1]))}"></div>
-              </div>
-              <button class="btn-big" id="ecoWrite" style="background:#e0a020;color:#1a2230">${esc(t('modes.ecoWrite'))}</button>
-              <button class="btn-text" id="ecoReset" style="margin-top:8px">${esc(t('modes.ecoReset'))}</button>` : '';
+              ${editable.map((m, i) => `<div class="group noico" style="margin-top:8px">
+                <div class="row static"><span class="t">${esc(m.id)}<small>${esc(t('modes.oemHintFlag', {
+                  f: m.adjustable === true ? t('word.yes') : m.adjustable === false ? t('word.no') : t('fault.unreadable') }))}</small></span>
+                  <span style="font-weight:600">${esc(String(m.current[1]))}</span></div>
+                <div class="row static"><span class="t">${esc(t('modes.ecoNew'))}<small>${esc(t('modes.ecoRange', { lo: m.limits.assistMin, hi: m.limits.assistMax }))}</small></span>
+                  <input class="numin maw" data-id="${esc(m.id)}" type="number" min="${m.limits.assistMin}" max="${m.limits.assistMax}" step="1" value="${esc(String(m.current[1]))}"></div>
+                <div class="row static"><button class="btn-text mawWrite" data-id="${esc(m.id)}">${esc(t('modes.ecoWrite'))}</button>
+                  <button class="btn-text mawReset" data-id="${esc(m.id)}">${esc(t('modes.ecoReset'))}</button></div>
+              </div>`).join('')}` : '';
           })()}` : '',
       ].join(''),
       bind() {
         if ($('probeModes')) $('probeModes').onclick = () => probeModes();
-        if ($('ecoWrite')) $('ecoWrite').onclick = () => writeEcoAssist(Number($('ecoAssist').value));
-        if ($('ecoReset')) $('ecoReset').onclick = () => resetEcoAssist();
+        $('sheetBody').querySelectorAll('.mawWrite').forEach((b) => {
+          b.onclick = () => { const inp = $('sheetBody').querySelector(`.maw[data-id="${b.dataset.id}"]`); writeModeAssist(b.dataset.id, Number(inp.value)); };
+        });
+        $('sheetBody').querySelectorAll('.mawReset').forEach((b) => { b.onclick = () => resetModeAssist(b.dataset.id); });
       },
     };
   },
