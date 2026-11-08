@@ -482,7 +482,9 @@ async function selfTest(addr) {
     else if (after.status !== 'ok') toast(t('clr.selfTestUnread', { ecu }), 'err');
     else toast(t('clr.selfTestFail', { ecu, s: `${r.statusName || r.status} / rv ${d.returnValue ?? '?'}` }), 'err');
   } catch (e) {
-    toast(t('msg.readError', { error: e.message }), 'err');
+    // Keine Antwort (Timeout) = das Steuergerät meldet sich nicht – als „nicht lesbar" berichten, nicht als Fehler
+    log(`  Abbruch: ${e.message}`);
+    toast(e.timeout ? t('clr.selfTestUnread', { ecu }) : t('msg.readError', { error: e.message }), 'err');
   } finally {
     if (blocked) { try { await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); log('  UNBLOCK'); } catch (e) { log(`UNBLOCK ${addr}: ${e.message}`); } }
     disableClear();
@@ -800,8 +802,10 @@ const PAGES = {
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p>${ledWarn}<div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
     const canClear = !!reader && faults.some((f) => isClearable(f.address) && f.status === 'ok' && f.faults.length);
-    // Selbsttest-Kandidaten: jedes löschbare, vorhandene (status 'ok') Steuergerät mit leerem Speicher
-    const emptyTestable = reader ? faults.filter((f) => isClearable(f.address) && f.status === 'ok' && !f.faults.length) : [];
+    // Selbsttest-Kandidaten: jedes löschbare Ziel, dessen Status NICHT 'none' ist – auch „nicht lesbar".
+    // Gerade bei einem nicht lesbaren, aber löschbaren Ziel (z. B. ABS) ist der Test das richtige Mittel; er
+    // berichtet dann selbst (leer → angenommen, gefüllt → echter Clear, nicht lesbar → kein Erfolg).
+    const testable = reader ? faults.filter((f) => isClearable(f.address) && f.status !== 'none') : [];
     return {
       title: t('ui.faults'),
       html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}` + (canClear ? `
@@ -811,7 +815,7 @@ const PAGES = {
         </div>
         <button class="btn-big" id="clrBtn" disabled style="background:#c62828;color:#fff">${esc(t('clr.btnNone'))}</button>
         <p class="foot">${esc(t('clr.hint'))}</p>` : '')
-        + emptyTestable.map((f) => `<button class="btn-text selfTestBtn" data-addr="${f.address}" style="margin-top:10px">${esc(t('clr.selfTest', { ecu: t(`fault.${f.component}`) }))}</button>`).join(''),
+        + testable.map((f) => `<button class="btn-text selfTestBtn" data-addr="${f.address}" style="margin-top:10px">${esc(t('clr.selfTest', { ecu: t(`fault.${f.component}`) }))}</button>`).join(''),
       bind() {
         $('sheetBody').querySelectorAll('.selfTestBtn').forEach((b) => { b.onclick = () => selfTest(Number(b.dataset.addr)); });
         if (!canClear) return;

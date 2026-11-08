@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.52 · November 2026
+- 🇬🇧 **Self-test link where it's needed**: the clear-path self-test now appears for every clearable control unit whose status isn't "not installed" – including one that reads "not readable" (e.g. ABS). That's exactly where the test helps, and it now reports itself: a unit that doesn't answer is reported as "not readable / no success" instead of a generic error. Button label is neutral now ("Check clear path").
+- 🇩🇪 **Selbsttest-Link dort, wo er gebraucht wird**: Der Löschpfad-Selbsttest erscheint jetzt bei jedem löschbaren Steuergerät, dessen Status nicht „nicht verbaut" ist – auch bei einem, das „nicht lesbar" meldet (z. B. ABS). Genau da hilft der Test, und er berichtet jetzt selbst: Ein Gerät, das nicht antwortet, wird als „nicht lesbar / kein Erfolg" gemeldet statt als allgemeiner Fehler. Die Beschriftung ist jetzt neutral („Löschpfad prüfen").
+
 ## 1.4.51 · November 2026
 - 🇬🇧 **Self-test read-back now waits and retries**: some control units (e.g. ABS) go briefly quiet right after the clear command and then answer with an empty frame – reading back immediately looked like "not readable". The read-back now waits ~1.5 s and retries once (the pre-read retries too), so a short absence is no longer mistaken for an unreachable channel. ABS stays a target for now; if it still reads "not readable" even in a fresh session, its channel is unusable there and it should be dropped.
 - 🇩🇪 **Selbsttest-Rücklesen wartet und wiederholt**: Manche Steuergeräte (z. B. ABS) sind direkt nach dem Löschbefehl kurz still und antworten dann mit einem leeren Rahmen – sofortiges Rücklesen sah wie „nicht lesbar" aus. Das Rücklesen wartet jetzt ~1,5 s und wiederholt einmal (auch das Vorab-Lesen), sodass eine kurze Abwesenheit nicht mehr für einen unerreichbaren Kanal gehalten wird. ABS bleibt vorerst Ziel; meldet es auch in einer neuen Sitzung weiter „nicht lesbar", ist der Kanal dort unbrauchbar und sollte entfernt werden.
