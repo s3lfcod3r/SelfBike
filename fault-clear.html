@@ -82,15 +82,16 @@
   </section>
 
   <section id="clearSec" class="locked">
-    <h2>3 · Akku-Fehlerspeicher löschen</h2>
+    <h2>3 · Fehlerspeicher löschen (alle Steuergeräte)</h2>
     <div class="alert" id="cmdNote"></div>
-    <p class="hint">Ablauf je Löschen: <code>BLOCK_REPORTING (0)</code> → <code>DELETE_ALL_ISSUES (2)</code> →
-      <code>UNBLOCK_REPORTING (1)</code> an Adresse <code>169</code> (Akku, IBD-Kanal). Payload je Schritt <code>08&nbsp;&lt;cmd&gt;</code>.</p>
+    <p class="hint">Je Steuergerät (<b>Akku zuerst, Motor zuletzt</b>): <code>BLOCK_REPORTING (0)</code> →
+      <code>DELETE_ALL_ISSUES (2)</code> → <code>UNBLOCK_REPORTING (1)</code>, Payload <code>08&nbsp;&lt;cmd&gt;</code>.
+      Nur Geräte mit Einträgen werden angefasst.</p>
     <label class="check"><input id="consent" type="checkbox">
-      <span>Ich lösche den Fehlerspeicher meines <b>eigenen</b> Akkus auf eigene Gefahr und habe verstanden, dass
-        die Historie (inkl. Warnungen/Hinweise) verloren geht und aktive Fehler zurückkommen.</span></label>
+      <span>Ich lösche den Fehlerspeicher meiner <b>eigenen</b> Steuergeräte auf eigene Gefahr und habe verstanden,
+        dass die Historie (inkl. Warnungen/Hinweise) verloren geht und aktive Fehler zurückkommen.</span></label>
     <div class="row">
-      <button class="danger" id="clear" disabled>Sichern &amp; Akku löschen …</button>
+      <button class="danger" id="clear" disabled>Sichern &amp; alle löschen …</button>
     </div>
     <p class="hint" id="clearReason"></p>
   </section>
@@ -116,7 +117,7 @@ import { DemoUsb } from './lib/demo-usb.js';
 import { BikeReader } from './lib/bike-reader.js';
 import { RPC } from './lib/messagebus.js';
 import { readFaults } from './lib/diagnostics.js';
-import { CMD, CLEAR_SEQUENCE, STATUS, VERIFIED, TRIAL_ECU, SOURCE, enableClear, disableClear, clearPayload } from './lib/fault-actions.js';
+import { CMD, CLEAR_SEQUENCE, STATUS, VERIFIED, CLEAR_TARGETS, SOURCE, enableClear, disableClear, clearPayload } from './lib/fault-actions.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -245,27 +246,31 @@ function saveSnapshot() {
 
 $('clear').onclick = async () => {
   if (!clearAllowed().ok || !reader || busy) return;
-  const addr = TRIAL_ECU.address; // 169, nur Akku
-  enableClear([addr]);
+  const targets = CLEAR_TARGETS.map((t) => t.address);
+  enableClear(targets);
   setBusy(true);
-  let deleteStatus = null;
   try {
     saveSnapshot();
-    const beforeAkku = new Map(((before.find((e) => e.address === addr)?.faults) || []).map((f) => [key(f), f]));
-    // Sequenz: BLOCK -> DELETE -> UNBLOCK
-    for (const cmd of CLEAR_SEQUENCE) {
-      log(`SENDE ${addr} (${LABEL[addr]}): ${cmdName(cmd)} → 08 0${cmd}`);
-      let r;
-      try { r = await reader.request(addr, RPC, clearPayload(cmd)); }
-      catch (e) { log(`  Fehler: ${e.message}`); if (cmd === CMD.DELETE_ALL_ISSUES) deleteStatus = -1; continue; }
-      log(`  Antwort: Status ${r.status} (${STATUS[r.status] ?? r.statusName ?? '?'})`);
-      if (cmd === CMD.DELETE_ALL_ISSUES) deleteStatus = r.status;
+    const beforeMap = Object.fromEntries(before.map((e) => [e.address, new Map((e.faults || []).map((f) => [key(f), f]))]));
+    const outcome = {}; // addr -> { skipped?, deleteStatus }
+    for (const { address: addr, label } of CLEAR_TARGETS) {
+      const bset = beforeMap[addr];
+      if (!bset || bset.size === 0) { outcome[addr] = { skipped: true }; log(`ÜBERSPRINGE ${addr} (${label}): kein Eintrag`); continue; }
+      let deleteStatus = null;
+      for (const cmd of CLEAR_SEQUENCE) {
+        log(`SENDE ${addr} (${label}): ${cmdName(cmd)} → 08 0${cmd}`);
+        let r;
+        try { r = await reader.request(addr, RPC, clearPayload(cmd)); }
+        catch (e) { log(`  Fehler: ${e.message}`); if (cmd === CMD.DELETE_ALL_ISSUES) deleteStatus = -1; continue; }
+        log(`  Antwort: Status ${r.status} (${STATUS[r.status] ?? r.statusName ?? '?'})`);
+        if (cmd === CMD.DELETE_ALL_ISSUES) deleteStatus = r.status;
+      }
+      outcome[addr] = { deleteStatus };
     }
-    // Gegenlesen und Akku einordnen
     setStatus('Gegenlesen …');
     const after = await readFaults(reader);
-    const afterAkku = new Map(((after.find((e) => e.address === addr)?.faults) || []).map((f) => [key(f), f]));
-    renderResult(beforeAkku, afterAkku, deleteStatus);
+    const afterMap = Object.fromEntries(after.map((e) => [e.address, new Map((e.faults || []).map((f) => [key(f), f]))]));
+    renderResult(beforeMap, afterMap, outcome);
     before = after; renderFaults();
     setStatus('Fertig.', 'ok');
   } catch (e) {
@@ -277,26 +282,25 @@ $('clear').onclick = async () => {
   }
 };
 
-function renderResult(beforeAkku, afterAkku, status) {
-  // Statusdeutung des DELETE-Schritts
-  const map = {
-    0: ['ok', 'SUCCESS – das Rad hat den Löschbefehl angenommen.'],
-    6: ['err', 'DENIED – das Rad verweigert den Befehl (gegatet, vermutlich Zertifikat/Berechtigung).'],
-    3: ['warn', 'NOT_READY – falscher Zustand. Rad an, Motor aus, Geschwindigkeit 0 und erneut versuchen.'],
-    7: ['err', 'INVALID_VALUE – die Nutzlast passt nicht. Nicht wiederholen, bitte melden.'],
-  };
-  const d = map[status] ?? ['err', `Unerwarteter Status ${status} (${STATUS[status] ?? '?'}) – abgebrochen, kein Retry.`];
-  $('resultStatus').className = 'alert' + (d[0] === 'err' ? ' red' : '');
-  $('resultStatus').innerHTML = `<b>DELETE_ALL_ISSUES → Status ${status === -1 ? '(keine Antwort)' : status}:</b> ${esc(d[1])}`;
-
-  const done = [...beforeAkku.keys()].filter((k) => !afterAkku.has(k));
-  const remain = [...beforeAkku.keys()].filter((k) => afterAkku.has(k));
-  const parts = [];
-  if (done.length) parts.push(`<span class="pill done">erledigt</span> ${done.map((k) => `<code>${esc(hex(beforeAkku.get(k).code))}</code>`).join(' ')}`);
-  if (remain.length) parts.push(`<span class="pill remain">weiterhin vorhanden</span> ${remain.map((k) => `<code>${esc(hex(beforeAkku.get(k).code))}</code>`).join(' ')}`);
-  if (!beforeAkku.size) parts.push('<span class="hint">Akku hatte keine Einträge.</span>');
-  else if (!parts.length) parts.push('<span class="hint">—</span>');
-  $('resultBody').innerHTML = `<table><tr><th>Akku</th><td>${parts.join('<br>')}</td></tr></table>`;
+const STATUS_PILL = { 0: ['done', 'SUCCESS'], 6: ['rej', 'DENIED'], 3: ['remain', 'NOT_READY'], 7: ['rej', 'INVALID_VALUE'] };
+function renderResult(beforeMap, afterMap, outcome) {
+  const rows = CLEAR_TARGETS.map(({ address: addr, label }) => {
+    const o = outcome[addr] || {};
+    if (o.skipped) return `<tr><th>${esc(label)}</th><td><span class="hint">kein Eintrag – übersprungen</span></td></tr>`;
+    const bset = beforeMap[addr] ?? new Map();
+    const aset = afterMap[addr] ?? new Map();
+    const done = [...bset.keys()].filter((k) => !aset.has(k));
+    const remain = [...bset.keys()].filter((k) => aset.has(k));
+    const st = o.deleteStatus;
+    const sp = STATUS_PILL[st] ?? ['rej', `Status ${st === -1 ? '(keine Antwort)' : st} (${STATUS[st] ?? '?'})`];
+    const parts = [`<span class="pill ${sp[0]}">${esc(sp[1])}</span>`];
+    if (done.length) parts.push(`<span class="pill done">erledigt</span> ${done.map((k) => `<code>${esc(hex(bset.get(k).code))}</code>`).join(' ')}`);
+    if (remain.length) parts.push(`<span class="pill remain">weiterhin vorhanden</span> ${remain.map((k) => `<code>${esc(hex(bset.get(k).code))}</code>`).join(' ')}`);
+    return `<tr><th>${esc(label)}</th><td>${parts.join('<br>')}</td></tr>`;
+  }).join('');
+  $('resultStatus').className = 'alert';
+  $('resultStatus').innerHTML = '<b>Je Steuergerät:</b> Status des Löschbefehls, dann was <b>erledigt</b> ist bzw. <b>weiterhin vorhanden</b> (aktiv/permanent, kommt zurück).';
+  $('resultBody').innerHTML = `<table>${rows}</table>`;
   $('resultSec').hidden = false;
   $('resultSec').scrollIntoView({ behavior: 'smooth' });
 }
