@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.46 · November 2026
+- 🇬🇧 **More read-only diagnostics**: added (read-only) the regio-speed application required/available (6204/6205, showing the region identifier e.g. "25kmh_EU-AU"), the eBike-Lock configuration (6197, shown conservatively without over-interpreting the Gen5 structure) and the available assist modes, kept as two separate upper/lower lists (6159/6248).
+- 🇩🇪 **Mehr Nur-Lese-Diagnose**: neu (nur lesend) die benötigte/verfügbare Regio-Speed-Anwendung (6204/6205, zeigt die Regionskennung z. B. „25kmh_EU-AU"), die eBike-Lock-Konfiguration (6197, bewusst ohne Überdeutung der Gen5-Struktur) und die verfügbaren Fahrmodi als zwei getrennte Listen oben/unten (6159/6248).
+
 ## 1.4.45 · November 2026
 - 🇬🇧 **Restart note bound to settings only + fault-export fixes**: the "takes effect after off/on" note now shows only for configuration writes, never for clearing the fault memory (which needs no restart). In the fault-memory export, `clearable` is now derived, not assumed – true only when the control unit supports clearing (ABS and ConnectModule have no channel → false) *and* actually responds, so a non-installed/unreadable unit (e.g. a display reporting "none") is no longer wrongly marked clearable.
 - 🇩🇪 **Neustart-Hinweis nur noch bei Einstellungen + Export-Korrekturen**: Der Hinweis „wirkt nach Aus/Ein" erscheint jetzt nur bei Konfigurations-Schreibvorgängen, nie beim Fehlerspeicher-Löschen (das braucht keinen Neustart). Im Fehlerspeicher-Export wird `clearable` jetzt abgeleitet statt angenommen – true nur, wenn das Steuergerät das Löschen unterstützt (ABS und ConnectModule haben keinen Kanal → false) *und* tatsächlich antwortet, sodass ein nicht verbautes/nicht lesbares Gerät (z. B. Display mit „kein Empfänger") nicht mehr fälschlich als löschbar markiert ist.
