@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.4.64-33A78C)
+![Version](https://img.shields.io/badge/version-1.4.65-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -50,7 +50,6 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 **⚙️ Change (only what the manufacturer allows)**
 - Light, service interval, start mode, display language, units, clock, walk assist on/off
 - **Power ports (beta)** — low/high power port on/off, only where the manufacturer allows it; locked ports are shown, never written
-- **Assist modes** — support, dynamics and top speed, only within the limits the bike reports for that mode, **never above 25 km/h**
 
 **💾 Data & reports**
 - **Backup before every change** — as a JSON file plus a copy in the browser (last 20); restore at any time
@@ -163,7 +162,6 @@ No build step, no dependencies — edit the files and reload. Start the local se
 
 - [x] Read out motor, battery, display, ABS, eShift and ride data over WebUSB
 - [x] Safe changes with backup, preview, step-by-step read-back
-- [x] Assist modes within the bike's limits (max. 25 km/h)
 - [x] Fault memory, PDF report, history, compare, demo mode, 12 languages
 - [ ] Next steps — tell me what you'd like to see via [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
 
@@ -212,7 +210,6 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - Licht, Service-Intervall, Startmodus, Display-Sprache, Einheiten, Uhrzeit, Schiebehilfe an/aus
 - **Power Ports (Beta)** — Low/High Power Port an/aus, nur wenn der Hersteller es freigibt; gesperrte Ports werden nur angezeigt, nie geschrieben
 - **Ladefenster / Akkuschonung (Beta)** — verschiebt die System­bewertung „voll" (SoC-Grenzen 162/163). Auf der getesteten Hardware (Performance Line CX Gen5) verweigert das Rad schon das **Lesen** der Grenzen und liefert keine Freigabe-Rückmeldung: SelfBike sendet die Werte dann **nur schreibend, ohne Bestätigung** und meldet das Ergebnis ehrlich als „gesendet, nicht bestätigt". Die Obergrenze muss über dem aktuellen Ladestand liegen, sonst bleibt sie wirkungslos. Ob dadurch auch das Ladegerät früher abschaltet, ist nicht bestätigt.
-- **Fahrmodi** — Unterstützung, Dynamik und Höchstgeschwindigkeit, nur innerhalb der Grenzen, die das Fahrrad für den Modus meldet, **nie über 25 km/h**
 
 **💾 Daten & Berichte**
 - **Backup vor jeder Änderung** — als JSON-Datei plus Kopie im Browser (letzte 20); jederzeit wiederherstellbar
@@ -326,7 +323,6 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 
 - [x] Motor, Akku, Bedieneinheit, ABS, eShift und Fahrdaten per WebUSB auslesen
 - [x] Sichere Änderungen mit Backup, Vorschau und Rücklesen Schritt für Schritt
-- [x] Fahrmodi innerhalb der Grenzen des Fahrrads (max. 25 km/h)
 - [x] Fehlerspeicher, PDF-Bericht, Verlauf, Vergleich, Demo-Modus, 12 Sprachen
 - [ ] Nächste Schritte — Wünsche gern über [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
 
