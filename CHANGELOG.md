@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.70 · November 2026
+- 🇬🇧 **Fault list: hide not-installed units and the non-clearable ABS**: control units that aren't installed (status "not installed", e.g. the display/head unit when a Kiox runs as the control unit) and ABS when it doesn't answer the clear channel on this system (a known, harmless state, "shown only, not clearable") are no longer listed — they have no real faults and only added noise. An installed, readable ABS with actual faults still shows (and stays non-clearable only where that was already the case).
+- 🇩🇪 **Fehlerliste: nicht verbaute Geräte und das nicht löschbare ABS ausgeblendet**: Steuergeräte, die nicht verbaut sind (Status „nicht verbaut", z. B. Display/HeadUnit, wenn ein Kiox als Bedieneinheit läuft) und ABS, das auf diesem System nicht auf den Löschkanal antwortet (bekannter, harmloser Zustand, „nur anzeigen, nicht löschbar"), stehen nicht mehr in der Liste – sie haben keine echten Fehler und waren nur Rauschen. Ein verbautes, lesbares ABS mit echten Fehlern wird weiter angezeigt.
+
 ## 1.4.69 · November 2026
 - 🇬🇧 **Connect progress ring + fault memory in Settings**: connecting now shows a round 0–100% progress popup (the same style as saving a change), filling up over the core read and the fault memory, then closing by itself when done — no extra click. And the fault memory now also has its own entry in the Settings tab (it is a setting, after all), in addition to "Your bike → Faults".
 - 🇩🇪 **Verbinden-Fortschrittskreis + Fehlerspeicher in den Einstellungen**: Beim Verbinden kommt jetzt ein rundes 0–100%-Fortschritts-Popup (gleicher Stil wie beim Speichern einer Änderung), das sich über den Kern-Lesevorgang und den Fehlerspeicher füllt und am Ende von selbst schließt – ohne Extra-Klick. Und der Fehlerspeicher hat jetzt zusätzlich einen eigenen Eintrag im Einstellungen-Tab (ist ja eine Einstellungssache), neben „Dein Rad → Fehler".
