@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fehlerspeicher löschen (Experiment)</title>
+<title>Fehlerspeicher löschen (Beta)</title>
 <style>
   :root {
     --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
@@ -28,11 +28,9 @@
             padding: 16px; margin-bottom: 16px; }
   section.locked { opacity: .55; pointer-events: none; }
   .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .grid { display: grid; grid-template-columns: max-content 1fr; gap: 8px 12px; align-items: center; }
-  button, input, select { font: inherit; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line);
+  button, input { font: inherit; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--line);
            background: var(--card); color: var(--text); }
   input[type=checkbox] { width: auto; padding: 0; }
-  input[type=number] { width: 10em; }
   button { cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
@@ -60,13 +58,12 @@
 <body>
 <main>
   <h1>Fehlerspeicher löschen <span class="pill" style="color:var(--warn);border-color:var(--warn)">BETA · in Arbeit</span></h1>
-  <p class="lead">Expertseite, nicht Teil der Haupt-App. <b>Beta – wird noch daran gearbeitet, Nutzung auf eigene
-    Gefahr.</b> Löschen läuft über <code>EXECUTE_INFORMATION_MANAGER_COMMAND</code> (IBD-Kanal). Der genaue
-    Aufruf ist <b>nicht gegen echte Hardware bestätigt</b> – im Demo-Modus läuft alles, gegen ein echtes Rad
-    ist das Senden gesperrt, bis die verifizierten Werte eingetragen sind.</p>
-  <div class="alert red">⚠️ <b>Beta / auf eigene Gefahr:</b> Diese Seite ist in Entwicklung. Löschen des
-    Fehlerspeichers ist eine Händler-Aktion – aktive Fehler kommen zurück, die Historie geht verloren. Alles
-    geschieht auf dein eigenes Risiko.</div>
+  <p class="lead">Expertseite, nicht Teil der Haupt-App. <b>Beta – Nutzung auf eigene Gefahr.</b>
+    Der Löschbefehl ist aus der offiziellen Bosch-Diagnosesoftware verifiziert; ob dein Rad ihn annimmt oder
+    verweigert, zeigt erst der Probelauf. Freigegeben ist bewusst <b>nur der Akku</b>.</p>
+  <div class="alert red">⚠️ <b>Auf eigene Gefahr:</b> Löschen entfernt die komplette Fehler-Historie –
+    <b>auch Warnungen und Hinweise, nicht nur Störungen</b>. Aktive Fehler kommen sofort zurück. Vorher wird
+    der Fehlerspeicher als Datei gesichert.</div>
 
   <section>
     <h2>1 · Verbindung</h2>
@@ -85,36 +82,31 @@
   </section>
 
   <section id="clearSec" class="locked">
-    <h2>3 · Löschbefehl</h2>
-    <div class="alert red" id="verifyNote"></div>
-    <div class="grid">
-      <span>IBD-Kanaladresse</span>
-      <span><input id="chanAddr" type="number" min="0" max="32767" step="1" placeholder="unbekannt">
-        <span class="hint">Nicht die Leseadresse – der IBD-Kanal liegt woanders. Muss in der Freigabeliste stehen.</span></span>
-      <span>Befehlsnummer</span>
-      <span><input id="cmdNum" type="number" min="0" max="255" step="1" placeholder="unbekannt">
-        <span class="hint">Wert aus <code>InformationManagerCommand</code> – öffentlich nicht dokumentiert.</span></span>
-    </div>
+    <h2>3 · Akku-Fehlerspeicher löschen</h2>
+    <div class="alert" id="cmdNote"></div>
+    <p class="hint">Ablauf je Löschen: <code>BLOCK_REPORTING (0)</code> → <code>DELETE_ALL_ISSUES (2)</code> →
+      <code>UNBLOCK_REPORTING (1)</code> an Adresse <code>169</code> (Akku, IBD-Kanal). Payload je Schritt <code>08&nbsp;&lt;cmd&gt;</code>.</p>
     <label class="check"><input id="consent" type="checkbox">
-      <span>Ich sende einen <b>unverifizierten</b> Aufruf an mein <b>eigenes</b> Rad und habe verstanden,
-        dass das Ergebnis eine Ablehnung sein kann. Probelauf-Ziel ist der Akku.</span></label>
+      <span>Ich lösche den Fehlerspeicher meines <b>eigenen</b> Akkus auf eigene Gefahr und habe verstanden, dass
+        die Historie (inkl. Warnungen/Hinweise) verloren geht und aktive Fehler zurückkommen.</span></label>
     <div class="row">
-      <button class="danger" id="clear" disabled>Vorher sichern &amp; löschen …</button>
+      <button class="danger" id="clear" disabled>Sichern &amp; Akku löschen …</button>
     </div>
     <p class="hint" id="clearReason"></p>
   </section>
 
   <section id="resultSec" hidden>
     <h2>4 · Ergebnis</h2>
+    <div class="alert" id="resultStatus"></div>
     <div id="resultBody"></div>
-    <p class="hint">Getrennt geführt: <span class="pill done">erledigt</span> (historisch, weg) ·
-      <span class="pill remain">weiterhin vorhanden</span> (aktiv/permanent, kommt zurück) ·
-      <span class="pill rej">abgelehnt</span> (Steuergerät verweigert den Befehl).</p>
+    <p class="hint">Deutung: <code>0 SUCCESS</code> geht · <code>6 DENIED</code> gegatet ·
+      <code>3 NOT_READY</code> Zustand falsch · <code>7 INVALID_VALUE</code> Payload falsch · alles andere: Abbruch, kein Retry.</p>
   </section>
 
   <section>
     <h2>Protokoll</h2>
     <pre id="log"></pre>
+    <p class="hint" id="srcNote"></p>
   </section>
 </main>
 
@@ -124,22 +116,17 @@ import { DemoUsb } from './lib/demo-usb.js';
 import { BikeReader } from './lib/bike-reader.js';
 import { RPC } from './lib/messagebus.js';
 import { readFaults } from './lib/diagnostics.js';
-import { FAULT_ECUS, KNOWN_CLEAR_TARGETS, DEMO_CLEAR_COMMAND, VERIFIED, setClear, clearPayload } from './lib/fault-actions.js';
+import { CMD, CLEAR_SEQUENCE, STATUS, VERIFIED, TRIAL_ECU, SOURCE, enableClear, disableClear, clearPayload } from './lib/fault-actions.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const hex = (n) => '0x' + Number(n).toString(16).toUpperCase().padStart(6, '0');
 const dt = (ts) => (ts ? new Date(ts * 1000).toLocaleString('de-DE') : '–');
+const cmdName = (c) => Object.keys(CMD).find((k) => CMD[k] === c) ?? String(c);
 
-// Reihenfolge der Ziel-ECUs: Akku zuerst, Motor zuletzt (nur die, die der Lesepfad kennt)
-const ORDER = [169, 8485, 3092, 2337, 4226];
-const LABEL = Object.fromEntries(FAULT_ECUS.map((e) => [e.readAddress, e.label]));
+const LABEL = { 169: 'Akku', 4226: 'Motor', 3092: 'Display', 8485: 'Bedieneinheit', 2337: 'ABS' };
 
-let usb = null;
-let reader = null;
-let mode = null;      // 'real' | 'demo'
-let before = null;    // letzte gelesene Fehlerliste (readFaults-Ergebnis)
-let busy = false;
+let usb = null, reader = null, mode = null, before = null, busy = false;
 const logLines = [];
 
 function log(m) {
@@ -161,9 +148,11 @@ function setBusy(on) {
   updateClearButton();
 }
 
+$('srcNote').textContent = `Quelle des Befehls: ${SOURCE}`;
+
 // ---------- Verbindung ----------
 
-async function start(newUsb, label) {
+async function startSession(newUsb, label) {
   setBusy(true);
   try {
     usb = newUsb;
@@ -177,9 +166,12 @@ async function start(newUsb, label) {
     $('status').className = 'err';
     return;
   }
-  // Demo bekommt den erfundenen Befehl vorbefüllt, damit es sofort testbar ist
-  if (mode === 'demo') { $('cmdNum').value = String(DEMO_CLEAR_COMMAND); $('chanAddr').value = '169'; }
-  updateVerifyNote();
+  $('cmdNote').innerHTML = mode === 'demo'
+    ? 'Demo-Modus: der ganze Ablauf läuft gefahrlos gegen ein erfundenes Rad.'
+    : (VERIFIED
+      ? 'Befehl aus der Bosch-Software verifiziert. Ob dein Rad ihn annimmt oder mit <code>DENIED</code> verweigert, zeigt der Lauf.'
+      : 'Nicht verifiziert – gegen echte Hardware gesperrt.');
+  updateClearButton();
   setBusy(false);
 }
 
@@ -189,9 +181,9 @@ $('connect').onclick = async () => {
   try { device = await McspUsb.request(); }
   catch (e) { return setStatus(e.name === 'NotFoundError' ? 'Kein Gerät ausgewählt.' : `${e.name}: ${e.message}`, 'warn'); }
   mode = 'real';
-  await start(new McspUsb(device, log), 'Rad');
+  await startSession(new McspUsb(device, log), 'Rad');
 };
-$('demo').onclick = async () => { mode = 'demo'; await start(new DemoUsb(log), 'Demo'); };
+$('demo').onclick = async () => { mode = 'demo'; await startSession(new DemoUsb(log), 'Demo'); };
 
 async function refresh(label) {
   const bar = $('progress'); bar.hidden = false; bar.max = 5; bar.value = 0;
@@ -222,28 +214,11 @@ async function disconnect(reason) {
 $('disconnect').onclick = () => disconnect();
 navigator.usb?.addEventListener('disconnect', (e) => { if (usb && usb.device && e.device === usb.device) disconnect('USB-Kabel getrennt.'); });
 
-// ---------- Freigabe des Löschen-Knopfs ----------
-
-function updateVerifyNote() {
-  if (mode === 'demo') {
-    $('verifyNote').className = 'alert';
-    $('verifyNote').innerHTML = 'Demo-Modus: erfundener Befehl, alle Steuergeräte. Hier lässt sich der ganze Ablauf gefahrlos durchspielen.';
-  } else {
-    $('verifyNote').className = 'alert red';
-    $('verifyNote').innerHTML = VERIFIED
-      ? 'Der Aufruf ist als verifiziert hinterlegt.'
-      : '<b>Nicht gegen echte Hardware bestätigt.</b> Trage IBD-Kanaladresse und Befehlsnummer ein und bestätige, um einen Probelauf gegen den Akku zu senden. Adressen außerhalb der Freigabeliste werden abgewiesen.';
-  }
-}
+// ---------- Freigabe ----------
 
 function clearAllowed() {
-  const cmd = Number($('cmdNum').value);
-  if (!Number.isInteger(cmd) || $('cmdNum').value === '') return { ok: false, reason: 'Befehlsnummer fehlt.' };
-  if (mode === 'demo') return { ok: true };
-  const addr = Number($('chanAddr').value);
   if (!$('consent').checked) return { ok: false, reason: 'Zustimmung fehlt.' };
-  if (!Number.isInteger(addr) || $('chanAddr').value === '') return { ok: false, reason: 'Kanaladresse fehlt.' };
-  if (!KNOWN_CLEAR_TARGETS.has(addr)) return { ok: false, reason: `Adresse ${addr} ist nicht in der Freigabeliste – gesperrt.` };
+  if (mode !== 'demo' && !VERIFIED) return { ok: false, reason: 'Befehl nicht verifiziert – gegen echte Hardware gesperrt.' };
   return { ok: true };
 }
 function updateClearButton() {
@@ -252,13 +227,12 @@ function updateClearButton() {
   $('clear').disabled = !a.ok;
   $('clearReason').textContent = a.ok ? '' : `Gesperrt: ${a.reason}`;
 }
-for (const id of ['cmdNum', 'chanAddr', 'consent']) $(id).addEventListener('input', updateClearButton);
-for (const id of ['cmdNum', 'chanAddr', 'consent']) $(id).addEventListener('change', updateClearButton);
+$('consent').addEventListener('change', updateClearButton);
 
-// ---------- Löschen ----------
+// ---------- Löschen (nur Akku 169) ----------
 
 function saveSnapshot() {
-  const snap = { tool: 'SelfBike fault-clear', createdAt: new Date().toISOString(), mode,
+  const snap = { tool: 'SelfBike fault-clear', createdAt: new Date().toISOString(), mode, source: SOURCE,
     faults: before.map((e) => ({ component: e.component, address: e.address, status: e.status, reason: e.reason, faults: e.faults })) };
   const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
@@ -270,58 +244,59 @@ function saveSnapshot() {
 }
 
 $('clear').onclick = async () => {
-  const a = clearAllowed();
-  if (!a.ok || !reader || busy) return;
-  const command = Number($('cmdNum').value);
-  const targets = mode === 'demo' ? ORDER.slice() : [Number($('chanAddr').value)];
-  setClear(command, targets);              // Guard: nur diese Adressen + dieser Befehl
+  if (!clearAllowed().ok || !reader || busy) return;
+  const addr = TRIAL_ECU.address; // 169, nur Akku
+  enableClear([addr]);
   setBusy(true);
+  let deleteStatus = null;
   try {
-    saveSnapshot();                        // Historie zuerst sichern
-    const beforeMap = Object.fromEntries(before.map((e) => [e.address, new Map((e.faults || []).map((f) => [key(f), f]))]));
-    const outcome = {};                    // address -> { rejected, statusName }
-    for (const addr of targets) {
-      if (!beforeMap[addr] || beforeMap[addr].size === 0) { outcome[addr] = { skipped: true }; continue; }
-      setStatus(`Löschen: ${LABEL[addr] ?? addr} …`);
-      log(`CLEAR ${addr} (${LABEL[addr] ?? addr}): Befehl ${command}`);
+    saveSnapshot();
+    const beforeAkku = new Map(((before.find((e) => e.address === addr)?.faults) || []).map((f) => [key(f), f]));
+    // Sequenz: BLOCK -> DELETE -> UNBLOCK
+    for (const cmd of CLEAR_SEQUENCE) {
+      log(`SENDE ${addr} (${LABEL[addr]}): ${cmdName(cmd)} → 08 0${cmd}`);
       let r;
-      try { r = await reader.request(addr, RPC, clearPayload(command)); }
-      catch (e) { outcome[addr] = { rejected: true, statusName: e.message }; log(`  Fehler: ${e.message}`); continue; }
-      outcome[addr] = { rejected: r.status !== 0, statusName: r.statusName };
-      log(`  Antwort: Status ${r.status}${r.status ? ` (${r.statusName})` : ' OK'}`);
+      try { r = await reader.request(addr, RPC, clearPayload(cmd)); }
+      catch (e) { log(`  Fehler: ${e.message}`); if (cmd === CMD.DELETE_ALL_ISSUES) deleteStatus = -1; continue; }
+      log(`  Antwort: Status ${r.status} (${STATUS[r.status] ?? r.statusName ?? '?'})`);
+      if (cmd === CMD.DELETE_ALL_ISSUES) deleteStatus = r.status;
     }
-    // Gegenlesen und je Code einordnen
+    // Gegenlesen und Akku einordnen
     setStatus('Gegenlesen …');
     const after = await readFaults(reader);
-    const afterMap = Object.fromEntries(after.map((e) => [e.address, new Map((e.faults || []).map((f) => [key(f), f]))]));
-    renderResult(beforeMap, afterMap, outcome, targets);
+    const afterAkku = new Map(((after.find((e) => e.address === addr)?.faults) || []).map((f) => [key(f), f]));
+    renderResult(beforeAkku, afterAkku, deleteStatus);
     before = after; renderFaults();
     setStatus('Fertig.', 'ok');
   } catch (e) {
     log(`Abbruch: ${e.message}`);
     setStatus(`Abbruch: ${e.message}`, 'err');
   } finally {
-    setClear(null, []);                    // Guard sofort wieder schließen
+    disableClear();
     setBusy(false);
   }
 };
 
-function renderResult(beforeMap, afterMap, outcome, targets) {
-  const blocks = targets.map((addr) => {
-    const o = outcome[addr] || {};
-    if (o.skipped) return `<tr><th>${esc(LABEL[addr] ?? addr)}</th><td><span class="hint">kein Eintrag – übersprungen</span></td></tr>`;
-    const bset = beforeMap[addr] ?? new Map();
-    const aset = afterMap[addr] ?? new Map();
-    const done = [...bset.keys()].filter((k) => !aset.has(k));
-    const remain = [...bset.keys()].filter((k) => aset.has(k));
-    const parts = [];
-    if (o.rejected) parts.push(`<span class="pill rej">abgelehnt</span> <span class="hint">${esc(o.statusName || '')}</span>`);
-    if (done.length) parts.push(`<span class="pill done">erledigt</span> ${done.map((k) => `<code>${esc(hex(bset.get(k).code))}</code>`).join(' ')}`);
-    if (remain.length && !o.rejected) parts.push(`<span class="pill remain">weiterhin vorhanden</span> ${remain.map((k) => `<code>${esc(hex(bset.get(k).code))}</code>`).join(' ')}`);
-    if (!parts.length) parts.push('<span class="hint">—</span>');
-    return `<tr><th>${esc(LABEL[addr] ?? addr)}</th><td>${parts.join('<br>')}</td></tr>`;
-  }).join('');
-  $('resultBody').innerHTML = `<table>${blocks}</table>`;
+function renderResult(beforeAkku, afterAkku, status) {
+  // Statusdeutung des DELETE-Schritts
+  const map = {
+    0: ['ok', 'SUCCESS – das Rad hat den Löschbefehl angenommen.'],
+    6: ['err', 'DENIED – das Rad verweigert den Befehl (gegatet, vermutlich Zertifikat/Berechtigung).'],
+    3: ['warn', 'NOT_READY – falscher Zustand. Rad an, Motor aus, Geschwindigkeit 0 und erneut versuchen.'],
+    7: ['err', 'INVALID_VALUE – die Nutzlast passt nicht. Nicht wiederholen, bitte melden.'],
+  };
+  const d = map[status] ?? ['err', `Unerwarteter Status ${status} (${STATUS[status] ?? '?'}) – abgebrochen, kein Retry.`];
+  $('resultStatus').className = 'alert' + (d[0] === 'err' ? ' red' : '');
+  $('resultStatus').innerHTML = `<b>DELETE_ALL_ISSUES → Status ${status === -1 ? '(keine Antwort)' : status}:</b> ${esc(d[1])}`;
+
+  const done = [...beforeAkku.keys()].filter((k) => !afterAkku.has(k));
+  const remain = [...beforeAkku.keys()].filter((k) => afterAkku.has(k));
+  const parts = [];
+  if (done.length) parts.push(`<span class="pill done">erledigt</span> ${done.map((k) => `<code>${esc(hex(beforeAkku.get(k).code))}</code>`).join(' ')}`);
+  if (remain.length) parts.push(`<span class="pill remain">weiterhin vorhanden</span> ${remain.map((k) => `<code>${esc(hex(beforeAkku.get(k).code))}</code>`).join(' ')}`);
+  if (!beforeAkku.size) parts.push('<span class="hint">Akku hatte keine Einträge.</span>');
+  else if (!parts.length) parts.push('<span class="hint">—</span>');
+  $('resultBody').innerHTML = `<table><tr><th>Akku</th><td>${parts.join('<br>')}</td></tr></table>`;
   $('resultSec').hidden = false;
   $('resultSec').scrollIntoView({ behavior: 'smooth' });
 }
