@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.36 · November 2026
+- 🇬🇧 **Speed-manipulation status shown** (read-only): the components page now also shows the bike's own speed-manipulation flag (SPEED_MANIPULATION_STATUS) next to the tuning detection, instead of only inferring "no tuning".
+- 🇩🇪 **Geschwindigkeits-Manipulations-Status angezeigt** (nur lesen): Die Komponenten-Seite zeigt jetzt zusätzlich das herstellereigene Manipulations-Flag des Rads (SPEED_MANIPULATION_STATUS) neben der Tuning-Erkennung, statt nur „kein Tuning" abzuleiten.
+
 ## 1.4.35 · November 2026
 - 🇬🇧 **Fault deletion: always unblocks** (beta fix): if a delete is interrupted (timeout/abort), the control unit is now reliably unblocked again in a cleanup step – so the bike never silently stops recording new faults. Deleting targets a fault by its stable id, so re-ordering of entries can't misfire.
 - 🇩🇪 **Fehler-Löschen: entblockt immer** (Beta-Fix): Wird ein Löschvorgang unterbrochen (Timeout/Abbruch), wird das Steuergerät jetzt zuverlässig in einem Aufräumschritt wieder entblockt – das Rad hört also nie heimlich auf, neue Fehler aufzuzeichnen. Gelöscht wird über die stabile Fehler-ID, Verschiebungen der Einträge können daher nicht danebengreifen.

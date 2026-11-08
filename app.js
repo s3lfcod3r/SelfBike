@@ -758,6 +758,7 @@ const PAGES = {
       ...(ok('gearCount') ? [[t('comp.shift'), t('comp.shiftVal'), `${t('comp.gears', { n: txt('gearCount') })}${ok('gearNow') ? ` · ${t('more.gearNow', { g: txt('gearNow') })}` : ''}`]] : []),
       [t('check.region'), txt('region'), ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
       [dpLabel('tuning'), txt('tuning'), t('check.tuningHint'), tuning ? (tuning.flag || tuning.counter ? 'bad' : 'good') : ''],
+      ...(ok('speedManip') ? [[dpLabel('speedManip'), txt('speedManip'), '', val('speedManip')?.status ? 'bad' : 'good']] : []),
       [t('comp.bikeId'), t(idOk ? 'comp.idOk' : 'comp.idConflict'), '', idOk ? 'good' : 'bad'],
       [t('comp.lock'), t(val('lockEnabled') ? 'comp.lockOn' : 'comp.lockOff'), ''],
     ];
