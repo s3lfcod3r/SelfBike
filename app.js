@@ -597,6 +597,7 @@ const PAGES = {
       html: `<p class="explain">${esc(t('soc.explain'))}</p>
         <div class="alert" style="margin-top:12px">${esc(t('soc.beta'))}</div>
         ${readDenied ? `<div class="alert">${esc(t('soc.readDenied'))}</div>` : ''}
+        ${ok('batterySoc') ? `<p class="foot" style="margin-top:12px">${esc(t('soc.nowCharge', { soc: fmtNum(val('batterySoc'), 0) }))}</p>` : ''}
         <div class="group noico" style="margin-top:12px">
           <div class="row static"><span class="t">${esc(t('soc.max'))}<small>${esc(t('soc.maxHint'))}</small></span>
             <input class="numin" id="socMax" type="number" min="0" max="100" step="1" value="${esc(curMax)}"${usable ? '' : ' disabled'}></div>
