@@ -326,6 +326,9 @@ const locked = (cond) => (cond ? `<div class="alert">${esc(t('ui.locked'))}</div
 const saveBtn = (id = 'save', disabled = false) => `<button class="btn-big" id="${id}"${disabled ? ' disabled' : ''}>${esc(t('ui.save'))}</button>`;
 
 // Plan bauen → bei „nichts zu tun“ Meldung, sonst Bestätigung zeigen
+// Plan-Arten, deren Werte erst nach einem Aus/Ein greifen (Konfiguration). Fehlerspeicher löschen ist NICHT dabei.
+const CONFIG_WRITE_KINDS = new Set(['light', 'service', 'display', 'ports', 'soc', 'restore']);
+
 function propose(fn) {
   let plan;
   try { plan = fn(); } catch (e) { return toast(e.message, 'warn'); }
@@ -337,10 +340,11 @@ function propose(fn) {
   $('confirmPlan').textContent = plan.title;
   $('confirmList').innerHTML = plan.steps.map((s) => `<div class="row static"><span class="t">${esc(s.label ?? dpLabel(s.key))}
     <span class="chg"><span class="b">${esc(s.before)}</span><span class="a">${esc(s.after)}</span></span></span></div>`).join('');
-  // Neustart-Hinweis bei JEDER Schreibaktion: der Wert steht sofort im Speicher, wirkt aber erst nach Aus/Ein
-  // (am Rad bestätigt bei Licht 6177/6178). Zuerst anzeigen, dann die planeigenen Warnungen.
-  $('confirmWarn').innerHTML = `<div class="alert">${esc(t('ui.restartNote'))}</div>`
-    + plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
+  // Neustart-Hinweis NUR bei Konfigurations-Schreibvorgängen (der Wert wirkt erst nach Aus/Ein, am Rad bestätigt
+  // bei Licht 6177/6178). An die Konfig-Plan-Arten gebunden, nicht pauschal an propose – Fehlerspeicher löschen
+  // läuft über einen eigenen Pfad und braucht keinen Neustart.
+  const restartNote = CONFIG_WRITE_KINDS.has(plan.kind) ? `<div class="alert">${esc(t('ui.restartNote'))}</div>` : '';
+  $('confirmWarn').innerHTML = restartNote + plan.warnings.map((w) => `<div class="alert">${esc(w)}</div>`).join('');
   $('confirmText').textContent = t(demo ? 'ui.confirmDemo' : 'ui.confirmText');
   $('confirmSheet').classList.add('open');
 }
@@ -348,9 +352,12 @@ $('confirmCancel').onclick = () => { pending = null; $('confirmSheet').classList
 
 // Fehlerspeicher löschen (Beta): verifizierter Befehl (DELETE_ALL_ISSUES), Sequenz je ECU, nur Geräte mit Einträgen.
 function saveFaultSnapshot() {
-  // clearable=false (ABS, ConnectModule) kommt mit in den Export, markiert als „nicht löschbar" – nicht weglassen.
+  // clearable wird GEPRÜFT, nicht gesetzt: nur true, wenn das Steuergerät das Löschen unterstützt (isClearable –
+  // ABS/ConnectModule haben keinen IM-Kanal → false) UND tatsächlich lesbar antwortet (status 'ok'). Ein nicht
+  // verbautes/nicht lesbares Gerät (z. B. Display status 'none') ist damit nicht fälschlich „löschbar".
+  // Alle Geräte kommen mit in den Export – nicht löschbare sind markiert, nicht weggelassen.
   const snap = { tool: 'SelfBike', createdAt: new Date().toISOString(),
-    faults: faults.map((e) => ({ component: e.component, address: e.address, status: e.status, clearable: isClearable(e.address), faults: e.faults })) };
+    faults: faults.map((e) => ({ component: e.component, address: e.address, status: e.status, clearable: isClearable(e.address) && e.status === 'ok', faults: e.faults })) };
   const blob = new Blob([JSON.stringify(snap, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -976,8 +983,8 @@ $('confirmGo').onclick = async () => {
     recordOutcome(backup.createdAt, { ok: true, at: new Date().toISOString(), done: applied.done });
     pending = null;
     plog(`FERTIG: ${plan.title}`);
-    // Jede geschriebene Einstellung wirkt erst nach Aus/Ein (am Rad bestätigt) – Hinweis nach jeder Änderung.
-    const restart = applied.done.length ? ` ${t('msg.restart')}` : '';
+    // Konfigurationswerte wirken erst nach Aus/Ein (am Rad bestätigt) – Hinweis nur bei Konfig-Schreibvorgängen.
+    const restart = applied.done.length && CONFIG_WRITE_KINDS.has(plan.kind) ? ` ${t('msg.restart')}` : '';
     // Schritte, die geschrieben, aber nicht zurückgelesen werden konnten (z. B. SoC-Grenzen) – ehrlich als unbestätigt melden
     const unconfirmed = applied.done.some((d) => d.unconfirmed) ? ` ${t('ui.changedUnconfirmed')}` : '';
     const changed = t('ui.changed') + unconfirmed + restart;
