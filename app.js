@@ -411,6 +411,33 @@ async function deleteSelectedFaults(items) {
   }
 }
 
+// Akku-Pipeline-Selbsttest (ohne Sperre, alle Ziele bleiben frei): DELETE_ALL gegen den LEEREN Akku-Speicher
+// muss SUCCESS liefern (ENTRY_COUNT 0). Bestätigt die Befehls-Pipeline dort und schließt eine versteckte
+// Vorbedingung aus. NO_ACCESS = der Akku gatet anders. Nur anbieten, wenn der Akku keine Einträge hat (no-op).
+async function akkuSelfTest() {
+  if (!reader) return;
+  const addr = 169;
+  saveFaultSnapshot();
+  enableClear([addr]);
+  let blocked = false;
+  try {
+    await reader.request(addr, RPC, clearPayload(CMD.BLOCK_REPORTING)); blocked = true;
+    const r = await reader.request(addr, RPC, clearPayload(CMD.DELETE_ALL_ISSUES));
+    const d = r.payload ? decodeFaultReply(Array.from(r.payload)) : {};
+    await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); blocked = false;
+    faults = await readFaults(reader); renderAll();
+    if (stack.length && stack[stack.length - 1].name === 'faults') drawPage();
+    if (r.status === 0 && d.returnValue === 0) toast(t('clr.selfTestOk', { n: d.entryCount ?? 0 }), 'ok');
+    else if (d.returnValue === 5 || r.status === 6) toast(t('clr.selfTestGate'), 'warn');
+    else toast(t('clr.selfTestFail', { s: `${r.statusName || r.status} / rv ${d.returnValue ?? '?'}` }), 'err');
+  } catch (e) {
+    toast(t('msg.readError', { error: e.message }), 'err');
+  } finally {
+    if (blocked) { try { await reader.request(addr, RPC, clearPayload(CMD.UNBLOCK_REPORTING)); } catch (e) { log(`UNBLOCK 169: ${e.message}`); } }
+    disableClear();
+  }
+}
+
 const PAGES = {
   light() {
     const can = val('lightOem')?.configurable === true;
@@ -707,6 +734,7 @@ const PAGES = {
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p>${ledWarn}<div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
     const canClear = !!reader && faults.some((f) => isClearable(f.address) && f.status === 'ok' && f.faults.length);
+    const akkuEmpty = !!reader && faults.some((f) => f.address === 169 && f.status === 'ok' && !f.faults.length);
     return {
       title: t('ui.faults'),
       html: `<p class="explain">${esc(t('ui.faultsExplain'))}</p>${body}` + (canClear ? `
@@ -715,8 +743,10 @@ const PAGES = {
           <label class="row"><span class="t" style="font-size:15px">${esc(t('clr.selAll'))}</span><input type="checkbox" class="sw" id="selAll"></label>
         </div>
         <button class="btn-big" id="clrBtn" disabled style="background:#c62828;color:#fff">${esc(t('clr.btnNone'))}</button>
-        <p class="foot">${esc(t('clr.hint'))}</p>` : ''),
+        <p class="foot">${esc(t('clr.hint'))}</p>` : '')
+        + (akkuEmpty ? `<button class="btn-text" id="akkuTest" style="margin-top:10px">${esc(t('clr.selfTest'))}</button>` : ''),
       bind() {
+        if ($('akkuTest')) $('akkuTest').onclick = () => akkuSelfTest();
         if (!canClear) return;
         const sels = () => [...$('sheetBody').querySelectorAll('.fsel')];
         const checked = () => sels().filter((c) => c.checked);

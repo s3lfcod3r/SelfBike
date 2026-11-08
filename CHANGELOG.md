@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.38 · November 2026
+- 🇬🇧 **Fault clearing confirmed verified on the bike**: documentation and the in-code note now say "verified on the bike" (Bosch Smart System / Gen 4, protocol 1.2.3, delete by issue id, ABS and ConnectModule excluded), after real deletion on motor and control unit. New optional battery pipeline self-test: when the battery has no faults, a clear against its empty memory must return SUCCESS – confirming the command path without touching anything.
+- 🇩🇪 **Fehler-Löschen als am Rad verifiziert dokumentiert**: Doku und der Hinweis im Code sagen jetzt „am Rad verifiziert" (Bosch Smart System / Gen 4, Protokoll 1.2.3, Löschen per Issue-ID, ABS und ConnectModule ausgenommen), nach echtem Löschen an Motor und Bedieneinheit. Neuer optionaler Akku-Pipeline-Selbsttest: hat der Akku keine Fehler, muss ein Löschen gegen den leeren Speicher SUCCESS liefern – bestätigt den Befehlsweg, ohne etwas anzufassen.
+
 ## 1.4.37 · November 2026
 - 🇬🇧 **Clearer fault-delete feedback** (beta): faults deleted on the control unit now carry a note that this also clears the LED fault display. The result message distinguishes a fault that was actually deleted but comes straight back as active. (Demo now models the real block/unblock behaviour so this is visible.)
 - 🇩🇪 **Klareres Feedback beim Fehler-Löschen** (Beta): Fehler an der Bedieneinheit tragen jetzt den Hinweis, dass dabei auch die LED-Fehleranzeige gelöscht wird. Die Ergebnismeldung unterscheidet einen wirklich gelöschten, aber sofort wieder aktiven Fehler. (Der Demo-Modus bildet das Block-/Unblock-Verhalten jetzt echt ab, damit das sichtbar ist.)
