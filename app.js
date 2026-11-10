@@ -1006,6 +1006,7 @@ const PAGES = {
           ${btn('diagScan', t('diag.scan'))}
         </div>
         <div class="group noico"><button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button></div>
+        <div id="diagBar" class="hidden" style="margin:8px 0 2px"><div class="meter" style="height:12px"><i id="diagBarFill" style="width:0%"></i></div></div>
         <p id="diagStatus" class="foot">${n ? esc(t('diag.have', { n })) : ''}</p>
         <div class="group noico" id="diagActions"${n ? '' : ' style="display:none"'}>
           ${btn('diagSave', t('diag.save'))}
@@ -1179,11 +1180,15 @@ async function diagReadAddr(address, timeoutMs = 1800) {
   return row;
 }
 function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textContent = text; }
+// Fortschrittsbalken während eines Scans (0–1); wie der Ring beim Verbinden, nur als Balken direkt auf der Seite,
+// damit Stopp-Taste und die live auflaufenden Treffer sichtbar bleiben.
+function diagBarSet(frac) { const el = $('diagBarFill'); if (el) el.style.width = `${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%`; }
 function diagSetBusy(on) {
   diag.busy = on; if (on) diag.stop = false;
   for (const id of ['diagRun', 'diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
   for (const el of document.querySelectorAll('#diagBands button')) el.disabled = on;
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
+  const bar = $('diagBar'); if (bar) { bar.classList.toggle('hidden', !on); if (on) diagBarSet(0); }
 }
 function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
 async function diagRunKnown() {
@@ -1193,6 +1198,7 @@ async function diagRunKnown() {
     if (diag.stop) break;
     diag.map.set(p.address, await diagReadAddr(p.address));
     diagStatusLine(t('diag.progress', { n: i + 1, total: READ_PLAN.length }));
+    diagBarSet((i + 1) / READ_PLAN.length);
   }
   diagSetBusy(false); redrawDiag();
 }
@@ -1210,6 +1216,7 @@ async function diagScanRange(from, to) {
     const r = await diagReadAddr(a, 450);
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
     diagStatusLine(t('diag.scanProgress', { a, to, hits }));
+    diagBarSet((a - from + 1) / (to - from + 1));
   }
   diagSetBusy(false); redrawDiag();
 }
@@ -1227,7 +1234,7 @@ async function diagRunFull() {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 400);
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
-    if ((a & 0x1f) === 0) diagStatusLine(t('diag.fullProgress', { a, max: MAX, hits }));
+    if ((a & 0x1f) === 0) { diagStatusLine(t('diag.fullProgress', { a, max: MAX, hits })); diagBarSet((a + 1) / (MAX + 1)); }
   }
   diagSetBusy(false); redrawDiag();
 }

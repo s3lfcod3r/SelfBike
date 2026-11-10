@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.74 · November 2026
+- 🇬🇧 **Progress bar for the diagnostic scan**: running a scan under "Diagnose / Export" — known addresses, a single component band, or the complete scan — now shows a progress bar filling 0–100% on the page (same feel as the connect progress), so you can see how far a complete scan has gotten. Stop button and the live results stay visible next to it.
+- 🇩🇪 **Fortschrittsbalken für den Diagnose-Scan**: Ein Scan unter „Diagnose / Export" — bekannte Adressen, ein einzelnes Bauteil oder der vollständige Scan — zeigt jetzt einen Fortschrittsbalken, der auf der Seite von 0 auf 100 % läuft (gleiches Gefühl wie der Verbinden-Fortschritt), damit man bei einem Komplettscan sieht, wie weit er ist. Stopp-Taste und die live auflaufenden Treffer bleiben daneben sichtbar.
+
 ## 1.4.73 · November 2026
 - 🇬🇧 **Extra battery shown + eShift no longer falsely reported** (from a Kalkhoff user's report): a second battery (e.g. PowerMore 250) now appears on the home tile ("· Extra X %", next to the main charge, not mixed into it), in "Battery in detail" (its own block with charge, health, capacity, model) and under component age in "More details". And electronic shifting (eShift/Di2) is only shown when an actual gear count is read — bikes without eShift no longer get a wrong "electronic (eShift/Di2)" line on the Components page.
 - 🇩🇪 **Zusatzakku angezeigt + eShift nicht mehr falsch gemeldet** (aus der Rückmeldung eines Kalkhoff-Fahrers): Ein zweiter Akku (z. B. PowerMore 250) erscheint jetzt auf der Startseiten-Kachel („· Zusatz X %", neben dem Hauptakku, nicht hineingerechnet), unter „Akku im Detail" (eigener Block mit Ladezustand, Gesundheit, Kapazität, Modell) und beim Bauteil-Alter unter „Mehr Details". Und die elektronische Schaltung (eShift/Di2) wird nur noch angezeigt, wenn wirklich eine Gangzahl gelesen wird — Räder ohne eShift bekommen auf der Komponenten-Seite keine falsche „elektronisch (eShift/Di2)"-Zeile mehr.
