@@ -1179,15 +1179,50 @@ function diagSetBusy(on) {
   for (const el of document.querySelectorAll('#diagBands button')) el.disabled = on;
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
 }
+// ---- Bildschirm wachhalten (Handy): verhindert, dass das Display während eines Scans in Standby geht
+// und dadurch die USB-Verbindung abreißt. Echtes Weiterlesen bei ausgeschaltetem Display geht im Browser nicht.
+let wakeLock = null;
+let wakeWanted = false;
+async function acquireWake() {
+  wakeWanted = true;
+  try {
+    if ('wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch { /* nicht unterstützt oder abgelehnt – dann halt nicht */ }
+}
+function releaseWake() {
+  wakeWanted = false;
+  try { if (wakeLock) wakeLock.release(); } catch { /* egal */ }
+  wakeLock = null;
+}
+// Ein Wake Lock wird beim Wegschalten automatisch freigegeben – kommt die Seite zurück und ein Scan läuft noch, neu anfordern.
+document.addEventListener('visibilitychange', () => {
+  if (wakeWanted && document.visibilityState === 'visible') acquireWake();
+});
+// Protokoll-Zeile ins Scan-Popup schreiben (sichtbar beim Aufklappen von „Protokoll“), mit Auto-Scroll ans Ende.
+function diagLog(line) {
+  const el = $('progLog');
+  if (!el) return;
+  el.textContent += `${line}\n`;
+  el.scrollTop = el.scrollHeight;
+}
+function diagHitLine(a, r) {
+  const label = ADDR_LABEL.get(a) || '';
+  return `${a}${label ? '  ' + label : ''}  ${r.status}${r.fields ? '  ' + r.fields : ''}`;
+}
 // Scan-Fortschritt als runder Kreis im selben Popup wie beim Verbinden (0–100 %), mit Stopp-Knopf im Popup,
 // damit auch der lange Komplettscan abbrechbar bleibt. Nach dem Scan kurz „fertig/gestoppt“, dann automatisch zu.
 function diagRingStart(title) {
   $('progTitle').textContent = title;
-  $('progLog').textContent = ''; $('progLog').classList.add('hidden');
+  // Protokoll sichtbar halten und mit einer Kopfzeile starten, damit beim Aufklappen wirklich etwas dasteht.
+  $('progLog').textContent = `${title}\n`; $('progLog').classList.remove('hidden');
   $('progKofi').classList.add('hidden');
   $('progDone').classList.add('hidden');
   const stop = $('progStop'); if (stop) { stop.classList.remove('hidden'); stop.onclick = () => { diag.stop = true; }; }
   ring(0); progStatus('');
+  acquireWake();
   $('progSheet').classList.add('open');
 }
 function diagRing(frac, text) { ring(frac); if (text != null) progStatus(text); }
@@ -1195,6 +1230,7 @@ function diagRingDone(stopped) {
   const stop = $('progStop'); if (stop) stop.classList.add('hidden');
   if (!stopped) ring(1);
   progStatus(stopped ? t('diag.stopped') : t('diag.done'), stopped ? 'warn' : 'ok');
+  releaseWake();
   setTimeout(() => { $('progSheet').classList.remove('open'); $('progLog').classList.remove('hidden'); }, 700);
 }
 function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
@@ -1221,7 +1257,7 @@ async function diagScanRange(from, to) {
   for (let a = from; a <= to; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 450);
-    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
+    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
     const s = t('diag.scanProgress', { a, to, hits });
     diagStatusLine(s); diagRing((a - from + 1) / (to - from + 1), s);
   }
@@ -1240,7 +1276,7 @@ async function diagRunFull() {
   for (let a = 0; a <= MAX; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 400);
-    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
+    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
     if ((a & 0x1f) === 0) { const s = t('diag.fullProgress', { a, max: MAX, hits }); diagStatusLine(s); diagRing((a + 1) / (MAX + 1), s); }
   }
   diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
@@ -1284,6 +1320,7 @@ async function refresh() {
   $('progStop')?.classList.add('hidden'); // nur der Diagnose-Scan hat den Stopp-Knopf
   ring(0);
   progStatus(t('msg.reading', { n: 0, total: CORE_PLAN.length }));
+  acquireWake(); // Bildschirm beim Verbinden/Auslesen wach halten (Handy)
   $('progSheet').classList.add('open');
   const total = CORE_PLAN.length + 1; // Kern-Datenpunkte + Fehlerspeicher als letzter Schritt
   try {
@@ -1300,9 +1337,11 @@ async function refresh() {
   } catch (e) {
     $('progSheet').classList.remove('open');
     $('progLog').classList.remove('hidden');
+    releaseWake();
     busy = false;
     throw e;
   }
+  releaseWake();
   busy = false;
   if (!demo) addSnapshot(snapshotFromRows(rows, new Date()));
   renderAll();

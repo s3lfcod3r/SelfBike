@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.78 · November 2026
+- 🇬🇧 **Screen stays awake during scan & connect (phone) + the scan log now actually shows something**: while reading or scanning, the screen is kept awake (Wake Lock) so the phone doesn't drop into standby and cut the USB connection mid-scan — if you switch away and back while a scan is still running, it re-acquires automatically. (Reading on with the screen fully off isn't possible in a browser — the connection always drops.) And the "Log" inside the scan popup was empty before; it now lists every value found live (address, name, data), scrolls along, and stays readable.
+- 🇩🇪 **Bildschirm bleibt beim Scannen & Verbinden an (Handy) + das Scan-Protokoll zeigt jetzt wirklich etwas**: Während des Auslesens/Scannens wird der Bildschirm wachgehalten (Wake Lock), damit das Handy nicht in den Standby geht und mitten im Scan die USB-Verbindung abreißt — wechselst du weg und wieder zurück, während der Scan noch läuft, wird er automatisch neu angefordert. (Weiterlesen bei ganz ausgeschaltetem Display geht im Browser nicht — die Verbindung bricht dann immer ab.) Und das „Protokoll" im Scan-Popup war vorher leer; es listet jetzt jeden gefundenen Wert live auf (Adresse, Name, Daten), scrollt mit und bleibt lesbar.
+
 ## 1.4.77 · November 2026
 - 🇬🇧 **Honest wording for the complete scan**: the "several hours" warning was overstated. The hint and confirmation now just say it takes a while — noticeably longer in a desktop browser than on a phone (with a USB-OTG adapter) — and that you should try it yourself. You can still stop anytime; what's read stays.
 - 🇩🇪 **Ehrlicher Text beim Komplett-Scan**: Der Hinweis „mehrere Stunden" war übertrieben. Hinweis und Bestätigung sagen jetzt nur noch, dass es eine Weile dauert — im PC-Browser spürbar länger als am Handy (mit USB-OTG-Adapter) — und dass man es am besten selbst ausprobiert. Stoppen geht weiterhin jederzeit, das Gelesene bleibt erhalten.
