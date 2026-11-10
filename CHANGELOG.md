@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.76 · November 2026
+- 🇬🇧 **Diagnose / Export simplified**: the redundant "Read known values" button is gone — connecting to the bike already reads those. The green **Complete scan (all addresses)** button now sits at the top, and below it each component (battery, ABS, Connect, display …) can still be scanned on its own with a tap.
+- 🇩🇪 **Diagnose / Export aufgeräumt**: Der doppelte Knopf „Bekannte Werte auslesen" ist weg — das passiert ohnehin schon beim Verbinden. Der grüne **Kompletter Scan (alle Adressen)** steht jetzt oben, und darunter lässt sich weiterhin jedes Bauteil (Akku, ABS, Connect, Display …) mit einem Tipp einzeln scannen.
+
 ## 1.4.75 · November 2026
 - 🇬🇧 **Diagnostic scan now uses the progress ring**: the scan under "Diagnose / Export" (known addresses, a single component band, or the complete scan) now shows the same round progress ring in a popup as connecting and saving — with the live address count, a percentage, and a **Stop** button right in the ring. Replaces the inline bar from 1.4.74; it closes on its own when the scan is done or stopped.
 - 🇩🇪 **Diagnose-Scan läuft jetzt über den Fortschrittskreis**: Der Scan unter „Diagnose / Export" (bekannte Adressen, ein einzelnes Bauteil oder der vollständige Scan) zeigt jetzt denselben runden Fortschrittskreis im Pop-up wie Verbinden und Speichern — mit der live mitlaufenden Adresszählung, einer Prozentanzeige und einer **Stopp**-Taste direkt im Kreis. Ersetzt den Balken aus 1.4.74 und schließt sich von selbst, wenn der Scan fertig oder gestoppt ist.

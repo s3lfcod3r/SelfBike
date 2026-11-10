@@ -984,21 +984,16 @@ const PAGES = {
     return {
       title: t('diag.title'),
       html: `<p class="explain">${esc(t('diag.explain'))}</p>
-        <p class="gh">${esc(t('diag.step1'))}</p>
+        <p class="gh">${esc(t('diag.fullTitle'))}</p>
         <div class="group noico">
-          <button class="btn-big" id="diagRun"${diag.busy ? ' disabled' : ''}>${esc(t('diag.run'))}</button>
+          <button class="btn-big" id="diagFull"${diag.busy ? ' disabled' : ''}>${esc(t('diag.full'))}</button>
         </div>
-        <p class="foot">${esc(t('diag.runHint'))}</p>
+        <p class="foot">${esc(t('diag.fullHint'))}</p>
         <p class="gh">${esc(t('diag.partsTitle'))}</p>
         <p class="explain" style="margin-top:0">${esc(t('diag.partsHint'))}</p>
         <div class="group noico" id="diagBands">
           ${DIAG_BANDS.map((b) => `<button class="row" data-band="${b.key}"><span class="t">${esc(t('diag.band.' + b.key))}<small>${esc(t('diag.bandRange', { from: b.from, to: b.to }))}</small></span></button>`).join('')}
         </div>
-        <p class="gh">${esc(t('diag.fullTitle'))}</p>
-        <div class="group noico">
-          ${btn('diagFull', t('diag.full'))}
-        </div>
-        <p class="foot">${esc(t('diag.fullHint'))}</p>
         <p class="gh">${esc(t('diag.manualTitle'))}</p>
         <div class="group noico">
           <div class="row static"><span class="t">${esc(t('diag.range'))}</span>
@@ -1014,7 +1009,6 @@ const PAGES = {
         </div>
         <p class="foot">${esc(t('diag.send'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
       bind() {
-        $('diagRun').onclick = diagRunKnown;
         $('diagScan').onclick = diagRunScan;
         $('diagFull').onclick = diagRunFull;
         for (const b of document.querySelectorAll('#diagBands button')) {
@@ -1181,7 +1175,7 @@ async function diagReadAddr(address, timeoutMs = 1800) {
 function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textContent = text; }
 function diagSetBusy(on) {
   diag.busy = on; if (on) diag.stop = false;
-  for (const id of ['diagRun', 'diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
+  for (const id of ['diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
   for (const el of document.querySelectorAll('#diagBands button')) el.disabled = on;
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
 }
