@@ -1011,10 +1011,12 @@ const PAGES = {
         </div>
         <div class="group noico"><button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button></div>
         <p id="diagStatus" class="foot">${n ? esc(t('diag.have', { n })) : ''}</p>
-        <div class="group noico" id="diagActions"${n ? '' : ' style="display:none"'}>
-          ${btn('diagSave', t('diag.save'))}
-          ${btn('diagCopy', t('diag.copy'))}
-          ${btn('diagClear', t('diag.clear'), 'danger')}
+        <div id="diagActions"${n ? '' : ' style="display:none"'}>
+          <div class="group noico"><button class="btn-big" id="diagSave">${esc(t('diag.save'))}</button></div>
+          <div class="group noico">
+            ${btn('diagCopy', t('diag.copy'))}
+            ${btn('diagClear', t('diag.clear'), 'danger')}
+          </div>
         </div>
         <p class="foot">${esc(t('diag.send'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
       bind() {
@@ -1283,7 +1285,14 @@ function diagRingDone(stopped) {
   if (!stopped) ring(1);
   progStatus(stopped ? t('diag.stopped') : t('diag.done'), stopped ? 'warn' : 'ok');
   releaseWake();
-  setTimeout(() => { $('progSheet').classList.remove('open'); $('progLog').classList.remove('hidden'); }, 700);
+  setTimeout(() => {
+    $('progSheet').classList.remove('open'); $('progLog').classList.remove('hidden');
+    // Nach dem Scan zum Speichern-Knopf springen + Hinweis – der Scan speichert NICHT automatisch.
+    if (!stopped && diag.map.size) {
+      const el = $('diagActions'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      toast(t('diag.savePrompt'), 'ok');
+    }
+  }, 700);
 }
 function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
 async function diagRunKnown() {
