@@ -60,6 +60,10 @@ const log = (m) => { logLines.push(`${new Date().toLocaleTimeString()}  ${m}`); 
 
 // Diagnose-Export: Adressen mit persönlichen Daten werden beim Export ausgelassen
 const PRIVATE_ADDR = new Set(READ_PLAN.filter((p) => p.private).map((p) => p.address));
+// Adressen, deren Textwerte im Export gezeigt werden dürfen: alle SelfBike bekannten, NICHT privaten
+// Datenpunkte (Modell/Version/hergestellt …). Unbekannte Adressen werden beim Export geschwärzt,
+// weil dort Seriennummern/IDs/Rahmennummern stehen können, die hier nicht als privat klassifiziert sind.
+const SAFE_TEXT_ADDR = new Set(READ_PLAN.filter((p) => !p.private).map((p) => p.address));
 const ADDR_LABEL = new Map(READ_PLAN.map((p) => [p.address, p.label]));
 const diag = { map: new Map(), busy: false, stop: false };
 // Die bekannten Adressen liegen in Blöcken je Bauteil – ein Knopf pro Block, damit man gezielt scannen kann
@@ -1165,8 +1169,8 @@ async function diagReadAddr(address, timeoutMs = 1800) {
   if (PRIVATE_ADDR.has(address)) { row.status = 'private'; row.fields = t('diag.hidden'); return row; }
   try {
     const r = await reader.read(address, timeoutMs);
-    row.hex = hex(r.payload);
-    row.fields = pbSummary(r.payload);
+    // Bei unbekannten Adressen Textwerte schwärzen (nur Zahlen bleiben); bekannte, nicht-private zeigen den Klartext.
+    row.fields = pbSummary(r.payload, 0, !SAFE_TEXT_ADDR.has(address));
     if (r.status === 0) row.status = 'ok';
     else { row.status = 'rejected'; row.code = r.status; row.error = r.statusName; }
   } catch (e) { row.status = e.timeout ? 'timeout' : 'error'; row.error = e.message; }
@@ -1291,10 +1295,10 @@ function diagText() {
     name ? `Rad: ${name}` : null,
     t('diag.fileNote'),
     '',
-    ['Adresse', 'Name', 'Status', 'Hex', 'Felder'].join('\t'),
+    ['Adresse', 'Name', 'Status', 'Felder'].join('\t'),
   ].filter((l) => l !== null);
   const body = list.map((r) => [r.address, ADDR_LABEL.get(r.address) || '',
-    r.status + (r.code != null ? ' ' + r.code : ''), r.hex, r.fields || r.error].join('\t'));
+    r.status + (r.code != null ? ' ' + r.code : ''), r.fields || r.error].join('\t'));
   return [...header, ...body].join('\n');
 }
 function downloadTextFile(fileName, text) {
