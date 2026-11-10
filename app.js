@@ -74,7 +74,7 @@ const DIAG_BANDS = [
   { key: 'connect', from: 2800, to: 2900 },
   { key: 'display', from: 3300, to: 3480 },
   { key: 'drive', from: 6100, to: 6400 },
-  { key: 'control', from: 8200, to: 8600 },
+  { key: 'control', from: 8200, to: 9100 }, // reicht bis ~9010 (Bedieneinheit-Zusatzadressen, in Exporten bestätigt)
 ];
 
 // ---------- Meldungen ----------
@@ -988,16 +988,21 @@ const PAGES = {
     return {
       title: t('diag.title'),
       html: `<p class="explain">${esc(t('diag.explain'))}</p>
-        <p class="gh">${esc(t('diag.fullTitle'))}</p>
+        <p class="gh">${esc(t('diag.bandsTitle'))}</p>
         <div class="group noico">
-          <button class="btn-big" id="diagFull"${diag.busy ? ' disabled' : ''}>${esc(t('diag.full'))}</button>
+          <button class="btn-big" id="diagBandsAll"${diag.busy ? ' disabled' : ''}>${esc(t('diag.bandsBtn'))}</button>
         </div>
-        <p class="foot">${esc(t('diag.fullHint'))}</p>
+        <p class="foot">${esc(t('diag.bandsHint'))}</p>
         <p class="gh">${esc(t('diag.partsTitle'))}</p>
         <p class="explain" style="margin-top:0">${esc(t('diag.partsHint'))}</p>
         <div class="group noico" id="diagBands">
           ${DIAG_BANDS.map((b) => `<button class="row" data-band="${b.key}"><span class="t">${esc(t('diag.band.' + b.key))}<small>${esc(t('diag.bandRange', { from: b.from, to: b.to }))}</small></span></button>`).join('')}
         </div>
+        <p class="gh">${esc(t('diag.fullTitle'))}</p>
+        <div class="group noico">
+          ${btn('diagFull', t('diag.full'))}
+        </div>
+        <p class="foot">${esc(t('diag.fullHint'))}</p>
         <p class="gh">${esc(t('diag.manualTitle'))}</p>
         <div class="group noico">
           <div class="row static"><span class="t">${esc(t('diag.range'))}</span>
@@ -1013,6 +1018,7 @@ const PAGES = {
         </div>
         <p class="foot">${esc(t('diag.send'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
       bind() {
+        $('diagBandsAll').onclick = diagRunBands;
         $('diagScan').onclick = diagRunScan;
         $('diagFull').onclick = diagRunFull;
         for (const b of document.querySelectorAll('#diagBands button')) {
@@ -1179,7 +1185,7 @@ async function diagReadAddr(address, timeoutMs = 1800) {
 function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textContent = text; }
 function diagSetBusy(on) {
   diag.busy = on; if (on) diag.stop = false;
-  for (const id of ['diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
+  for (const id of ['diagBandsAll', 'diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
   for (const el of document.querySelectorAll('#diagBands button')) el.disabled = on;
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
 }
@@ -1314,6 +1320,33 @@ async function diagScanRange(from, to) {
 }
 async function diagRunScan() {
   await diagScanRange(parseInt($('diagFrom').value, 10) || 0, parseInt($('diagTo').value, 10) || 0);
+}
+// Schnell-Scan: nur die Bereiche, in denen echte Geräte sitzen (DIAG_BANDS). Deckt praktisch alle
+// nützlichen Daten ab (~1 Min), statt 32768 Adressen abzuklappern, von denen fast alle „verweigert“ sind –
+// so läuft es locker vor dem Bosch-Auto-Off (~10 Min) durch.
+async function diagRunBands() {
+  if (!reader || diag.busy) return;
+  diag.map.clear();
+  diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
+  startKeepAwake();
+  log('Schnell-Scan (bekannte Bereiche) gestartet');
+  const total = DIAG_BANDS.reduce((s, b) => s + (b.to - b.from + 1), 0);
+  let done = 0, hits = 0; diagErrStreak = 0;
+  let aborted = false;
+  for (const band of DIAG_BANDS) {
+    for (let a = band.from; a <= band.to; a++) {
+      if (diag.stop) { aborted = true; break; }
+      const r = await diagReadAddr(a, 450);
+      if (!diagStillAlive(a, r)) { aborted = true; break; }
+      if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
+      done++;
+      if ((done & 0x1f) === 0) { const s = t('diag.bandsProgress', { done, total, hits }); diagStatusLine(s); diagRing(done / total, s); }
+    }
+    if (aborted) break;
+  }
+  stopKeepAwake();
+  diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
+  log(`Schnell-Scan beendet: ${hits} mit Daten`);
 }
 // Kompletter Scan über den ganzen gültigen Adressraum (0–32767). Dauert lange, jederzeit per Stopp abbrechbar.
 async function diagRunFull() {
