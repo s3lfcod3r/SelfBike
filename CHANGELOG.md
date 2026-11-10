@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.85 · November 2026
+- 🇬🇧 **Bike model in the export filename**. The saved diagnostic file now starts with the bike's make and model, e.g. "Canyon 50020630 - selfbike-diagnose-1.4.85.txt", so files people send in are easy to tell apart. Only make and model – no personal data.
+- 🇩🇪 **Fahrrad-Modell im Dateinamen des Exports**. Die gespeicherte Diagnose-Datei beginnt jetzt mit Marke und Modell des Rads, z. B. „Canyon 50020630 - selfbike-diagnose-1.4.85.txt", damit zugeschickte Dateien leicht auseinanderzuhalten sind. Nur Marke und Modell – keine persönlichen Daten.
+
 ## 1.4.84 · November 2026
 - 🇬🇧 **Export no longer lists the "refused" addresses**. On a real bike almost every address answers "refused" (rejected 6) – tens of thousands of pure-noise lines that made the file huge and hard to read. Those are now left out entirely (not even stored). What stays: addresses with real data, "no receiver" (an empty device slot, which is actually informative) and the hidden personal ones. A real export shrinks from ~32,000 lines to a few hundred.
 - 🇩🇪 **Export listet die „verweigert"-Adressen nicht mehr**. Am echten Rad antwortet fast jede Adresse mit „verweigert" (rejected 6) – zehntausende reine Lärm-Zeilen, die die Datei riesig und unübersichtlich gemacht haben. Die fallen jetzt komplett weg (werden gar nicht erst gespeichert). Drin bleibt: Adressen mit echten Daten, „kein Empfänger" (ein leerer Geräteplatz, der ist ja aussagekräftig) und die ausgeblendeten persönlichen. Ein echter Export schrumpft so von ~32.000 Zeilen auf ein paar Hundert.

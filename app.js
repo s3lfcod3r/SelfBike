@@ -1027,7 +1027,11 @@ const PAGES = {
           b.onclick = () => { const band = DIAG_BANDS.find((x) => x.key === b.dataset.band); if (band) diagScanRange(band.from, band.to); };
         }
         $('diagStop').onclick = () => { diag.stop = true; };
-        const save = $('diagSave'); if (save) save.onclick = () => downloadTextFile(`selfbike-diagnose-${VERSION}.txt`, diagText());
+        const save = $('diagSave'); if (save) save.onclick = () => {
+          // Dateiname mit Fahrrad-Modell voran, damit zugeschickte Dateien gleich zuzuordnen sind (keine privaten Daten – nur Marke + Modell).
+          const bike = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').replace(/[\\/:*?"<>|]+/g, '-').replace(/\s+/g, ' ').trim();
+          downloadTextFile(`${bike ? bike + ' - ' : ''}selfbike-diagnose-${VERSION}.txt`, diagText());
+        };
         const copy = $('diagCopy'); if (copy) copy.onclick = async () => { try { await navigator.clipboard.writeText(diagText()); toast(t('diag.copied'), 'ok'); } catch { toast(t('diag.copyFail'), 'warn'); } };
         const clear = $('diagClear'); if (clear) clear.onclick = () => { diag.map.clear(); redrawDiag(); };
       },
