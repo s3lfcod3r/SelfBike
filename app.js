@@ -1006,7 +1006,6 @@ const PAGES = {
           ${btn('diagScan', t('diag.scan'))}
         </div>
         <div class="group noico"><button class="row hidden" id="diagStop"><span class="t">${esc(t('diag.stop'))}</span></button></div>
-        <div id="diagBar" class="hidden" style="margin:8px 0 2px"><div class="meter" style="height:12px"><i id="diagBarFill" style="width:0%"></i></div></div>
         <p id="diagStatus" class="foot">${n ? esc(t('diag.have', { n })) : ''}</p>
         <div class="group noico" id="diagActions"${n ? '' : ' style="display:none"'}>
           ${btn('diagSave', t('diag.save'))}
@@ -1180,27 +1179,41 @@ async function diagReadAddr(address, timeoutMs = 1800) {
   return row;
 }
 function diagStatusLine(text) { const el = $('diagStatus'); if (el) el.textContent = text; }
-// Fortschrittsbalken während eines Scans (0–1); wie der Ring beim Verbinden, nur als Balken direkt auf der Seite,
-// damit Stopp-Taste und die live auflaufenden Treffer sichtbar bleiben.
-function diagBarSet(frac) { const el = $('diagBarFill'); if (el) el.style.width = `${Math.round(Math.max(0, Math.min(1, frac)) * 100)}%`; }
 function diagSetBusy(on) {
   diag.busy = on; if (on) diag.stop = false;
   for (const id of ['diagRun', 'diagScan', 'diagFull']) { const el = $(id); if (el) el.disabled = on; }
   for (const el of document.querySelectorAll('#diagBands button')) el.disabled = on;
   const stop = $('diagStop'); if (stop) stop.classList.toggle('hidden', !on);
-  const bar = $('diagBar'); if (bar) { bar.classList.toggle('hidden', !on); if (on) diagBarSet(0); }
+}
+// Scan-Fortschritt als runder Kreis im selben Popup wie beim Verbinden (0–100 %), mit Stopp-Knopf im Popup,
+// damit auch der lange Komplettscan abbrechbar bleibt. Nach dem Scan kurz „fertig/gestoppt“, dann automatisch zu.
+function diagRingStart(title) {
+  $('progTitle').textContent = title;
+  $('progLog').textContent = ''; $('progLog').classList.add('hidden');
+  $('progKofi').classList.add('hidden');
+  $('progDone').classList.add('hidden');
+  const stop = $('progStop'); if (stop) { stop.classList.remove('hidden'); stop.onclick = () => { diag.stop = true; }; }
+  ring(0); progStatus('');
+  $('progSheet').classList.add('open');
+}
+function diagRing(frac, text) { ring(frac); if (text != null) progStatus(text); }
+function diagRingDone(stopped) {
+  const stop = $('progStop'); if (stop) stop.classList.add('hidden');
+  if (!stopped) ring(1);
+  progStatus(stopped ? t('diag.stopped') : t('diag.done'), stopped ? 'warn' : 'ok');
+  setTimeout(() => { $('progSheet').classList.remove('open'); $('progLog').classList.remove('hidden'); }, 700);
 }
 function redrawDiag() { if (stack.length && stack[stack.length - 1].name === 'diagnose') drawPage(); }
 async function diagRunKnown() {
   if (!reader || diag.busy) return;
-  diag.map.clear(); diagSetBusy(true);
+  diag.map.clear(); diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
   for (const [i, p] of READ_PLAN.entries()) {
     if (diag.stop) break;
     diag.map.set(p.address, await diagReadAddr(p.address));
-    diagStatusLine(t('diag.progress', { n: i + 1, total: READ_PLAN.length }));
-    diagBarSet((i + 1) / READ_PLAN.length);
+    const s = t('diag.progress', { n: i + 1, total: READ_PLAN.length });
+    diagStatusLine(s); diagRing((i + 1) / READ_PLAN.length, s);
   }
-  diagSetBusy(false); redrawDiag();
+  diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
 }
 // Einen Adressbereich scannen (höchstens 600 Adressen pro Lauf). Von Bauteil-Knöpfen und vom eigenen Bereich genutzt.
 async function diagScanRange(from, to) {
@@ -1209,16 +1222,16 @@ async function diagScanRange(from, to) {
   to = Math.min(0x7fff, to | 0);
   if (to < from) [from, to] = [to, from];
   to = Math.min(to, from + 599);
-  diagSetBusy(true);
+  diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
   let hits = 0;
   for (let a = from; a <= to; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 450);
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
-    diagStatusLine(t('diag.scanProgress', { a, to, hits }));
-    diagBarSet((a - from + 1) / (to - from + 1));
+    const s = t('diag.scanProgress', { a, to, hits });
+    diagStatusLine(s); diagRing((a - from + 1) / (to - from + 1), s);
   }
-  diagSetBusy(false); redrawDiag();
+  diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
 }
 async function diagRunScan() {
   await diagScanRange(parseInt($('diagFrom').value, 10) || 0, parseInt($('diagTo').value, 10) || 0);
@@ -1227,16 +1240,16 @@ async function diagRunScan() {
 async function diagRunFull() {
   if (!reader || diag.busy) return;
   if (!confirm(t('diag.fullConfirm'))) return;
-  diagSetBusy(true);
+  diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
   const MAX = 0x7fff;
   let hits = 0;
   for (let a = 0; a <= MAX; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 400);
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') hits++; }
-    if ((a & 0x1f) === 0) { diagStatusLine(t('diag.fullProgress', { a, max: MAX, hits })); diagBarSet((a + 1) / (MAX + 1)); }
+    if ((a & 0x1f) === 0) { const s = t('diag.fullProgress', { a, max: MAX, hits }); diagStatusLine(s); diagRing((a + 1) / (MAX + 1), s); }
   }
-  diagSetBusy(false); redrawDiag();
+  diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
 }
 function diagText() {
   const name = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim();
@@ -1274,6 +1287,7 @@ async function refresh() {
   $('progLog').classList.add('hidden'); // beim Verbinden kein Log, nur der Kreis
   $('progKofi').classList.add('hidden');
   $('progDone').classList.add('hidden');
+  $('progStop')?.classList.add('hidden'); // nur der Diagnose-Scan hat den Stopp-Knopf
   ring(0);
   progStatus(t('msg.reading', { n: 0, total: CORE_PLAN.length }));
   $('progSheet').classList.add('open');

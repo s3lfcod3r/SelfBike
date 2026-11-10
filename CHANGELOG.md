@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.75 · November 2026
+- 🇬🇧 **Diagnostic scan now uses the progress ring**: the scan under "Diagnose / Export" (known addresses, a single component band, or the complete scan) now shows the same round progress ring in a popup as connecting and saving — with the live address count, a percentage, and a **Stop** button right in the ring. Replaces the inline bar from 1.4.74; it closes on its own when the scan is done or stopped.
+- 🇩🇪 **Diagnose-Scan läuft jetzt über den Fortschrittskreis**: Der Scan unter „Diagnose / Export" (bekannte Adressen, ein einzelnes Bauteil oder der vollständige Scan) zeigt jetzt denselben runden Fortschrittskreis im Pop-up wie Verbinden und Speichern — mit der live mitlaufenden Adresszählung, einer Prozentanzeige und einer **Stopp**-Taste direkt im Kreis. Ersetzt den Balken aus 1.4.74 und schließt sich von selbst, wenn der Scan fertig oder gestoppt ist.
+
 ## 1.4.74 · November 2026
 - 🇬🇧 **Progress bar for the diagnostic scan**: running a scan under "Diagnose / Export" — known addresses, a single component band, or the complete scan — now shows a progress bar filling 0–100% on the page (same feel as the connect progress), so you can see how far a complete scan has gotten. Stop button and the live results stay visible next to it.
 - 🇩🇪 **Fortschrittsbalken für den Diagnose-Scan**: Ein Scan unter „Diagnose / Export" — bekannte Adressen, ein einzelnes Bauteil oder der vollständige Scan — zeigt jetzt einen Fortschrittsbalken, der auf der Seite von 0 auf 100 % läuft (gleiches Gefühl wie der Verbinden-Fortschritt), damit man bei einem Komplettscan sieht, wie weit er ist. Stopp-Taste und die live auflaufenden Treffer bleiben daneben sichtbar.
