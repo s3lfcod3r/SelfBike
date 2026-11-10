@@ -1224,6 +1224,12 @@ function diagHitLine(a, r) {
   const label = ADDR_LABEL.get(a) || '';
   return `${a}${label ? '  ' + label : ''}  ${r.status}${r.fields ? '  ' + r.fields : ''}`;
 }
+// In die Datei kommen nur Adressen, die echt etwas melden: Daten (ok), privat (ausgelassen) oder eine
+// aussagekräftige Ablehnung wie „kein Empfänger“ (Code 2). Reines „verweigert“ (rejected 6) ist Lärm
+// (zehntausende Adressen) und wird gar nicht erst gespeichert – hält Datei, Speicher und Export klein.
+function diagKeep(r) {
+  return r.status === 'ok' || r.status === 'private' || (r.status === 'rejected' && r.code !== 6);
+}
 // Prüft während eines Scans, ob die Verbindung noch steht. Protokolliert einen Abbruch mit Adresse
 // und (über log()) Uhrzeit, damit man im Protokoll sieht, wo und warum der Scan endete. Ein gesunder
 // Bus antwortet auf leere Adressen mit „rejected“ (Status 6) – nur echte Fehler/Timeouts häufen sich.
@@ -1320,7 +1326,7 @@ async function diagScanRange(from, to) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 450);
     if (!diagStillAlive(a, r)) break;
-    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
+    if (diagKeep(r)) { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
     const s = t('diag.scanProgress', { a, to, hits });
     diagStatusLine(s); diagRing((a - from + 1) / (to - from + 1), s);
   }
@@ -1347,7 +1353,7 @@ async function diagRunBands() {
       if (diag.stop) { aborted = true; break; }
       const r = await diagReadAddr(a, 450);
       if (!diagStillAlive(a, r)) { aborted = true; break; }
-      if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
+      if (diagKeep(r)) { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
       done++;
       if ((done & 0x1f) === 0) { const s = t('diag.bandsProgress', { done, total, hits }); diagStatusLine(s); diagRing(done / total, s); }
     }
@@ -1388,7 +1394,7 @@ async function diagRunFull() {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 400);
     if (!diagStillAlive(a, r)) break;
-    if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
+    if (diagKeep(r)) { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
     if ((a & 0x3ff) === 0) saveScanProgress(bikeId, a + 1); // Checkpoint alle 1024 (übersteht auch einen Reload)
     if ((a & 0x1f) === 0) { const s = t('diag.fullProgress', { a, max: MAX, hits }); diagStatusLine(s); diagRing((a + 1) / (MAX + 1), s); }
   }

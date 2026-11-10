@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.84 · November 2026
+- 🇬🇧 **Export no longer lists the "refused" addresses**. On a real bike almost every address answers "refused" (rejected 6) – tens of thousands of pure-noise lines that made the file huge and hard to read. Those are now left out entirely (not even stored). What stays: addresses with real data, "no receiver" (an empty device slot, which is actually informative) and the hidden personal ones. A real export shrinks from ~32,000 lines to a few hundred.
+- 🇩🇪 **Export listet die „verweigert"-Adressen nicht mehr**. Am echten Rad antwortet fast jede Adresse mit „verweigert" (rejected 6) – zehntausende reine Lärm-Zeilen, die die Datei riesig und unübersichtlich gemacht haben. Die fallen jetzt komplett weg (werden gar nicht erst gespeichert). Drin bleibt: Adressen mit echten Daten, „kein Empfänger" (ein leerer Geräteplatz, der ist ja aussagekräftig) und die ausgeblendeten persönlichen. Ein echter Export schrumpft so von ~32.000 Zeilen auf ein paar Hundert.
+
 ## 1.4.83 · November 2026
 - 🇬🇧 **Clearer saving after a scan**. A scan does not save a file on its own – you save it afterwards. That wasn't obvious, so now: when a scan finishes, the page jumps to the save buttons and shows a note ("save it below with Save export; on a PC it usually lands straight in your Downloads folder"), and the **Save export** button is now a big green button so it stands out.
 - 🇩🇪 **Deutlicheres Speichern nach dem Scan**. Ein Scan speichert nicht von selbst eine Datei – das macht man danach. Das war nicht klar, deshalb jetzt: Wenn ein Scan fertig ist, springt die Seite zu den Speichern-Knöpfen und zeigt einen Hinweis („unten mit Export speichern sichern; am PC landet die Datei meist direkt im Downloads-Ordner"), und der **Export speichern**-Knopf ist jetzt ein großer grüner Button, damit er auffällt.
