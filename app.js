@@ -1216,6 +1216,19 @@ function diagHitLine(a, r) {
   const label = ADDR_LABEL.get(a) || '';
   return `${a}${label ? '  ' + label : ''}  ${r.status}${r.fields ? '  ' + r.fields : ''}`;
 }
+// Prüft während eines Scans, ob die Verbindung noch steht. Protokolliert einen Abbruch mit Adresse
+// und (über log()) Uhrzeit, damit man im Protokoll sieht, wo und warum der Scan endete. Ein gesunder
+// Bus antwortet auf leere Adressen mit „rejected“ (Status 6) – nur echte Fehler/Timeouts häufen sich.
+let diagErrStreak = 0;
+function diagStillAlive(a, r) {
+  if (!reader) { log(`⚠ Verbindung verloren bei Adresse ${a} – Scan abgebrochen`); diag.stop = true; return false; }
+  if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diagErrStreak = 0; return true; }
+  if (++diagErrStreak >= 15) {
+    log(`⚠ ${diagErrStreak} Lesefehler in Folge bis Adresse ${a} (${r.status}${r.error ? ': ' + r.error : ''}) – Verbindung vermutlich weg, Scan gestoppt`);
+    diag.stop = true; return false;
+  }
+  return true;
+}
 // Scan-Fortschritt als runder Kreis im selben Popup wie beim Verbinden (0–100 %), mit Stopp-Knopf im Popup,
 // damit auch der lange Komplettscan abbrechbar bleibt. Nach dem Scan kurz „fertig/gestoppt“, dann automatisch zu.
 function diagRingStart(title) {
@@ -1257,15 +1270,18 @@ async function diagScanRange(from, to) {
   if (to < from) [from, to] = [to, from];
   to = Math.min(to, from + 599);
   diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
-  let hits = 0;
+  log(`Bereichsscan ${from}–${to} gestartet`);
+  let hits = 0; diagErrStreak = 0;
   for (let a = from; a <= to; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 450);
+    if (!diagStillAlive(a, r)) break;
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
     const s = t('diag.scanProgress', { a, to, hits });
     diagStatusLine(s); diagRing((a - from + 1) / (to - from + 1), s);
   }
   diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
+  log(`Bereichsscan beendet: ${hits} mit Daten`);
 }
 async function diagRunScan() {
   await diagScanRange(parseInt($('diagFrom').value, 10) || 0, parseInt($('diagTo').value, 10) || 0);
@@ -1275,15 +1291,18 @@ async function diagRunFull() {
   if (!reader || diag.busy) return;
   if (!confirm(t('diag.fullConfirm'))) return;
   diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
+  log('Kompletter Scan (0–32767) gestartet');
   const MAX = 0x7fff;
-  let hits = 0;
+  let hits = 0; diagErrStreak = 0;
   for (let a = 0; a <= MAX; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 400);
+    if (!diagStillAlive(a, r)) break;
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
     if ((a & 0x1f) === 0) { const s = t('diag.fullProgress', { a, max: MAX, hits }); diagStatusLine(s); diagRing((a + 1) / (MAX + 1), s); }
   }
   diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
+  log(`Kompletter Scan beendet: ${hits} mit Daten, bis Adresse ${diag.map.size ? [...diag.map.keys()].pop() : 0}`);
 }
 function diagText() {
   const name = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim();
@@ -1430,7 +1449,10 @@ async function disconnect() {
   renderAll();
 }
 navigator.usb?.addEventListener('disconnect', async (e) => {
-  if (usb && e.device === usb.device) { await disconnect(); toast(t('msg.cableOff'), 'warn'); }
+  if (usb && e.device === usb.device) {
+    log('⚠ USB-Gerät getrennt (Browser meldet „disconnect“) – Bike aus, Kabel ab oder USB-Strom weg');
+    await disconnect(); toast(t('msg.cableOff'), 'warn');
+  }
 });
 
 // ---------- Rechtlicher Hinweis ----------
