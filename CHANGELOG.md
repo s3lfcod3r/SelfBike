@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.86 · November 2026
+- 🇬🇧 **Diagnostics / Export page fully translated into all languages**. Until now the whole Diagnostics page only existed in German and English; the other ten languages (French, Italian, Spanish, Portuguese, Dutch, Polish, Czech, Danish, Swedish, Finnish) fell back to German. All 44 texts of that page are now translated into every language, so the quick scan, complete scan, component scan, hints and messages show in the app's language.
+- 🇩🇪 **Diagnose/Export-Seite vollständig in alle Sprachen übersetzt**. Bisher gab es die ganze Diagnose-Seite nur auf Deutsch und Englisch; die übrigen zehn Sprachen (Französisch, Italienisch, Spanisch, Portugiesisch, Niederländisch, Polnisch, Tschechisch, Dänisch, Schwedisch, Finnisch) fielen auf Deutsch zurück. Alle 44 Texte dieser Seite sind jetzt in jede Sprache übersetzt – Schnell-Scan, Komplettscan, Bauteil-Scan, Hinweise und Meldungen erscheinen nun in der Sprache der App.
+
 ## 1.4.85 · November 2026
 - 🇬🇧 **Bike model in the export filename**. The saved diagnostic file now starts with the bike's make and model, e.g. "Canyon 50020630 - selfbike-diagnose-1.4.85.txt", so files people send in are easy to tell apart. Only make and model – no personal data.
 - 🇩🇪 **Fahrrad-Modell im Dateinamen des Exports**. Die gespeicherte Diagnose-Datei beginnt jetzt mit Marke und Modell des Rads, z. B. „Canyon 50020630 - selfbike-diagnose-1.4.85.txt", damit zugeschickte Dateien leicht auseinanderzuhalten sind. Nur Marke und Modell – keine persönlichen Daten.
