@@ -50,6 +50,9 @@ const denied = (key) => S[key]?.status === 'rejected';
 const val = (key) => (ok(key) ? S[key].value : null);
 const txt = (key, fallback = '–') => (ok(key) && S[key].value !== '' && S[key].text ? S[key].text : fallback);
 const dpLabel = (key) => (t(`dp.${key}`) !== `dp.${key}` ? t(`dp.${key}`) : READ_PLAN.find((p) => p.key === key)?.label ?? key);
+// eShift/Di2 nur annehmen, wenn wirklich eine Gangzahl > 0 gelesen wurde – manche Räder antworten auf 8545
+// mit einem leeren/0-Wert (Status ok, aber kein Gang), das darf NICHT als elektronische Schaltung gelten.
+const hasEshift = () => Number.isFinite(val('gearCount')) && val('gearCount') > 0;
 // „1 Eintrag" / „N Einträge" – Singular/Plural für Zähltexte
 const entries = (n) => (n === 1 ? t('clr.entry1') : t('clr.entryN', { n }));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -159,7 +162,7 @@ function renderHome() {
       <div class="k">${esc(t('tile.battery'))} · ${esc(t('bat.soc'))}</div>
       <div class="n">${soc != null ? esc(fmtNum(soc, 0)) : '–'}<small>%</small></div>
       <div class="meter"><i style="width:${Math.max(0, Math.min(100, soc ?? 0))}%;${soc != null && soc < 20 ? 'background:var(--self-yellow)' : ''}"></i></div>
-      <div class="c">${hText ? `<span class="${hKind}">${esc(t('tile.health', { health: hText }))}</span> · ` : ''}${esc(txt('batteryRiderWh', '') ? t('tile.remaining', { wh: txt('batteryRiderWh') }) : '')}</div>
+      <div class="c">${hText ? `<span class="${hKind}">${esc(t('tile.health', { health: hText }))}</span> · ` : ''}${esc(txt('batteryRiderWh', '') ? t('tile.remaining', { wh: txt('batteryRiderWh') }) : '')}${ok('battery2Soc') ? ` · ${esc(t('tile.extra', { soc: fmtNum(val('battery2Soc'), 0) }))}` : ''}</div>
     </button>
     ${checkTile()}
     <div class="tile"><div class="k">${esc(t('ui.km'))}</div>
@@ -314,12 +317,12 @@ function renderAll() {
 // (gemeinsamer Cache S; ein schon laufender Request wird geteilt), danach die Seite neu gezeichnet. Der Kern ist
 // der einzige automatische Teil beim Verbinden; ein Nachladen blockiert ihn nicht (es läuft erst nach dem Öffnen).
 const PAGE_LAZY = {
-  battery: ['batteryCapacityAh', 'batteryDeliveredAh', 'batteryEnergy', 'batteryVoltage', 'batteryMaxCurrent', 'batteryTempNow', 'batteryFetTemp', 'batteryThermal', 'batteryDeepDischarge', 'batterySelfDischarge', 'batteryTempMax', 'batteryTempMin', 'batteryCycles', 'batteryRemainingWh'],
+  battery: ['batteryCapacityAh', 'batteryDeliveredAh', 'batteryEnergy', 'batteryVoltage', 'batteryMaxCurrent', 'batteryTempNow', 'batteryFetTemp', 'batteryThermal', 'batteryDeepDischarge', 'batterySelfDischarge', 'batteryTempMax', 'batteryTempMin', 'batteryCycles', 'batteryRemainingWh', 'battery2Product'],
   // Reichweite nutzt lib/care.js (rangeEstimate + Akku-Werte) – dieselben Akku-Detailwerte, geteilter Cache.
   range: ['rideStats', 'batteryCapacityAh', 'batteryEnergy', 'batteryRemainingWh', 'batteryCycles', 'batteryTempMax', 'batteryTempMin', 'batteryTempNow', 'batteryThermal', 'batteryDeepDischarge'],
   stats: ['rideStats', 'powerOnHours', 'motorHours', 'cadence'],
   details: ['motorMade', 'batteryMade', 'controllerMade', 'absMade', 'absName', 'absMode', 'absSoftware', 'absModes', 'absDisc', 'absUpdates', 'gearCount', 'gearNow', 'gearCadence', 'gearCadenceLimits', 'rangeExtender', 'wheelOem', 'wheelUser', 'maxGearRatio', 'motorCutOff', 'speedTolerance', 'bikeCategory', 'regioRequired', 'regioAvailable', 'componentLock', 'assistModesUpper', 'assistModesLower', 'udamModPossible', 'motorPowerLimit', 'motorTorqueLimit'],
-  components: ['absName', 'absMode', 'absSoftware', 'battery2Product', 'battery2Software', 'battery2Hardware', 'battery2Soc', 'headProduct', 'headSoftware', 'headHardware', 'connectProduct', 'connectSoftware', 'connectHardware', 'speedManip', 'gearCount', 'gearNow'],
+  components: ['absName', 'absMode', 'absSoftware', 'battery2Product', 'battery2Software', 'battery2Hardware', 'headProduct', 'headSoftware', 'headHardware', 'connectProduct', 'connectSoftware', 'connectHardware', 'speedManip', 'gearCount', 'gearNow'],
 };
 const DIAG_BY_KEY = new Map(DIAG_PLAN.map((p) => [p.key, p]));
 const ALL_LAZY = DIAG_PLAN.map((p) => p.key);
@@ -704,6 +707,8 @@ const PAGES = {
   // Akku: oben der Akku-Check mit Bewertung, darunter die übrigen Werte (Gesundheit, Zyklen,
   // Tiefentladung und Überhitzung stehen schon im Check)
   battery() {
+    // Zusatzakku (PowerMore) nur zeigen, wenn verbaut (mind. Ladezustand oder Modell gelesen).
+    const hasBat2 = ok('battery2Soc') || ok('battery2Product');
     return {
       title: t('more.battery'),
       html: `${PAGES.batterycheck().html}<p class="gh">${esc(t('more.battery'))}</p>${infoGroup([
@@ -714,7 +719,12 @@ const PAGES = {
         ok('batteryTempNow') && [t('more.tempNow'), `${txt('batteryTempNow')} · ${txt('batteryFetTemp')}`, t('more.tempNowHint')],
         ok('batterySelfDischarge') && [t('more.selfDischarge'), txt('batterySelfDischarge'), ''],
         [t('bat.model'), withProductName(txt('batteryProduct')), ''],
-      ])}`,
+      ])}${hasBat2 ? `<p class="gh">${esc(t('comp.battery2'))}</p>${infoGroup([
+        ok('battery2Soc') && [t('bat.soc'), txt('battery2Soc'), ''],
+        ok('battery2Soh') && [t('bat.soh'), txt('battery2Soh'), ''],
+        ok('battery2Capacity') && [t('more.capacity'), txt('battery2Capacity'), ''],
+        ok('battery2Product') && [t('bat.model'), withProductName(txt('battery2Product')), ''],
+      ])}` : ''}`,
     };
   },
 
@@ -765,7 +775,10 @@ const PAGES = {
       const months = Math.max(0, Math.round((Date.now() - new Date(+m[3], +m[2] - 1, +m[1])) / (30.44 * 86400000)));
       return [txt(key), months < 24 ? t('more.months', { n: months }) : t('more.years', { n: fmtNum(months / 12, 1) })];
     };
-    const ages = [['comp.motor', 'motorMade'], ['comp.battery', 'batteryMade'], ['comp.controller', 'controllerMade'], ['fault.ABS', 'absMade']]
+    // Bauteil-Alter für alles, was verbaut ist – ageText liefert nur eine Zeile, wenn ein Herstelldatum gelesen wurde,
+    // nicht verbaute Teile (Zusatzakku/Display/Connect) fallen also automatisch weg.
+    const ages = [['comp.motor', 'motorMade'], ['comp.battery', 'batteryMade'], ['comp.battery2', 'battery2Made'],
+      ['comp.controller', 'controllerMade'], ['comp.display', 'headMade'], ['comp.connect', 'connectMade'], ['fault.ABS', 'absMade']]
       .map(([label, key]) => { const a = ageText(key); return a ? [t(label), a[0], a[1]] : null; });
     const wheelSame = ok('wheelOem') && ok('wheelUser') && val('wheelOem') === val('wheelUser');
     const section = (title, items) => (items.some(Boolean) ? `<p class="gh">${esc(title)}</p>${infoGroup(items)}` : '');
@@ -774,7 +787,7 @@ const PAGES = {
       html: [
         section(t('more.ages'), ages),
         ages.some(Boolean) ? `<p class="foot">${esc(t('more.warrantyHint'))}</p>` : '',
-        ok('gearCount') ? section(t('more.eshift'), [
+        hasEshift() ? section(t('more.eshift'), [
           [t('more.gears'), txt('gearCount'), ok('gearNow') ? t('more.gearNow', { g: txt('gearNow') }) : ''],
           ok('gearCadence') && [t('more.cadence'), txt('gearCadence'), ok('gearCadenceLimits') ? t('more.cadenceRange', { r: txt('gearCadenceLimits') }) : ''],
         ]) : '',
@@ -892,7 +905,7 @@ const PAGES = {
       ...(ok('headProduct') ? [[t('comp.display'), withProductName(txt('headProduct')), t('versions', { sw: txt('headSoftware'), hw: txt('headHardware') })]] : []),
       ...(ok('connectProduct') ? [[t('comp.connect'), withProductName(txt('connectProduct')), t('versions', { sw: txt('connectSoftware'), hw: txt('connectHardware') })]] : []),
       ...(ok('absName') ? [[t('fault.ABS'), txt('absName'), `${t('abs.mode', { m: txt('absMode') })} · Software ${txt('absSoftware')}`]] : []),
-      ...(ok('gearCount') ? [[t('comp.shift'), t('comp.shiftVal'), `${t('comp.gears', { n: txt('gearCount') })}${ok('gearNow') ? ` · ${t('more.gearNow', { g: txt('gearNow') })}` : ''}`]] : []),
+      ...(hasEshift() ? [[t('comp.shift'), t('comp.shiftVal'), `${t('comp.gears', { n: txt('gearCount') })}${ok('gearNow') ? ` · ${t('more.gearNow', { g: txt('gearNow') })}` : ''}`]] : []),
       [t('check.region'), txt('region'), ok('maxAssistSpeed') ? `${t('check.speed', { v: txt('maxAssistSpeed') })}${ok('maxLegalSpeed') ? ` · ${t('check.legal', { v: txt('maxLegalSpeed') })}` : ''}` : ''],
       [dpLabel('tuning'), txt('tuning'), t('check.tuningHint'), tuning ? (tuning.flag || tuning.counter ? 'bad' : 'good') : ''],
       ...(ok('speedManip') ? [[dpLabel('speedManip'), txt('speedManip'), '', val('speedManip')?.status ? 'bad' : 'good']] : []),

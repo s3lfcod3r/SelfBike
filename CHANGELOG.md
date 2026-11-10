@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.73 · November 2026
+- 🇬🇧 **Extra battery shown + eShift no longer falsely reported** (from a Kalkhoff user's report): a second battery (e.g. PowerMore 250) now appears on the home tile ("· Extra X %", next to the main charge, not mixed into it), in "Battery in detail" (its own block with charge, health, capacity, model) and under component age in "More details". And electronic shifting (eShift/Di2) is only shown when an actual gear count is read — bikes without eShift no longer get a wrong "electronic (eShift/Di2)" line on the Components page.
+- 🇩🇪 **Zusatzakku angezeigt + eShift nicht mehr falsch gemeldet** (aus der Rückmeldung eines Kalkhoff-Fahrers): Ein zweiter Akku (z. B. PowerMore 250) erscheint jetzt auf der Startseiten-Kachel („· Zusatz X %", neben dem Hauptakku, nicht hineingerechnet), unter „Akku im Detail" (eigener Block mit Ladezustand, Gesundheit, Kapazität, Modell) und beim Bauteil-Alter unter „Mehr Details". Und die elektronische Schaltung (eShift/Di2) wird nur noch angezeigt, wenn wirklich eine Gangzahl gelesen wird — Räder ohne eShift bekommen auf der Komponenten-Seite keine falsche „elektronisch (eShift/Di2)"-Zeile mehr.
+
 ## 1.4.72 · November 2026
 - 🇬🇧 **Log is now a copyable console**: the "Log" under Save is now the raw technical session log — a command-line style, monospace view of every action with its time and the write/read-back lines (“WRITE … → …”, “OK … read back …”), with a **Copy log** button (handy for a support question). Replaces the formatted cards from 1.4.71. It lives in the browser only and is gone after disconnecting.
 - 🇩🇪 **Protokoll ist jetzt eine kopierbare Konsole**: Das „Protokoll" unter Sichern ist jetzt das rohe technische Sitzungs-Log – eine Kommandozeilen-Ansicht in Festbreitenschrift mit jeder Aktion samt Zeit und den Schreib-/Rücklese-Zeilen („SCHREIBE … → …“, „OK … zurückgelesen …“), mit einem **Protokoll-kopieren**-Knopf (praktisch für eine Rückfrage). Ersetzt die formatierten Karten aus 1.4.71. Lebt nur im Browser und ist nach dem Trennen weg.
