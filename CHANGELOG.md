@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.77 · November 2026
+- 🇬🇧 **Honest wording for the complete scan**: the "several hours" warning was overstated. The hint and confirmation now just say it takes a while — noticeably longer in a desktop browser than on a phone (with a USB-OTG adapter) — and that you should try it yourself. You can still stop anytime; what's read stays.
+- 🇩🇪 **Ehrlicher Text beim Komplett-Scan**: Der Hinweis „mehrere Stunden" war übertrieben. Hinweis und Bestätigung sagen jetzt nur noch, dass es eine Weile dauert — im PC-Browser spürbar länger als am Handy (mit USB-OTG-Adapter) — und dass man es am besten selbst ausprobiert. Stoppen geht weiterhin jederzeit, das Gelesene bleibt erhalten.
+
 ## 1.4.76 · November 2026
 - 🇬🇧 **Diagnose / Export simplified**: the redundant "Read known values" button is gone — connecting to the bike already reads those. The green **Complete scan (all addresses)** button now sits at the top, and below it each component (battery, ABS, Connect, display …) can still be scanned on its own with a tap.
 - 🇩🇪 **Diagnose / Export aufgeräumt**: Der doppelte Knopf „Bekannte Werte auslesen" ist weg — das passiert ohnehin schon beim Verbinden. Der grüne **Kompletter Scan (alle Adressen)** steht jetzt oben, und darunter lässt sich weiterhin jedes Bauteil (Akku, ABS, Connect, Display …) mit einem Tipp einzeln scannen.
