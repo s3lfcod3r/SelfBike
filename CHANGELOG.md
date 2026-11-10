@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.87 · November 2026
+- 🇬🇧 **PDF report & component pages now fully translated too**. The remaining 35 labels that still appeared in German in the ten non-German/English languages – the data-point names of the newer components (second battery, display, Connect module, charge window, assist modes, motor power/torque limits, etc.) and their group headings – are now translated in every language. With this, the whole app and the PDF report are fully localised in all 12 languages; nothing falls back to German anymore.
+- 🇩🇪 **PDF-Report & Bauteil-Seiten jetzt ebenfalls komplett übersetzt**. Die letzten 35 Bezeichnungen, die in den zehn Nicht-DE/EN-Sprachen noch auf Deutsch standen – die Datenpunkt-Namen der neueren Bauteile (Zusatzakku, Display, Connect-Modul, Ladefenster, Fahrmodi, Motorleistung/-drehmoment-Grenze usw.) und ihre Gruppen-Überschriften – sind jetzt in jeder Sprache übersetzt. Damit sind die gesamte App und der PDF-Report in allen 12 Sprachen vollständig lokalisiert; nichts fällt mehr auf Deutsch zurück.
+
 ## 1.4.86 · November 2026
 - 🇬🇧 **Diagnostics / Export page fully translated into all languages**. Until now the whole Diagnostics page only existed in German and English; the other ten languages (French, Italian, Spanish, Portuguese, Dutch, Polish, Czech, Danish, Swedish, Finnish) fell back to German. All 44 texts of that page are now translated into every language, so the quick scan, complete scan, component scan, hints and messages show in the app's language.
 - 🇩🇪 **Diagnose/Export-Seite vollständig in alle Sprachen übersetzt**. Bisher gab es die ganze Diagnose-Seite nur auf Deutsch und Englisch; die übrigen zehn Sprachen (Französisch, Italienisch, Spanisch, Portugiesisch, Niederländisch, Polnisch, Tschechisch, Dänisch, Schwedisch, Finnisch) fielen auf Deutsch zurück. Alle 44 Texte dieser Seite sind jetzt in jede Sprache übersetzt – Schnell-Scan, Komplettscan, Bauteil-Scan, Hinweise und Meldungen erscheinen nun in der Sprache der App.
