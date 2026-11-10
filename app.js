@@ -1229,6 +1229,34 @@ function diagStillAlive(a, r) {
   }
   return true;
 }
+// Erinnerung während des langen Komplettscans: alle paar Minuten „Taste am Bike drücken“, damit das
+// Bosch-System nicht nach ~10 Min Auto-Off abschaltet. Ein Tastendruck setzt den Timer wirklich zurück.
+let keepAwakeTimer = null;
+function startKeepAwake() {
+  const n = $('progNudge');
+  if (n) { n.textContent = t('diag.keepAwake'); n.classList.remove('hidden'); }
+  clearInterval(keepAwakeTimer);
+  keepAwakeTimer = setInterval(() => {
+    const el = $('progNudge'); if (!el) return;
+    el.textContent = t('diag.keepAwakeNow');
+    try { navigator.vibrate && navigator.vibrate([400, 150, 400]); } catch { /* egal */ }
+    setTimeout(() => { const e2 = $('progNudge'); if (e2 && keepAwakeTimer) e2.textContent = t('diag.keepAwake'); }, 9000);
+  }, 6 * 60 * 1000); // alle 6 Minuten (Auto-Off ~10 Min)
+}
+function stopKeepAwake() {
+  clearInterval(keepAwakeTimer); keepAwakeTimer = null;
+  const n = $('progNudge'); if (n) n.classList.add('hidden');
+}
+// Komplettscan-Fortschritt pro Rad lokal merken, damit nach einem Abbruch (Bike-Auto-Off, Kabel) beim
+// nächsten Verbinden weitergemacht werden kann. Nur im Browser, wird nie exportiert/geteilt.
+const SCAN_KEY = 'selfbike-scan-progress';
+function loadScanProgress() {
+  try { const d = JSON.parse(localStorage.getItem(SCAN_KEY)); return (d && typeof d.nextAddr === 'number' && Array.isArray(d.entries)) ? d : null; } catch { return null; }
+}
+function saveScanProgress(bikeId, nextAddr) {
+  try { localStorage.setItem(SCAN_KEY, JSON.stringify({ bikeId, nextAddr, entries: [...diag.map], at: Date.now() })); } catch { /* Quota o. ä. – in-memory reicht meist */ }
+}
+function clearScanProgress() { try { localStorage.removeItem(SCAN_KEY); } catch { /* egal */ } }
 // Scan-Fortschritt als runder Kreis im selben Popup wie beim Verbinden (0–100 %), mit Stopp-Knopf im Popup,
 // damit auch der lange Komplettscan abbrechbar bleibt. Nach dem Scan kurz „fertig/gestoppt“, dann automatisch zu.
 function diagRingStart(title) {
@@ -1237,6 +1265,7 @@ function diagRingStart(title) {
   $('progLog').textContent = `${title}\n`; $('progLog').classList.remove('hidden');
   $('progKofi').classList.add('hidden');
   $('progDone').classList.add('hidden');
+  $('progNudge')?.classList.add('hidden'); // nur der lange Komplettscan zeigt die „Taste drücken“-Erinnerung
   const stop = $('progStop'); if (stop) { stop.classList.remove('hidden'); stop.onclick = () => { diag.stop = true; }; }
   ring(0); progStatus('');
   acquireWake();
@@ -1289,20 +1318,47 @@ async function diagRunScan() {
 // Kompletter Scan über den ganzen gültigen Adressraum (0–32767). Dauert lange, jederzeit per Stopp abbrechbar.
 async function diagRunFull() {
   if (!reader || diag.busy) return;
-  if (!confirm(t('diag.fullConfirm'))) return;
-  diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
-  log('Kompletter Scan (0–32767) gestartet');
   const MAX = 0x7fff;
-  let hits = 0; diagErrStreak = 0;
-  for (let a = 0; a <= MAX; a++) {
+  const bikeId = val('motorBikeId') || '';
+  // Unterbrochenen Scan dieses Rads fortsetzen? Sonst normal von vorne bestätigen.
+  const saved = loadScanProgress();
+  const canResume = !!saved && saved.bikeId === bikeId && saved.nextAddr > 0 && saved.nextAddr <= MAX;
+  let start = 0;
+  if (canResume) {
+    if (confirm(t('diag.resumeAsk', { a: saved.nextAddr }))) {
+      start = saved.nextAddr;
+      if (diag.map.size === 0) for (const [k, v] of saved.entries) diag.map.set(k, v); // nach Reload wiederherstellen
+    } else {
+      clearScanProgress(); diag.map.clear();
+      if (!confirm(t('diag.fullConfirm'))) return;
+    }
+  } else if (!confirm(t('diag.fullConfirm'))) {
+    return;
+  }
+  if (start === 0) { diag.map.clear(); clearScanProgress(); } // frischer Komplettscan beginnt sauber
+  diagSetBusy(true); diagRingStart(t('diag.scanTitle'));
+  startKeepAwake();
+  log(start > 0 ? `Kompletter Scan ab Adresse ${start} fortgesetzt` : 'Kompletter Scan (0–32767) gestartet');
+  let hits = [...diag.map.values()].filter((r) => r.status === 'ok').length;
+  diagErrStreak = 0;
+  let a;
+  for (a = start; a <= MAX; a++) {
     if (diag.stop) break;
     const r = await diagReadAddr(a, 400);
     if (!diagStillAlive(a, r)) break;
     if (r.status === 'ok' || r.status === 'rejected' || r.status === 'private') { diag.map.set(a, r); if (r.status === 'ok') { hits++; diagLog(diagHitLine(a, r)); } }
+    if ((a & 0x3ff) === 0) saveScanProgress(bikeId, a + 1); // Checkpoint alle 1024 (übersteht auch einen Reload)
     if ((a & 0x1f) === 0) { const s = t('diag.fullProgress', { a, max: MAX, hits }); diagStatusLine(s); diagRing((a + 1) / (MAX + 1), s); }
   }
+  stopKeepAwake();
   diagSetBusy(false); diagRingDone(diag.stop); redrawDiag();
-  log(`Kompletter Scan beendet: ${hits} mit Daten, bis Adresse ${diag.map.size ? [...diag.map.keys()].pop() : 0}`);
+  if (a > MAX) {
+    clearScanProgress();
+    log(`Kompletter Scan fertig: ${hits} mit Daten`);
+  } else {
+    saveScanProgress(bikeId, a);
+    log(`Kompletter Scan unterbrochen bei Adresse ${a}: ${hits} mit Daten – gespeichert, Weitermachen beim nächsten Verbinden möglich`);
+  }
 }
 function diagText() {
   const name = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim();
@@ -1341,6 +1397,7 @@ async function refresh() {
   $('progKofi').classList.add('hidden');
   $('progDone').classList.add('hidden');
   $('progStop')?.classList.add('hidden'); // nur der Diagnose-Scan hat den Stopp-Knopf
+  $('progNudge')?.classList.add('hidden');
   ring(0);
   progStatus(t('msg.reading', { n: 0, total: CORE_PLAN.length }));
   acquireWake(); // Bildschirm beim Verbinden/Auslesen wach halten (Handy)
