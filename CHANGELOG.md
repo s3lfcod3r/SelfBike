@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.88 · November 2026
+- 🇬🇧 **README updated for the new features**. The GitHub README now lists what was added recently: the diagnostics page with quick scan (known areas, ~1 min, avoids the bike's auto-off) and full scan, the resumable scan, the text export with the bike model in the file name, clearing the fault memory by selection from the main app, and the stricter export redaction (serial numbers and unknown values blacked out, no raw hex). No app code changed – documentation only.
+- 🇩🇪 **README an die neuen Funktionen angepasst**. Das GitHub-README listet jetzt, was zuletzt dazugekommen ist: die Diagnose-Seite mit Schnell-Scan (bekannte Bereiche, ~1 Min, umgeht das Auto-Off des Rads) und Komplett-Scan, den abbruchsicheren Scan, den Text-Export mit Fahrradmodell im Dateinamen, das gezielte Löschen des Fehlerspeichers aus der Haupt-App und die schärfere Export-Schwärzung (Seriennummern und unbekannte Werte geschwärzt, kein Roh-Hex). Kein App-Code geändert – nur Dokumentation.
+
 ## 1.4.87 · November 2026
 - 🇬🇧 **PDF report & component pages now fully translated too**. The remaining 35 labels that still appeared in German in the ten non-German/English languages – the data-point names of the newer components (second battery, display, Connect module, charge window, assist modes, motor power/torque limits, etc.) and their group headings – are now translated in every language. With this, the whole app and the PDF report are fully localised in all 12 languages; nothing falls back to German anymore.
 - 🇩🇪 **PDF-Report & Bauteil-Seiten jetzt ebenfalls komplett übersetzt**. Die letzten 35 Bezeichnungen, die in den zehn Nicht-DE/EN-Sprachen noch auf Deutsch standen – die Datenpunkt-Namen der neueren Bauteile (Zusatzakku, Display, Connect-Modul, Ladefenster, Fahrmodi, Motorleistung/-drehmoment-Grenze usw.) und ihre Gruppen-Überschriften – sind jetzt in jeder Sprache übersetzt. Damit sind die gesamte App und der PDF-Report in allen 12 Sprachen vollständig lokalisiert; nichts fällt mehr auf Deutsch zurück.

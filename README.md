@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.4.87-33A78C)
+![Version](https://img.shields.io/badge/version-1.4.88-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -29,7 +29,7 @@ SelfBike reads your **own Bosch Smart System e-bike** over USB and lets you chan
 
 Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker …) — same design system; deployed as a static site on GitHub Pages.
 
-> **TL;DR** — motor · battery health · charge cycles · fault memory · ride stats · safe settings with backup & read-back · PDF report · demo mode · 12 languages · no install
+> **TL;DR** — motor · battery health · charge cycles · fault memory (read & clear) · diagnostics scan · ride stats · safe settings with backup & read-back · PDF report · demo mode · 12 languages · no install
 
 > **⚠️ Unofficial project:** SelfBike has no connection to Robert Bosch GmbH or any bike manufacturer. Use at your own risk — changes to e-bike electronics can affect warranty and road safety.
 
@@ -45,7 +45,13 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 - **Overview** — motor, battery, display/remote, ABS, eShift, odometer
 - **Battery** — state of charge, health, charge cycles, battery check with rules of thumb, range estimate
 - **Ride data** — ride statistics, distance and energy per assist mode, history over time (stored in your browser)
-- **Fault memory** — read only; every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature")
+- **Fault memory** — read, **and clear by selection** (verified on the bike for motor, control unit and battery); every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature")
+
+**🩺 Diagnostics & export**
+- **Quick scan** of the known address ranges (battery, motor, display, Connect …) in about a minute — reads every answering value without touching the ~30,000 noise addresses, so the bike doesn't hit its ~10-minute auto-off mid-scan
+- **Full scan** of all addresses when you really want everything
+- **Resumable** — remembers progress and continues from the last address after a dropout; a keep-awake reminder helps keep the bike on
+- **Text export** with the bike model in the file name; serial numbers and unknown values are redacted (allowlist-based, no raw hex)
 
 **⚙️ Change (only what the manufacturer allows)**
 - Light, service interval, start mode, display language, units, clock, walk assist on/off
@@ -121,8 +127,8 @@ Open `http://localhost:8080` → SelfBike runs locally. Any other static server 
 - **Step by step with read-back** — before each step: same bike, value unchanged since the backup; after each step the value is read back, any mismatch aborts
 - **Never retried automatically**; an interrupted change is remembered
 - **Manufacturer approval** — only values the bike reports as changeable
-- **Hard limits** — assist speed never above 25 km/h, no region / speed-limit writes, fault memory read only
-- **No server, no account** — data stays in your browser (`localStorage` / IndexedDB); serial numbers are shortened in exports
+- **Hard limits** — assist speed never above 25 km/h, no region / speed-limit writes; the fault memory is only cleared by the entries you pick, with a readable snapshot saved first
+- **No server, no account** — data stays in your browser (`localStorage` / IndexedDB); in exports and scans serial numbers and unknown values are redacted (allowlist-based, no raw hex)
 - Bosch fault texts are **not shipped** — SelfBike shows its own classification (area + general tip) instead
 
 Security update history → [CHANGELOG.md](CHANGELOG.md) (entries marked 🔒).
@@ -162,7 +168,7 @@ No build step, no dependencies — edit the files and reload. Start the local se
 
 - [x] Read out motor, battery, display, ABS, eShift and ride data over WebUSB
 - [x] Safe changes with backup, preview, step-by-step read-back
-- [x] Fault memory, PDF report, history, compare, demo mode, 12 languages
+- [x] Fault memory (read & clear by selection), diagnostics quick/full scan, PDF report, history, compare, demo mode, 12 languages
 - [ ] Next steps — tell me what you'd like to see via [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
 
 Trademarks belong to their owners and are only named to describe compatibility.
@@ -187,7 +193,7 @@ SelfBike liest dein **eigenes Bosch-Smart-System-E-Bike** per USB aus und änder
 
 Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker …) — gleiches Design-System; läuft als statische Seite auf GitHub Pages.
 
-> **Kurz** — Motor · Akku-Gesundheit · Ladezyklen · Fehlerspeicher · Fahrstatistik · sichere Einstellungen mit Backup und Rücklesen · PDF-Bericht · Demo-Modus · 12 Sprachen · keine Installation
+> **Kurz** — Motor · Akku-Gesundheit · Ladezyklen · Fehlerspeicher (lesen & löschen) · Diagnose-Scan · Fahrstatistik · sichere Einstellungen mit Backup und Rücklesen · PDF-Bericht · Demo-Modus · 12 Sprachen · keine Installation
 
 > **⚠️ Inoffizielles Projekt:** SelfBike hat keine Verbindung zur Robert Bosch GmbH oder zu Fahrradherstellern. Nutzung auf eigene Gefahr — Änderungen an der E-Bike-Elektronik können Garantie und Verkehrssicherheit betreffen.
 
@@ -203,7 +209,13 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - **Übersicht** — Motor, Akku, Bedieneinheit, ABS, eShift, Kilometer
 - **Akku** — Ladezustand, Gesundheit, Ladezyklen, Akku-Check mit Faustregeln, Reichweiten-Schätzung
 - **Fahrdaten** — Fahrstatistik, Strecke und Energie je Fahrmodus, Verlauf über die Zeit (im Browser gespeichert)
-- **Fehlerspeicher** — nur lesen; jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“)
+- **Fehlerspeicher** — lesen **und gezielt löschen** (am Rad belegt für Motor, Bedieneinheit und Akku); jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“)
+
+**🩺 Diagnose & Export**
+- **Schnell-Scan** der bekannten Adressbereiche (Akku, Motor, Display, Connect …) in etwa einer Minute — liest jeden antwortenden Wert, ohne die ~30.000 Rausch-Adressen abzuklappern, damit das E-Bike nicht mitten im Scan nach ~10 Minuten abschaltet
+- **Kompletter Scan** aller Adressen, wenn du wirklich alles willst
+- **Abbruchsicher** — merkt sich den Fortschritt und macht nach einem Abbruch an der letzten Adresse weiter; eine Erinnerung hilft, das Rad wach zu halten
+- **Text-Export** mit dem Fahrradmodell im Dateinamen; Seriennummern und unbekannte Werte werden geschwärzt (Allowlist-basiert, kein Roh-Hex)
 
 **⚙️ Ändern (nur was der Hersteller freigibt)**
 - Änderungen sind **flag-gesteuert, nicht pauschal gesperrt**: Wo das Hersteller-„änderbar"-Flag `true` meldet, funktioniert das Schreiben nachweislich (am Rad belegt: Licht geschrieben und zurückgelesen, Performance Line CX Gen5 / BDU3843 über IBD ohne Zertifikat). Gesperrt sind **einzelne** Felder (z. B. High-Power-Port, Geschwindigkeitsquelle), die dann nur angezeigt werden. Jede Einstellung wirkt erst, wenn du das E-Bike einmal aus- und wieder einschaltest.
@@ -281,8 +293,8 @@ Selbst betreiben: reines HTML/JS, kein Build — WebUSB braucht `localhost` oder
 - **Schritt für Schritt mit Rücklesen** — vor jedem Schritt: gleiches Fahrrad, Wert unverändert seit dem Backup; nach jedem Schritt wird zurückgelesen, bei Abweichung Abbruch
 - **Nie automatisch wiederholt**; eine unterbrochene Änderung wird gemerkt
 - **Herstellerfreigabe** — nur Werte, die das Fahrrad als „änderbar“ meldet
-- **Harte Grenzen** — Unterstützung nie über 25 km/h, kein Schreiben von Region/Tempolimit, Fehlerspeicher nur lesen
-- **Kein Server, kein Konto** — Daten bleiben in deinem Browser (`localStorage` / IndexedDB); Seriennummern werden beim Export gekürzt
+- **Harte Grenzen** — Unterstützung nie über 25 km/h, kein Schreiben von Region/Tempolimit; der Fehlerspeicher wird nur für die von dir ausgewählten Einträge gelöscht, vorher wird ein lesbarer Stand gesichert
+- **Kein Server, kein Konto** — Daten bleiben in deinem Browser (`localStorage` / IndexedDB); in Export und Scan werden Seriennummern und unbekannte Werte geschwärzt (Allowlist-basiert, kein Roh-Hex)
 - Bosch-Fehlertexte werden **nicht mitgeliefert** — SelfBike zeigt stattdessen eine eigene Einordnung (Bereich + allgemeiner Hinweis)
 
 Verlauf der Sicherheitsupdates → [CHANGELOG.md](CHANGELOG.md) (Einträge mit 🔒).
@@ -322,7 +334,7 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 
 - [x] Motor, Akku, Bedieneinheit, ABS, eShift und Fahrdaten per WebUSB auslesen
 - [x] Sichere Änderungen mit Backup, Vorschau und Rücklesen Schritt für Schritt
-- [x] Fehlerspeicher, PDF-Bericht, Verlauf, Vergleich, Demo-Modus, 12 Sprachen
+- [x] Fehlerspeicher (lesen & gezielt löschen), Diagnose Schnell-/Komplett-Scan, PDF-Bericht, Verlauf, Vergleich, Demo-Modus, 12 Sprachen
 - [ ] Nächste Schritte — Wünsche gern über [Issues](https://github.com/s3lfcod3r/SelfBike/issues)
 
 Marken gehören ihren Inhabern und werden nur genannt, um die Kompatibilität zu beschreiben.
