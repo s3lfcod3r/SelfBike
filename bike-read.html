@@ -124,6 +124,7 @@ import { McspUsb } from './lib/mcsp-usb.js';
 import { BikeReader } from './lib/bike-reader.js';
 import { READ_PLAN } from './lib/datapoints.js';
 import { buildReportHtml } from './lib/report.js';
+import { checkForUpdate } from './lib/version-check.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -143,6 +144,8 @@ let stopRequested = false;
 const logLines = [];
 let snapshot = null;
 try { snapshot = JSON.parse(localStorage.getItem(SNAP_KEY)); } catch { /* kein Speicher */ }
+// Prüfen, ob auf dem Server schon eine neuere Version liegt (gegen gecachte alte Tabs)
+checkForUpdate();
 
 function log(msg) {
   logLines.push(`${new Date().toLocaleTimeString('de-DE')}  ${msg}`);

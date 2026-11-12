@@ -15,6 +15,7 @@ import { loadCatalog, lookupIssue } from './lib/issue-catalog.js';
 import { describeFault, codeHex, bySeverity } from './lib/fault-categories.js';
 import { withProductName } from './lib/product-names.js';
 import { VERSION, CHANGELOG_URL } from './lib/version.js';
+import { checkForUpdate } from './lib/version-check.js';
 import { loadOwnTexts } from './lib/own-fault-texts.js';
 import { buildReportHtml } from './lib/report.js';
 import { addSnapshot, snapshotFromRows, historyFor } from './lib/history.js';
@@ -1642,3 +1643,5 @@ if (isIos()) {
 }
 renderAll();
 if (!discAccepted()) showDisclaimer();
+// Prüfen, ob auf dem Server schon eine neuere Version liegt (gegen gecachte alte Tabs)
+checkForUpdate();
