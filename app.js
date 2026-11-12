@@ -321,7 +321,7 @@ function renderAll() {
 // (gemeinsamer Cache S; ein schon laufender Request wird geteilt), danach die Seite neu gezeichnet. Der Kern ist
 // der einzige automatische Teil beim Verbinden; ein Nachladen blockiert ihn nicht (es läuft erst nach dem Öffnen).
 const PAGE_LAZY = {
-  battery: ['batteryCapacityAh', 'batteryDeliveredAh', 'batteryEnergy', 'batteryVoltage', 'batteryMaxCurrent', 'batteryTempNow', 'batteryFetTemp', 'batteryThermal', 'batteryDeepDischarge', 'batterySelfDischarge', 'batteryTempMax', 'batteryTempMin', 'batteryCycles', 'batteryRemainingWh', 'battery2Product'],
+  battery: ['batteryCapacityAh', 'batteryDeliveredAh', 'batteryEnergy', 'batteryVoltage', 'batteryMaxCurrent', 'batteryTempNow', 'batteryFetTemp', 'batteryThermal', 'batteryDeepDischarge', 'batterySelfDischarge', 'batteryTempMax', 'batteryTempMin', 'batteryCycles', 'batteryRemainingWh', 'battery2Product', 'battery2Voltage', 'battery2MaxCurrent', 'battery2TempNow', 'battery2FetTemp', 'battery2Energy', 'battery2DeliveredAh', 'battery2Cycles', 'battery2TempMax', 'battery2TempMin', 'battery2RemainingWh'],
   // Reichweite nutzt lib/care.js (rangeEstimate + Akku-Werte) – dieselben Akku-Detailwerte, geteilter Cache.
   range: ['rideStats', 'batteryCapacityAh', 'batteryEnergy', 'batteryRemainingWh', 'batteryCycles', 'batteryTempMax', 'batteryTempMin', 'batteryTempNow', 'batteryThermal', 'batteryDeepDischarge'],
   stats: ['rideStats', 'powerOnHours', 'motorHours', 'cadence'],
@@ -726,7 +726,9 @@ const PAGES = {
       ])}${hasBat2 ? `<p class="gh">${esc(t('comp.battery2'))}</p>${infoGroup([
         ok('battery2Soc') && [t('bat.soc'), txt('battery2Soc'), ''],
         ok('battery2Soh') && [t('bat.soh'), txt('battery2Soh'), ''],
-        ok('battery2Capacity') && [t('more.capacity'), txt('battery2Capacity'), ''],
+        ok('battery2Capacity') && [t('more.capacity'), txt('battery2Capacity'), ok('battery2DeliveredAh') ? t('more.delivered', { ah: txt('battery2DeliveredAh'), wh: txt('battery2Energy') }) : ''],
+        ok('battery2Voltage') && [t('more.voltage'), txt('battery2Voltage'), ok('battery2MaxCurrent') ? t('more.maxCurrent', { a: txt('battery2MaxCurrent') }) : ''],
+        ok('battery2TempNow') && [t('more.tempNow'), ok('battery2FetTemp') ? `${txt('battery2TempNow')} · ${txt('battery2FetTemp')}` : txt('battery2TempNow'), ''],
         ok('battery2Product') && [t('bat.model'), withProductName(txt('battery2Product')), ''],
       ])}` : ''}`,
     };
