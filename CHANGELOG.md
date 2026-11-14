@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.93 · November 2026
+- 🇬🇧 **Gen2–Gen4 hint in all languages and highlighted.** The start-page hint for riders of older Bosch systems is now translated into all 12 languages and stands out in yellow so it is not overlooked.
+- 🇩🇪 **Gen2–Gen4-Hinweis in allen Sprachen und hervorgehoben.** Der Hinweis auf der Startseite für Fahrer älterer Bosch-Systeme ist jetzt in alle 12 Sprachen übersetzt und gelb abgesetzt, damit er nicht übersehen wird.
+
 ## 1.4.92 · November 2026
 - 🇬🇧 **Start page points to the Gen2–Gen4 log page.** Below the connect button there is now a short hint for riders of older Bosch systems that leads to the listen-only log page. Nothing changes for Smart System bikes.
 - 🇩🇪 **Startseite verweist auf die Gen2–Gen4-Log-Seite.** Unter dem Verbinden-Knopf steht jetzt ein kurzer Hinweis für Fahrer älterer Bosch-Systeme, der zur reinen Mitlese-Log-Seite führt. Für Smart-System-Räder ändert sich nichts.
