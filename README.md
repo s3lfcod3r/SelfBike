@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.5.4-33A78C)
+![Version](https://img.shields.io/badge/version-1.6.0-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -161,6 +161,7 @@ No build step, no dependencies — edit the files and reload. Start the local se
 - `bike-read.html`, `bike-write.html`, `usb-check.html` — simple expert/test pages for reading, writing and checking the USB connection
 - `gen2-gen4-log.html` — listen-only log recorder for older Bosch systems (Gen2–Gen4, via the display's micro-USB port) to collect data for a future extension
 - `gen2-gen4-read.html` — experimental reader for older Bosch systems (Gen2–Gen4) over WebHID; read-only
+- `can-read.html` + `can-tap/` — listen-only CAN-bus capture (Web Serial + ESP32) to map the broadcast values
 - `fault-clear.html` — expert page for clearing the fault memory. **Verified on the bike** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, protocol 1.2.3): a fault is deleted by its issue id (`DELETE_ISSUE`, wrapped block→delete→unblock), covering the control units that answer the clear channel (motor and control unit proven by real deletes, battery confirmed by the self-test). The display is a latent target – present in the code and on the same clear channel, but not installed on this bike (a Kiox runs as the control unit), so it only applies to bikes with a second display/head unit. ABS was checked and dropped: after answering once it stayed "not readable" across a bike restart, riding and a direct retry, so its clear channel is unreliable here — ABS and the ConnectModule are shown only, not cleared. A readable fault-memory snapshot is downloaded first. The main app's fault page offers the same, selection-based
 - Without a bike: demo mode (`lib/demo-usb.js` + `lib/demo-data.js`) runs the full app including the safety guard
 
@@ -329,6 +330,7 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 - `bike-read.html`, `bike-write.html`, `usb-check.html` — einfache Experten-/Testseiten zum Lesen, Schreiben und Prüfen der USB-Verbindung
 - `gen2-gen4-log.html` — reiner Mitlese-Logger für ältere Bosch-Systeme (Gen2–Gen4, über den Micro-USB-Anschluss am Display), um Daten für eine spätere Erweiterung zu sammeln
 - `gen2-gen4-read.html` — experimenteller Leser für ältere Bosch-Systeme (Gen2–Gen4) über WebHID; nur lesend
+- `can-read.html` + `can-tap/` — Listen-Only-CAN-Bus-Mitschnitt (Web Serial + ESP32) zum Kartieren der Broadcast-Werte
 - `fault-clear.html` — Expertseite zum Löschen des Fehlerspeichers. **Am Rad verifiziert** (Bosch Smart System, Performance Line CX Gen5 / BDU3843, Protokoll 1.2.3): ein Fehler wird über seine Issue-ID gelöscht (`DELETE_ISSUE`, umschlossen von Block→Löschen→Unblock), für die Steuergeräte, die den Löschkanal beantworten (Motor und Bedieneinheit durch echtes Löschen bewiesen, Akku per Selbsttest bestätigt). Das Display ist ein latentes Ziel – im Code vorhanden und auf demselben Löschkanal, auf diesem Rad aber nicht verbaut (ein Kiox läuft als Bedieneinheit), es gilt also nur für Räder mit zweitem Display/HeadUnit. ABS wurde geprüft und verworfen: Nach einer einmaligen Antwort blieb es über Rad-Neustart, Radbewegung und direkten Wiederholversuch „nicht lesbar", der Löschkanal ist hier also nicht zuverlässig – ABS und das ConnectModule werden nur angezeigt, nicht gelöscht. Vorher wird ein lesbarer Fehlerspeicher-Export heruntergeladen. Die Haupt-App bietet dasselbe per Auswahl
 - Ohne Fahrrad: Demo-Modus (`lib/demo-usb.js` + `lib/demo-data.js`) fährt die ganze App samt Sicherheits-Guard
 

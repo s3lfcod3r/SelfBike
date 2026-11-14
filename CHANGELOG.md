@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.6.0 · November 2026
+- 🇬🇧 **CAN tap tools for the locked live values (listen-only).** The eight SecurityAccess-locked values (odometer, voltage, temperature, charge cycles …) are broadcast unencrypted on the Bosch CAN bus. New: an ESP32 listen-only sniffer firmware (can-tap/esp32-listen-only.ino) and a Web Serial capture page (can-read.html) that maps the byte layout — mark idle values, change one thing on the bike, the moving byte is highlighted. No writing, no SecurityAccess; just listening to open broadcasts.
+- 🇩🇪 **CAN-Abgriff-Werkzeuge für die gesperrten Live-Werte (Listen-Only).** Die acht per SecurityAccess gesperrten Werte (Kilometerstand, Spannung, Temperatur, Ladezyklen …) laufen unverschlüsselt als Broadcast über den Bosch-CAN-Bus. Neu: eine ESP32-Listen-Only-Sniffer-Firmware (can-tap/esp32-listen-only.ino) und eine Web-Serial-Mitschnitt-Seite (can-read.html), die die Byte-Belegung kartiert — Ruhewerte merken, eine Sache am Rad ändern, das wandernde Byte wird hervorgehoben. Kein Schreiben, kein SecurityAccess; nur Mithören offener Broadcasts.
+
 ## 1.5.4 · November 2026
 - 🇬🇧 **Gen2-Gen4: clearer locked label.** Protected values are now labelled 'locked (SecurityAccess) - deliberately not included' instead of '... unlock not implemented', to state honestly that the unlock is a deliberate non-goal, not a pending to-do.
 - 🇩🇪 **Gen2-Gen4: klareres Sperr-Label.** Geschuetzte Werte heissen jetzt 'gesperrt (SecurityAccess) - bewusst nicht enthalten' statt '... Freischaltung nicht implementiert', um ehrlich zu sagen, dass die Freischaltung eine bewusste Entscheidung ist, kein offenes To-do.

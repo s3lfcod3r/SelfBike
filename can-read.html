@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SelfBike · CAN-Mitschnitt (Listen-Only)</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#1b1f24; --muted:#5d6673; --line:#dde1e6; --accent:#1f5fd1; --warn:#9a6700; --err:#c62828; --hi:#ffe9a8; --code:#f0f2f5; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111418; --card:#1a1e24; --text:#e6e9ed; --muted:#9aa4b1; --line:#2c323a; --accent:#6ea2ff; --warn:#e3b341; --err:#ff7b72; --hi:#5a4a16; --code:#0d1014; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:900px; margin:0 auto; padding:24px 16px 48px; }
+  header { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  h1 { font-size:1.5rem; margin:0 0 4px; } p.lead { color:var(--muted); margin:0 0 16px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  button { font:inherit; padding:9px 15px; border-radius:9px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button:disabled { opacity:.5; cursor:default; }
+  .note { border-left:3px solid var(--warn); padding:6px 12px; margin:10px 0 0; font-size:.92rem; color:var(--muted); }
+  .status { font-size:.92rem; color:var(--muted); margin:10px 0 0; }
+  table { border-collapse:collapse; width:100%; font:13px/1.4 ui-monospace,Consolas,monospace; }
+  th,td { padding:5px 7px; border-bottom:1px solid var(--line); text-align:left; white-space:nowrap; }
+  th { color:var(--muted); font-weight:600; font-family:system-ui,sans-serif; font-size:12px; }
+  td.id { font-weight:700; } td.cnt { color:var(--muted); text-align:right; }
+  .b { display:inline-block; width:2ch; text-align:center; }
+  .b.hi { background:var(--hi); border-radius:3px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div><h1 data-t="title"></h1><p class="lead" data-t="lead"></p></div>
+    <button id="lang" aria-label="Sprache / Language">EN</button>
+  </header>
+
+  <section>
+    <p class="note" data-t="exp"></p>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="connect" data-t="b_connect"></button>
+      <button id="baseline" disabled data-t="b_baseline"></button>
+      <button id="save" disabled data-t="b_save"></button>
+      <button id="clear" disabled data-t="b_clear"></button>
+      <span class="status" id="status"></span>
+    </div>
+    <p class="status" id="env"></p>
+  </section>
+
+  <section id="tableBox" hidden>
+    <table>
+      <thead><tr><th data-t="h_id"></th><th data-t="h_bytes"></th><th data-t="h_cnt"></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
+
+<script>
+'use strict';
+const T = {
+  de: {
+    title: 'SelfBike · CAN-Mitschnitt', lang: 'EN',
+    lead: 'Offene Broadcasts vom Bosch-CAN-Bus mithören (Listen-Only) und die Byte-Belegung kartieren.',
+    exp: 'Nur Mithören – es wird nichts gesendet. Voraussetzung: ESP32 mit can-tap/esp32-listen-only.ino, Transceiver SN65HVD230, Chrome/Edge am PC. „Verbinden" wählt den seriellen Port.',
+    b_connect: 'Verbinden', b_baseline: 'Ruhewerte merken', b_save: 'Mitschnitt speichern', b_clear: 'Leeren',
+    env_bad: 'Dieser Browser kann kein Web Serial. Bitte Chrome oder Edge am PC über HTTPS verwenden.',
+    connecting: 'Verbinde…', live: '{n} IDs · {f} Frames', stopped: 'Getrennt.',
+    h_id: 'CAN-ID', h_bytes: 'Datenbytes (geänderte hervorgehoben)', h_cnt: 'Frames',
+    baseSet: 'Ruhewerte gemerkt – jetzt eine Sache am Rad ändern, das hervorgehobene Byte ist der Kandidat.',
+    saved: 'Mitschnitt gespeichert.', noPort: 'Kein Port gewählt.', err: 'Fehler: {e}',
+  },
+  en: {
+    title: 'SelfBike · CAN capture', lang: 'DE',
+    lead: 'Listen to the open broadcasts on the Bosch CAN bus (listen-only) and map the byte layout.',
+    exp: 'Listen-only – nothing is sent. Needs an ESP32 running can-tap/esp32-listen-only.ino, an SN65HVD230 transceiver, Chrome/Edge on a PC. “Connect” picks the serial port.',
+    b_connect: 'Connect', b_baseline: 'Mark idle values', b_save: 'Save capture', b_clear: 'Clear',
+    env_bad: 'This browser has no Web Serial. Please use Chrome or Edge on a PC over HTTPS.',
+    connecting: 'Connecting…', live: '{n} IDs · {f} frames', stopped: 'Disconnected.',
+    h_id: 'CAN ID', h_bytes: 'Data bytes (changed ones highlighted)', h_cnt: 'Frames',
+    baseSet: 'Idle values stored – now change one thing on the bike; the highlighted byte is the candidate.',
+    saved: 'Capture saved.', noPort: 'No port selected.', err: 'Error: {e}',
+  },
+};
+let lang = (navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
+const t = (k, v = {}) => (T[lang][k] ?? T.de[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => v[n] ?? '');
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const map = new Map();     // id -> { dlc, bytes:[hex], base:[hex]|null, count }
+let frames = 0, raw = [], running = false, port = null, reader = null, dirty = false;
+const RAW_CAP = 300000;    // Rohzeilen für den Datei-Mitschnitt (gedeckelt)
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
+  $('lang').textContent = t('lang');
+  checkEnv();
+}
+$('lang').onclick = () => { lang = lang === 'de' ? 'en' : 'de'; applyLang(); render(); };
+
+function checkEnv() {
+  const ok = 'serial' in navigator && window.isSecureContext;
+  $('env').textContent = ok ? '' : t('env_bad');
+  $('connect').disabled = !ok || running;
+}
+
+function handleLine(line) {
+  if (!line || line[0] !== 'T') return;                    // '#'-Kommentare ignorieren
+  const m = line.match(/^T([0-9A-Fa-f]{3})([0-8])((?:[0-9A-Fa-f]{2})*)$/);
+  if (!m) return;
+  const id = m[1].toUpperCase(), dlc = +m[2];
+  const bytes = []; for (let k = 0; k < m[3].length; k += 2) bytes.push(m[3].slice(k, k + 2).toUpperCase());
+  let e = map.get(id);
+  if (!e) { e = { dlc, bytes, base: null, count: 0 }; map.set(id, e); }
+  e.dlc = dlc; e.bytes = bytes; e.count++;
+  frames++;
+  if (raw.length < RAW_CAP) raw.push(line);
+  dirty = true;
+}
+
+function render() {
+  if (!map.size) return;
+  $('tableBox').hidden = false;
+  const ids = [...map.keys()].sort();
+  let html = '';
+  for (const id of ids) {
+    const e = map.get(id);
+    const cells = e.bytes.map((b, k) => {
+      const hi = e.base && e.base[k] !== undefined && e.base[k] !== b;
+      return `<span class="b${hi ? ' hi' : ''}">${esc(b)}</span>`;
+    }).join(' ');
+    html += `<tr><td class="id">0x${esc(id)}</td><td>${cells}</td><td class="cnt">${e.count}</td></tr>`;
+  }
+  $('rows').innerHTML = html;
+  $('status').textContent = t('live', { n: map.size, f: frames });
+}
+setInterval(() => { if (dirty) { dirty = false; render(); } }, 200);
+
+async function readLoop() {
+  const dec = new TextDecoderStream();
+  const closed = port.readable.pipeTo(dec.writable).catch(() => {});
+  reader = dec.readable.getReader();
+  let buf = '';
+  try {
+    while (running) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += value;
+      let i;
+      while ((i = buf.indexOf('\n')) >= 0) { handleLine(buf.slice(0, i).trim()); buf = buf.slice(i + 1); }
+      if (buf.length > 4096) buf = buf.slice(-256);        // Schutz gegen Müllstrom
+    }
+  } catch {}
+  await closed;
+}
+
+$('connect').onclick = async () => {
+  try {
+    $('status').textContent = t('connecting');
+    port = await navigator.serial.requestPort();
+    await port.open({ baudRate: 921600 });
+    running = true;
+    $('connect').disabled = true;
+    for (const id of ['baseline', 'save', 'clear']) $(id).disabled = false;
+    readLoop();
+  } catch (e) {
+    $('status').textContent = e.name === 'NotFoundError' ? t('noPort') : t('err', { e: e.message });
+  }
+};
+$('baseline').onclick = () => { for (const e of map.values()) e.base = e.bytes.slice(); $('status').textContent = t('baseSet'); render(); };
+$('clear').onclick = () => { map.clear(); frames = 0; raw = []; $('rows').innerHTML = ''; render(); };
+$('save').onclick = () => {
+  const head = `# SelfBike CAN-Mitschnitt ${new Date().toISOString()}\n# Format: T<ID_hex><DLC><Daten_hex>\n`;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([head + raw.join('\n') + '\n'], { type: 'text/plain' }));
+  a.download = `selfbike-can-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.txt`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $('status').textContent = t('saved');
+};
+
+applyLang();
+</script>
+</body>
+</html>
