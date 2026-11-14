@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.95 · November 2026
+- 🇬🇧 **Gen2-Gen4 reader: more robust connection.** The handshake is now retried several times (like the official tool), the read page listens continuously for responses, and it logs the device HID structure and every frame to help diagnose a real bike.
+- 🇩🇪 **Gen2-Gen4-Leser: robustere Verbindung.** Der Handschlag wird jetzt mehrfach versucht (wie das Original-Tool), die Leseseite lauscht durchgehend auf Antworten und schreibt die HID-Struktur des Geraets sowie jedes Frame ins Protokoll - zur Fehlersuche am echten Rad.
+
 ## 1.4.94 · November 2026
 - 🇬🇧 **Experimental read support for older Bosch systems (Gen2–Gen4).** New page `gen2-gen4-read.html` reads battery, motor and display values from the classic Bosch systems over WebHID (handshake, diagnostic read requests only – nothing is written). Early test stage.
 - 🇩🇪 **Experimentelles Auslesen älterer Bosch-Systeme (Gen2–Gen4).** Neue Seite `gen2-gen4-read.html` liest Akku-, Motor- und Display-Werte der klassischen Bosch-Systeme über WebHID (Handschlag, nur Diagnose-Leseanfragen – es wird nichts geschrieben). Frühes Teststadium.

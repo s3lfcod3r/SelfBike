@@ -138,23 +138,40 @@ function checkEnv() {
   $('connect').disabled = !ok;
 }
 
-// Eine Anfrage senden und auf die passende Antwort warten (WebHID request/response).
-function transact(device, out, { timeout = 500, wantRx = null } = {}) {
-  trace('TX', out);
-  return new Promise((resolve, reject) => {
-    let done = false;
-    const onReport = (e) => {
-      const arr = new Uint8Array(e.data.byteLength);
-      for (let i = 0; i < arr.length; i++) arr[i] = e.data.getUint8(i);
-      if (wantRx != null && arr[2] !== wantRx) return; // fremdes Frame ignorieren
-      finish(() => resolve(arr));
-      trace('RX', arr);
-    };
-    const to = setTimeout(() => finish(() => reject(new Error('timeout'))), timeout);
-    function finish(fn) { if (done) return; done = true; clearTimeout(to); device.removeEventListener('inputreport', onReport); fn(); }
-    device.addEventListener('inputreport', onReport);
-    device.sendReport(0, out).catch((err) => finish(() => reject(err)));
-  });
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const toArr = (dv) => { const a = new Uint8Array(dv.byteLength); for (let i = 0; i < a.length; i++) a[i] = dv.getUint8(i); return a; };
+function logln(s) { report.trace.push(s); $('log').textContent = report.trace.join('\n'); $('logBox').hidden = false; }
+
+// HID-Struktur des echten Geräts protokollieren (hilft bei der Fehlersuche).
+function dumpDevice(device) {
+  const rep = (l) => (l || []).map((r) => '#' + r.reportId).join(',') || '-';
+  logln(`DEV "${device.productName || '?'}" VID=0x${(device.vendorId || 0).toString(16)} PID=0x${(device.productId || 0).toString(16)}`);
+  for (const c of device.collections || []) {
+    logln(`  coll up=0x${(c.usagePage || 0).toString(16)} usage=0x${(c.usage || 0).toString(16)} in=${rep(c.inputReports)} out=${rep(c.outputReports)} feat=${rep(c.featureReports)}`);
+  }
+}
+
+// Eine Anfrage senden, auf passende Antwort warten; lauscht durchgehend (Geräte,
+// die ständig senden) und wiederholt bei Bedarf. Jeder RX wird protokolliert.
+async function exchange(device, out, { match, timeout = 500, tries = 1, label = '' } = {}) {
+  for (let attempt = 0; attempt < tries; attempt++) {
+    const res = await new Promise((resolve) => {
+      let done = false;
+      const onReport = (e) => {
+        const arr = toArr(e.data);
+        trace(`RX(${e.data.byteLength}B)`, arr);
+        if (match(arr)) fin(arr);
+      };
+      const to = setTimeout(() => fin(null), timeout);
+      function fin(v) { if (done) return; done = true; clearTimeout(to); device.removeEventListener('inputreport', onReport); resolve(v); }
+      device.addEventListener('inputreport', onReport);
+      trace('TX' + (label ? ' ' + label : '') + (tries > 1 ? ` #${attempt + 1}` : ''), out);
+      device.sendReport(0, out).catch((err) => { logln('TX-FEHLER ' + err.name + ': ' + err.message); fin(null); });
+    });
+    if (res) return res;
+    await sleep(120);
+  }
+  return null;
 }
 
 let rendered = false;
@@ -168,26 +185,29 @@ $('connect').onclick = async () => {
     const device = list[0];
     if (!device.opened) await device.open();
 
+    dumpDevice(device);
+
     $('status').textContent = t('handshaking');
-    const hres = parseHello(await transact(device, buildHello(1), { timeout: 800 }));
+    // Handschlag mehrfach versuchen – wie die Bosch-Software (Wiederholung).
+    const hbuf = await exchange(device, buildHello(1), { match: (a) => a[0] === 0 && a[1] === 1, timeout: 400, tries: 12, label: 'hello' });
+    const hres = hbuf ? parseHello(hbuf) : { ok: false, reason: 'timeout' };
     if (!hres.ok) { $('status').textContent = t('hs_fail', { r: hres.reason }); report.transport = `fail:${hres.reason}`; showLog(); return; }
     report.transport = hres.transportName;
     $('status').textContent = t('hs_ok', { t: hres.transportName });
 
     // Sitzungen (nicht-schreibend) je Steuergerät starten – Fehler werden toleriert.
     for (const e of new Set(ITEMS.map((i) => i.ecu))) {
-      try { await transact(device, buildSessionFrame(ECU[e].tx), { timeout: 400, wantRx: ECU[e].rx }); } catch {}
+      await exchange(device, buildSessionFrame(ECU[e].tx), { match: (a) => a[2] === ECU[e].rx, timeout: 400, tries: 2, label: 'session ' + e });
     }
 
     $('status').textContent = t('reading');
     let n = 0;
     for (const item of ITEMS) {
-      try {
-        const buf = await transact(device, buildReadFrame(ECU[item.ecu].tx, item.did), { timeout: 500, wantRx: ECU[item.ecu].rx });
-        const r = parseResponse(buf);
-        if (r.ok && r.did === item.did) { report.values[item.key] = item.dec(r.data); n++; }
-        else report.values[item.key] = null;
-      } catch { report.values[item.key] = null; }
+      const buf = await exchange(device, buildReadFrame(ECU[item.ecu].tx, item.did),
+        { match: (a) => { const r = parseResponse(a); return r.ok && r.did === item.did; }, timeout: 500, tries: 2, label: item.key });
+      const r = buf ? parseResponse(buf) : null;
+      if (r && r.ok && r.did === item.did) { report.values[item.key] = item.dec(r.data); n++; }
+      else report.values[item.key] = null;
       render();
     }
     $('status').textContent = t('done', { n, m: ITEMS.length });
