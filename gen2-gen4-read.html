@@ -128,7 +128,8 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 
 const report = { tool: 'selfbike-gen2-gen4-read', createdAt: new Date().toISOString(), transport: null, values: {}, trace: [] };
 const hx = (a) => Array.from(a).map((b) => b.toString(16).padStart(2, '0')).join(' ');
-function trace(dir, bytes) { report.trace.push(`${dir} ${hx(bytes).slice(0, 47)}`); $('log').textContent = report.trace.join('\n'); }
+// Genug Bytes loggen (Header + Länge + Nutzlast), nicht auf 16 Byte kappen.
+function trace(dir, bytes) { report.trace.push(`${dir} ${hx(bytes).slice(0, 29 * 3)}`); $('log').textContent = report.trace.join('\n'); }
 
 function applyLang() {
   document.documentElement.lang = lang;

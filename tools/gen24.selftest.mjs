@@ -68,21 +68,23 @@ const ctx = parseResponse(hex('01 00 23 08 04 62 05 01 A1'));
 check('Status-DID 0x0501 = 0xA1', ctx.ok && ctx.did === 0x0501 && ctx.data[0] === 0xa1,
   JSON.stringify(ctx), 'did 0501 / A1');
 
-// 5) Multiframe (ISO-TP First Frame + Consecutive Frame) – echtes FF aus dem Radlauf
-const ff = frameType(hex('01 00 23 08 10 0E 62 01 22 30 32 37'));
-check('First Frame erkannt (total=14, 6 Startbytes)',
-  ff && ff.kind === 'FF' && ff.total === 14 && ff.data.length === 6 && ff.data[0] === 0x62,
-  JSON.stringify(ff && { kind: ff.kind, total: ff.total, n: ff.data.length }), 'FF/14/6');
+// 5) Multiframe – exakt die am Rad mitgeschnittenen FF+CF-Frames (Anhang = Puffermüll)
+const ff = frameType(hex('01 00 23 08 10 0E 62 01 22 30 32 37 20 81 E5 05'));
+check('First Frame (total=14, 7 Nutzbytes)',
+  ff && ff.kind === 'FF' && ff.total === 14 && ff.data.length === 7 && ff.data[0] === 0x62,
+  JSON.stringify(ff && { kind: ff.kind, total: ff.total, n: ff.data.length }), 'FF/14/7');
 check('Flow Control Bytes', hx(buildFlowControl(0x22).slice(0, 7)) === '01 00 22 08 30 10 05',
   hx(buildFlowControl(0x22).slice(0, 7)), '01 00 22 08 30 10 05');
-const cf1 = frameType(hex('01 00 23 08 21 35 30 30 37 35 34 33'));
-check('Consecutive Frame erkannt (seq 1, 7 Bytes)', cf1 && cf1.kind === 'CF' && cf1.seq === 1 && cf1.data.length === 7,
+const cf1 = frameType(hex('01 00 23 08 21 35 30 30 37 35 34 33 20 1B 65 07'));
+check('Consecutive Frame (seq 1, 7 Nutzbytes)',
+  cf1 && cf1.kind === 'CF' && cf1.seq === 1 && cf1.data.length === 7 && cf1.data[0] === 0x35,
   JSON.stringify(cf1 && { kind: cf1.kind, seq: cf1.seq, n: cf1.data.length }), 'CF/1/7');
-// Zusammensetzen: 6 (FF) + 8 (aus CF, auf total=14 begrenzt) → "027500753..." als Teilenummer
-const assembled = Uint8Array.from([...ff.data, ...cf1.data, 0x30].slice(0, ff.total));
+// FF(7) + CF1(7) = 14, auf Länge begrenzt. Ein zweiter CF wäre überzählig.
+const assembled = Uint8Array.from([...ff.data, ...cf1.data].slice(0, ff.total));
 const pr = parseUds(assembled, 0x23);
-check('Reassembliert → DID 0x0122, 11 Byte Wert', pr.ok && pr.did === 0x0122 && pr.data.length === 11,
-  JSON.stringify({ did: pr.did, n: pr.data && pr.data.length }), 'did 0122 / 11');
+const val = pr.ok ? Array.from(pr.data).map((b) => String.fromCharCode(b)).join('') : '';
+check('Reassembliert → DID 0x0122 = "027 5007543"', pr.ok && pr.did === 0x0122 && val === '027 5007543',
+  JSON.stringify({ did: pr.did && pr.did.toString(16), val }), '0122 / "027 5007543"');
 
 console.log(fails === 0
   ? `\n✓ Gen2–Gen4-Selbsttest bestanden: ${tested} Werte + DTC/Status + Multiframe gegen echte Bytes verifiziert.`

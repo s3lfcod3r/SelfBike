@@ -81,21 +81,26 @@ TX  01 00 22 08 03 22 05 01        RX  01 00 23 08 04 62 05 01 A1               
 TX  01 00 22 08 03 22 01 21        RX  01 00 23 08 04 62 01 21 1F                  # Akku-Variante (Enum 0x1F)
 ```
 
-## Multiframe-Beispiel (Teilenummer, Werte anonymisiert)
+## Multiframe (Teilenummer) — am Rad bestätigte Ausrichtung
 ```
-TX  01 00 22 08 03 22 01 22                                  # read 0x0122
-RX  01 00 22 08 10 0E 62 01 22 XX XX XX XX                   # First Frame: total 0x0E = 14
-TX  01 00 22 08 30 10 05                                     # Flow Control (Clear To Send)
-RX  01 00 23 08 21 XX XX XX XX XX XX XX                      # CF seq 1
+TX   01 00 22 08 03 22 01 22                                 # read 0x0122
+RX   01 00 23 08 10 0E 62 01 22 30 32 37 20 | 81 E5 05       # First Frame: total 0x0E=14, 7 Nutzbytes
+TX   01 00 22 08 30 10 05                                    # Flow Control (Clear To Send)
+RX   01 00 23 08 21 35 30 30 37 35 34 33 | 20 1B 65 07       # CF seq 1, 7 Nutzbytes
+#    (ein zweiter CF ist überzählig — nach 14 Byte ist voll)
 ```
-**Beobachtet am Kiox (BUI330), weicht vom ISO-TP-Standard ab — unbedingt beachten:**
-- Der First Frame trägt hier **7 Nutzbytes**, nicht die üblichen 6. Mit 6 gerechnet
-  landet ein Byte falsch (im Test `…433` statt `…430`).
-- Nach First Frame (7) + **einem** CF (7) sind die 14 Byte voll. Ein zweiter CF ist
-  überschüssig. Zusammensetzen **strikt auf die Längenangabe begrenzen** und danach
-  aufhören — sonst bricht die nächste längere Nutzlast still.
-- Die genaue Byte-Ausrichtung ist gegen einen echten FF+CF-Mitschnitt zu fixieren,
-  nicht zu raten.
+Zusammengesetzt: `62 01 22` + `30 32 37 20 35 30 30 37 35 34 33` = Wert **"027 5007543"**
+(10 Stellen, Bosch-Format `0275 007 543`).
+
+**Regeln (am Kiox/BUI330 bestätigt, weicht vom ISO-TP-Lehrbuch ab):**
+- Header 5 Byte (`01 00 <canRx> <DLC> <PCI>`). FF: `10 <len>` + **7 Nutzbytes**
+  (nicht die üblichen 6!). CF: `2N` + **7 Nutzbytes**.
+- Der Anhang hinter der Nutzlast (`| …`) ist **Puffermüll, kein CRC**: beide CFs haben
+  unterschiedlichen Inhalt, aber identischen Anhang `20 1B 65 07`; ein CRC müsste sich
+  ändern. Die `32 01 F4`-Fragmente in vielen Anhängen sind P2-Werte der Sitzungsantwort,
+  die im Puffer stehen bleiben. Anhang **vollständig über die deklarierte Länge** wegschneiden.
+- Bei der deklarierten Länge stoppen, überzählige CFs verwerfen — aber protokollieren:
+  ein überzähliger CF kann auch ein abgeschnittenes Längenfeld bedeuten.
 
 ## Gesperrt über Kiox-USB (SecurityAccess, NRC 0x33)
 Zustands-/Zählerwerte (Ladestand, Spannung, Temperatur, Ladezyklen, entnommene Ah,

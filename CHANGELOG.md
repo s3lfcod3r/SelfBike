@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.5.2 · November 2026
+- 🇬🇧 **Gen2-Gen4 multiframe fixed against real frames.** The Kiox First Frame carries 7 payload bytes (not the textbook 6); fixing the alignment makes the part number read correctly (e.g. 027 5007543). Trailer bytes after the declared length are buffer garbage (not CRC) and are dropped. The protocol log now shows enough bytes (was cut at 16). Verified by the self-test against the captured FF+CF frames.
+- 🇩🇪 **Gen2-Gen4-Multiframe gegen echte Frames korrigiert.** Der Kiox-First-Frame traegt 7 Nutzbytes (nicht die ueblichen 6); mit der korrigierten Ausrichtung stimmt die Teilenummer (z. B. 027 5007543). Anhang-Bytes hinter der deklarierten Laenge sind Puffermuell (kein CRC) und werden verworfen. Das Protokoll zeigt jetzt genug Bytes (war auf 16 gekappt). Per Selbsttest gegen die mitgeschnittenen FF+CF-Frames geprueft.
+
 ## 1.5.1 · November 2026
 - 🇬🇧 **Gen2-Gen4 reader polish.** Separate counts for read / locked / not-read instead of one total; a tip to close the tab after reading (keep-alive holds the session); fixture now documents DTC 430013 (on-board computer backup battery low) and the observed Kiox First-Frame layout (7 payload bytes) to fix later against raw frames.
 - 🇩🇪 **Gen2-Gen4-Leser Feinschliff.** Getrennte Zaehlung gelesen / gesperrt / nicht gelesen statt einer Summe; Hinweis, den Tab nach dem Auslesen zu schliessen (Keep-alive haelt die Sitzung); Fixture dokumentiert jetzt DTC 430013 (Pufferbatterie Bordcomputer schwach) und das beobachtete Kiox-First-Frame-Layout (7 Nutzbytes) zur spaeteren Fixierung an Rohframes.
