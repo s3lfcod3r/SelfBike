@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.92 · November 2026
+- 🇬🇧 **Start page points to the Gen2–Gen4 log page.** Below the connect button there is now a short hint for riders of older Bosch systems that leads to the listen-only log page. Nothing changes for Smart System bikes.
+- 🇩🇪 **Startseite verweist auf die Gen2–Gen4-Log-Seite.** Unter dem Verbinden-Knopf steht jetzt ein kurzer Hinweis für Fahrer älterer Bosch-Systeme, der zur reinen Mitlese-Log-Seite führt. Für Smart-System-Räder ändert sich nichts.
+
 ## 1.4.91 · November 2026
 - 🇬🇧 **Log page for older Bosch systems (Gen2–Gen4).** New page `gen2-gen4-log.html`: owners of older Bosch drives can connect their display (Intuvia, Kiox, Nyon, Purion) via micro-USB, record what the display reports and save it as a file to send in. The page only listens – nothing is sent to the bike and nothing is changed. The logs are the basis for possibly supporting these generations later.
 - 🇩🇪 **Log-Seite für ältere Bosch-Systeme (Gen2–Gen4).** Neue Seite `gen2-gen4-log.html`: Wer einen älteren Bosch-Antrieb fährt, kann sein Display (Intuvia, Kiox, Nyon, Purion) per Micro-USB anschließen, aufzeichnen, was das Display meldet, und das als Datei speichern und einschicken. Die Seite liest nur mit – es wird nichts an das Fahrrad gesendet und nichts verändert. Die Logs sind die Grundlage, um diese Generationen später eventuell zu unterstützen.

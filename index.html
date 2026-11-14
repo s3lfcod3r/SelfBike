@@ -103,6 +103,9 @@
   .btn-big.plain { background: var(--self-bg-2); color: var(--self-teal-bright); border: 1px solid var(--self-line); }
   .btn-text { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 15px; }
   .btn-text.red { color: var(--self-red); }
+  .gen-hint { display: block; margin: 22px 0 0; padding: 14px 4px 0; border-top: 1px solid var(--self-line-strong); font-size: 14px; color: var(--self-text-2); text-decoration: none; }
+  .gen-hint b { display: block; color: var(--self-teal-bright); margin-bottom: 2px; }
+  .gen-hint:hover b, .gen-hint:focus-visible b { text-decoration: underline; }
 
   .card { background: var(--self-bg-2); border: 1px solid var(--self-line); border-radius: 18px; padding: 22px 18px; margin-top: 10px; text-align: center; }
   .card .logo { width: 64px; height: 64px; margin: 0 auto 8px; display: block; }
@@ -182,6 +185,7 @@
       <p class="alert hidden" id="insecure"></p>
       <button class="btn-big" id="connect" data-i18n="ui.connect"></button>
       <button class="btn-text" id="demoStart" data-i18n="ui.demo"></button>
+      <a class="gen-hint" href="gen2-gen4-log.html"><b data-i18n="gen.title"></b><span data-i18n="gen.text"></span></a>
     </div>
     <div id="home" class="hidden">
       <div class="alert hidden" id="pendingHint"></div>
