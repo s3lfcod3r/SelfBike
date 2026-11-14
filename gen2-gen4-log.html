@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SelfBike · Gen2–Gen4 Log</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
+    --line: #dde1e6; --accent: #1f5fd1; --ok: #1a7f37; --warn: #9a6700; --err: #c62828;
+    --code: #f0f2f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1e24; --text: #e6e9ed; --muted: #9aa4b1;
+      --line: #2c323a; --accent: #6ea2ff; --ok: #56d364; --warn: #e3b341; --err: #ff7b72;
+      --code: #0d1014;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 0 0 12px; }
+  p.lead { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+            padding: 16px; margin-bottom: 16px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button { font: inherit; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line);
+           background: var(--card); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  table { border-collapse: collapse; width: 100%; }
+  td { padding: 4px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td:first-child { color: var(--muted); width: 40%; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .err { color: var(--err); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px;
+        overflow-x: auto; font: 12.5px/1.45 ui-monospace, Consolas, monospace; margin: 0;
+        max-height: 320px; }
+  .hint { color: var(--muted); font-size: .9rem; margin: 10px 0 0; }
+  .note { border-left: 3px solid var(--warn); padding: 6px 12px; margin: 12px 0 0; font-size: .92rem; }
+  .device { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 12px; }
+  .badge { display: inline-block; font-size: .8rem; padding: 1px 8px; border-radius: 99px;
+           border: 1px solid currentColor; margin-left: 6px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+  label { display: block; font-size: .88rem; color: var(--muted); }
+  input[type=text] { width: 100%; font: inherit; margin-top: 3px; padding: 7px 10px; border-radius: 8px;
+          border: 1px solid var(--line); background: var(--bg); color: var(--text); }
+  ol { margin: 0; padding-left: 20px; } ol li { margin-bottom: 4px; }
+  #counter { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="lead" data-t="lead"></p>
+    </div>
+    <button id="lang" aria-label="Sprache / Language">EN</button>
+  </header>
+
+  <section>
+    <h2 data-t="h_how"></h2>
+    <ol>
+      <li data-t="how1"></li>
+      <li data-t="how2"></li>
+      <li data-t="how3"></li>
+      <li data-t="how4"></li>
+    </ol>
+    <p class="note" data-t="safe"></p>
+  </section>
+
+  <section>
+    <h2 data-t="h_env"></h2>
+    <table id="env"></table>
+  </section>
+
+  <section>
+    <h2 data-t="h_bike"></h2>
+    <div class="grid">
+      <label><span data-t="f_motor"></span><input type="text" id="f_motor" maxlength="80" placeholder="Performance Line CX Gen4"></label>
+      <label><span data-t="f_display"></span><input type="text" id="f_display" maxlength="80" placeholder="Intuvia / Kiox / Nyon / Purion"></label>
+      <label><span data-t="f_year"></span><input type="text" id="f_year" maxlength="20" placeholder="2020"></label>
+      <label><span data-t="f_battery"></span><input type="text" id="f_battery" maxlength="80" placeholder="PowerTube 625"></label>
+    </div>
+    <p class="hint" data-t="bike_hint"></p>
+  </section>
+
+  <section>
+    <h2 data-t="h_find"></h2>
+    <div class="row">
+      <button class="primary" id="hidBosch" data-t="b_hidBosch"></button>
+      <button id="hidAll" data-t="b_hidAll"></button>
+      <button id="usbAll" data-t="b_usbAll"></button>
+    </div>
+    <p class="hint" data-t="find_hint"></p>
+    <div id="devices"></div>
+  </section>
+
+  <section>
+    <h2 data-t="h_rec"></h2>
+    <div class="row">
+      <button class="primary" id="rec" disabled data-t="b_rec"></button>
+      <button id="stop" disabled data-t="b_stop"></button>
+      <span id="counter" class="hint" style="margin:0"></span>
+    </div>
+    <p class="hint" data-t="rec_hint"></p>
+  </section>
+
+  <section>
+    <h2 data-t="h_send"></h2>
+    <div class="row" style="margin-bottom:12px">
+      <button class="primary" id="save" data-t="b_save"></button>
+      <button id="mail" data-t="b_mail"></button>
+      <button id="clear" data-t="b_clear"></button>
+    </div>
+    <pre id="log"></pre>
+    <p class="note" data-t="privacy"></p>
+  </section>
+</main>
+
+<script>
+'use strict';
+// SelfBike · Gen2–Gen4 Log
+// Sammelt nur, was das Display von sich aus per USB meldet: Gerätekennung,
+// HID-Beschreibung und eingehende Datenpakete. Es wird NICHTS an das Fahrrad gesendet.
+const BOSCH_VID = 0x108c;
+const MAIL = 'info@selfcoder.de';
+const MAX_PACKETS = 5000;      // Obergrenze, damit die Datei klein bleibt
+const REC_SECONDS = 60;        // Aufzeichnung stoppt automatisch
+
+const T = {
+  de: {
+    title: 'SelfBike · Gen2–Gen4 Log',
+    lead: 'Hilf mit, SelfBike auf ältere Bosch-Antriebe (Gen2 bis Gen4) zu erweitern: Display per USB anschließen, Log aufzeichnen, Datei schicken.',
+    h_how: 'So geht’s',
+    how1: 'Chrome oder Edge am PC oder Laptop verwenden.',
+    how2: 'E-Bike einschalten und das Display (Intuvia, Kiox, Nyon, Purion) mit einem Micro-USB-Datenkabel verbinden.',
+    how3: 'Unten „Bosch-Display suchen“ drücken, das Gerät auswählen und die Aufzeichnung starten.',
+    how4: 'Datei speichern und per E-Mail an ' + MAIL + ' schicken.',
+    safe: 'Sicher: Diese Seite liest nur mit. Es wird nichts an dein Fahrrad gesendet und nichts verändert.',
+    h_env: '1 · Browser',
+    h_bike: '2 · Dein Fahrrad (freiwillig, hilft sehr)',
+    f_motor: 'Motor', f_display: 'Display', f_year: 'Modelljahr', f_battery: 'Akku',
+    bike_hint: 'Bitte keine Seriennummern eintragen.',
+    h_find: '3 · Display suchen',
+    b_hidBosch: 'Bosch-Display suchen', b_hidAll: 'Alle HID-Geräte', b_usbAll: 'Alle USB-Geräte',
+    find_hint: 'Findet „Bosch-Display suchen“ nichts, probiere die beiden anderen Knöpfe – auch das Ergebnis hilft mir.',
+    h_rec: '4 · Aufzeichnen',
+    b_rec: 'Aufzeichnung starten', b_stop: 'Stoppen',
+    rec_hint: 'Läuft ' + REC_SECONDS + ' Sekunden. Währenddessen gern am Display Tasten drücken, Unterstützungsstufe wechseln und das Hinterrad kurz drehen.',
+    h_send: '5 · Speichern und schicken',
+    b_save: 'Log-Datei speichern', b_mail: 'E-Mail öffnen', b_clear: 'Leeren',
+    privacy: 'Die Rohdaten können Seriennummern deines Fahrrads enthalten. Bitte die Datei nur per E-Mail schicken und nicht öffentlich im Forum posten.',
+    ok: '✓ verfügbar', missing: '✕ fehlt – ',
+    env_ctx: 'Sicherer Kontext', env_hid: 'WebHID', env_usb: 'WebUSB',
+    fix_ctx: 'Seite über https öffnen', fix_browser: 'Chrome oder Edge am PC verwenden',
+    none: 'Kein Gerät ausgewählt.', dup: 'Gerät ist bereits in der Liste.',
+    found: 'Gerät erkannt', opened: 'Gerät geöffnet – bereit zum Aufzeichnen.',
+    openFail: 'Öffnen fehlgeschlagen', usbOnly: 'Nur Kennung gelesen (kein HID) – bitte trotzdem speichern und schicken.',
+    recStart: 'Aufzeichnung gestartet.', recStop: 'Aufzeichnung beendet', packets: 'Pakete',
+    limit: 'Obergrenze erreicht – Aufzeichnung gestoppt.',
+    disc: 'Gerät getrennt', saved: 'Datei gespeichert', empty: 'Noch nichts aufgezeichnet.',
+    unnamed: 'Unbenanntes Gerät', bosch: 'Bosch', notBosch: 'kein Bosch-Gerät',
+    mail_subject: 'SelfBike Gen2-Gen4 Log',
+    mail_body: 'Hallo Sven,\n\nim Anhang mein Log (bitte die gespeicherte Datei anhängen).\n\nMotor: {motor}\nDisplay: {display}\nModelljahr: {year}\nAkku: {battery}\n',
+  },
+  en: {
+    title: 'SelfBike · Gen2–Gen4 log',
+    lead: 'Help bring SelfBike to older Bosch drive systems (Gen2 to Gen4): connect the display via USB, record a log, send the file.',
+    h_how: 'How it works',
+    how1: 'Use Chrome or Edge on a PC or laptop.',
+    how2: 'Switch on the e-bike and connect the display (Intuvia, Kiox, Nyon, Purion) with a micro-USB data cable.',
+    how3: 'Press “Find Bosch display” below, pick the device and start recording.',
+    how4: 'Save the file and e-mail it to ' + MAIL + '.',
+    safe: 'Safe: this page only listens. Nothing is sent to your bike and nothing is changed.',
+    h_env: '1 · Browser',
+    h_bike: '2 · Your bike (optional, very helpful)',
+    f_motor: 'Motor', f_display: 'Display', f_year: 'Model year', f_battery: 'Battery',
+    bike_hint: 'Please do not enter serial numbers.',
+    h_find: '3 · Find the display',
+    b_hidBosch: 'Find Bosch display', b_hidAll: 'All HID devices', b_usbAll: 'All USB devices',
+    find_hint: 'If “Find Bosch display” shows nothing, try the other two buttons – that result helps me too.',
+    h_rec: '4 · Record',
+    b_rec: 'Start recording', b_stop: 'Stop',
+    rec_hint: 'Runs for ' + REC_SECONDS + ' seconds. Meanwhile press buttons on the display, change the assist level and spin the rear wheel briefly.',
+    h_send: '5 · Save and send',
+    b_save: 'Save log file', b_mail: 'Open e-mail', b_clear: 'Clear',
+    privacy: 'The raw data may contain serial numbers of your bike. Please send the file by e-mail only and do not post it publicly.',
+    ok: '✓ available', missing: '✕ missing – ',
+    env_ctx: 'Secure context', env_hid: 'WebHID', env_usb: 'WebUSB',
+    fix_ctx: 'open the page via https', fix_browser: 'use Chrome or Edge on a PC',
+    none: 'No device selected.', dup: 'Device is already in the list.',
+    found: 'Device detected', opened: 'Device opened – ready to record.',
+    openFail: 'Open failed', usbOnly: 'Only the identification was read (not HID) – please save and send it anyway.',
+    recStart: 'Recording started.', recStop: 'Recording finished', packets: 'packets',
+    limit: 'Limit reached – recording stopped.',
+    disc: 'Device disconnected', saved: 'File saved', empty: 'Nothing recorded yet.',
+    unnamed: 'Unnamed device', bosch: 'Bosch', notBosch: 'not a Bosch device',
+    mail_subject: 'SelfBike Gen2-Gen4 log',
+    mail_body: 'Hi Sven,\n\nmy log is attached (please attach the saved file).\n\nMotor: {motor}\nDisplay: {display}\nModel year: {year}\nBattery: {battery}\n',
+  },
+};
+let lang = (navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
+const t = (k) => T[lang][k] ?? T.de[k] ?? k;
+
+const $ = (id) => document.getElementById(id);
+// Gerätenamen kommen vom USB-Gerät selbst: vor innerHTML immer maskieren
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const hex4 = (n) => '0x' + n.toString(16).padStart(4, '0');
+const hexBytes = (dv) => Array.from(new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength),
+  (b) => b.toString(16).padStart(2, '0')).join(' ');
+const mask = (s) => (s && s.length > 4) ? s.slice(0, 2) + '…' + s.slice(-2) : (s ? '…' : s);
+
+const report = {
+  tool: 'selfbike-gen2-gen4-log', format: 1,
+  createdAt: new Date().toISOString(),
+  environment: {}, bike: {}, devices: [], events: [], packets: [],
+};
+const hidDevices = [];   // geöffnete HID-Geräte
+let recording = false, recTimer = null, recStartMs = 0;
+
+function render() {
+  const view = { ...report, packets: report.packets.length > 20
+    ? [...report.packets.slice(0, 20), `… +${report.packets.length - 20}`] : report.packets };
+  $('log').textContent = JSON.stringify(view, null, 2);
+  $('counter').textContent = report.packets.length ? `${report.packets.length} ${t('packets')}` : '';
+}
+function event(msg, level = 'info') {
+  report.events.push({ t: new Date().toISOString().slice(11, 23), level, msg });
+  render();
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
+  $('lang').textContent = lang === 'de' ? 'EN' : 'DE';
+  checkEnv();
+  render();
+}
+
+// ---------- 1. Umgebung ----------
+function checkEnv() {
+  const env = {
+    secureContext: window.isSecureContext,
+    webhid: 'hid' in navigator,
+    webusb: 'usb' in navigator,
+    userAgent: navigator.userAgent,
+  };
+  report.environment = env;
+  const rows = [
+    [t('env_ctx'), env.secureContext, t('fix_ctx')],
+    [t('env_hid'), env.webhid, t('fix_browser')],
+    [t('env_usb'), env.webusb, t('fix_browser')],
+  ];
+  $('env').innerHTML = rows.map(([label, ok, fix]) =>
+    `<tr><td>${esc(label)}</td><td class="${ok ? 'ok' : 'err'}">${ok ? t('ok') : t('missing') + esc(fix)}</td></tr>`
+  ).join('');
+  $('hidBosch').disabled = $('hidAll').disabled = !env.webhid;
+  $('usbAll').disabled = !env.webusb;
+}
+
+// ---------- 2. HID ----------
+function describeCollection(c) {
+  const rep = (list) => (list || []).map((r) => ({
+    id: r.reportId,
+    bytes: Math.ceil((r.items || []).reduce((s, it) => s + it.reportSize * it.reportCount, 0) / 8),
+    items: (r.items || []).map((it) => ({
+      size: it.reportSize, count: it.reportCount,
+      usages: (it.usages || []).slice(0, 16).map((u) => '0x' + u.toString(16)),
+      usageMin: it.usageMinimum, usageMax: it.usageMaximum,
+      logicalMin: it.logicalMinimum, logicalMax: it.logicalMaximum,
+      isArray: it.isArray, isConstant: it.isConstant,
+    })),
+  }));
+  return {
+    usagePage: hex4(c.usagePage), usage: hex4(c.usage), type: c.type,
+    input: rep(c.inputReports), output: rep(c.outputReports), feature: rep(c.featureReports),
+    children: (c.children || []).map(describeCollection),
+  };
+}
+function describeHid(d) {
+  return {
+    api: 'WebHID',
+    vendorId: hex4(d.vendorId), productId: hex4(d.productId),
+    isBosch: d.vendorId === BOSCH_VID,
+    product: d.productName,
+    collections: d.collections.map(describeCollection),
+  };
+}
+function onInputReport(e) {
+  if (!recording) return;
+  if (report.packets.length >= MAX_PACKETS) { event(t('limit'), 'warn'); return stopRec(); }
+  report.packets.push({
+    ms: Math.round(performance.now() - recStartMs),
+    dev: hex4(e.device.productId),
+    id: e.reportId,
+    hex: hexBytes(e.data),
+  });
+  if (report.packets.length % 25 === 0 || report.packets.length < 25) render();
+}
+async function pickHid(filters) {
+  try {
+    const list = await navigator.hid.requestDevice({ filters });
+    if (!list.length) return event(t('none'), 'warn');
+    for (const d of list) {
+      if (hidDevices.includes(d)) { event(t('dup')); continue; }
+      const info = describeHid(d);
+      report.devices.push(info);
+      showDevice(info);
+      event(`${t('found')}: HID ${info.vendorId}/${info.productId} ${info.product || ''}`.trim(), 'ok');
+      try {
+        if (!d.opened) await d.open();
+        d.addEventListener('inputreport', onInputReport);
+        hidDevices.push(d);
+        info.opened = true;
+        event(t('opened'), 'ok');
+      } catch (e) {
+        info.opened = false;
+        info.openError = `${e.name}: ${e.message}`;
+        event(`${t('openFail')} – ${e.name}: ${e.message}`, 'err');
+      }
+    }
+    $('rec').disabled = !hidDevices.length || recording;
+  } catch (e) {
+    event(`${e.name}: ${e.message}`, 'err');
+  }
+}
+
+// ---------- 3. USB (nur Kennung, es wird nichts geöffnet) ----------
+function describeUsb(d) {
+  return {
+    api: 'WebUSB',
+    vendorId: hex4(d.vendorId), productId: hex4(d.productId),
+    isBosch: d.vendorId === BOSCH_VID,
+    manufacturer: d.manufacturerName, product: d.productName,
+    serial: mask(d.serialNumber),
+    usbVersion: `${d.usbVersionMajor}.${d.usbVersionMinor}`,
+    deviceVersion: `${d.deviceVersionMajor}.${d.deviceVersionMinor}.${d.deviceVersionSubminor}`,
+    deviceClass: `${d.deviceClass}/${d.deviceSubclass}/${d.deviceProtocol}`,
+    configurations: d.configurations.map((c) => ({
+      value: c.configurationValue,
+      interfaces: c.interfaces.map((i) => ({
+        number: i.interfaceNumber,
+        alternates: i.alternates.map((a) => ({
+          class: `${a.interfaceClass}/${a.interfaceSubclass}/${a.interfaceProtocol}`,
+          name: a.interfaceName,
+          endpoints: a.endpoints.map((e) =>
+            `EP${e.endpointNumber} ${e.direction.toUpperCase()} ${e.type} (${e.packetSize} B)`),
+        })),
+      })),
+    })),
+  };
+}
+async function pickUsb() {
+  try {
+    const d = await navigator.usb.requestDevice({ filters: [] });
+    const info = describeUsb(d);
+    report.devices.push(info);
+    showDevice(info);
+    event(`${t('found')}: USB ${info.vendorId}/${info.productId} ${info.product || ''}`.trim(), 'ok');
+    event(t('usbOnly'));
+  } catch (e) {
+    event(e.name === 'NotFoundError' ? t('none') : `${e.name}: ${e.message}`,
+      e.name === 'NotFoundError' ? 'warn' : 'err');
+  }
+}
+
+function showDevice(info) {
+  const box = document.createElement('div');
+  box.className = 'device';
+  const tag = info.isBosch ? `<span class="badge ok">${esc(t('bosch'))}</span>`
+    : `<span class="badge warn">${esc(t('notBosch'))}</span>`;
+  box.innerHTML = `<strong>${esc(info.product || t('unnamed'))}</strong>${tag}
+    <table>
+      <tr><td>API</td><td>${esc(info.api)}</td></tr>
+      <tr><td>Vendor-ID / Product-ID</td><td>${esc(info.vendorId)} / ${esc(info.productId)}</td></tr>
+    </table>`;
+  $('devices').append(box);
+}
+
+// ---------- 4. Aufzeichnung ----------
+function startRec() {
+  if (recording || !hidDevices.length) return;
+  recording = true;
+  recStartMs = performance.now();
+  $('rec').disabled = true; $('stop').disabled = false;
+  event(t('recStart'), 'ok');
+  recTimer = setTimeout(stopRec, REC_SECONDS * 1000);
+}
+function stopRec() {
+  if (!recording) return;
+  recording = false;
+  clearTimeout(recTimer);
+  $('rec').disabled = !hidDevices.length; $('stop').disabled = true;
+  event(`${t('recStop')}: ${report.packets.length} ${t('packets')}`, 'ok');
+}
+
+// ---------- 5. Export ----------
+function readBike() {
+  const v = (id) => $(id).value.trim().slice(0, 80);
+  report.bike = { motor: v('f_motor'), display: v('f_display'), year: v('f_year'), battery: v('f_battery') };
+}
+$('save').onclick = () => {
+  readBike();
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 1)], { type: 'application/json' }));
+  a.download = `selfbike-gen2-gen4-log-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  event(`${t('saved')}: ${a.download}`, 'ok');
+};
+$('mail').onclick = () => {
+  readBike();
+  const body = t('mail_body').replace(/\{(\w+)\}/g, (_, k) => report.bike[k] || '-');
+  location.href = `mailto:${MAIL}?subject=${encodeURIComponent(t('mail_subject'))}&body=${encodeURIComponent(body)}`;
+};
+$('clear').onclick = () => { stopRec(); report.events = []; report.packets = []; render(); };
+
+$('hidBosch').onclick = () => pickHid([{ vendorId: BOSCH_VID }]);
+$('hidAll').onclick = () => pickHid([]);
+$('usbAll').onclick = pickUsb;
+$('rec').onclick = startRec;
+$('stop').onclick = stopRec;
+$('lang').onclick = () => { lang = lang === 'de' ? 'en' : 'de'; applyLang(); };
+
+if ('hid' in navigator) {
+  navigator.hid.addEventListener('disconnect', (e) => {
+    const i = hidDevices.indexOf(e.device);
+    if (i >= 0) hidDevices.splice(i, 1);
+    event(`${t('disc')}: ${hex4(e.device.productId)}`, 'warn');
+    if (!hidDevices.length) stopRec();
+    $('rec').disabled = !hidDevices.length || recording;
+  });
+}
+applyLang();
+</script>
+</body>
+</html>

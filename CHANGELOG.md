@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.91 · November 2026
+- 🇬🇧 **Log page for older Bosch systems (Gen2–Gen4).** New page `gen2-gen4-log.html`: owners of older Bosch drives can connect their display (Intuvia, Kiox, Nyon, Purion) via micro-USB, record what the display reports and save it as a file to send in. The page only listens – nothing is sent to the bike and nothing is changed. The logs are the basis for possibly supporting these generations later.
+- 🇩🇪 **Log-Seite für ältere Bosch-Systeme (Gen2–Gen4).** Neue Seite `gen2-gen4-log.html`: Wer einen älteren Bosch-Antrieb fährt, kann sein Display (Intuvia, Kiox, Nyon, Purion) per Micro-USB anschließen, aufzeichnen, was das Display meldet, und das als Datei speichern und einschicken. Die Seite liest nur mit – es wird nichts an das Fahrrad gesendet und nichts verändert. Die Logs sind die Grundlage, um diese Generationen später eventuell zu unterstützen.
+
 ## 1.4.90 · November 2026
 - 🇬🇧 **Update hint when a tab has gone stale.** A browser tab left open for a long time never reloads SelfBike's modules, so it keeps running an old version – and a PDF report made from it then carries an outdated version number (a user saw 1.4.25 instead of the current one). SelfBike now checks the server for a newer version on start and shows a small bar at the top with an "Update now" button when the open tab is behind. The PDF footer itself always used the running version correctly; this makes sure that running version is the current one.
 - 🇩🇪 **Update-Hinweis bei veraltetem Tab.** Ein lange geöffneter Browser-Tab lädt die SelfBike-Module nie neu und läuft dann auf einer alten Version weiter – ein daraus erzeugter PDF-Bericht trägt dann eine veraltete Versionsnummer (ein Nutzer sah 1.4.25 statt der aktuellen). SelfBike prüft beim Start jetzt am Cache vorbei, ob auf dem Server eine neuere Version liegt, und blendet oben einen kleinen Balken mit Knopf „Jetzt aktualisieren" ein, wenn der offene Tab hinterherhinkt. Der PDF-Footer nutzte die laufende Version immer korrekt; dieser Fix sorgt dafür, dass die laufende auch die aktuelle ist.
