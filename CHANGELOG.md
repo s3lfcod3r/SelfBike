@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.5.3 · November 2026
+- 🇬🇧 **Gen2-Gen4 multiframe corrected + reader finished.** Frame payload length now comes from byte 3 (FF = byte3-2, CF = byte3-1), the trailing NUL terminator is stripped, and the declared length is treated as an upper bound - so the part number reads correctly across firmware variants (verified against two real captures). Consecutive frames are only accepted during an open reassembly (hard rule), the multiframe read runs last, discarded CF bytes are logged, fault codes show their ISO status byte (active/confirmed) with known-code text, an empty value has its own state, and read/locked/not-read are counted separately.
+- 🇩🇪 **Gen2-Gen4-Multiframe korrigiert + Leser fertig.** Die Nutzlast-Länge kommt jetzt aus Byte 3 (FF = byte3-2, CF = byte3-1), der angehängte NUL-Terminator wird abgeschnitten, und die deklarierte Länge ist Obergrenze - damit stimmt die Teilenummer variantenfest (gegen zwei echte Mitschnitte geprüft). Folgeframes gelten nur bei offener Reassembly (harte Regel), der Multiframe-Read läuft zuletzt, verworfene CF-Bytes werden geloggt, Fehlercodes zeigen ihr ISO-Statusbyte (aktiv/bestätigt) mit Klartext bei bekannten Codes, ein leerer Wert hat einen eigenen Zustand, und gelesen/gesperrt/nicht-gelesen werden getrennt gezählt.
+
 ## 1.5.2 · November 2026
 - 🇬🇧 **Gen2-Gen4 multiframe fixed against real frames.** The Kiox First Frame carries 7 payload bytes (not the textbook 6); fixing the alignment makes the part number read correctly (e.g. 027 5007543). Trailer bytes after the declared length are buffer garbage (not CRC) and are dropped. The protocol log now shows enough bytes (was cut at 16). Verified by the self-test against the captured FF+CF frames.
 - 🇩🇪 **Gen2-Gen4-Multiframe gegen echte Frames korrigiert.** Der Kiox-First-Frame traegt 7 Nutzbytes (nicht die ueblichen 6); mit der korrigierten Ausrichtung stimmt die Teilenummer (z. B. 027 5007543). Anhang-Bytes hinter der deklarierten Laenge sind Puffermuell (kein CRC) und werden verworfen. Das Protokoll zeigt jetzt genug Bytes (war auf 16 gekappt). Per Selbsttest gegen die mitgeschnittenen FF+CF-Frames geprueft.

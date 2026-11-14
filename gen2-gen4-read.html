@@ -95,10 +95,11 @@ const T = {
     env_bad: 'Dieser Browser kann kein WebHID. Bitte Chrome oder Edge am PC verwenden.',
     connecting: 'Verbinde…', handshaking: 'Handschlag…', reading: 'Lese Werte…',
     readingDtc: 'Lese Fehlerspeicher…', faults: 'Fehlerspeicher', noFaults: 'keine Fehler',
+    dtcActive: 'aktiv', dtcConfirmed: 'bestätigt', dtcPending: 'sporadisch', dtcStored: 'gespeichert',
     hs_ok: 'Verbunden (Transport: {t}).', hs_fail: 'Handschlag fehlgeschlagen: {r}',
     no_device: 'Kein Gerät ausgewählt.', done: 'Fertig: {ok} gelesen · {locked} gesperrt · {na} nicht gelesen.',
     tabHint: 'Tipp: Nach dem Auslesen den Tab schließen, bevor du losfährst – sonst hält der Keep-alive die Diagnosesitzung offen.',
-    err: 'Fehler: {e}', na: 'nicht gelesen', locked: 'gesperrt – Freischaltung nicht implementiert', saved: 'Datei gespeichert.',
+    err: 'Fehler: {e}', na: 'nicht gelesen', locked: 'gesperrt – Freischaltung nicht implementiert', unreadable: '— (leer / unlesbar)', saved: 'Datei gespeichert.',
     g_DU: 'Motor', g_BMS: 'Akku', g_BUI: 'Display',
     mail_subject: 'SelfBike Gen2-Gen4 Auslese-Test',
     mail_body: 'Hallo Sven,\n\nanbei mein Auslese-Ergebnis (bitte die gespeicherte Datei anhängen).\n',
@@ -112,10 +113,11 @@ const T = {
     env_bad: 'This browser has no WebHID. Please use Chrome or Edge on a PC.',
     connecting: 'Connecting…', handshaking: 'Handshake…', reading: 'Reading values…',
     readingDtc: 'Reading fault memory…', faults: 'Fault memory', noFaults: 'no faults',
+    dtcActive: 'active', dtcConfirmed: 'confirmed', dtcPending: 'pending', dtcStored: 'stored',
     hs_ok: 'Connected (transport: {t}).', hs_fail: 'Handshake failed: {r}',
     no_device: 'No device selected.', done: 'Done: {ok} read · {locked} locked · {na} not read.',
     tabHint: 'Tip: close the tab after reading, before you ride – otherwise the keep-alive holds the diagnostic session open.',
-    err: 'Error: {e}', na: 'not read', locked: 'locked – unlock not implemented', saved: 'File saved.',
+    err: 'Error: {e}', na: 'not read', locked: 'locked – unlock not implemented', unreadable: '— (empty / unreadable)', saved: 'File saved.',
     g_DU: 'Motor', g_BMS: 'Battery', g_BUI: 'Display',
     mail_subject: 'SelfBike Gen2-Gen4 read test',
     mail_body: 'Hi Sven,\n\nattached is my read result (please attach the saved file).\n',
@@ -148,6 +150,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const toArr = (dv) => { const a = new Uint8Array(dv.byteLength); for (let i = 0; i < a.length; i++) a[i] = dv.getUint8(i); return a; };
 function logln(s) { report.trace.push(s); $('log').textContent = report.trace.join('\n'); $('logBox').hidden = false; }
 
+// Harte Zustandsregel: Consecutive Frames sind NUR gültig, solange für diese Quelle
+// eine Reassembly offen ist. Außerhalb davon werden sie überall verworfen – unabhängig
+// von jedem Timer. Das Drain-Fenster ist nur Zusatz-Absicherung.
+let reassemblyRx = null;   // CAN-RX-Adresse mit offener Reassembly, sonst null
+
 // HID-Struktur des echten Geräts protokollieren (hilft bei der Fehlersuche).
 function dumpDevice(device) {
   const rep = (l) => (l || []).map((r) => '#' + r.reportId).join(',') || '-';
@@ -165,6 +172,8 @@ async function exchange(device, out, { match, timeout = 500, tries = 1, label = 
       let done = false;
       const onReport = (e) => {
         const arr = toArr(e.data);
+        const f = frameType(arr);
+        if (f && f.kind === 'CF' && reassemblyRx !== f.canRx) { trace('RX(cf verworfen – keine offene Reassembly)', arr); return; }
         trace(`RX(${e.data.byteLength}B)`, arr);
         if (match(arr)) fin(arr);
       };
@@ -190,25 +199,36 @@ async function readUds(device, ecu, reqFrame, label) {
   if (!first) return null;
   const f0 = frameType(first);
   if (f0.kind === 'SF') return { uds: f0.data, canRx: rx };
-  const parts = Array.from(f0.data);                       // First Frame: erste 6 Bytes
+  const parts = Array.from(f0.data);                       // First Frame: byte3 − 2 Nutzbytes
   const rest = await collectCF(device, tx, rx, f0.total - parts.length);
   for (const b of (rest || [])) parts.push(b);
-  return { uds: Uint8Array.from(parts.slice(0, f0.total)), canRx: rx, partial: rest === null };
+  let out = parts.slice(0, f0.total);                      // deklarierte Länge = Obergrenze
+  while (out.length && out[out.length - 1] === 0) out.pop(); // NUL-Terminator abschneiden
+  return { uds: Uint8Array.from(out), canRx: rx, partial: rest === null };
 }
 
 // Nach einem First Frame: Flow Control senden und Folgeframes (CF) sammeln.
+// Nur CF der passenden Quelladresse (rx) zählen. Nach der deklarierten Länge ein
+// Drain-Fenster: der Kiox sendet deterministisch genau einen überzähligen CF – den
+// hier schlucken, damit er nicht ins Fenster der nächsten Anfrage leckt.
 function collectCF(device, tx, rx, need) {
+  reassemblyRx = rx;   // Reassembly für diese Quelle offen → CF gelten jetzt
   return new Promise((resolve) => {
-    const out = []; let done = false;
+    const out = []; let done = false, drain = null;
     const onReport = (e) => {
       const a = toArr(e.data); const f = frameType(a);
-      if (!f || f.canRx !== rx || f.kind !== 'CF') return;
-      trace('RX(cf)', a);
-      for (const b of f.data) if (out.length < need) out.push(b);
-      if (out.length >= need) fin(out);
+      if (!f || f.canRx !== rx || f.kind !== 'CF') return;      // nur CF dieser Quelle
+      const room = need - out.length;
+      if (room <= 0) { trace('RX(cf verworfen – überzählig)', a); }   // Beweiskette: Regel greift sichtbar
+      else {
+        const take = Math.min(room, f.data.length);
+        for (let i = 0; i < take; i++) out.push(f.data[i]);
+        trace(take < f.data.length ? `RX(cf – ${take}/${f.data.length} Byte genutzt, Rest verworfen)` : 'RX(cf)', a);
+      }
+      if (out.length >= need && !drain) drain = setTimeout(() => fin(out), 90);
     };
     const to = setTimeout(() => fin(out.length ? out : null), 900);
-    function fin(v) { if (done) return; done = true; clearTimeout(to); device.removeEventListener('inputreport', onReport); resolve(v); }
+    function fin(v) { if (done) return; done = true; clearTimeout(to); if (drain) clearTimeout(drain); reassemblyRx = null; device.removeEventListener('inputreport', onReport); resolve(v); }
     device.addEventListener('inputreport', onReport);
     trace('TX fc', buildFlowControl(tx));
     device.sendReport(0, buildFlowControl(tx)).catch(() => fin(null));
@@ -292,6 +312,21 @@ $('connect').onclick = async () => {
 
 function showLog() { $('logBox').hidden = report.trace.length === 0; }
 
+// Bekannte Fehlercodes im Stil der eigenen Fehlertexte. Unbekannte bleiben unbeschriftet.
+const DTC_TEXT = {
+  de: { '430013': 'Pufferbatterie des Bordcomputers schwach/leer' },
+  en: { '430013': 'on-board computer backup battery low/empty' },
+};
+
+// DTC-Statusbyte (ISO 14229) deuten, damit aktiv und alt-gespeichert unterscheidbar sind.
+function dtcStatus(s) {
+  const f = [];
+  if (s & 0x01) f.push(t('dtcActive'));      // testFailed – schlägt gerade fehl
+  if (s & 0x08) f.push(t('dtcConfirmed'));   // confirmedDTC – bestätigt/gespeichert
+  if (s & 0x04) f.push(t('dtcPending'));     // pendingDTC – sporadisch
+  return `0x${s.toString(16).padStart(2, '0')} · ${f.length ? f.join(', ') : t('dtcStored')}`;
+}
+
 const EN_LABEL = {
   displayType: 'Display type', displaySw: 'Display software', batteryType: 'Battery type',
   batteryPart: 'Battery part number', batterySw: 'Battery software',
@@ -315,7 +350,10 @@ function render() {
       else if (d.na) { v = `<small>${esc(t('na'))}</small>`; bad = true; }
       else if (d.nrc != null) { v = `<small>NRC 0x${d.nrc.toString(16)}</small>`; bad = true; }
       else if (!d.codes.length) v = esc(t('noFaults'));
-      else v = esc(d.codes.map((c) => c.code).join(', '));
+      else v = d.codes.map((c) => {
+        const txt = (DTC_TEXT[lang] || DTC_TEXT.de)[c.code];
+        return `${esc(c.code)} <small>${esc(dtcStatus(c.status))}${txt ? ' · ' + esc(txt) : ''}</small>`;
+      }).join('<br>');
       html += `<tr class="${bad ? 'bad' : ''}"><td>${esc(t('g_' + e))}</td><td class="val">${v}</td></tr>`;
     }
     html += '</tbody></table>';
@@ -328,7 +366,11 @@ function render() {
       let cell, bad = false;
       if (v === '__locked__') { cell = `<td class="val"><small>${esc(t('locked'))}</small></td>`; bad = true; }
       else if (v === null || v === undefined) { cell = `<td class="val"><small>${esc(t('na'))}</small></td>`; bad = true; }
-      else if (item.kind === 'text') cell = `<td class="val">${esc(v)}</td>`;
+      else if (item.kind === 'text') {
+        const s = String(v).trim();
+        if (s) cell = `<td class="val">${esc(s)}</td>`;
+        else { cell = `<td class="val"><small>${esc(t('unreadable'))}</small></td>`; bad = true; }   // 4. Zustand: leer
+      }
       else cell = `<td class="val">${esc(Number(v).toFixed(item.digits))} <small>${esc(item.unit)}</small></td>`;
       html += `<tr class="${bad ? 'bad' : ''}"><td>${esc(label)}</td>${cell}</tr>`;
     }

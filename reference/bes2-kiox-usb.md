@@ -81,26 +81,29 @@ TX  01 00 22 08 03 22 05 01        RX  01 00 23 08 04 62 05 01 A1               
 TX  01 00 22 08 03 22 01 21        RX  01 00 23 08 04 62 01 21 1F                  # Akku-Variante (Enum 0x1F)
 ```
 
-## Multiframe (Teilenummer) — am Rad bestätigte Ausrichtung
+## Multiframe (Teilenummer) — am Rad bestätigte Längen (Byte 3 ist maßgeblich)
 ```
 TX   01 00 22 08 03 22 01 22                                 # read 0x0122
-RX   01 00 23 08 10 0E 62 01 22 30 32 37 20 | 81 E5 05       # First Frame: total 0x0E=14, 7 Nutzbytes
+RX   01 00 23 08 10 0E 62 01 22 30 32 37 | 08 7D 64 07       # FF: byte3=08 → 6 Nutzbytes (62 01 22 30 32 37)
 TX   01 00 22 08 30 10 05                                    # Flow Control (Clear To Send)
-RX   01 00 23 08 21 35 30 30 37 35 34 33 | 20 1B 65 07       # CF seq 1, 7 Nutzbytes
-#    (ein zweiter CF ist überzählig — nach 14 Byte ist voll)
+RX   01 00 23 08 21 35 30 30 37 35 34 33 | 08 7D 64 07       # CF seq1: byte3=08 → 7 Nutzbytes
+RX   01 00 23 08 22 00 30 30 37 35 34 33 | 20 1B 65 07       # CF seq2: liefert das NUL (14. Byte)
 ```
-Zusammengesetzt: `62 01 22` + `30 32 37 20 35 30 30 37 35 34 33` = Wert **"027 5007543"**
-(10 Stellen, Bosch-Format `0275 007 543`).
+Zusammengesetzt (auf total=14 begrenzt, NUL abgeschnitten):
+`62 01 22` + `30 32 37 35 30 30 37 35 34 33` = Wert **"0275007543"** (10 Stellen).
 
-**Regeln (am Kiox/BUI330 bestätigt, weicht vom ISO-TP-Lehrbuch ab):**
-- Header 5 Byte (`01 00 <canRx> <DLC> <PCI>`). FF: `10 <len>` + **7 Nutzbytes**
-  (nicht die üblichen 6!). CF: `2N` + **7 Nutzbytes**.
-- Der Anhang hinter der Nutzlast (`| …`) ist **Puffermüll, kein CRC**: beide CFs haben
-  unterschiedlichen Inhalt, aber identischen Anhang `20 1B 65 07`; ein CRC müsste sich
-  ändern. Die `32 01 F4`-Fragmente in vielen Anhängen sind P2-Werte der Sitzungsantwort,
-  die im Puffer stehen bleiben. Anhang **vollständig über die deklarierte Länge** wegschneiden.
-- Bei der deklarierten Länge stoppen, überzählige CFs verwerfen — aber protokollieren:
-  ein überzähliger CF kann auch ein abgeschnittenes Längenfeld bedeuten.
+**Regeln (am Kiox/BUI330 bestätigt):**
+- **Byte 3 (DLC) ist maßgeblich**, nicht Byte 4: es zählt die Nutzbytes ab Byte 4.
+  Daraus je Frametyp: **SF** = PCI-Längennibble · **FF** = `byte3 − 2` (nach `1L LL`) ·
+  **CF** = `byte3 − 1` (nach `2N`).
+- Der Anhang hinter der Nutzlast (`| …`) ist **Puffermüll, kein CRC**: er steht identisch
+  (`08 7D 64 07`) hinter FF *und* CF, obwohl deren Inhalt verschieden ist — ein CRC müsste
+  sich ändern. Im ersten Mitschnitt war das Anhang-Byte zufällig `20` (Leerzeichen) und
+  sah fälschlich nach Daten aus. Nie über die Byte-3-Länge hinaus lesen.
+- Die FF-Gesamtlänge (`0E`=14) ist **Obergrenze, kein Ziel**: 13 Nutzbytes + 1 NUL-Terminator.
+  Darum kommt der zweite CF (er liefert das `00`). Am Ende das **angehängte NUL abschneiden**.
+- CF nur bei offener Reassembly der passenden Quelladresse annehmen, sonst verwerfen
+  (harte Zustandsregel, nicht timergestützt).
 
 ## Gesperrt über Kiox-USB (SecurityAccess, NRC 0x33)
 Zustands-/Zählerwerte (Ladestand, Spannung, Temperatur, Ladezyklen, entnommene Ah,

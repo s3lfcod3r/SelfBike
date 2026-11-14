@@ -68,23 +68,32 @@ const ctx = parseResponse(hex('01 00 23 08 04 62 05 01 A1'));
 check('Status-DID 0x0501 = 0xA1', ctx.ok && ctx.did === 0x0501 && ctx.data[0] === 0xa1,
   JSON.stringify(ctx), 'did 0501 / A1');
 
-// 5) Multiframe – exakt die am Rad mitgeschnittenen FF+CF-Frames (Anhang = Puffermüll)
-const ff = frameType(hex('01 00 23 08 10 0E 62 01 22 30 32 37 20 81 E5 05'));
-check('First Frame (total=14, 7 Nutzbytes)',
-  ff && ff.kind === 'FF' && ff.total === 14 && ff.data.length === 7 && ff.data[0] === 0x62,
-  JSON.stringify(ff && { kind: ff.kind, total: ff.total, n: ff.data.length }), 'FF/14/7');
+// 5) Multiframe – Längen aus Byte 3 (FF byte3−2, CF byte3−1), Anhang = Puffermüll,
+//    deklarierte Länge = Obergrenze inkl. NUL, Terminator abschneiden.
+check('First Frame = 6 Nutzbytes (byte3−2)', frameType(hex('01 00 23 08 10 0E 62 01 22 30 32 37 08 7D 64 07')).data.length === 6,
+  '' + frameType(hex('01 00 23 08 10 0E 62 01 22 30 32 37 08 7D 64 07')).data.length, '6');
+check('Consecutive Frame = 7 Nutzbytes (byte3−1)', frameType(hex('01 00 23 08 21 35 30 30 37 35 34 33 08 7D 64 07')).data.length === 7,
+  '' + frameType(hex('01 00 23 08 21 35 30 30 37 35 34 33 08 7D 64 07')).data.length, '7');
 check('Flow Control Bytes', hx(buildFlowControl(0x22).slice(0, 7)) === '01 00 22 08 30 10 05',
   hx(buildFlowControl(0x22).slice(0, 7)), '01 00 22 08 30 10 05');
-const cf1 = frameType(hex('01 00 23 08 21 35 30 30 37 35 34 33 20 1B 65 07'));
-check('Consecutive Frame (seq 1, 7 Nutzbytes)',
-  cf1 && cf1.kind === 'CF' && cf1.seq === 1 && cf1.data.length === 7 && cf1.data[0] === 0x35,
-  JSON.stringify(cf1 && { kind: cf1.kind, seq: cf1.seq, n: cf1.data.length }), 'CF/1/7');
-// FF(7) + CF1(7) = 14, auf Länge begrenzt. Ein zweiter CF wäre überzählig.
-const assembled = Uint8Array.from([...ff.data, ...cf1.data].slice(0, ff.total));
-const pr = parseUds(assembled, 0x23);
-const val = pr.ok ? Array.from(pr.data).map((b) => String.fromCharCode(b)).join('') : '';
-check('Reassembliert → DID 0x0122 = "027 5007543"', pr.ok && pr.did === 0x0122 && val === '027 5007543',
-  JSON.stringify({ did: pr.did && pr.did.toString(16), val }), '0122 / "027 5007543"');
+
+// Reassembly wie in der Seite: FF-Start + CFs (auf Gesamtlänge begrenzt), NUL abschneiden.
+function reassemble(ffHex, cfHexes) {
+  const ff = frameType(hex(ffHex));
+  const parts = Array.from(ff.data);
+  for (const c of cfHexes) for (const b of frameType(hex(c)).data) if (parts.length < ff.total) parts.push(b);
+  let out = parts.slice(0, ff.total);
+  while (out.length && out[out.length - 1] === 0) out.pop();
+  const r = parseUds(Uint8Array.from(out), ff.canRx);
+  return r.ok ? Array.from(r.data).map((b) => String.fromCharCode(b)).join('') : '(fehler)';
+}
+// Zwei echte Läufe – unterschiedlicher Anhang (20 bzw. 08), beide müssen gleich sein.
+const runOld = reassemble('01 00 23 08 10 0E 62 01 22 30 32 37 20 81 E5 05',
+  ['01 00 23 08 21 35 30 30 37 35 34 33 20 1B 65 07', '01 00 23 08 22 00 30 30 37 35 34 33 20']);
+const runNew = reassemble('01 00 23 08 10 0E 62 01 22 30 32 37 08 7D 64 07',
+  ['01 00 23 08 21 35 30 30 37 35 34 33 08 7D 64 07', '01 00 23 08 22 00 30 30 37 35 34 33 20 1B 65 07']);
+check('Lauf 1 (Anhang 20) → "0275007543"', runOld === '0275007543', runOld, '0275007543');
+check('Lauf 2 (Anhang 08) → "0275007543"', runNew === '0275007543', runNew, '0275007543');
 
 console.log(fails === 0
   ? `\n✓ Gen2–Gen4-Selbsttest bestanden: ${tested} Werte + DTC/Status + Multiframe gegen echte Bytes verifiziert.`
