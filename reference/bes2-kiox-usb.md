@@ -67,7 +67,9 @@ RX  01 00 21 08 03 59 02 7B                                  # Motor: keine Code
 RX  01 00 23 08 03 59 02 7B                                  # Akku:  keine Codes
 RX  01 00 3D 0C 0B 59 02 7B 43 00 13 28 4D 30 07 68          # Display: 2 Codes
 #   59 02 <mask=7B> dann je 4 Byte: DTC(3) + Status(1)
-#   → 430013 (Status 0x28), 4D3007 (Status 0x68)
+#   → 430013 (Status 0x28): bekannter Bosch-Code, 430 = interner Akku/Pufferbatterie
+#     des Bordcomputers (BUI330) leer/schwach – auf einem Gebrauchtrad plausibel.
+#   → 4D3007 (Status 0x68): Bedeutung offen (nicht raten).
 ```
 
 ## Status / Kennungen (frei beobachtet)
@@ -82,11 +84,18 @@ TX  01 00 22 08 03 22 01 21        RX  01 00 23 08 04 62 01 21 1F               
 ## Multiframe-Beispiel (Teilenummer, Werte anonymisiert)
 ```
 TX  01 00 22 08 03 22 01 22                                  # read 0x0122
-RX  01 00 22 08 10 0E 62 01 22 XX XX XX                      # First Frame: total 14, 6 Startbytes
+RX  01 00 22 08 10 0E 62 01 22 XX XX XX XX                   # First Frame: total 0x0E = 14
 TX  01 00 22 08 30 10 05                                     # Flow Control (Clear To Send)
-RX  01 00 23 08 21 XX XX XX XX XX XX XX                      # CF seq 1 (7 Bytes)
-RX  01 00 23 08 22 XX                                        # CF seq 2 (Rest, auf total=14 begrenzt)
+RX  01 00 23 08 21 XX XX XX XX XX XX XX                      # CF seq 1
 ```
+**Beobachtet am Kiox (BUI330), weicht vom ISO-TP-Standard ab — unbedingt beachten:**
+- Der First Frame trägt hier **7 Nutzbytes**, nicht die üblichen 6. Mit 6 gerechnet
+  landet ein Byte falsch (im Test `…433` statt `…430`).
+- Nach First Frame (7) + **einem** CF (7) sind die 14 Byte voll. Ein zweiter CF ist
+  überschüssig. Zusammensetzen **strikt auf die Längenangabe begrenzen** und danach
+  aufhören — sonst bricht die nächste längere Nutzlast still.
+- Die genaue Byte-Ausrichtung ist gegen einen echten FF+CF-Mitschnitt zu fixieren,
+  nicht zu raten.
 
 ## Gesperrt über Kiox-USB (SecurityAccess, NRC 0x33)
 Zustands-/Zählerwerte (Ladestand, Spannung, Temperatur, Ladezyklen, entnommene Ah,

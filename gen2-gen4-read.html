@@ -59,6 +59,7 @@
       <span class="status" id="status"></span>
     </div>
     <p class="status" id="env"></p>
+    <p class="note" data-t="tabHint"></p>
   </section>
 
   <section id="resultBox" hidden>
@@ -95,7 +96,8 @@ const T = {
     connecting: 'Verbinde…', handshaking: 'Handschlag…', reading: 'Lese Werte…',
     readingDtc: 'Lese Fehlerspeicher…', faults: 'Fehlerspeicher', noFaults: 'keine Fehler',
     hs_ok: 'Verbunden (Transport: {t}).', hs_fail: 'Handschlag fehlgeschlagen: {r}',
-    no_device: 'Kein Gerät ausgewählt.', done: 'Fertig: {n} von {m} Werten gelesen.',
+    no_device: 'Kein Gerät ausgewählt.', done: 'Fertig: {ok} gelesen · {locked} gesperrt · {na} nicht gelesen.',
+    tabHint: 'Tipp: Nach dem Auslesen den Tab schließen, bevor du losfährst – sonst hält der Keep-alive die Diagnosesitzung offen.',
     err: 'Fehler: {e}', na: 'nicht gelesen', locked: 'gesperrt – Freischaltung nicht implementiert', saved: 'Datei gespeichert.',
     g_DU: 'Motor', g_BMS: 'Akku', g_BUI: 'Display',
     mail_subject: 'SelfBike Gen2-Gen4 Auslese-Test',
@@ -111,7 +113,8 @@ const T = {
     connecting: 'Connecting…', handshaking: 'Handshake…', reading: 'Reading values…',
     readingDtc: 'Reading fault memory…', faults: 'Fault memory', noFaults: 'no faults',
     hs_ok: 'Connected (transport: {t}).', hs_fail: 'Handshake failed: {r}',
-    no_device: 'No device selected.', done: 'Done: {n} of {m} values read.',
+    no_device: 'No device selected.', done: 'Done: {ok} read · {locked} locked · {na} not read.',
+    tabHint: 'Tip: close the tab after reading, before you ride – otherwise the keep-alive holds the diagnostic session open.',
     err: 'Error: {e}', na: 'not read', locked: 'locked – unlock not implemented', saved: 'File saved.',
     g_DU: 'Motor', g_BMS: 'Battery', g_BUI: 'Display',
     mail_subject: 'SelfBike Gen2-Gen4 read test',
@@ -259,17 +262,24 @@ $('connect').onclick = async () => {
     }
 
     $('status').textContent = t('reading');
-    let n = 0;
     for (const item of ITEMS) {
       await keepAlive(item.ecu);
       const res = await readUds(device, item.ecu, buildReadFrame(ECU[item.ecu].tx, item.did), item.key);
       const u = res ? parseUds(res.uds, res.canRx) : null;
-      if (u && u.ok && u.did === item.did) { report.values[item.key] = item.dec(u.data); n++; }
+      if (u && u.ok && u.did === item.did) report.values[item.key] = item.dec(u.data);
       else if (u && u.negative && u.nrc === 0x33) report.values[item.key] = '__locked__';
       else report.values[item.key] = null;
       render();
     }
-    $('status').textContent = t('done', { n, m: ITEMS.length });
+    // Zustände getrennt zählen: gelesen / gesperrt / nicht gelesen.
+    let ok = 0, locked = 0, na = 0;
+    for (const v of Object.values(report.values)) {
+      if (v === '__locked__') locked++; else if (v === null || v === undefined) na++; else ok++;
+    }
+    for (const d of Object.values(report.dtc)) {
+      if (d.locked) locked++; else if (d.na || d.nrc != null) na++; else ok++;
+    }
+    $('status').textContent = t('done', { ok, locked, na });
     showLog();
   } catch (err) {
     $('status').textContent = t('err', { e: err.message });

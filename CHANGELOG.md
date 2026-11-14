@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.5.1 · November 2026
+- 🇬🇧 **Gen2-Gen4 reader polish.** Separate counts for read / locked / not-read instead of one total; a tip to close the tab after reading (keep-alive holds the session); fixture now documents DTC 430013 (on-board computer backup battery low) and the observed Kiox First-Frame layout (7 payload bytes) to fix later against raw frames.
+- 🇩🇪 **Gen2-Gen4-Leser Feinschliff.** Getrennte Zaehlung gelesen / gesperrt / nicht gelesen statt einer Summe; Hinweis, den Tab nach dem Auslesen zu schliessen (Keep-alive haelt die Sitzung); Fixture dokumentiert jetzt DTC 430013 (Pufferbatterie Bordcomputer schwach) und das beobachtete Kiox-First-Frame-Layout (7 Nutzbytes) zur spaeteren Fixierung an Rohframes.
+
 ## 1.5.0 · November 2026
 - 🇬🇧 **Gen2-Gen4 reader works on real hardware.** Fault memory (DTC) reads successfully over Kiox-USB without any unlock (verified on a real Gen4 bike). Added ISO-TP multiframe reassembly (First Frame + Flow Control 30 10 05 + Consecutive Frames) so long values like the part number come through complete, an explicit CAN address map, strict length bounds, and a graceful enum/hex fallback. New: anonymised BES2/Kiox-USB protocol fixture under docs/. SecurityAccess-protected values stay honestly marked; live values via a CAN tap remain a separate future step.
 - 🇩🇪 **Gen2-Gen4-Leser laeuft an echter Hardware.** Der Fehlerspeicher (DTC) wird ueber Kiox-USB ohne jede Freischaltung gelesen (an einem echten Gen4-Rad bestaetigt). Neu: ISO-TP-Multiframe-Zusammensetzung (First Frame + Flow Control 30 10 05 + Consecutive Frames), damit lange Werte wie die Teilenummer vollstaendig ankommen, eine explizite CAN-Adresskarte, strikte Laengenbegrenzung und ein sauberer Enum/Hex-Rueckfall. Neu: anonymisierte BES2/Kiox-USB-Protokoll-Fixture unter docs/. SecurityAccess-geschuetzte Werte bleiben ehrlich gekennzeichnet; Live-Werte ueber CAN-Abgriff bleiben ein spaeterer Schritt.
