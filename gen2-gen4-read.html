@@ -95,7 +95,7 @@ const T = {
     connecting: 'Verbinde…', handshaking: 'Handschlag…', reading: 'Lese Werte…',
     hs_ok: 'Verbunden (Transport: {t}).', hs_fail: 'Handschlag fehlgeschlagen: {r}',
     no_device: 'Kein Gerät ausgewählt.', done: 'Fertig: {n} von {m} Werten gelesen.',
-    err: 'Fehler: {e}', na: 'nicht gelesen', saved: 'Datei gespeichert.',
+    err: 'Fehler: {e}', na: 'nicht gelesen', locked: 'gesperrt', saved: 'Datei gespeichert.',
     g_DU: 'Motor', g_BMS: 'Akku', g_BUI: 'Display',
     mail_subject: 'SelfBike Gen2-Gen4 Auslese-Test',
     mail_body: 'Hallo Sven,\n\nanbei mein Auslese-Ergebnis (bitte die gespeicherte Datei anhängen).\n',
@@ -110,7 +110,7 @@ const T = {
     connecting: 'Connecting…', handshaking: 'Handshake…', reading: 'Reading values…',
     hs_ok: 'Connected (transport: {t}).', hs_fail: 'Handshake failed: {r}',
     no_device: 'No device selected.', done: 'Done: {n} of {m} values read.',
-    err: 'Error: {e}', na: 'not read', saved: 'File saved.',
+    err: 'Error: {e}', na: 'not read', locked: 'locked', saved: 'File saved.',
     g_DU: 'Motor', g_BMS: 'Battery', g_BUI: 'Display',
     mail_subject: 'SelfBike Gen2-Gen4 read test',
     mail_body: 'Hi Sven,\n\nattached is my read result (please attach the saved file).\n',
@@ -203,10 +203,14 @@ $('connect').onclick = async () => {
     $('status').textContent = t('reading');
     let n = 0;
     for (const item of ITEMS) {
-      const buf = await exchange(device, buildReadFrame(ECU[item.ecu].tx, item.did),
-        { match: (a) => { const r = parseResponse(a); return r.ok && r.did === item.did; }, timeout: 500, tries: 2, label: item.key });
+      const rx = ECU[item.ecu].rx;
+      const buf = await exchange(device, buildReadFrame(ECU[item.ecu].tx, item.did), {
+        match: (a) => { const r = parseResponse(a); return (r.ok && r.did === item.did) || (r.negative && a[2] === rx); },
+        timeout: 500, tries: 2, label: item.key,
+      });
       const r = buf ? parseResponse(buf) : null;
       if (r && r.ok && r.did === item.did) { report.values[item.key] = item.dec(r.data); n++; }
+      else if (r && r.negative && r.nrc === 0x33) report.values[item.key] = '__locked__';
       else report.values[item.key] = null;
       render();
     }
@@ -223,6 +227,8 @@ $('connect').onclick = async () => {
 function showLog() { $('logBox').hidden = report.trace.length === 0; }
 
 const EN_LABEL = {
+  displayType: 'Display type', displaySw: 'Display software', batteryType: 'Battery type',
+  batteryPart: 'Battery part number', batterySw: 'Battery software',
   odometer: 'Odometer', soc: 'State of charge', voltage: 'Voltage', packTemp: 'Temperature',
   cyclesOnBike: 'Charge cycles (on bike)', cyclesOffBike: 'Charge cycles (external charger)',
   providedAh: 'Total charge delivered', nominalWh: 'Nominal capacity',
@@ -239,10 +245,12 @@ function render() {
     for (const item of items) {
       const v = report.values[item.key];
       const label = lang === 'en' ? (EN_LABEL[item.key] || item.label) : item.label;
-      const cell = (v === null || v === undefined)
-        ? `<td class="val"><small>${esc(t('na'))}</small></td>`
-        : `<td class="val">${esc(Number(v).toFixed(item.digits))} <small>${esc(item.unit)}</small></td>`;
-      html += `<tr class="${v == null ? 'bad' : ''}"><td>${esc(label)}</td>${cell}</tr>`;
+      let cell, bad = false;
+      if (v === '__locked__') { cell = `<td class="val"><small>${esc(t('locked'))}</small></td>`; bad = true; }
+      else if (v === null || v === undefined) { cell = `<td class="val"><small>${esc(t('na'))}</small></td>`; bad = true; }
+      else if (item.kind === 'text') cell = `<td class="val">${esc(v)}</td>`;
+      else cell = `<td class="val">${esc(Number(v).toFixed(item.digits))} <small>${esc(item.unit)}</small></td>`;
+      html += `<tr class="${bad ? 'bad' : ''}"><td>${esc(label)}</td>${cell}</tr>`;
     }
     html += '</tbody></table>';
   }

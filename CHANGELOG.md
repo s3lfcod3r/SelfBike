@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.97 · November 2026
+- 🇬🇧 **Gen2-Gen4: read identifiers, mark locked values.** On the real bike every read is answered, but the diagnostic values are protected by Bosch SecurityAccess (negative response 0x33). The page now reads the freely available identifiers (display type, battery type, part numbers, software versions) and clearly labels the protected values as locked. No attempt is made to defeat the security lock.
+- 🇩🇪 **Gen2-Gen4: Kennungen lesen, gesperrte Werte kennzeichnen.** Am echten Rad wird jede Anfrage beantwortet, die Diagnosewerte sind aber durch Boschs SecurityAccess geschuetzt (Negativantwort 0x33). Die Seite liest jetzt die frei verfuegbaren Kennungen (Display-Typ, Akku-Typ, Teilenummern, Softwarestaende) und zeigt die geschuetzten Werte klar als gesperrt an. Die Sperre wird nicht umgangen.
+
 ## 1.4.96 · November 2026
 - 🇬🇧 **Gen2-Gen4 handshake fix.** The PC hello frame had one leading zero too many, so the display never answered. Corrected to the exact on-wire bytes from the capture (00 00 01 01 for Legacy); verified by the self-test.
 - 🇩🇪 **Gen2-Gen4-Handschlag korrigiert.** Das PC-Hallo hatte eine fuehrende Null zu viel, darum antwortete das Display nie. Auf die exakten Leitungs-Bytes aus dem Mitschnitt korrigiert (00 00 01 01 fuer Legacy); per Selbsttest geprueft.
