@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.5.4 · November 2026
+- 🇬🇧 **Gen2-Gen4: clearer locked label.** Protected values are now labelled 'locked (SecurityAccess) - deliberately not included' instead of '... unlock not implemented', to state honestly that the unlock is a deliberate non-goal, not a pending to-do.
+- 🇩🇪 **Gen2-Gen4: klareres Sperr-Label.** Geschuetzte Werte heissen jetzt 'gesperrt (SecurityAccess) - bewusst nicht enthalten' statt '... Freischaltung nicht implementiert', um ehrlich zu sagen, dass die Freischaltung eine bewusste Entscheidung ist, kein offenes To-do.
+
 ## 1.5.3 · November 2026
 - 🇬🇧 **Gen2-Gen4 multiframe corrected + reader finished.** Frame payload length now comes from byte 3 (FF = byte3-2, CF = byte3-1), the trailing NUL terminator is stripped, and the declared length is treated as an upper bound - so the part number reads correctly across firmware variants (verified against two real captures). Consecutive frames are only accepted during an open reassembly (hard rule), the multiframe read runs last, discarded CF bytes are logged, fault codes show their ISO status byte (active/confirmed) with known-code text, an empty value has its own state, and read/locked/not-read are counted separately.
 - 🇩🇪 **Gen2-Gen4-Multiframe korrigiert + Leser fertig.** Die Nutzlast-Länge kommt jetzt aus Byte 3 (FF = byte3-2, CF = byte3-1), der angehängte NUL-Terminator wird abgeschnitten, und die deklarierte Länge ist Obergrenze - damit stimmt die Teilenummer variantenfest (gegen zwei echte Mitschnitte geprüft). Folgeframes gelten nur bei offener Reassembly (harte Regel), der Multiframe-Read läuft zuletzt, verworfene CF-Bytes werden geloggt, Fehlercodes zeigen ihr ISO-Statusbyte (aktiv/bestätigt) mit Klartext bei bekannten Codes, ein leerer Wert hat einen eigenen Zustand, und gelesen/gesperrt/nicht-gelesen werden getrennt gezählt.
