@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.5.0 · November 2026
+- 🇬🇧 **Gen2-Gen4 reader works on real hardware.** Fault memory (DTC) reads successfully over Kiox-USB without any unlock (verified on a real Gen4 bike). Added ISO-TP multiframe reassembly (First Frame + Flow Control 30 10 05 + Consecutive Frames) so long values like the part number come through complete, an explicit CAN address map, strict length bounds, and a graceful enum/hex fallback. New: anonymised BES2/Kiox-USB protocol fixture under docs/. SecurityAccess-protected values stay honestly marked; live values via a CAN tap remain a separate future step.
+- 🇩🇪 **Gen2-Gen4-Leser laeuft an echter Hardware.** Der Fehlerspeicher (DTC) wird ueber Kiox-USB ohne jede Freischaltung gelesen (an einem echten Gen4-Rad bestaetigt). Neu: ISO-TP-Multiframe-Zusammensetzung (First Frame + Flow Control 30 10 05 + Consecutive Frames), damit lange Werte wie die Teilenummer vollstaendig ankommen, eine explizite CAN-Adresskarte, strikte Laengenbegrenzung und ein sauberer Enum/Hex-Rueckfall. Neu: anonymisierte BES2/Kiox-USB-Protokoll-Fixture unter docs/. SecurityAccess-geschuetzte Werte bleiben ehrlich gekennzeichnet; Live-Werte ueber CAN-Abgriff bleiben ein spaeterer Schritt.
+
 ## 1.4.99 · November 2026
 - 🇬🇧 **Gen2-Gen4: fault memory (DTC) and status, no unlock.** The reader now requests the fault memory (UDS 19 02) from motor, battery and display, reads the free status identifier (0x0501), keeps the session alive with TesterPresent, and labels SecurityAccess-protected values honestly. Parser verified against a real capture (DTC records, status). The free set needs no unlock; live values via CAN remain a separate future step.
 - 🇩🇪 **Gen2-Gen4: Fehlerspeicher (DTC) und Status, ohne Freischaltung.** Der Leser fragt jetzt den Fehlerspeicher (UDS 19 02) von Motor, Akku und Display ab, liest die freie Status-Kennung (0x0501), haelt die Sitzung mit TesterPresent offen und kennzeichnet SecurityAccess-geschuetzte Werte ehrlich. Parser gegen echten Mitschnitt geprueft (DTC-Eintraege, Status). Das freie Set braucht keine Freischaltung; Live-Werte ueber CAN bleiben ein spaeterer Schritt.

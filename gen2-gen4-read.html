@@ -79,7 +79,7 @@
 
 <script type="module">
 import { ECU, ITEMS, DTC_ECUS, buildHello, parseHello, buildSessionFrame, buildTesterPresent,
-  buildReadFrame, parseResponse, buildDtcRead, parseDtc } from './lib/gen24.js';
+  buildReadFrame, buildDtcRead, buildFlowControl, frameType, parseUds } from './lib/gen24.js';
 
 const BOSCH_VID = 0x108c;
 const MAIL = 'info@selfcoder.de';
@@ -176,6 +176,41 @@ async function exchange(device, out, { match, timeout = 500, tries = 1, label = 
   return null;
 }
 
+// Eine UDS-Anfrage senden und die Antwort zusammensetzen (SF direkt, FF+CF mit Flow Control).
+async function readUds(device, ecu, reqFrame, label) {
+  const rx = ECU[ecu].rx, tx = ECU[ecu].tx;
+  const first = await exchange(device, reqFrame, {
+    match: (a) => { const f = frameType(a); return !!f && f.canRx === rx && (f.kind === 'SF' || f.kind === 'FF'); },
+    timeout: 600, tries: 2, label,
+  });
+  if (!first) return null;
+  const f0 = frameType(first);
+  if (f0.kind === 'SF') return { uds: f0.data, canRx: rx };
+  const parts = Array.from(f0.data);                       // First Frame: erste 6 Bytes
+  const rest = await collectCF(device, tx, rx, f0.total - parts.length);
+  for (const b of (rest || [])) parts.push(b);
+  return { uds: Uint8Array.from(parts.slice(0, f0.total)), canRx: rx, partial: rest === null };
+}
+
+// Nach einem First Frame: Flow Control senden und Folgeframes (CF) sammeln.
+function collectCF(device, tx, rx, need) {
+  return new Promise((resolve) => {
+    const out = []; let done = false;
+    const onReport = (e) => {
+      const a = toArr(e.data); const f = frameType(a);
+      if (!f || f.canRx !== rx || f.kind !== 'CF') return;
+      trace('RX(cf)', a);
+      for (const b of f.data) if (out.length < need) out.push(b);
+      if (out.length >= need) fin(out);
+    };
+    const to = setTimeout(() => fin(out.length ? out : null), 900);
+    function fin(v) { if (done) return; done = true; clearTimeout(to); device.removeEventListener('inputreport', onReport); resolve(v); }
+    device.addEventListener('inputreport', onReport);
+    trace('TX fc', buildFlowControl(tx));
+    device.sendReport(0, buildFlowControl(tx)).catch(() => fin(null));
+  });
+}
+
 let rendered = false;
 $('connect').onclick = async () => {
   $('connect').disabled = true;
@@ -214,11 +249,11 @@ $('connect').onclick = async () => {
     report.dtc = {};
     for (const e of DTC_ECUS) {
       await keepAlive(e);
-      const buf = await exchange(device, buildDtcRead(ECU[e].tx), { match: (a) => a[2] === ECU[e].rx, timeout: 600, tries: 2, label: 'DTC ' + e });
-      const d = buf ? parseDtc(buf) : null;
-      if (d && d.ok) report.dtc[e] = { codes: d.codes };
-      else if (d && d.negative && d.nrc === 0x33) report.dtc[e] = { locked: true };
-      else if (d && d.negative) report.dtc[e] = { nrc: d.nrc };
+      const res = await readUds(device, e, buildDtcRead(ECU[e].tx), 'DTC ' + e);
+      const u = res ? parseUds(res.uds, res.canRx) : null;
+      if (u && u.ok && u.dtc) report.dtc[e] = { codes: u.codes };
+      else if (u && u.negative && u.nrc === 0x33) report.dtc[e] = { locked: true };
+      else if (u && u.negative) report.dtc[e] = { nrc: u.nrc };
       else report.dtc[e] = { na: true };
       render();
     }
@@ -226,15 +261,11 @@ $('connect').onclick = async () => {
     $('status').textContent = t('reading');
     let n = 0;
     for (const item of ITEMS) {
-      const rx = ECU[item.ecu].rx;
       await keepAlive(item.ecu);
-      const buf = await exchange(device, buildReadFrame(ECU[item.ecu].tx, item.did), {
-        match: (a) => { const r = parseResponse(a); return (r.ok && r.did === item.did) || (r.negative && a[2] === rx); },
-        timeout: 500, tries: 2, label: item.key,
-      });
-      const r = buf ? parseResponse(buf) : null;
-      if (r && r.ok && r.did === item.did) { report.values[item.key] = item.dec(r.data); n++; }
-      else if (r && r.negative && r.nrc === 0x33) report.values[item.key] = '__locked__';
+      const res = await readUds(device, item.ecu, buildReadFrame(ECU[item.ecu].tx, item.did), item.key);
+      const u = res ? parseUds(res.uds, res.canRx) : null;
+      if (u && u.ok && u.did === item.did) { report.values[item.key] = item.dec(u.data); n++; }
+      else if (u && u.negative && u.nrc === 0x33) report.values[item.key] = '__locked__';
       else report.values[item.key] = null;
       render();
     }
