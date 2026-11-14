@@ -12,7 +12,7 @@ const check = (name, cond, got, exp) => {
 
 // 1) Handschlag
 const hello = buildHello(1);
-check('PC-Hallo Bytes', hx(hello.slice(0, 5)) === '00 00 00 01 01', hx(hello.slice(0, 5)), '00 00 00 01 01');
+check('PC-Hallo Bytes (Leitung)', hx(hello.slice(0, 4)) === '00 00 01 01', hx(hello.slice(0, 4)), '00 00 01 01');
 const hr = parseHello(hex('00 01 01 00 00 00'));
 check('Handschlag-Antwort = LEGACY', hr.ok && hr.transportName === 'LEGACY', JSON.stringify(hr), 'LEGACY');
 

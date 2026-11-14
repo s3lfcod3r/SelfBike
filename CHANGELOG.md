@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.96 · November 2026
+- 🇬🇧 **Gen2-Gen4 handshake fix.** The PC hello frame had one leading zero too many, so the display never answered. Corrected to the exact on-wire bytes from the capture (00 00 01 01 for Legacy); verified by the self-test.
+- 🇩🇪 **Gen2-Gen4-Handschlag korrigiert.** Das PC-Hallo hatte eine fuehrende Null zu viel, darum antwortete das Display nie. Auf die exakten Leitungs-Bytes aus dem Mitschnitt korrigiert (00 00 01 01 fuer Legacy); per Selbsttest geprueft.
+
 ## 1.4.95 · November 2026
 - 🇬🇧 **Gen2-Gen4 reader: more robust connection.** The handshake is now retried several times (like the official tool), the read page listens continuously for responses, and it logs the device HID structure and every frame to help diagnose a real bike.
 - 🇩🇪 **Gen2-Gen4-Leser: robustere Verbindung.** Der Handschlag wird jetzt mehrfach versucht (wie das Original-Tool), die Leseseite lauscht durchgehend auf Antworten und schreibt die HID-Struktur des Geraets sowie jedes Frame ins Protokoll - zur Fehlersuche am echten Rad.
