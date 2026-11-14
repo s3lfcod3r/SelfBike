@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.98 · November 2026
+- 🇬🇧 **Gen2-Gen4: clearer locked wording.** Values behind Bosch SecurityAccess are now labelled 'locked - unlock not implemented' instead of just 'locked', to show it is a not-yet-built feature, not a hard limit.
+- 🇩🇪 **Gen2-Gen4: klarere Sperr-Anzeige.** Werte hinter Boschs SecurityAccess heissen jetzt 'gesperrt - Freischaltung nicht implementiert' statt nur 'gesperrt', um zu zeigen, dass es eine noch nicht gebaute Funktion ist, keine harte Grenze.
+
 ## 1.4.97 · November 2026
 - 🇬🇧 **Gen2-Gen4: read identifiers, mark locked values.** On the real bike every read is answered, but the diagnostic values are protected by Bosch SecurityAccess (negative response 0x33). The page now reads the freely available identifiers (display type, battery type, part numbers, software versions) and clearly labels the protected values as locked. No attempt is made to defeat the security lock.
 - 🇩🇪 **Gen2-Gen4: Kennungen lesen, gesperrte Werte kennzeichnen.** Am echten Rad wird jede Anfrage beantwortet, die Diagnosewerte sind aber durch Boschs SecurityAccess geschuetzt (Negativantwort 0x33). Die Seite liest jetzt die frei verfuegbaren Kennungen (Display-Typ, Akku-Typ, Teilenummern, Softwarestaende) und zeigt die geschuetzten Werte klar als gesperrt an. Die Sperre wird nicht umgangen.
