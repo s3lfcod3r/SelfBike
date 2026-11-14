@@ -78,8 +78,8 @@
 </main>
 
 <script type="module">
-import { ECU, ITEMS, buildHello, parseHello, buildSessionFrame, buildReadFrame, parseResponse }
-  from './lib/gen24.js';
+import { ECU, ITEMS, DTC_ECUS, buildHello, parseHello, buildSessionFrame, buildTesterPresent,
+  buildReadFrame, parseResponse, buildDtcRead, parseDtc } from './lib/gen24.js';
 
 const BOSCH_VID = 0x108c;
 const MAIL = 'info@selfcoder.de';
@@ -93,6 +93,7 @@ const T = {
     protocol: 'Protokoll (für Entwickler)',
     env_bad: 'Dieser Browser kann kein WebHID. Bitte Chrome oder Edge am PC verwenden.',
     connecting: 'Verbinde…', handshaking: 'Handschlag…', reading: 'Lese Werte…',
+    readingDtc: 'Lese Fehlerspeicher…', faults: 'Fehlerspeicher', noFaults: 'keine Fehler',
     hs_ok: 'Verbunden (Transport: {t}).', hs_fail: 'Handschlag fehlgeschlagen: {r}',
     no_device: 'Kein Gerät ausgewählt.', done: 'Fertig: {n} von {m} Werten gelesen.',
     err: 'Fehler: {e}', na: 'nicht gelesen', locked: 'gesperrt – Freischaltung nicht implementiert', saved: 'Datei gespeichert.',
@@ -108,6 +109,7 @@ const T = {
     protocol: 'Protocol (for developers)',
     env_bad: 'This browser has no WebHID. Please use Chrome or Edge on a PC.',
     connecting: 'Connecting…', handshaking: 'Handshake…', reading: 'Reading values…',
+    readingDtc: 'Reading fault memory…', faults: 'Fault memory', noFaults: 'no faults',
     hs_ok: 'Connected (transport: {t}).', hs_fail: 'Handshake failed: {r}',
     no_device: 'No device selected.', done: 'Done: {n} of {m} values read.',
     err: 'Error: {e}', na: 'not read', locked: 'locked – unlock not implemented', saved: 'File saved.',
@@ -196,14 +198,36 @@ $('connect').onclick = async () => {
     $('status').textContent = t('hs_ok', { t: hres.transportName });
 
     // Sitzungen (nicht-schreibend) je Steuergerät starten – Fehler werden toleriert.
-    for (const e of new Set(ITEMS.map((i) => i.ecu))) {
+    const ecus = new Set([...DTC_ECUS, ...ITEMS.map((i) => i.ecu)]);
+    for (const e of ecus) {
       await exchange(device, buildSessionFrame(ECU[e].tx), { match: (a) => a[2] === ECU[e].rx, timeout: 400, tries: 2, label: 'session ' + e });
+    }
+    let lastKa = Date.now();
+    const keepAlive = async (ecu) => {
+      if (Date.now() - lastKa < 3000) return;
+      await exchange(device, buildTesterPresent(ECU[ecu].tx), { match: (a) => a[2] === ECU[ecu].rx, timeout: 200, tries: 1, label: 'keepalive ' + ecu });
+      lastKa = Date.now();
+    };
+
+    // Fehlerspeicher (DTC) je Steuergerät – erwartet frei, ohne Freischaltung.
+    $('status').textContent = t('readingDtc');
+    report.dtc = {};
+    for (const e of DTC_ECUS) {
+      await keepAlive(e);
+      const buf = await exchange(device, buildDtcRead(ECU[e].tx), { match: (a) => a[2] === ECU[e].rx, timeout: 600, tries: 2, label: 'DTC ' + e });
+      const d = buf ? parseDtc(buf) : null;
+      if (d && d.ok) report.dtc[e] = { codes: d.codes };
+      else if (d && d.negative && d.nrc === 0x33) report.dtc[e] = { locked: true };
+      else if (d && d.negative) report.dtc[e] = { nrc: d.nrc };
+      else report.dtc[e] = { na: true };
+      render();
     }
 
     $('status').textContent = t('reading');
     let n = 0;
     for (const item of ITEMS) {
       const rx = ECU[item.ecu].rx;
+      await keepAlive(item.ecu);
       const buf = await exchange(device, buildReadFrame(ECU[item.ecu].tx, item.did), {
         match: (a) => { const r = parseResponse(a); return (r.ok && r.did === item.did) || (r.negative && a[2] === rx); },
         timeout: 500, tries: 2, label: item.key,
@@ -240,6 +264,20 @@ function render() {
   const groups = {};
   for (const item of ITEMS) (groups[item.ecu] ||= []).push(item);
   let html = '';
+  if (report.dtc && Object.keys(report.dtc).length) {
+    html += `<h2>${esc(t('faults'))}</h2><table><tbody>`;
+    for (const e of DTC_ECUS) {
+      const d = report.dtc[e]; if (!d) continue;
+      let v, bad = false;
+      if (d.locked) { v = `<small>${esc(t('locked'))}</small>`; bad = true; }
+      else if (d.na) { v = `<small>${esc(t('na'))}</small>`; bad = true; }
+      else if (d.nrc != null) { v = `<small>NRC 0x${d.nrc.toString(16)}</small>`; bad = true; }
+      else if (!d.codes.length) v = esc(t('noFaults'));
+      else v = esc(d.codes.map((c) => c.code).join(', '));
+      html += `<tr class="${bad ? 'bad' : ''}"><td>${esc(t('g_' + e))}</td><td class="val">${v}</td></tr>`;
+    }
+    html += '</tbody></table>';
+  }
   for (const [ecu, items] of Object.entries(groups)) {
     html += `<h2>${esc(t('g_' + ecu))}</h2><table><tbody>`;
     for (const item of items) {

@@ -1,6 +1,6 @@
 // Verifiziert lib/gen24.js gegen einen echten Bosch-Mitschnitt (Gen4, 14.11.2026).
 // Erwartete Werte = die vom Bosch-Tool entschlüsselten Werte desselben Rads.
-import { buildHello, parseHello, buildReadFrame, parseResponse, ITEMS, ECU } from '../lib/gen24.js';
+import { buildHello, parseHello, buildReadFrame, parseResponse, parseDtc, buildDtcRead, buildTesterPresent, ITEMS, ECU } from '../lib/gen24.js';
 
 const hex = (s) => Uint8Array.from(s.trim().split(/\s+/).map((h) => parseInt(h, 16)));
 const hx = (a) => Array.from(a).map((b) => b.toString(16).padStart(2, '0')).join(' ');
@@ -50,7 +50,24 @@ for (const item of ITEMS) {
     didOk && near, `${val} / did ${r.did.toString(16)}`, `${EXPECT[item.key]} / ${item.did.toString(16)}`);
 }
 
+// 4) Fehlerspeicher (DTC) + Status-DID gegen echte Antwort-Frames
+check('DTC-Anfrage Bytes', hx(buildDtcRead(0x3a).slice(0, 8)) === '01 00 3a 08 03 19 02 08',
+  hx(buildDtcRead(0x3a).slice(0, 8)), '01 00 3a 08 03 19 02 08');
+check('TesterPresent Bytes', hx(buildTesterPresent(0x22).slice(0, 7)) === '01 00 22 08 02 3e 00',
+  hx(buildTesterPresent(0x22).slice(0, 7)), '01 00 22 08 02 3e 00');
+
+const dtcDisplay = parseDtc(hex('01 00 3D 0C 0B 59 02 7B 43 00 13 28 4D 30 07 68'));
+check('DTC Display: 2 Codes (430013, 4D3007)',
+  dtcDisplay.ok && dtcDisplay.codes.length === 2 && dtcDisplay.codes[0].code === '430013' && dtcDisplay.codes[1].code === '4D3007',
+  JSON.stringify(dtcDisplay.codes), '430013, 4D3007');
+const dtcMotor = parseDtc(hex('01 00 21 08 03 59 02 7B'));
+check('DTC Motor: keine Codes', dtcMotor.ok && dtcMotor.codes.length === 0, JSON.stringify(dtcMotor.codes), '[]');
+
+const ctx = parseResponse(hex('01 00 23 08 04 62 05 01 A1'));
+check('Status-DID 0x0501 = 0xA1', ctx.ok && ctx.did === 0x0501 && ctx.data[0] === 0xa1,
+  JSON.stringify(ctx), 'did 0501 / A1');
+
 console.log(fails === 0
-  ? `\n✓ Gen2–Gen4-Selbsttest bestanden: ${tested} Werte gegen echten Mitschnitt verifiziert.`
+  ? `\n✓ Gen2–Gen4-Selbsttest bestanden: ${tested} Werte + DTC/Status gegen echten Mitschnitt verifiziert.`
   : `\n✗ ${fails} Fehler.`);
 process.exit(fails ? 1 : 0);

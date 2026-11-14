@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.99 · November 2026
+- 🇬🇧 **Gen2-Gen4: fault memory (DTC) and status, no unlock.** The reader now requests the fault memory (UDS 19 02) from motor, battery and display, reads the free status identifier (0x0501), keeps the session alive with TesterPresent, and labels SecurityAccess-protected values honestly. Parser verified against a real capture (DTC records, status). The free set needs no unlock; live values via CAN remain a separate future step.
+- 🇩🇪 **Gen2-Gen4: Fehlerspeicher (DTC) und Status, ohne Freischaltung.** Der Leser fragt jetzt den Fehlerspeicher (UDS 19 02) von Motor, Akku und Display ab, liest die freie Status-Kennung (0x0501), haelt die Sitzung mit TesterPresent offen und kennzeichnet SecurityAccess-geschuetzte Werte ehrlich. Parser gegen echten Mitschnitt geprueft (DTC-Eintraege, Status). Das freie Set braucht keine Freischaltung; Live-Werte ueber CAN bleiben ein spaeterer Schritt.
+
 ## 1.4.98 · November 2026
 - 🇬🇧 **Gen2-Gen4: clearer locked wording.** Values behind Bosch SecurityAccess are now labelled 'locked - unlock not implemented' instead of just 'locked', to show it is a not-yet-built feature, not a hard limit.
 - 🇩🇪 **Gen2-Gen4: klarere Sperr-Anzeige.** Werte hinter Boschs SecurityAccess heissen jetzt 'gesperrt - Freischaltung nicht implementiert' statt nur 'gesperrt', um zu zeigen, dass es eine noch nicht gebaute Funktion ist, keine harte Grenze.
