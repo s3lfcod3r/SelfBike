@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.4.94 · November 2026
+- 🇬🇧 **Experimental read support for older Bosch systems (Gen2–Gen4).** New page `gen2-gen4-read.html` reads battery, motor and display values from the classic Bosch systems over WebHID (handshake, diagnostic read requests only – nothing is written). Early test stage.
+- 🇩🇪 **Experimentelles Auslesen älterer Bosch-Systeme (Gen2–Gen4).** Neue Seite `gen2-gen4-read.html` liest Akku-, Motor- und Display-Werte der klassischen Bosch-Systeme über WebHID (Handschlag, nur Diagnose-Leseanfragen – es wird nichts geschrieben). Frühes Teststadium.
+
 ## 1.4.93 · November 2026
 - 🇬🇧 **Gen2–Gen4 hint in all languages and highlighted.** The start-page hint for riders of older Bosch systems is now translated into all 12 languages and stands out in yellow so it is not overlooked.
 - 🇩🇪 **Gen2–Gen4-Hinweis in allen Sprachen und hervorgehoben.** Der Hinweis auf der Startseite für Fahrer älterer Bosch-Systeme ist jetzt in alle 12 Sprachen übersetzt und gelb abgesetzt, damit er nicht übersehen wird.

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>SelfBike · Gen2–Gen4 lesen (Test)</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1b1f24; --muted: #5d6673;
+    --line: #dde1e6; --accent: #1f5fd1; --ok: #1a7f37; --warn: #9a6700; --err: #c62828; --code: #f0f2f5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111418; --card: #1a1e24; --text: #e6e9ed; --muted: #9aa4b1;
+      --line: #2c323a; --accent: #6ea2ff; --ok: #56d364; --warn: #e3b341; --err: #ff7b72; --code: #0d1014;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.0rem; margin: 18px 0 8px; }
+  p.lead { color: var(--muted); margin: 0 0 16px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  button { font: inherit; padding: 9px 16px; border-radius: 9px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: .5; cursor: default; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .note { border-left: 3px solid var(--warn); padding: 6px 12px; margin: 10px 0 0; font-size: .92rem; color: var(--muted); }
+  .status { font-size: .92rem; color: var(--muted); margin: 10px 0 0; }
+  table { border-collapse: collapse; width: 100%; }
+  td, th { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: baseline; }
+  td.val { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+  td.val small { font-weight: 400; color: var(--muted); }
+  .ecu { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+  .bad td { color: var(--muted); }
+  pre { background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; font: 12px/1.45 ui-monospace, Consolas, monospace; margin: 10px 0 0; max-height: 220px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1 data-t="title"></h1>
+      <p class="lead" data-t="lead"></p>
+    </div>
+    <button id="lang" aria-label="Sprache / Language">EN</button>
+  </header>
+
+  <section>
+    <p class="note" data-t="exp"></p>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="connect" data-t="b_connect"></button>
+      <span class="status" id="status"></span>
+    </div>
+    <p class="status" id="env"></p>
+  </section>
+
+  <section id="resultBox" hidden>
+    <div id="results"></div>
+    <div class="row" style="margin-top:14px">
+      <button id="save" data-t="b_save"></button>
+      <button id="mail" data-t="b_mail"></button>
+    </div>
+  </section>
+
+  <section id="logBox" hidden>
+    <details>
+      <summary data-t="protocol"></summary>
+      <pre id="log"></pre>
+    </details>
+  </section>
+</main>
+
+<script type="module">
+import { ECU, ITEMS, buildHello, parseHello, buildSessionFrame, buildReadFrame, parseResponse }
+  from './lib/gen24.js';
+
+const BOSCH_VID = 0x108c;
+const MAIL = 'info@selfcoder.de';
+
+const T = {
+  de: {
+    title: 'SelfBike · Gen2–Gen4 lesen', lang: 'EN',
+    lead: 'Testlauf: ältere Bosch-Antriebe (Gen2–Gen4) über das Display auslesen.',
+    exp: 'Nur Lesen. Es werden ausschließlich Diagnose-Leseanfragen gesendet – nichts am Rad verändert. Chrome oder Edge am PC/Laptop, Display per USB verbinden.',
+    b_connect: 'Verbinden und auslesen', b_save: 'Als Datei speichern', b_mail: 'E-Mail an Entwickler',
+    protocol: 'Protokoll (für Entwickler)',
+    env_bad: 'Dieser Browser kann kein WebHID. Bitte Chrome oder Edge am PC verwenden.',
+    connecting: 'Verbinde…', handshaking: 'Handschlag…', reading: 'Lese Werte…',
+    hs_ok: 'Verbunden (Transport: {t}).', hs_fail: 'Handschlag fehlgeschlagen: {r}',
+    no_device: 'Kein Gerät ausgewählt.', done: 'Fertig: {n} von {m} Werten gelesen.',
+    err: 'Fehler: {e}', na: 'nicht gelesen', saved: 'Datei gespeichert.',
+    g_DU: 'Motor', g_BMS: 'Akku', g_BUI: 'Display',
+    mail_subject: 'SelfBike Gen2-Gen4 Auslese-Test',
+    mail_body: 'Hallo Sven,\n\nanbei mein Auslese-Ergebnis (bitte die gespeicherte Datei anhängen).\n',
+  },
+  en: {
+    title: 'SelfBike · read Gen2–Gen4', lang: 'DE',
+    lead: 'Test run: read older Bosch drive systems (Gen2–Gen4) through the display.',
+    exp: 'Read-only. Only diagnostic read requests are sent – nothing on the bike is changed. Use Chrome or Edge on a PC/laptop, connect the display via USB.',
+    b_connect: 'Connect and read', b_save: 'Save as file', b_mail: 'E-mail the developer',
+    protocol: 'Protocol (for developers)',
+    env_bad: 'This browser has no WebHID. Please use Chrome or Edge on a PC.',
+    connecting: 'Connecting…', handshaking: 'Handshake…', reading: 'Reading values…',
+    hs_ok: 'Connected (transport: {t}).', hs_fail: 'Handshake failed: {r}',
+    no_device: 'No device selected.', done: 'Done: {n} of {m} values read.',
+    err: 'Error: {e}', na: 'not read', saved: 'File saved.',
+    g_DU: 'Motor', g_BMS: 'Battery', g_BUI: 'Display',
+    mail_subject: 'SelfBike Gen2-Gen4 read test',
+    mail_body: 'Hi Sven,\n\nattached is my read result (please attach the saved file).\n',
+  },
+};
+let lang = (navigator.language || 'de').toLowerCase().startsWith('de') ? 'de' : 'en';
+const t = (k, v = {}) => (T[lang][k] ?? T.de[k] ?? k).replace(/\{(\w+)\}/g, (_, n) => v[n] ?? '');
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const report = { tool: 'selfbike-gen2-gen4-read', createdAt: new Date().toISOString(), transport: null, values: {}, trace: [] };
+const hx = (a) => Array.from(a).map((b) => b.toString(16).padStart(2, '0')).join(' ');
+function trace(dir, bytes) { report.trace.push(`${dir} ${hx(bytes).slice(0, 47)}`); $('log').textContent = report.trace.join('\n'); }
+
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-t]').forEach((el) => { el.textContent = t(el.dataset.t); });
+  $('lang').textContent = t('lang');
+}
+$('lang').onclick = () => { lang = lang === 'de' ? 'en' : 'de'; applyLang(); if (rendered) render(); };
+
+function checkEnv() {
+  const ok = 'hid' in navigator && window.isSecureContext;
+  $('env').textContent = ok ? '' : t('env_bad');
+  $('connect').disabled = !ok;
+}
+
+// Eine Anfrage senden und auf die passende Antwort warten (WebHID request/response).
+function transact(device, out, { timeout = 500, wantRx = null } = {}) {
+  trace('TX', out);
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const onReport = (e) => {
+      const arr = new Uint8Array(e.data.byteLength);
+      for (let i = 0; i < arr.length; i++) arr[i] = e.data.getUint8(i);
+      if (wantRx != null && arr[2] !== wantRx) return; // fremdes Frame ignorieren
+      finish(() => resolve(arr));
+      trace('RX', arr);
+    };
+    const to = setTimeout(() => finish(() => reject(new Error('timeout'))), timeout);
+    function finish(fn) { if (done) return; done = true; clearTimeout(to); device.removeEventListener('inputreport', onReport); fn(); }
+    device.addEventListener('inputreport', onReport);
+    device.sendReport(0, out).catch((err) => finish(() => reject(err)));
+  });
+}
+
+let rendered = false;
+$('connect').onclick = async () => {
+  $('connect').disabled = true;
+  report.values = {}; report.trace = [];
+  try {
+    $('status').textContent = t('connecting');
+    const list = await navigator.hid.requestDevice({ filters: [{ vendorId: BOSCH_VID }] });
+    if (!list.length) { $('status').textContent = t('no_device'); $('connect').disabled = false; return; }
+    const device = list[0];
+    if (!device.opened) await device.open();
+
+    $('status').textContent = t('handshaking');
+    const hres = parseHello(await transact(device, buildHello(1), { timeout: 800 }));
+    if (!hres.ok) { $('status').textContent = t('hs_fail', { r: hres.reason }); report.transport = `fail:${hres.reason}`; showLog(); return; }
+    report.transport = hres.transportName;
+    $('status').textContent = t('hs_ok', { t: hres.transportName });
+
+    // Sitzungen (nicht-schreibend) je Steuergerät starten – Fehler werden toleriert.
+    for (const e of new Set(ITEMS.map((i) => i.ecu))) {
+      try { await transact(device, buildSessionFrame(ECU[e].tx), { timeout: 400, wantRx: ECU[e].rx }); } catch {}
+    }
+
+    $('status').textContent = t('reading');
+    let n = 0;
+    for (const item of ITEMS) {
+      try {
+        const buf = await transact(device, buildReadFrame(ECU[item.ecu].tx, item.did), { timeout: 500, wantRx: ECU[item.ecu].rx });
+        const r = parseResponse(buf);
+        if (r.ok && r.did === item.did) { report.values[item.key] = item.dec(r.data); n++; }
+        else report.values[item.key] = null;
+      } catch { report.values[item.key] = null; }
+      render();
+    }
+    $('status').textContent = t('done', { n, m: ITEMS.length });
+    showLog();
+  } catch (err) {
+    $('status').textContent = t('err', { e: err.message });
+    showLog();
+  } finally {
+    $('connect').disabled = false;
+  }
+};
+
+function showLog() { $('logBox').hidden = report.trace.length === 0; }
+
+const EN_LABEL = {
+  odometer: 'Odometer', soc: 'State of charge', voltage: 'Voltage', packTemp: 'Temperature',
+  cyclesOnBike: 'Charge cycles (on bike)', cyclesOffBike: 'Charge cycles (external charger)',
+  providedAh: 'Total charge delivered', nominalWh: 'Nominal capacity',
+};
+
+function render() {
+  rendered = true;
+  $('resultBox').hidden = false;
+  const groups = {};
+  for (const item of ITEMS) (groups[item.ecu] ||= []).push(item);
+  let html = '';
+  for (const [ecu, items] of Object.entries(groups)) {
+    html += `<h2>${esc(t('g_' + ecu))}</h2><table><tbody>`;
+    for (const item of items) {
+      const v = report.values[item.key];
+      const label = lang === 'en' ? (EN_LABEL[item.key] || item.label) : item.label;
+      const cell = (v === null || v === undefined)
+        ? `<td class="val"><small>${esc(t('na'))}</small></td>`
+        : `<td class="val">${esc(Number(v).toFixed(item.digits))} <small>${esc(item.unit)}</small></td>`;
+      html += `<tr class="${v == null ? 'bad' : ''}"><td>${esc(label)}</td>${cell}</tr>`;
+    }
+    html += '</tbody></table>';
+  }
+  $('results').innerHTML = html;
+}
+
+$('save').onclick = () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(report, null, 1)], { type: 'application/json' }));
+  a.download = `selfbike-gen2-gen4-read-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  $('status').textContent = t('saved');
+};
+$('mail').onclick = () => {
+  location.href = `mailto:${MAIL}?subject=${encodeURIComponent(t('mail_subject'))}&body=${encodeURIComponent(t('mail_body'))}`;
+};
+
+applyLang();
+checkEnv();
+</script>
+</body>
+</html>
