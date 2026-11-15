@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.1 · November 2026
+- 🇬🇧 Device picker now matches by Bosch vendor only (no fixed product id), so a Nyon or Intuvia head unit shows up too — not just the Kiox. The selected unit's USB id is logged to help identify other displays.
+- 🇩🇪 Die Geräteauswahl filtert jetzt nur noch nach der Bosch-Hersteller-Kennung (ohne feste Produkt-ID), damit auch ein Nyon oder Intuvia erscheint — nicht nur der Kiox. Die USB-Kennung des gewählten Bedienteils wird protokolliert, um andere Displays zu erkennen.
+
 ## 1.8.0 · November 2026
 - 🇬🇧 Added a progress dial (0→100 %) shown while reading out the eBike and after saving the protocol, with a "Done" button and a friendly Ko-fi note — SelfBike is free and lives on support. Read-only only, no tuning.
 - 🇩🇪 Fortschritts-Ring (0→100 %) beim Auslesen des eBikes und nach dem Speichern des Protokolls ergänzt, mit „Fertig"-Knopf und einem freundlichen Ko-fi-Hinweis — SelfBike ist kostenlos und lebt von Unterstützung. Nur Lesen, kein Tuning.

@@ -164,9 +164,12 @@ async function scan(){
     if(!(await keyServiceOk())) throw new Error('Schlüssel-Dienst nicht erreichbar');
     if(!device){
       progMsg('Gerät auswählen …'); setStatus('Geräteauswahl …','busy');
-      const [d]=await navigator.hid.requestDevice({filters:[{vendorId:VID,productId:PID}]});
+      // Nur Hersteller-Kennung (Bosch), ohne feste PID: so erscheinen auch Nyon/Intuvia, nicht nur der Kiox.
+      const [d]=await navigator.hid.requestDevice({filters:[{vendorId:VID}]});
       if(!d){setStatus('abgebrochen'); progClose(); reEnable();return;}
       await d.open(); device=d; attach();
+      log('Gerät: '+(d.productName||'?')+' VID=0x'+(d.vendorId||0).toString(16)+' PID=0x'+(d.productId||0).toString(16),'ok');
+      progMsg('Gerät: '+(d.productName||'Bosch')+' · PID 0x'+(d.productId||0).toString(16));
     }
     progMsg('Handschlag …'); setStatus('Handschlag …','busy'); await hello();
     progMsg('Bus prüfen …'); const n=await checkBus();
