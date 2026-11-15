@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.7.2 · November 2026
+- 🇬🇧 Removed the old Gen2–Gen4 log-recording page (gen2-gen4-log.html) as well — superseded by the Classic-Line diagnosis.
+- 🇩🇪 Auch die alte Gen2–Gen4-Log-Aufzeichnungsseite (gen2-gen4-log.html) entfernt — wird von der Classic-Line-Diagnose abgelöst.
+
 ## 1.7.1 · November 2026
 - 🇬🇧 Removed the old non-working Gen2–Gen4 reader page (gen2-gen4-read.html) and pointed the start page at the new Classic-Line diagnosis. Added a clear note that it only works on a PC/laptop with Chrome or Edge — not on a phone (mobile browsers have no WebUSB/WebHID).
 - 🇩🇪 Die alte, nicht funktionierende Gen2–Gen4-Leseseite (gen2-gen4-read.html) entfernt und die Startseite auf die neue Classic-Line-Diagnose verlinkt. Klarer Hinweis ergänzt, dass es nur am PC/Laptop mit Chrome oder Edge geht — nicht am Handy (Handy-Browser haben kein WebUSB/WebHID).
