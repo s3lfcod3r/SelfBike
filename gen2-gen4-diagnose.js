@@ -340,7 +340,7 @@ function fullTables(){
     }
     for(const r of (m.rc||[])){
       const lbl=r.req.map(x=>x.toString(16).padStart(2,'0')).join(' ');
-      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>`${esc(p.name)}: ${esc(p.val)}`).join(' · ');
+      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>`${esc(p.name)}: ${esc(p.val||'unbekannt')}`).join(' · ');
       h+=`<tr><td class="did">${lbl}</td><td class="svc">${esc(r.dec.n||'')}</td><td class="val">${dec}</td></tr>`;
     }
     h+='</tbody></table>';
@@ -356,7 +356,7 @@ function buildReport(){
   const bike=(el('bikeName')?el('bikeName').value.trim():'')||'—';
   const L=['SelfBike · BES2 (Gen2–4) — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
     'Seriennummern/IDs sind zum Schutz ausgeblendet. Senden an: info@selfcoder.de','',
-    'Typ: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),
+    'Typ: '+(str('M','5b7c')||'unbekannt')+' / '+(str('A','5b7c')||'unbekannt')+' / '+(str('D','5b7c')||'unbekannt'),
     'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),''];
   for(const tk of ['M','A','D']){ const m=model[tk]; if(!m)continue;
     L.push('=== '+names[tk]+' ===');
@@ -365,7 +365,7 @@ function buildReport(){
       L.push(('  '+did.slice(0,2)+' '+did.slice(2)).padEnd(8)+(o.dec.n||'').padEnd(40)+' '+parts);
     }
     for(const r of (m.rc||[])){ const lbl=r.req.map(x=>x.toString(16).padStart(2,'0')).join(' ');
-      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>p.name+': '+p.val).join(' · ');
+      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>p.name+': '+(p.val||'unbekannt')).join(' · ');
       L.push(('  '+lbl).padEnd(8)+(r.dec.n||'').padEnd(40)+' '+dec); }
     L.push('');
   }

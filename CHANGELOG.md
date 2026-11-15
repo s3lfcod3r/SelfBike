@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.6 · November 2026
+- 🇬🇧 Empty values (e.g. missing Bosch product codes on older hardware) now show "unbekannt" instead of a blank, including the "Typ:" line.
+- 🇩🇪 Leere Werte (z. B. fehlende Bosch-Produktcodes bei älterer Hardware) zeigen jetzt „unbekannt" statt leer — auch in der „Typ:"-Zeile.
+
 ## 1.8.5 · November 2026
 - 🇬🇧 Non-standard SecurityAccess seeds (e.g. a Nyon display's 4-byte seed) are now logged and written into the saved protocol for analysis; an all-zero seed is treated as already unlocked.
 - 🇩🇪 Nicht-standardmäßige SecurityAccess-Seeds (z. B. der 4-Byte-Seed eines Nyon-Displays) werden jetzt protokolliert und ins gespeicherte Protokoll geschrieben (zur Analyse); ein Seed aus lauter Nullen gilt als bereits freigeschaltet.
