@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.3 · November 2026
+- 🇬🇧 Added a bilingual FAQ (supported systems, why PC-only / WebHID vs WebUSB, head units & device detection, read-only / no tuning, data privacy) and linked it from the README.
+- 🇩🇪 Zweisprachige FAQ ergänzt (unterstützte Systeme, warum nur am PC / WebHID vs. WebUSB, Bedienteile & Geräteerkennung, nur Lesen / kein Tuning, Datenschutz) und im README verlinkt.
+
 ## 1.8.2 · November 2026
 - 🇬🇧 Renamed "Classic Line" to "BES2 (Gen2–4)" throughout — the Bosch name "Classic Line / Classic+ Line" officially refers to the 2011 first-generation drive, not this system. This tool reads BES2: Active Line, Active Line Plus, Performance Line and Performance Line CX Gen2–Gen4.
 - 🇩🇪 „Classic Line" überall in „BES2 (Gen2–4)" umbenannt — der Bosch-Name „Classic Line / Classic+ Line" meint offiziell den 2011er-Erstantrieb, nicht dieses System. Dieses Tool liest BES2: Active Line, Active Line Plus, Performance Line und Performance Line CX Gen2–Gen4.
