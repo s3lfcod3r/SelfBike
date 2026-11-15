@@ -1,0 +1,370 @@
+'use strict';
+/* SelfBike · BES2 Classic-Line Diagnose (öffentlich).
+   Liest Motor/Akku/Display über WebHID aus. Freischalt-Schlüssel UND die ODX-Decode-Tabelle
+   liegen geschützt in Cloudflare-Workern — der Browser schickt nur Seed bzw. Rohbytes hin und
+   bekommt den Key bzw. die fertigen Klartext-Werte zurück. Kein Schlüssel, keine Tabelle im Code. */
+
+const VID = 0x108c, PID = 0x193;
+const SF_MAX = 13, FF_MAX = 6, CF_MAX = 7, KSTORE = 'bes2.slots';
+const T = { SESSION_GAP:25, CONTEXT_GAP:20, KEY_GAP:15, DID_GAP:28, RESPONSE_TIMEOUT:1500,
+            PENDING_EXTEND:40000, KEEPALIVE_BUSY:1800, FC_TIMEOUT:1500, LOCKOUT:12000 };
+const SID_REPLY = {0x10:0x50,0x11:0x51,0x14:0x54,0x19:0x59,0x22:0x62,0x27:0x67,0x28:0x68,0x2e:0x6e,0x31:0x71,0x3e:0x7e};
+
+// Schlüssel UND Decode-Tabelle liegen NICHT im Browser/Repo — sie kommen von geschützten Cloudflare-Workern.
+const KEY_WORKER = 'https://bike-key.s3lfcod3r.workers.dev';
+const DECODE_WORKER = 'https://bike-decode.s3lfcod3r.workers.dev';
+
+const TARGETS = [
+  { key:'M', id:'motor', name:'Motor', tx:0x20, rx:0x21, slot:0, kontext:[0x22,0x05,0x01], shortKey:false,
+    routines:[[3,0x60,0],[3,0x60,1],[3,0x60,2],[3,0x60,3],[3,0x60,4],[3,0x60,5],[3,0x60,6],[3,0x60,7],[3,0x60,8],[3,0x60,9]],
+    dids:[[1,3],[1,4],[1,5],[1,6],[1,0x13],[1,0x25],[1,0x43],[1,0x49],[1,0x4a],[1,0x4b],[1,0x4c],[1,0x4f],[1,0x50],[1,0x57],[1,0x58],[1,0x59],[1,0x67],[1,0x6b],[1,0x6c],[1,0x70],[1,0x72],[1,0x73],[1,0x74],[1,0x80],[1,0x81],[1,0x82],[1,0x85],[1,0xa8],[2,0x10],[2,0x11],[2,0x14],[2,0x16],[2,0x17],[2,0x18],[2,0x19],[2,0x20],[2,0x21],[2,0x24],[2,0x25],[2,0x26],[2,0x27],[2,0x28],[2,0x29],[2,0x2a],[2,0x2b],[2,0x2d],[2,0x40],[2,0x41],[2,0x42],[2,0x43],[2,0x44],[2,0x45],[2,0x46],[2,0x47],[2,0x48],[2,0x49],[2,0x4a],[2,0x4b],[2,0x4c],[2,0x4d],[2,0x51],[2,0x65],[2,0x67],[2,0x68],[2,0x72],[2,0x74],[2,0x80],[5,1],[0x11,0x72],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
+  { key:'A', id:'akku', name:'Akku', tx:0x22, rx:0x23, slot:1, kontext:[0x22,0x05,0x01], shortKey:false,
+    routines:[[3,0x3e,0,1],[3,0x3e,1,1],[3,0x3e,2,1],[3,0x3e,3,1],[3,0x3e,4,1],[3,0x3e,5,1]],
+    dids:[[1,3],[1,4],[1,5],[1,6],[1,0x20],[1,0x21],[1,0x22],[1,0x50],[2,0x22],[2,0x24],[2,0x2e],[2,0x2f],[2,0x36],[2,0x64],[2,0x73],[2,0xa0],[3,0x12],[3,0x13],[3,0x19],[4,0x13],[4,0x33],[4,0x50],[5,1],[5,0x10],[6,0x10],[6,0],[7,0xa1],[7,0xa0],[0xda,0x10],[0xda,0x15],[0xda,0x16],[3,0x70],[2,0x1c],[0x42,1],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
+  { key:'D', id:'display', name:'Display', tx:0x3a, rx:0x3d, slot:5, kontext:null, shortKey:false, routines:[],
+    dids:[[0,4],[2,0x20],[2,0x21],[2,0x22],[2,0x30],[2,0x31],[2,0x32],[2,0x3a],[2,0x42],[2,0x43],[2,0x45],[2,0x52],[2,0x53],[2,0x60],[2,0x70],[2,0x71],[2,0x72],[2,0x88],[0x5b,0x7c],[0xde,0x95]] },
+];
+
+/* ---------- Schlüssel über den geschützten Worker (Keys bleiben serverseitig) ---------- */
+const toHexStr=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+async function keyFor(slot,seed){
+  const r=await fetch(KEY_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot,seed:toHexStr(seed)})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.key)throw new Error('Schlüssel-Dienst: '+(j.error||('HTTP '+r.status)));
+  return fromHex(j.key);
+}
+async function keyServiceOk(){
+  try{ const r=await fetch(KEY_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slot:5,seed:'06B4C94ECAE6C689540EE03D705C17BF'})}); const j=await r.json(); return j.key==='966F1978E3180DEBF576F9441C467F68'; }catch(e){ return false; }
+}
+
+/* ---------- Helfer ---------- */
+const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join(' ');
+const pad=b=>b.toString(16).padStart(2,'0').toUpperCase();
+const fromHex=s=>Uint8Array.from(s.replace(/\s/g,'').match(/../g).map(h=>parseInt(h,16)));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const concat=list=>{const n=list.reduce((a,x)=>a+x.length,0),o=new Uint8Array(n);let f=0;for(const a of list){o.set(a,f);f+=a.length;}return o;};
+const asciiOf=b=>[...b].filter(x=>x>=0x20&&x<0x7f).map(x=>String.fromCharCode(x)).join('').trim();
+const beInt=seg=>{let n=0;for(const b of seg)n=n*256+b;return n;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- Zustand + Log ---------- */
+let device=null, busy=0, pending=null, fcWait=null;
+const assembly=new Map();
+let logEl=null;
+function log(msg,cls){ if(!logEl)return; const d=document.createElement('div'); if(cls)d.className=cls; d.textContent=new Date().toLocaleTimeString()+'  '+msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; }
+function setStatus(text,state){ const dot=el('dot'),st=el('statustext'); if(st)st.textContent=text; if(dot)dot.className='dot'+(state?' '+state:''); }
+
+/* ---------- Transport (identisch zur geprüften unlock.js) ---------- */
+function frame(dst,payload){const f=new Uint8Array(64);f[0]=1;f[1]=0;f[2]=dst;f[3]=8;f.set(payload,4);return f;}
+function buiFrame(dst,pdu){const f=new Uint8Array(64);f[0]=1;f[1]=0;f[2]=dst;f[3]=pdu.length<=SF_MAX?8:0x13;f[4]=pdu.length&0xff;f.set(pdu,5);return f;}
+async function rawWrite(f){log('TX '+hex(f.subarray(2,5+f[4])),'tx');await device.sendReport(0,f);}
+function waitFc(t,ms){return new Promise((res,rej)=>{const tm=setTimeout(()=>{fcWait=null;rej(new Error('kein Flow Control'));},ms);fcWait={rx:t.rx,done:fc=>{clearTimeout(tm);fcWait=null;res(fc);}};});}
+async function sendPdu(t,pdu){
+  if(!device)throw new Error('kein Gerät');
+  if(t.rx===0x3d)return rawWrite(buiFrame(t.tx,pdu));
+  if(pdu.length<=SF_MAX)return rawWrite(frame(t.tx,concat([Uint8Array.of(pdu.length),pdu])));
+  const head=Uint8Array.of(0x10|((pdu.length>>8)&0x0f),pdu.length&0xff);
+  await rawWrite(frame(t.tx,concat([head,pdu.subarray(0,FF_MAX)])));
+  const fc=await waitFc(t,T.FC_TIMEOUT); const stmin=Math.max(fc.stmin||20,10);
+  let off=FF_MAX,seq=1;
+  while(off<pdu.length){const ch=pdu.subarray(off,off+CF_MAX);await rawWrite(frame(t.tx,concat([Uint8Array.of(0x20|(seq++&0x0f)),ch])));off+=ch.length;if(off<pdu.length)await sleep(stmin);}
+}
+function request(t,pdu,ms){return new Promise((res,rej)=>{const sid=pdu[0];const tm=setTimeout(()=>{pending=null;rej(new Error('Timeout'));},ms||T.RESPONSE_TIMEOUT);pending={rx:t.rx,sid,want:SID_REPLY[sid]||0,timer:tm,resolve:d=>{clearTimeout(tm);pending=null;res(d);},reject:e=>{clearTimeout(tm);pending=null;rej(e);},rearm:()=>{clearTimeout(pending.timer);pending.timer=setTimeout(()=>{pending=null;rej(new Error('Timeout'));},T.PENDING_EXTEND);}};sendPdu(t,pdu).catch(e=>{if(pending)pending.reject(e);});});}
+function deliver(d){if(pending)pending.resolve(d);}
+function onReport(ev){
+  if(ev.reportId!==0)return;
+  const d=new Uint8Array(ev.data.buffer,ev.data.byteOffset,ev.data.byteLength);
+  if(d.length>=4&&d[0]===0&&d[1]===1){log('Handshake quittiert','ok');return;}
+  if(d.length<5)return;
+  const src=d[2],hdr=d[4];
+  if(src===0x3d){const len=d[4],data=d.slice(5,5+len);if(!data.length)return;log('RX 3d '+hex(data),'rx');handlePdu(src,data);return;}
+  if((hdr&0xf0)===0x30){const fc={bs:d[5],stmin:d[6]};if(fcWait&&fcWait.rx===src)fcWait.done(fc);return;}
+  if((hdr&0xf0)===0x10){const total=((hdr&0x0f)<<8)|d[5];const first=d.slice(6,6+FF_MAX);assembly.set(src,{buf:[...first],total});rawWrite(frame(src-1,Uint8Array.of(0x30,0,0))).catch(()=>{});return;}
+  if((hdr&0xf0)===0x20){const a=assembly.get(src);if(!a)return;const take=Math.min(CF_MAX,a.total-a.buf.length);for(let i=0;i<take;i++)a.buf.push(d[5+i]);if(a.buf.length>=a.total){assembly.delete(src);handlePdu(src,Uint8Array.from(a.buf));}return;}
+  const data=d.slice(5,5+hdr);if(!data.length)return;log('RX '+hex(data),'rx');handlePdu(src,data);
+}
+function handlePdu(src,pdu){
+  if(!pending)return;
+  if(src!==pending.rx)return;
+  if(pdu.length===2&&pdu[0]===0x7e)return;
+  if(pdu[0]===0x7f){if(pdu[2]===0x78){pending.rearm();return;}deliver(pdu);return;}
+  if(pending.want&&pdu[0]!==pending.want)return;
+  deliver(pdu);
+}
+async function hello(){const f=new Uint8Array(64);f[2]=1;f[3]=1;log('Handshake gesendet','lock');await device.sendReport(0,f);await sleep(500);}
+let tick=null;
+function attach(){device.addEventListener('inputreport',onReport);tick=setInterval(()=>{if(!device||busy>0)return;for(const t of TARGETS)sendPdu(t,Uint8Array.of(0x3e,0)).catch(()=>{});},T.KEEPALIVE_BUSY);}
+async function pause(ms){busy--;await sleep(ms);busy++;}
+async function checkBus(){let n=0;for(const t of TARGETS){try{const r=await request(t,Uint8Array.of(0x10,3),1200);if(r[0]===0x50){n++;log(t.name+': 50 03','ok');}else log(t.name+': '+hex(r),'warn');}catch(e){log(t.name+': '+e.message,'no');}await sleep(300);}return n;}
+async function openSession(t){const r=await request(t,Uint8Array.of(0x10,3));if(r[0]!==0x50)throw new Error('Sitzung 03 abgelehnt');await sleep(T.SESSION_GAP);}
+async function precheck(t){if(!t.kontext)return;await sleep(T.CONTEXT_GAP);const r=await request(t,Uint8Array.from(t.kontext));if(r[0]!==0x62)throw new Error('Kontext '+hex(r));}
+async function getSeed(t,sub){const r=await request(t,Uint8Array.of(0x27,sub));if(r[0]===0x7f){const e=new Error('27'+pad(sub)+' NRC '+pad(r[2]));e.nrc=r[2];throw e;}if(r[0]!==0x67)throw new Error('27'+pad(sub)+' '+hex(r));const s=r.subarray(2);if(s.length===0||(s.length===1&&s[0]===0))return new Uint8Array(16);if(s.length<16)throw new Error('Seed '+s.length+' Byte');return Uint8Array.from(s.subarray(0,16));}
+async function sendKey(t,sub,slot){
+  let seed;
+  try{seed=await getSeed(t,sub);}catch(e){if(e.nrc===0x37){log(t.name+': Wartezeit – 12 s','warn');await pause(T.LOCKOUT);await openSession(t);await precheck(t);seed=await getSeed(t,sub);}else throw e;}
+  let ans=await keyFor(slot,seed);
+  if(t.shortKey){const sh=new Uint8Array(16);sh.set(ans.subarray(0,4));ans=sh;}
+  await sleep(T.KEY_GAP);
+  const r=await request(t,concat([Uint8Array.of(0x27,sub+1),ans]));
+  if(r[0]===0x67){log(t.name+': freigeschaltet','ok');return true;}
+  if(r[0]===0x7f){const n=r[2];log(t.name+': NRC '+pad(n)+(n===0x36?' (Zähler voll – Kiox aus/15s/ein)':n===0x35?' (Schlüssel passt nicht)':''),'no');const e=new Error('NRC'+pad(n));e.nrc=n;throw e;}
+  throw new Error('unerwartet '+hex(r));
+}
+
+/* ---------- Decode über den geschützten Worker (ODX-Tabelle bleibt serverseitig) ---------- */
+async function decodeAll(){
+  const items=[], refs=[];
+  for(const tk of ['M','A','D']){ const m=model[tk]; if(!m)continue;
+    for(const did in m.dids){ items.push({t:tk,did,b:[...m.dids[did].raw]}); refs.push(m.dids[did]); }
+    for(const r of m.rc){ items.push({t:tk,rid:r.rid,b:[...r.raw]}); refs.push(r); }
+  }
+  if(!items.length)return;
+  const res=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})});
+  const j=await res.json().catch(()=>({}));
+  if(!res.ok||!Array.isArray(j.results))throw new Error('Decode-Dienst: '+(j.error||('HTTP '+res.status)));
+  j.results.forEach((dec,i)=>{ refs[i].dec=dec; });
+}
+
+/* ---------- Auslesen ---------- */
+const model={};
+window.__model=model; window.__render=()=>render();
+async function scanTarget(t){
+  busy++;
+  try{
+    setStatus(t.name+' – Sitzung …','busy');
+    await openSession(t); await precheck(t);
+    let unlocked=false;
+    try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ if(e.nrc)log(t.name+': Freischaltung fehlgeschlagen ('+e.message+')','warn'); else throw e; }
+    const tm={unlocked,dids:{},rc:[]};
+    // Routinen
+    for(const r of t.routines){
+      try{ const res=await request(t,concat([Uint8Array.of(0x31,0x01),Uint8Array.from(r)]));
+        if(res[0]===0x71){ const rid=r.slice(0,2).map(x=>x.toString(16).padStart(2,'0')).join(''); tm.rc.push({req:r,rid,raw:res.subarray(3)}); }
+      }catch(e){}
+      await sleep(T.DID_GAP);
+    }
+    // DIDs
+    setStatus(t.name+' – lese Kennungen …','busy');
+    for(const did of t.dids){
+      const didhex=did.map(x=>x.toString(16).padStart(2,'0')).join('');
+      try{ const res=await request(t,Uint8Array.of(0x22,did[0],did[1]));
+        if(res[0]===0x62){ tm.dids[didhex]={raw:res.subarray(3)}; }
+      }catch(e){}
+      await sleep(T.DID_GAP);
+    }
+    model[t.key]=tm;
+  }finally{ busy--; }
+}
+async function scan(){
+  try{
+    el('scan').disabled=true; const s2d=el('scan2'); if(s2d)s2d.disabled=true;
+    setStatus('Schlüssel-Dienst prüfen …','busy'); if(!(await keyServiceOk())) throw new Error('Schlüssel-Dienst nicht erreichbar');
+    if(!device){
+      setStatus('Geräteauswahl …','busy');
+      const [d]=await navigator.hid.requestDevice({filters:[{vendorId:VID,productId:PID}]});
+      if(!d){setStatus('abgebrochen');reEnable();return;}
+      await d.open(); device=d; attach();
+    }
+    setStatus('Handschlag …','busy'); await hello();
+    const n=await checkBus();
+    if(!n){ setStatus('kein Gerät im Diagnosemodus – Kiox aus/15s/ein','err'); reEnable(); return; }
+    for(const t of TARGETS){ await scanTarget(t); await sleep(T.SESSION_GAP); }
+    setStatus('Werte dekodieren …','busy'); await decodeAll();
+    setStatus('fertig ✓','on');
+    render();
+  }catch(e){ setStatus('Fehler: '+e.message,'err'); log(e.message,'no'); }
+  finally{ reEnable(); }
+}
+function reEnable(){ el('scan').disabled=false; const s2=el('scan2'); if(s2)s2.disabled=false; el('scan').textContent='Neu auslesen'; }
+
+/* ---------- Darstellung ---------- */
+function el(id){return document.getElementById(id);}
+function pick(tk,didhex,i=0){ const d=model[tk]&&model[tk].dids[didhex]; if(!d)return null; return d.dec.parts[i]||null; }
+function num(tk,didhex,i=0){ const p=pick(tk,didhex,i); return p&&p.num!=null?p.num:null; }
+function str(tk,didhex,i=0){ const p=pick(tk,didhex,i); return p?p.val:null; }
+const km=m=>m==null?null:(m/1000);
+const nf=(v,d=1)=>v==null?'—':v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const ni=v=>v==null?'—':Math.round(v).toLocaleString('de-DE');
+
+function gauge(pct){
+  const p=Math.max(0,Math.min(100,pct||0)); const r=62,c=2*Math.PI*r, off=c*(1-p/100);
+  const col=p>50?'var(--acc)':p>20?'var(--warn)':'var(--danger)';
+  return `<div class="gauge"><svg width="148" height="148" viewBox="0 0 148 148">
+    <circle cx="74" cy="74" r="${r}" fill="none" stroke="#1c2634" stroke-width="12"/>
+    <circle cx="74" cy="74" r="${r}" fill="none" stroke="${col}" stroke-width="12" stroke-linecap="round"
+      stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" style="transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)"/>
+  </svg><div class="lbl"><div><div class="p">${p==null?'—':Math.round(p)}<span style="font-size:16px">%</span></div><div class="t">Ladung</div></div></div></div>`;
+}
+function metric(k,v,cls){ return `<div class="metric"><div class="m-k">${esc(k)}</div><div class="m-v${cls?' '+cls:''}">${v}</div></div>`; }
+
+function render(){
+  const stage=el('stage'); stage.innerHTML=''; stage.classList.add('show');
+  const intro=el('intro'); if(intro)intro.style.display='none';
+
+  // Werte ziehen
+  const frame=str('M','0181')||'—';
+  const odo=num('M','0167'); // DID 0167 ist bereits km (×0,001)
+  const soc=num('A','0510');
+  const volt=num('A','0413'), temp=num('A','0433'), cap=num('A','02a0');
+  const cyc=(num('A','0312')||0)+(num('A','0313')||0);
+  const ah=num('A','0319'), mcell=num('A','07a1'), mcellMax=num('A','0610'), debal=num('A','da10');
+  const delta=debal!=null?debal*1000:(mcellMax!=null&&mcell!=null?(mcellMax-mcell)*1000:null);
+  const bd=model.A&&model.A.dids['0120']; const mfg=bd?bd.dec.parts:null;
+  const rtM=num('M','016b'), rtS=num('M','016c');
+  const assist=num('M','0143'), disp=num('M','0210');
+  const manip=num('M','0272');
+
+  let h='';
+
+  // Aktionsleiste
+  h+=`<div class="actions"><button class="btn-save" onclick="saveReport()">⬇ Protokoll speichern</button><span class="actions-note">Seriennummern werden ausgeblendet · senden an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></span></div>`;
+
+  // Banner
+  h+=`<div class="banner">`;
+  h+=`
+    <div class="eyebrow">${esc(str('M','5b7c')||'eBike')} · ${esc(str('A','5b7c')||'')} · ${esc(str('D','5b7c')||'')}</div>
+    <div class="frame">${esc(frame)}</div>
+    <div class="sub">Modell-ID ${esc(str('M','0180')||'—')} · Motor-Nr. ${esc(str('M','014a')||'—')}</div>
+    <div class="odo"><div class="num">${odo==null?'—':nf(odo,1)}</div><div class="unit">km Gesamtlaufleistung</div></div>
+  </div>`;
+
+  // Akku + Motor
+  h+='<div class="grid">';
+  h+=`<div class="card"><h3><span class="ico">▰</span> Akku</h3><p class="cardsub">${esc(str('A','5b7c')||'')} · ${cap?ni(cap)+' Wh':''}</p>
+    <div class="batt">${gauge(soc)}
+      <div class="battstats">
+        ${metric('Spannung',nf(volt,2)+' <small>V</small>')}
+        ${metric('Temperatur',nf(temp,1)+' <small>°C</small>', temp>45?'bad':temp<0?'warn':'')}
+        ${metric('Nennkapazität',ni(cap)+' <small>Wh</small>')}
+        ${metric('Ladezyklen',nf(cyc,1), cyc<300?'good':cyc<600?'warn':'bad')}
+        ${metric('Entnommen',nf(ah,1)+' <small>Ah</small>')}
+        ${metric('min. Zelle',nf(mcell,2)+' <small>V</small>')}
+        ${metric('max. Zelle',nf(mcellMax,2)+' <small>V</small>')}
+        ${metric('Zell-Delta',delta!=null?ni(delta)+' <small>mV</small>':'—', delta!=null&&delta>50?'warn':'good')}
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="chips">
+      <div class="chip"><span>Serie</span> <b>${esc(str('A','0122')||'—')}</b></div>
+      ${mfg?`<div class="chip"><span>Baujahr</span> <b>${mfg[0].num}.${mfg[1].num}.${mfg[2].num}</b></div>`:''}
+      <div class="chip"><span>SW</span> <b>${esc(verStr('A','0103'))}</b></div>
+    </div>
+  </div>`;
+
+  h+=`<div class="card"><h3><span class="ico">⚙</span> Motor</h3><p class="cardsub">${esc(str('M','5b7c')||'')} · ${esc(str('M','0150')||'')}</p>
+    <div class="battstats" style="grid-template-columns:1fr 1fr">
+      ${metric('Motor-Laufzeit',nf(rtM,1)+' <small>h</small>')}
+      ${metric('System an',nf(rtS,1)+' <small>h</small>')}
+      ${metric('HW / SW',esc(verStr('M','0104'))+' / '+esc(verStr('M','0103')))}
+      ${metric('Laufrad',(num('M','0170')||'—')+' <small>mm</small>')}
+    </div>
+    <div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="color:var(--mut);font-size:12.5px">Geschwindigkeit</span>
+      ${manip===0?'<span class="flag ok">✓ keine Manipulation erkannt</span>':manip?'<span class="flag hot">⚠ Manipulation erkannt</span>':''}
+    </div>
+    <div class="speed">
+      <div class="speedbox${assist>25.3?' hot':''}"><div class="s-v">${nf(assist,1)}</div><div class="s-k">Unterstützung km/h</div></div>
+      <div class="speedbox"><div class="s-v">${nf(disp,1)}</div><div class="s-k">Anzeige max km/h</div></div>
+    </div>
+  </div>`;
+  h+='</div>';
+
+  // Mode-Distanzen
+  const modes=[['Eco','0226'],['Tour','0227'],['Sport','0228'],['Turbo','0247'],['Off','022a']];
+  const md=modes.map(([n,d])=>({n,km:km(num('M',d))||0}));
+  const maxkm=Math.max(1,...md.map(x=>x.km));
+  h+=`<div class="card"><h3><span class="ico">▤</span> Fahrstrecke nach Modus</h3><p class="cardsub">Summe entspricht dem Gesamtkilometerstand</p>
+    <div class="bars">${md.map(x=>`<div class="bar"><div class="b-k">${x.n}</div><div class="b-track"><div class="b-fill" style="width:${(x.km/maxkm*100).toFixed(1)}%"></div></div><div class="b-v">${nf(x.km,1)} km</div></div>`).join('')}</div>
+  </div>`;
+
+  // Service-Historie
+  const hist=(model.M&&model.M.rc||[]).map(r=>r.dec).filter(d=>d&&!d.empty&&d.parts.length>=4);
+  if(hist.length){
+    h+=`<div class="card"><h3><span class="ico">◷</span> Service-Historie</h3><p class="cardsub">Datum und Kilometerstand je Eintrag</p>
+      <div class="timeline">${hist.map((d,i)=>{const y=d.parts[0].num,m=d.parts[1].num,day=d.parts[2].num,o=d.parts[3].num;return `<div class="tl${o===0?' first':''}"><div class="d">${String(day).padStart(2,'0')}.${String(m).padStart(2,'0')}.${y}</div><div class="k">${o===0?'Erstregistrierung / Produktion':(o/1000).toFixed(1)+' km'}</div></div>`;}).join('')}</div>
+    </div>`;
+  }
+
+  // Display-Karte
+  h+=`<div class="card"><h3><span class="ico">▣</span> Display</h3><p class="cardsub">${esc(str('D','5b7c')||'')}</p>
+    <div class="chips">
+      <div class="chip"><span>Serie</span> <b>${esc(str('D','0242')||'—')}</b></div>
+      <div class="chip"><span>Teilenr.</span> <b>${esc(str('D','0232')||'—')}</b></div>
+      <div class="chip"><span>SW</span> <b>${esc(verStr('D','0220'))}</b></div>
+      <div class="chip"><span>HW</span> <b>${esc(verStr('D','0221'))}</b></div>
+    </div>
+  </div>`;
+
+  stage.innerHTML=h;
+
+  // Volltabellen + Log anhängen
+  stage.appendChild(fullTables());
+  const logWrap=document.createElement('details');
+  logWrap.innerHTML='<summary>Protokoll <span class="arr">▾</span></summary>';
+  const ld=document.createElement('div'); ld.id='log'; logWrap.appendChild(ld); stage.appendChild(logWrap);
+  // altes Log übernehmen
+  if(logEl){ ld.innerHTML=logEl.innerHTML; } logEl=ld;
+}
+function verStr(tk,didhex){ const p=model[tk]&&model[tk].dids[didhex]; if(!p)return '—'; const q=p.dec.parts; if(q.length>=3)return q.slice(0,4).map(x=>x.num!=null?x.num:x.val).join('.'); return q[0]?q[0].val:'—'; }
+
+function fullTables(){
+  const names={M:'Motor',A:'Akku',D:'Display'};
+  const det=document.createElement('details');
+  let h='<summary>Alle Werte ('+Object.values(model).reduce((a,m)=>a+Object.keys(m.dids).length,0)+' Kennungen) <span class="arr">▾</span></summary>';
+  for(const tk of ['M','A','D']){
+    const m=model[tk]; if(!m)continue;
+    h+=`<table class="tbl"><thead><tr><th colspan="3">${names[tk]}</th></tr></thead><tbody>`;
+    for(const [did,o] of Object.entries(m.dids)){
+      const lbl=did.slice(0,2)+' '+did.slice(2);
+      const dec=o.dec.parts.map(p=>p.name?`${esc(p.name)}: ${esc(p.val)}`:esc(p.val)).join(' · ');
+      h+=`<tr><td class="did">${lbl}</td><td class="svc">${esc(o.dec.n||'')}</td><td class="val">${dec}</td></tr>`;
+    }
+    for(const r of (m.rc||[])){
+      const lbl=r.req.map(x=>x.toString(16).padStart(2,'0')).join(' ');
+      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>`${esc(p.name)}: ${esc(p.val)}`).join(' · ');
+      h+=`<tr><td class="did">${lbl}</td><td class="svc">${esc(r.dec.n||'')}</td><td class="val">${dec}</td></tr>`;
+    }
+    h+='</tbody></table>';
+  }
+  det.innerHTML=h; return det;
+}
+
+/* ---------- Protokoll speichern (Seriennummern/IDs ausgeblendet) ---------- */
+const BLUR=/serial|seriennumm|partnumber|teilenumm|idnumber|keynumber|rahmennumm|bike_id|number|label/i;
+function blurVal(name,svc,val,isStr){ if(!isStr)return val; if(BLUR.test(name||'')||BLUR.test(svc||''))return '•••••••• (ausgeblendet)'; return val; }
+function buildReport(){
+  const names={M:'Motor',A:'Akku',D:'Display'};
+  const L=['SelfBike · BES2 Classic-Line — Auslese-Protokoll','Datum: '+new Date().toLocaleString('de-DE'),
+    'Seriennummern/IDs sind zum Schutz ausgeblendet. Senden an: info@selfcoder.de','',
+    'Typ: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),
+    'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),''];
+  for(const tk of ['M','A','D']){ const m=model[tk]; if(!m)continue;
+    L.push('=== '+names[tk]+' ===');
+    for(const [did,o] of Object.entries(m.dids)){
+      const parts=o.dec.parts.map(p=>(p.name?p.name+': ':'')+blurVal(p.name,o.dec.n,p.val,p.str)).join(' · ');
+      L.push(('  '+did.slice(0,2)+' '+did.slice(2)).padEnd(8)+(o.dec.n||'').padEnd(40)+' '+parts);
+    }
+    for(const r of (m.rc||[])){ const lbl=r.req.map(x=>x.toString(16).padStart(2,'0')).join(' ');
+      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>p.name+': '+p.val).join(' · ');
+      L.push(('  '+lbl).padEnd(8)+(r.dec.n||'').padEnd(40)+' '+dec); }
+    L.push('');
+  }
+  L.push('Erstellt mit SelfBike · bike.selfcoder.de');
+  return L.join('\n');
+}
+function saveReport(){
+  if(!Object.keys(model).length){ alert('Erst auslesen.'); return; }
+  const blob=new Blob([buildReport()],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='selfbike-protokoll-'+new Date().toISOString().slice(0,10)+'.txt';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+window.saveReport=saveReport;
+
+/* ---------- Init ---------- */
+function init(){
+  logEl=document.createElement('div'); logEl.style.display='none'; document.body.appendChild(logEl);
+  el('scan').onclick=scan; const s2=el('scan2'); if(s2)s2.onclick=scan;
+}
+init();
