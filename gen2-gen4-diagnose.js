@@ -49,6 +49,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 
 /* ---------- Zustand + Log ---------- */
 let device=null, busy=0, pending=null, fcWait=null;
+let PROG={t:0,d:0};
 const assembly=new Map();
 let logEl=null;
 function log(msg,cls){ if(!logEl)return; const d=document.createElement('div'); if(cls)d.className=cls; d.textContent=new Date().toLocaleTimeString()+'  '+msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; }
@@ -131,7 +132,7 @@ window.__model=model; window.__render=()=>render();
 async function scanTarget(t){
   busy++;
   try{
-    setStatus(t.name+' – Sitzung …','busy');
+    setStatus(t.name+' – Sitzung …','busy'); progMsg(t.name+' – Sitzung & Freischaltung …');
     await openSession(t); await precheck(t);
     let unlocked=false;
     try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ if(e.nrc)log(t.name+': Freischaltung fehlgeschlagen ('+e.message+')','warn'); else throw e; }
@@ -141,16 +142,16 @@ async function scanTarget(t){
       try{ const res=await request(t,concat([Uint8Array.of(0x31,0x01),Uint8Array.from(r)]));
         if(res[0]===0x71){ const rid=r.slice(0,2).map(x=>x.toString(16).padStart(2,'0')).join(''); tm.rc.push({req:r,rid,raw:res.subarray(3)}); }
       }catch(e){}
-      await sleep(T.DID_GAP);
+      await sleep(T.DID_GAP); if(PROG.t){PROG.d++;progTick();}
     }
     // DIDs
-    setStatus(t.name+' – lese Kennungen …','busy');
+    setStatus(t.name+' – lese Kennungen …','busy'); progMsg(t.name+' – Kennungen lesen …');
     for(const did of t.dids){
       const didhex=did.map(x=>x.toString(16).padStart(2,'0')).join('');
       try{ const res=await request(t,Uint8Array.of(0x22,did[0],did[1]));
         if(res[0]===0x62){ tm.dids[didhex]={raw:res.subarray(3)}; }
       }catch(e){}
-      await sleep(T.DID_GAP);
+      await sleep(T.DID_GAP); if(PROG.t){PROG.d++;progTick();}
     }
     model[t.key]=tm;
   }finally{ busy--; }
@@ -158,27 +159,40 @@ async function scanTarget(t){
 async function scan(){
   try{
     el('scan').disabled=true; const s2d=el('scan2'); if(s2d)s2d.disabled=true;
-    setStatus('Schlüssel-Dienst prüfen …','busy'); if(!(await keyServiceOk())) throw new Error('Schlüssel-Dienst nicht erreichbar');
+    PROG.t=0; PROG.d=0; progOpen('eBike wird ausgelesen …');
+    progMsg('Schlüssel-Dienst prüfen …'); setStatus('Schlüssel-Dienst prüfen …','busy');
+    if(!(await keyServiceOk())) throw new Error('Schlüssel-Dienst nicht erreichbar');
     if(!device){
-      setStatus('Geräteauswahl …','busy');
+      progMsg('Gerät auswählen …'); setStatus('Geräteauswahl …','busy');
       const [d]=await navigator.hid.requestDevice({filters:[{vendorId:VID,productId:PID}]});
-      if(!d){setStatus('abgebrochen');reEnable();return;}
+      if(!d){setStatus('abgebrochen'); progClose(); reEnable();return;}
       await d.open(); device=d; attach();
     }
-    setStatus('Handschlag …','busy'); await hello();
-    const n=await checkBus();
-    if(!n){ setStatus('kein Gerät im Diagnosemodus – Kiox aus/15s/ein','err'); reEnable(); return; }
+    progMsg('Handschlag …'); setStatus('Handschlag …','busy'); await hello();
+    progMsg('Bus prüfen …'); const n=await checkBus();
+    if(!n){ setStatus('kein Gerät im Diagnosemodus – Kiox aus/15s/ein','err');
+      progFinish('err','Kein Gerät gefunden',false); progMsg('Kiox aus → 15 Sek. warten → ein, dann erneut auslesen.'); reEnable(); return; }
+    PROG.t=TARGETS.reduce((a,t)=>a+t.routines.length+t.dids.length,0)+1; PROG.d=0; progTick();
     for(const t of TARGETS){ await scanTarget(t); await sleep(T.SESSION_GAP); }
-    setStatus('Werte dekodieren …','busy'); await decodeAll();
-    setStatus('fertig ✓','on');
-    render();
-  }catch(e){ setStatus('Fehler: '+e.message,'err'); log(e.message,'no'); }
+    progMsg('Werte dekodieren …'); setStatus('Werte dekodieren …','busy'); await decodeAll();
+    PROG.d=PROG.t; progTick();
+    setStatus('fertig ✓','on'); render();
+    progFinish('ok','Auslesen fertig ✓', true); progMsg('Alle Werte stehen bereit. Protokoll kannst du unten speichern.');
+  }catch(e){ setStatus('Fehler: '+e.message,'err'); log(e.message,'no'); progFinish('err','Fehler beim Auslesen',false); progMsg(e.message); }
   finally{ reEnable(); }
 }
 function reEnable(){ el('scan').disabled=false; const s2=el('scan2'); if(s2)s2.disabled=false; el('scan').textContent='Neu auslesen'; }
 
 /* ---------- Darstellung ---------- */
 function el(id){return document.getElementById(id);}
+/* ---------- Fortschritt + Unterstützung (Ko-fi) ---------- */
+const PROG_RC=2*Math.PI*52;
+function progSet(frac,kind){ const f=Math.max(0,Math.min(1,frac||0)); const a=el('progArc'); if(a){ a.style.strokeDashoffset=(PROG_RC*(1-f)).toFixed(1); a.style.stroke=kind==='err'?'var(--self-red)':kind==='warn'?'var(--self-yellow)':'var(--self-teal-bright)'; } const p=el('progPct'); if(p)p.textContent=Math.round(f*100)+'%'; }
+function progTick(){ if(PROG.t)progSet(PROG.d/PROG.t); }
+function progMsg(txt){ const s=el('progStat'); if(s)s.textContent=txt||''; }
+function progOpen(title){ const m=el('prog'); if(!m)return; el('progTitle').textContent=title||'Auslesen …'; progMsg(''); el('progKofi').classList.remove('show'); el('progDone').style.display='none'; progSet(0); m.classList.add('open'); }
+function progFinish(kind,title,kofi){ if(title&&el('progTitle'))el('progTitle').textContent=title; progSet(kind==='err'?(PROG.t?PROG.d/PROG.t:0):1,kind); if(el('progKofi'))el('progKofi').classList.toggle('show',!!kofi); if(el('progDone'))el('progDone').style.display=''; }
+function progClose(){ const m=el('prog'); if(m)m.classList.remove('open'); }
 function pick(tk,didhex,i=0){ const d=model[tk]&&model[tk].dids[didhex]; if(!d)return null; return d.dec.parts[i]||null; }
 function num(tk,didhex,i=0){ const p=pick(tk,didhex,i); return p&&p.num!=null?p.num:null; }
 function str(tk,didhex,i=0){ const p=pick(tk,didhex,i); return p?p.val:null; }
@@ -364,6 +378,7 @@ function saveReport(){
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='selfbike-protokoll-'+slug+'-'+new Date().toISOString().slice(0,10)+'.txt';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+  progOpen('Protokoll gespeichert ✓'); progFinish('ok','Protokoll gespeichert ✓', true); progMsg('Danke! Schick uns die Datei gern an info@selfcoder.de.');
 }
 window.saveReport=saveReport;
 
@@ -371,5 +386,7 @@ window.saveReport=saveReport;
 function init(){
   logEl=document.createElement('div'); logEl.style.display='none'; document.body.appendChild(logEl);
   el('scan').onclick=scan; const s2=el('scan2'); if(s2)s2.onclick=scan;
+  const pd=el('progDone'); if(pd)pd.onclick=progClose;
+  const pm=el('prog'); if(pm)pm.addEventListener('click',e=>{ if(e.target===pm && el('progDone').style.display!=='none') progClose(); });
 }
 init();

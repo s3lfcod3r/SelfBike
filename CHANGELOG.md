@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.0 · November 2026
+- 🇬🇧 Added a progress dial (0→100 %) shown while reading out the eBike and after saving the protocol, with a "Done" button and a friendly Ko-fi note — SelfBike is free and lives on support. Read-only only, no tuning.
+- 🇩🇪 Fortschritts-Ring (0→100 %) beim Auslesen des eBikes und nach dem Speichern des Protokolls ergänzt, mit „Fertig"-Knopf und einem freundlichen Ko-fi-Hinweis — SelfBike ist kostenlos und lebt von Unterstützung. Nur Lesen, kein Tuning.
+
 ## 1.7.3 · November 2026
 - 🇬🇧 Saving the protocol now asks for your bike (make & model) — it's written at the top of the file so submitted protocols can be matched to a bike (serial numbers stay blurred). The bike name is also used in the file name.
 - 🇩🇪 Beim Speichern des Protokolls wird jetzt nach dem Fahrrad (Marke & Modell) gefragt — es steht oben in der Datei, damit eingeschickte Protokolle einem Rad zugeordnet werden können (Seriennummern bleiben ausgeblendet). Der Fahrrad-Name steckt auch im Dateinamen.

@@ -147,6 +147,26 @@
   #log{font-family:var(--self-font-mono);font-size:11px;line-height:1.55;color:var(--self-text-2);max-height:260px;overflow:auto;padding:14px 20px;background:var(--self-bg-1);white-space:pre-wrap}
   #log .ok{color:var(--self-teal-bright)} #log .no{color:var(--self-red)} #log .warn{color:var(--self-yellow)} #log .lock{color:var(--self-ice)}
 
+  /* Fortschritts-Fenster + Unterstützung */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:center;justify-content:center;padding:20px;
+    background:rgba(4,8,11,.72);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+  .modal.open{display:flex}
+  .modal .box{background:var(--self-bg-2);border:1px solid var(--self-line-strong);border-radius:var(--self-radius);
+    max-width:440px;width:100%;padding:28px 26px;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+  .modal h3{margin:0;font-size:18px;font-weight:700}
+  .ring{position:relative;width:124px;height:124px;margin:14px auto 12px}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font:700 26px var(--self-font-mono);color:var(--self-text)}
+  .pstat{color:var(--self-text-2);font-size:13.5px;min-height:20px;margin:0}
+  .kofi{display:none;align-items:center;gap:12px;flex-wrap:wrap;text-align:left;
+    margin:18px 0 2px;padding:13px 15px;border:1px solid var(--self-line);border-radius:12px;background:var(--self-bg-3)}
+  .kofi.show{display:flex}
+  .kofi .kt{flex:1;min-width:180px;color:var(--self-text-2);font-size:13px}
+  .kofi a{background:linear-gradient(145deg,var(--self-teal-bright),var(--self-teal-deep));color:#06241a;
+    font-weight:700;text-decoration:none;padding:9px 14px;border-radius:10px;white-space:nowrap}
+  #progDone{margin-top:18px}
+
   .foot{margin-top:26px;color:var(--self-text-3);font-size:12px;text-align:center}
 </style>
 </head>
@@ -178,6 +198,27 @@
   <div id="stage"></div>
 
   <p class="foot">SelfBike · bike.selfcoder.de — lokale Diagnose, deine Daten bleiben im Browser. Freischaltung über einen geschützten Dienst, nur Lesen, kein Tuning.</p>
+</div>
+
+<div class="modal" id="prog">
+  <div class="box">
+    <h3 id="progTitle">eBike wird ausgelesen …</h3>
+    <div class="ring">
+      <svg width="124" height="124" viewBox="0 0 124 124">
+        <circle cx="62" cy="62" r="52" fill="none" stroke="var(--self-bg-3)" stroke-width="9"></circle>
+        <circle id="progArc" cx="62" cy="62" r="52" fill="none" stroke="var(--self-teal-bright)" stroke-width="9"
+          stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+          style="transition:stroke-dashoffset .45s var(--self-ease),stroke .3s var(--self-ease)"></circle>
+      </svg>
+      <div class="pct" id="progPct">0%</div>
+    </div>
+    <p class="pstat" id="progStat"></p>
+    <div class="kofi" id="progKofi">
+      <span class="kt">Danke! SelfBike ist kostenlos und lebt von eurer Unterstützung.</span>
+      <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ SelfBike unterstützen</a>
+    </div>
+    <button id="progDone" style="display:none">Fertig</button>
+  </div>
 </div>
 
 <script src="gen2-gen4-diagnose.js"></script>
