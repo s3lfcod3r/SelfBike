@@ -50,6 +50,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 /* ---------- Zustand + Log ---------- */
 let device=null, busy=0, pending=null, fcWait=null;
 let PROG={t:0,d:0};
+const SEEDS=[]; // nicht-standardmäßige SecurityAccess-Seeds (z. B. Nyon 4 Byte) fürs Protokoll
 const assembly=new Map();
 let logEl=null;
 function log(msg,cls){ if(!logEl)return; const d=document.createElement('div'); if(cls)d.className=cls; d.textContent=new Date().toLocaleTimeString()+'  '+msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; }
@@ -99,7 +100,7 @@ async function pause(ms){busy--;await sleep(ms);busy++;}
 async function checkBus(){let n=0;for(const t of TARGETS){try{const r=await request(t,Uint8Array.of(0x10,3),1200);if(r[0]===0x50){n++;log(t.name+': 50 03','ok');}else log(t.name+': '+hex(r),'warn');}catch(e){log(t.name+': '+e.message,'no');}await sleep(300);}return n;}
 async function openSession(t){const r=await request(t,Uint8Array.of(0x10,3));if(r[0]!==0x50)throw new Error('Sitzung 03 abgelehnt');await sleep(T.SESSION_GAP);}
 async function precheck(t){if(!t.kontext)return;await sleep(T.CONTEXT_GAP);const r=await request(t,Uint8Array.from(t.kontext));if(r[0]!==0x62)throw new Error('Kontext '+hex(r));}
-async function getSeed(t,sub){const r=await request(t,Uint8Array.of(0x27,sub));if(r[0]===0x7f){const e=new Error('27'+pad(sub)+' NRC '+pad(r[2]));e.nrc=r[2];throw e;}if(r[0]!==0x67)throw new Error('27'+pad(sub)+' '+hex(r));const s=r.subarray(2);if(s.length===0||(s.length===1&&s[0]===0))return new Uint8Array(16);if(s.length<16)throw new Error('Seed '+s.length+' Byte');return Uint8Array.from(s.subarray(0,16));}
+async function getSeed(t,sub){const r=await request(t,Uint8Array.of(0x27,sub));if(r[0]===0x7f){const e=new Error('27'+pad(sub)+' NRC '+pad(r[2]));e.nrc=r[2];throw e;}if(r[0]!==0x67)throw new Error('27'+pad(sub)+' '+hex(r));const s=r.subarray(2);log(t.name+': Seed '+s.length+' Byte: '+hex(s),'lock');if(s.length!==16&&s.length>1)SEEDS.push(t.name+' (27'+pad(sub)+', '+s.length+' Byte): '+hex(s));if(s.length===0||s.every(x=>x===0))return new Uint8Array(16);if(s.length<16)throw new Error('Seed '+s.length+' Byte ('+hex(s)+')');return Uint8Array.from(s.subarray(0,16));}
 async function sendKey(t,sub,slot){
   let seed;
   try{seed=await getSeed(t,sub);}catch(e){if(e.nrc===0x37){log(t.name+': Wartezeit – 12 s','warn');await pause(T.LOCKOUT);await openSession(t);await precheck(t);seed=await getSeed(t,sub);}else throw e;}
@@ -159,7 +160,7 @@ async function scanTarget(t){
 async function scan(){
   try{
     el('scan').disabled=true; const s2d=el('scan2'); if(s2d)s2d.disabled=true;
-    PROG.t=0; PROG.d=0; progOpen('eBike wird ausgelesen …');
+    PROG.t=0; PROG.d=0; SEEDS.length=0; progOpen('eBike wird ausgelesen …');
     progMsg('Schlüssel-Dienst prüfen …'); setStatus('Schlüssel-Dienst prüfen …','busy');
     if(!(await keyServiceOk())) throw new Error('Schlüssel-Dienst nicht erreichbar');
     if(!device){
@@ -368,6 +369,7 @@ function buildReport(){
       L.push(('  '+lbl).padEnd(8)+(r.dec.n||'').padEnd(40)+' '+dec); }
     L.push('');
   }
+  if(SEEDS.length){ L.push('=== SecurityAccess-Seeds (für Analyse, keine persönlichen Daten) ==='); SEEDS.forEach(x=>L.push('  '+x)); L.push(''); }
   L.push('Erstellt mit SelfBike · bike.selfcoder.de');
   return L.join('\n');
 }

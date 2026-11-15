@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.5 · November 2026
+- 🇬🇧 Non-standard SecurityAccess seeds (e.g. a Nyon display's 4-byte seed) are now logged and written into the saved protocol for analysis; an all-zero seed is treated as already unlocked.
+- 🇩🇪 Nicht-standardmäßige SecurityAccess-Seeds (z. B. der 4-Byte-Seed eines Nyon-Displays) werden jetzt protokolliert und ins gespeicherte Protokoll geschrieben (zur Analyse); ein Seed aus lauter Nullen gilt als bereits freigeschaltet.
+
 ## 1.8.4 · November 2026
 - 🇬🇧 Fixed the read-out aborting with "Seed 4 Byte" when a control unit (e.g. a Nyon display) returns a different SecurityAccess seed. Unlock failures are now skipped per control unit, so motor, battery and the rest are still read.
 - 🇩🇪 Behoben, dass das Auslesen mit „Seed 4 Byte" abbrach, wenn ein Steuergerät (z. B. ein Nyon-Display) einen anderen SecurityAccess-Seed liefert. Freischaltungs-Fehler werden jetzt pro Steuergerät übersprungen — Motor, Akku und der Rest werden trotzdem ausgelesen.
