@@ -64,9 +64,12 @@
   #stage{display:none;flex-direction:column;gap:18px}
   #stage.show{display:flex}
 
-  .actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .btn-save{padding:10px 16px}
-  .actions-note{color:var(--self-text-3);font-size:12.5px}
+  .actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .bikein{flex:1;min-width:240px;background:var(--self-bg-1);border:1px solid var(--self-line-strong);border-radius:10px;color:var(--self-text);font:inherit;font-size:14px;padding:11px 14px}
+  .bikein::placeholder{color:var(--self-text-3)}
+  .bikein:focus{outline:none;border-color:var(--self-teal-bright)}
+  .btn-save{padding:11px 16px;white-space:nowrap}
+  .actions-note{flex-basis:100%;color:var(--self-text-3);font-size:12.5px}
 
   .banner{position:relative;overflow:hidden;border-radius:var(--self-radius);padding:24px 26px;
     background:linear-gradient(135deg,var(--self-bg-3) 0%,var(--self-bg-1) 65%);border:1px solid var(--self-line-strong)}

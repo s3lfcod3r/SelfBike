@@ -217,7 +217,7 @@ function render(){
   let h='';
 
   // Aktionsleiste
-  h+=`<div class="actions"><button class="btn-save" onclick="saveReport()">⬇ Protokoll speichern</button><span class="actions-note">Seriennummern werden ausgeblendet · senden an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></span></div>`;
+  h+=`<div class="actions"><input id="bikeName" class="bikein" maxlength="80" placeholder="Dein Fahrrad – Marke &amp; Modell (z. B. Cube Stereo Hybrid 2021)"><button class="btn-save" onclick="saveReport()">⬇ Protokoll speichern</button><span class="actions-note">Fahrrad eingeben, Seriennummern werden ausgeblendet · senden an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></span></div>`;
 
   // Banner
   h+=`<div class="banner">`;
@@ -335,7 +335,8 @@ const BLUR=/serial|seriennumm|partnumber|teilenumm|idnumber|keynumber|rahmennumm
 function blurVal(name,svc,val,isStr){ if(!isStr)return val; if(BLUR.test(name||'')||BLUR.test(svc||''))return '•••••••• (ausgeblendet)'; return val; }
 function buildReport(){
   const names={M:'Motor',A:'Akku',D:'Display'};
-  const L=['SelfBike · BES2 Classic-Line — Auslese-Protokoll','Datum: '+new Date().toLocaleString('de-DE'),
+  const bike=(el('bikeName')?el('bikeName').value.trim():'')||'—';
+  const L=['SelfBike · BES2 Classic-Line — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
     'Seriennummern/IDs sind zum Schutz ausgeblendet. Senden an: info@selfcoder.de','',
     'Typ: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),
     'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),''];
@@ -355,9 +356,13 @@ function buildReport(){
 }
 function saveReport(){
   if(!Object.keys(model).length){ alert('Erst auslesen.'); return; }
+  const f=el('bikeName'); const bike=(f?f.value:'').trim();
+  if(bike.length<3){ alert('Bitte gib dein Fahrrad ein (Marke und Modell) — damit wir das eingeschickte Protokoll zuordnen können.'); if(f){f.focus();f.style.borderColor='var(--self-red)';} return; }
+  if(f)f.style.borderColor='';
+  const slug=bike.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'rad';
   const blob=new Blob([buildReport()],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-  a.download='selfbike-protokoll-'+new Date().toISOString().slice(0,10)+'.txt';
+  a.download='selfbike-protokoll-'+slug+'-'+new Date().toISOString().slice(0,10)+'.txt';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
 }
 window.saveReport=saveReport;

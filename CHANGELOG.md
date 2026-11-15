@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.7.3 · November 2026
+- 🇬🇧 Saving the protocol now asks for your bike (make & model) — it's written at the top of the file so submitted protocols can be matched to a bike (serial numbers stay blurred). The bike name is also used in the file name.
+- 🇩🇪 Beim Speichern des Protokolls wird jetzt nach dem Fahrrad (Marke & Modell) gefragt — es steht oben in der Datei, damit eingeschickte Protokolle einem Rad zugeordnet werden können (Seriennummern bleiben ausgeblendet). Der Fahrrad-Name steckt auch im Dateinamen.
+
 ## 1.7.2 · November 2026
 - 🇬🇧 Removed the old Gen2–Gen4 log-recording page (gen2-gen4-log.html) as well — superseded by the Classic-Line diagnosis.
 - 🇩🇪 Auch die alte Gen2–Gen4-Log-Aufzeichnungsseite (gen2-gen4-log.html) entfernt — wird von der Classic-Line-Diagnose abgelöst.
