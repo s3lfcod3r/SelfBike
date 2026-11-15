@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.4 · November 2026
+- 🇬🇧 Fixed the read-out aborting with "Seed 4 Byte" when a control unit (e.g. a Nyon display) returns a different SecurityAccess seed. Unlock failures are now skipped per control unit, so motor, battery and the rest are still read.
+- 🇩🇪 Behoben, dass das Auslesen mit „Seed 4 Byte" abbrach, wenn ein Steuergerät (z. B. ein Nyon-Display) einen anderen SecurityAccess-Seed liefert. Freischaltungs-Fehler werden jetzt pro Steuergerät übersprungen — Motor, Akku und der Rest werden trotzdem ausgelesen.
+
 ## 1.8.3 · November 2026
 - 🇬🇧 Added a bilingual FAQ (supported systems, why PC-only / WebHID vs WebUSB, head units & device detection, read-only / no tuning, data privacy) and linked it from the README.
 - 🇩🇪 Zweisprachige FAQ ergänzt (unterstützte Systeme, warum nur am PC / WebHID vs. WebUSB, Bedienteile & Geräteerkennung, nur Lesen / kein Tuning, Datenschutz) und im README verlinkt.

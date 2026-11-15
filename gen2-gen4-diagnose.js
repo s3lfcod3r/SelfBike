@@ -135,7 +135,7 @@ async function scanTarget(t){
     setStatus(t.name+' – Sitzung …','busy'); progMsg(t.name+' – Sitzung & Freischaltung …');
     await openSession(t); await precheck(t);
     let unlocked=false;
-    try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ if(e.nrc)log(t.name+': Freischaltung fehlgeschlagen ('+e.message+')','warn'); else throw e; }
+    try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ log(t.name+': Freischaltung übersprungen ('+e.message+')','warn'); }
     const tm={unlocked,dids:{},rc:[]};
     // Routinen
     for(const r of t.routines){
