@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.7.1 · November 2026
+- 🇬🇧 Removed the old non-working Gen2–Gen4 reader page (gen2-gen4-read.html) and pointed the start page at the new Classic-Line diagnosis. Added a clear note that it only works on a PC/laptop with Chrome or Edge — not on a phone (mobile browsers have no WebUSB/WebHID).
+- 🇩🇪 Die alte, nicht funktionierende Gen2–Gen4-Leseseite (gen2-gen4-read.html) entfernt und die Startseite auf die neue Classic-Line-Diagnose verlinkt. Klarer Hinweis ergänzt, dass es nur am PC/Laptop mit Chrome oder Edge geht — nicht am Handy (Handy-Browser haben kein WebUSB/WebHID).
+
 ## 1.7.0 · November 2026
 - 🇬🇧 **Classic-Line full diagnosis page (gen2-gen4-diagnose.html).** Reads motor, battery and display completely and shows every value in plain text, decoded from the Bosch diagnostic data: total km, battery state of charge / voltage / temperature / charge cycles / capacity, **min and max cell voltage with balancing delta**, motor runtime, mode distances, service-history timeline and the full identifier table. The SecurityAccess unlock runs through a protected key service — the keys never reach the browser or the repo. Read-only, no tuning. Save the protocol (serial numbers blurred) and send it to info@selfcoder.de.
 - 🇩🇪 **Classic-Line-Voll-Diagnose (gen2-gen4-diagnose.html).** Liest Motor, Akku und Display komplett und zeigt jeden Wert in Klartext, dekodiert aus den Bosch-Diagnosedaten: Gesamt-km, Ladezustand / Spannung / Temperatur / Ladezyklen / Kapazität, **min. und max. Zellspannung mit Balancing-Delta**, Motor-Laufzeit, Fahrstrecke nach Modus, Service-Historie-Timeline und die volle Kennungs-Tabelle. Die Freischaltung läuft über einen geschützten Schlüssel-Dienst — die Keys landen nie im Browser oder im Repo. Nur Lesen, kein Tuning. Protokoll speichern (Seriennummern ausgeblendet) und an info@selfcoder.de senden.
