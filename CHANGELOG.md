@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.8.2 · November 2026
+- 🇬🇧 Renamed "Classic Line" to "BES2 (Gen2–4)" throughout — the Bosch name "Classic Line / Classic+ Line" officially refers to the 2011 first-generation drive, not this system. This tool reads BES2: Active Line, Active Line Plus, Performance Line and Performance Line CX Gen2–Gen4.
+- 🇩🇪 „Classic Line" überall in „BES2 (Gen2–4)" umbenannt — der Bosch-Name „Classic Line / Classic+ Line" meint offiziell den 2011er-Erstantrieb, nicht dieses System. Dieses Tool liest BES2: Active Line, Active Line Plus, Performance Line und Performance Line CX Gen2–Gen4.
+
 ## 1.8.1 · November 2026
 - 🇬🇧 Device picker now matches by Bosch vendor only (no fixed product id), so a Nyon or Intuvia head unit shows up too — not just the Kiox. The selected unit's USB id is logged to help identify other displays.
 - 🇩🇪 Die Geräteauswahl filtert jetzt nur noch nach der Bosch-Hersteller-Kennung (ohne feste Produkt-ID), damit auch ein Nyon oder Intuvia erscheint — nicht nur der Kiox. Die USB-Kennung des gewählten Bedienteils wird protokolliert, um andere Displays zu erkennen.

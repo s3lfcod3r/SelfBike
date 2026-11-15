@@ -1,5 +1,5 @@
 'use strict';
-/* SelfBike · BES2 Classic-Line Diagnose (öffentlich).
+/* SelfBike · BES2 Diagnose Gen2–4 (öffentlich).
    Liest Motor/Akku/Display über WebHID aus. Freischalt-Schlüssel UND die ODX-Decode-Tabelle
    liegen geschützt in Cloudflare-Workern — der Browser schickt nur Seed bzw. Rohbytes hin und
    bekommt den Key bzw. die fertigen Klartext-Werte zurück. Kein Schlüssel, keine Tabelle im Code. */
@@ -353,7 +353,7 @@ function blurVal(name,svc,val,isStr){ if(!isStr)return val; if(BLUR.test(name||'
 function buildReport(){
   const names={M:'Motor',A:'Akku',D:'Display'};
   const bike=(el('bikeName')?el('bikeName').value.trim():'')||'—';
-  const L=['SelfBike · BES2 Classic-Line — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
+  const L=['SelfBike · BES2 (Gen2–4) — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
     'Seriennummern/IDs sind zum Schutz ausgeblendet. Senden an: info@selfcoder.de','',
     'Typ: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),
     'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),''];
