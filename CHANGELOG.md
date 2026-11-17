@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.2 · November 2026
+- 🇬🇧 Gen 2–4 now reads more battery-health and motor values (state-of-health flag, current/nominal capacity, measured-capacity test, internal resistance, charge/discharge hours; motor generation, total riding time, PCB/motor temperatures) so they show up in the protocol. Values a bike doesn't have are simply skipped.
+- 🇩🇪 Gen 2–4 liest jetzt mehr Akku-Gesundheits- und Motor-Werte (SOH-Flag, aktuelle/nominale Kapazität, Kapazitätstest, Innenwiderstand, Lade-/Entladestunden; Motor-Generation, Gesamt-Fahrzeit, Platinen-/Motor-Temperaturen) — sie erscheinen jetzt im Protokoll. Werte, die ein Rad nicht hat, werden einfach übersprungen.
+- 🇬🇧 (Smart already read these values — no change needed there.)
+- 🇩🇪 (Smart hat diese Werte schon gelesen — dort keine Änderung nötig.)
+
 ## 1.9.1 · November 2026
 - 🇬🇧 Gen 2–4 PDF report now has the same footer as Smart (disclaimer note, full "nobody may charge for SelfBike" text, version line).
 - 🇩🇪 Gen 2–4 PDF-Bericht hat jetzt denselben Footer wie Smart (Hinweis-Satz, voller „niemand darf für SelfBike Geld verlangen"-Text, Versionszeile).
