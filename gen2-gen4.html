@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mein E-Bike · BES2 (Gen2–4)</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<link rel="apple-touch-icon" href="brand/favicon-192.png">
+<link rel="stylesheet" href="brand/tokens.css">
+<style>
+  /* Gleiche Optik wie die Smart-System-Ansicht (index.html), iPhone-Stil. Farben aus brand/tokens.css */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--self-bg-0); color: var(--self-text); }
+  body { font: 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  button, input, select { font: inherit; color: inherit; }
+  .hidden { display: none !important; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
+
+  header.big { display: flex; align-items: center; gap: 12px; padding: calc(14px + env(safe-area-inset-top)) 2px 12px; }
+  .hlogo { width: 40px; height: 40px; flex: none; }
+  .htext { flex: 1; min-width: 0; }
+  .htext h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hright { display: flex; align-items: center; gap: 8px; flex: none; font-size: 13px; color: var(--self-text-3); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
+  .conn.on { color: var(--self-green); } .conn.busy { color: var(--self-yellow); }
+  .badge { font-size: 11px; font-weight: 600; color: var(--self-yellow); border: 1px solid currentColor; border-radius: 6px; padding: 1px 6px; }
+  h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0; line-height: 1.2; }
+  .sub { color: var(--self-text-2); margin: 1px 0 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .foothelp { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 34px 0 0; padding-top: 14px; border-top: 1px solid var(--self-line); font-size: 14px; }
+  .foothelp a, .foothelp button { color: var(--self-teal-bright); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: none; }
+  .foothelp .kofihint { flex-basis: 100%; margin: 0; text-align: center; font-size: 12px; color: var(--self-text-2); }
+
+  /* Kacheln */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .tile { background: var(--self-bg-2); border-radius: 16px; padding: 14px; border: 1px solid var(--self-line); }
+  .tile.wide { grid-column: 1 / -1; }
+  .tile .k { font-size: 13px; color: var(--self-text-2); }
+  .tile .n { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .tile .n small { font-size: 16px; font-weight: 600; color: var(--self-text-2); margin-left: 3px; }
+  .tile .c { font-size: 13px; color: var(--self-text-2); margin-top: 4px; }
+  .meter { height: 8px; border-radius: 4px; background: var(--self-bg-3); margin-top: 8px; overflow: hidden; }
+  .meter i { display: block; height: 100%; border-radius: 4px; background: var(--self-green); }
+  .statrow { padding: 11px 14px; } .statrow + .statrow { border-top: 1px solid var(--self-line); }
+  .sr-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; margin-bottom: 7px; gap: 10px; }
+  .sr-km { color: var(--self-text-2); font-family: ui-monospace, monospace; font-size: 13px; white-space: nowrap; }
+  .good { color: var(--self-green); } .warn { color: var(--self-yellow); } .bad { color: var(--self-red); }
+
+  /* Gruppierte Listen (iPhone-Einstellungen) */
+  .gh { font-size: 13px; color: var(--self-text-2); margin: 22px 16px 6px; }
+  .group { background: var(--self-bg-2); border-radius: 14px; overflow: hidden; border: 1px solid var(--self-line); }
+  .row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 50px; padding: 10px 14px; background: none; border: 0; text-align: left; cursor: pointer; position: relative; color: var(--self-text); text-decoration: none; }
+  .row + .row::before { content: ""; position: absolute; top: 0; left: 52px; right: 0; border-top: 1px solid var(--self-line); }
+  .group.noico .row + .row::before { left: 14px; }
+  .row:active { background: var(--self-bg-3); }
+  .row .ico { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; flex: none; background: var(--self-teal); color: #fff; font-size: 15px; }
+  .row .t { flex: 1; min-width: 0; } .row .t small { display: block; font-size: 13px; color: var(--self-text-2); }
+  .row .v { color: var(--self-text-2); font-size: 15px; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .chev { color: var(--self-text-3); font-size: 22px; line-height: 1; }
+  .row.static { cursor: default; } .row.static:active { background: none; }
+  .row.danger { color: var(--self-red); justify-content: center; font-weight: 600; }
+  .explain { font-size: 15px; color: var(--self-text-2); margin: 4px 4px 0; }
+  .foot { font-size: 13px; color: var(--self-text-2); margin: 6px 16px 0; }
+
+  .btn-big { display: block; width: 100%; margin-top: 22px; padding: 15px; border: 0; border-radius: 14px; background: var(--self-teal); color: #fff; font-size: 17px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
+  .btn-big:disabled { opacity: .4; cursor: default; }
+  .btn-text { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 15px; }
+  .gen-hint { display: block; margin: 22px 0 0; padding: 12px 14px; border: 1px solid color-mix(in oklab, var(--self-yellow) 55%, transparent); border-radius: 12px; background: color-mix(in oklab, var(--self-yellow) 14%, transparent); font-size: 14px; color: var(--self-text); }
+  .gen-hint b { display: block; color: var(--self-yellow); margin-bottom: 2px; }
+  .card { background: var(--self-bg-2); border: 1px solid var(--self-line); border-radius: 18px; padding: 22px 18px; margin-top: 10px; text-align: center; }
+  .card .logo { width: 64px; height: 64px; margin: 0 auto 8px; display: block; }
+  .card h2 { margin: 6px 0; font-size: 22px; } .card p { color: var(--self-text-2); margin: 6px 0; }
+
+  /* Tab-Leiste unten */
+  nav.tabbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; background: color-mix(in oklab, var(--self-bg-1) 88%, transparent); backdrop-filter: blur(18px); border-top: 1px solid var(--self-line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); z-index: 5; }
+  nav.tabbar button { flex: 1; max-width: 160px; background: none; border: 0; color: var(--self-text-3); font-size: 11px; cursor: pointer; padding: 4px 0; }
+  nav.tabbar svg { display: block; margin: 0 auto 2px; width: 26px; height: 26px; }
+  nav.tabbar button.on { color: var(--self-teal-bright); }
+  /* Beta betrifft NUR das Ändern von Einstellungen – deutlich gekennzeichnet */
+  .beta-badge { display:inline-block; margin-left:5px; padding:1px 6px; border-radius:999px; background:var(--self-yellow,#d29922); color:#1a1200; font-size:9px; font-weight:800; letter-spacing:.03em; vertical-align:1px; }
+  .beta-pill { display:inline-block; margin-left:7px; padding:0 7px; border-radius:999px; background:var(--self-yellow,#d29922); color:#1a1200; font-size:9.5px; font-weight:800; letter-spacing:.03em; vertical-align:1px; }
+  .beta-banner { display:flex; gap:10px; align-items:flex-start; margin:0 0 12px; padding:11px 13px; border:1px solid var(--self-yellow,#d29922); border-radius:12px; background:color-mix(in oklab, var(--self-yellow,#d29922) 15%, transparent); color:var(--self-text); font-size:13px; line-height:1.4; }
+  .beta-banner .bi { font-size:18px; line-height:1.2; }
+  .beta-banner b { color:var(--self-yellow,#d29922); }
+
+  /* Schreib-Regler */
+  .wset { padding: 12px 14px; } .wset + .wset { border-top: 1px solid var(--self-line); }
+  .wlabel { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+  .wrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 6px 0; }
+  .wfn { color: var(--self-text-2); font-size: 13px; flex: 1; min-width: 120px; }
+  .wctl { background: var(--self-bg-3); border: 1px solid var(--self-line-strong); border-radius: 10px; color: var(--self-text); font-size: 15px; padding: 8px 10px; min-width: 130px; }
+  .wcur { color: var(--self-text-3); font-family: ui-monospace, monospace; font-size: 12px; flex-basis: 100%; }
+  .wact { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+  .wbtn { background: var(--self-bg-3); border: 1px solid var(--self-line-strong); border-radius: 10px; color: var(--self-teal-bright); font-size: 14px; font-weight: 600; padding: 8px 14px; cursor: pointer; }
+  .wbtn.red { color: var(--self-red); } .wbtn:disabled { opacity: .4; cursor: default; }
+  .wres { font-family: ui-monospace, monospace; font-size: 12px; color: var(--self-text-2); }
+
+  /* Auswahl-Zeilen mit Häkchen + Blatt von unten (iPhone-Stil) */
+  .row .check { color: var(--self-teal-bright); font-size: 20px; visibility: hidden; }
+  .row.sel .check { visibility: visible; }
+  .sheet { position: fixed; inset: 0; z-index: 30; display: none; background: rgba(0,0,0,.5); }
+  .sheet.open { display: flex; align-items: flex-end; justify-content: center; }
+  .panel { width: 100%; max-width: 560px; max-height: 92vh; background: var(--self-bg-0); border-radius: 18px 18px 0 0; display: flex; flex-direction: column; animation: up .25s ease-out; }
+  .dhead { padding: 14px 16px; border-bottom: 1px solid var(--self-line); font-weight: 600; text-align: center; }
+  .dbody { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 18px calc(20px + env(safe-area-inset-bottom)); }
+  .dbody h2 { font-size: 19px; margin: 0 0 6px; }
+  .dbody h3 { font-size: 14px; margin: 14px 0 2px; }
+  .dbody p { color: var(--self-text-2); font-size: 14px; line-height: 1.5; margin: 0 0 4px; }
+  .dcheck { display: flex; gap: 12px; align-items: flex-start; margin: 18px 0 12px; font-size: 14px; }
+  .dcheck .sw { flex: none; }
+  .langsel { background: var(--self-bg-2); color: var(--self-text); border: 1px solid var(--self-line-strong); border-radius: 9px; padding: 5px 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .langsel option { background: var(--self-bg-2); color: var(--self-text); }
+  .backbtn { display: inline-flex; align-items: center; gap: 4px; flex: none; background: var(--self-bg-2); border: 1px solid var(--self-line-strong); color: var(--self-text-2); border-radius: 999px; padding: 6px 11px 6px 8px; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer; }
+  .backbtn:hover { color: var(--self-text); border-color: var(--self-teal); }
+  .backbtn svg { width: 16px; height: 16px; }
+  @media (max-width: 400px) { .backbtn span { display: none; } .backbtn { padding: 6px 8px; } }
+  @keyframes up { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .phead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--self-line); }
+  .phead h2 { margin: 0; font-size: 17px; font-weight: 600; text-align: center; }
+  .phead button { background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 16px; justify-self: start; padding: 4px 0; }
+  .pbody { overflow-y: auto; padding: 14px 16px calc(24px + env(safe-area-inset-bottom)); }
+  .setblock { margin: 4px 0 22px; }
+  .setblock .q { font-size: 16px; font-weight: 600; margin: 0 2px 8px; }
+  .setblock .desc { font-size: 14px; color: var(--self-text-2); margin: 10px 4px 0; line-height: 1.5; }
+  .steprow { display: flex; align-items: center; gap: 10px; padding: 12px 14px; }
+  .steprow .t { flex: 1; } .steprow .u { color: var(--self-text-2); }
+  .stepper { display: flex; align-items: center; gap: 6px; }
+  .stepper button { width: 38px; height: 38px; border-radius: 10px; border: 0; background: var(--self-bg-3); font-size: 20px; cursor: pointer; color: var(--self-text); }
+  .stepper .numin { width: 90px; text-align: center; background: var(--self-bg-3); border: 0; border-radius: 10px; padding: 9px 4px; color: var(--self-text); font-size: 17px; }
+  .slider { padding: 12px 14px; }
+  .slider .top { display: flex; justify-content: space-between; align-items: baseline; }
+  .slider .val { font-weight: 700; font-size: 20px; color: var(--self-teal-bright); }
+  .slider input[type=range] { width: 100%; accent-color: var(--self-teal); margin: 10px 0 2px; }
+  .slider .ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--self-text-3); }
+  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(82px + env(safe-area-inset-bottom)); z-index: 40; max-width: min(520px, calc(100% - 32px)); background: var(--self-bg-3); border: 1px solid var(--self-line-strong); border-radius: 14px; padding: 12px 16px; font-size: 15px; box-shadow: 0 12px 30px rgba(0,0,0,.4); display: none; }
+  .toast.show { display: block; } .toast.ok { border-color: var(--self-green); } .toast.err { border-color: var(--self-red); }
+  /* Schalter (iOS) + Service-Zeilen */
+  input.sw { appearance: none; -webkit-appearance: none; width: 51px; height: 31px; border-radius: 16px; background: var(--self-bg-3); position: relative; flex: none; cursor: pointer; transition: background .2s; border: 1px solid var(--self-line-strong); margin: 0; }
+  input.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 25px; height: 25px; border-radius: 50%; background: #fff; transition: left .2s; }
+  input.sw:checked { background: var(--self-green); border-color: transparent; }
+  input.sw:checked::after { left: 22px; }
+  .swrow, .inrow { display: flex; align-items: center; gap: 12px; padding: 13px 14px; }
+  .swrow + .inrow, .inrow + .swrow, .swrow + .swrow, .inrow + .inrow { border-top: 1px solid var(--self-line); }
+  .swrow .t, .inrow .t { flex: 1; } .swrow .t small, .inrow .t small { display: block; font-size: 13px; color: var(--self-text-2); }
+  .inrow .numin { width: 100px; text-align: center; background: var(--self-bg-3); border: 0; border-radius: 10px; padding: 9px 6px; color: var(--self-text); font-size: 16px; }
+  input[type=date].numin { width: auto; text-align: left; padding: 9px 10px; }
+  /* Fehlerliste */
+  .fault { padding: 12px 14px; } .fault + .fault { border-top: 1px solid var(--self-line); }
+  .fault b { display: block; font-size: 15px; }
+  .fault span { display: block; color: var(--self-text-2); font-size: 14px; margin-top: 3px; line-height: 1.45; }
+  .sevtag { display: inline-block; font-style: normal; font-size: 11px; font-weight: 600; padding: 1px 8px; margin-right: 8px; border-radius: 99px; color: #fff; background: #3b4a5a; vertical-align: 1px; }
+  .sev-ERROR { background: #ef7d1a; } .sev-WARNING { background: #f2c230; color: #1d1a00; }
+  .fault details summary { cursor: pointer; color: var(--self-teal-bright); font-size: 13px; margin-top: 8px; list-style: none; }
+  .fault details[open] summary { margin-bottom: 4px; }
+
+  /* Fortschritt (Engine-Modal, über IDs gestylt) */
+  #prog { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(4,8,11,.72); }
+  #prog.open { display: flex; }
+  #prog .box { background: var(--self-bg-2); border: 1px solid var(--self-line-strong); border-radius: 18px; max-width: 420px; width: 100%; padding: 26px 24px; text-align: center; }
+  #prog h3 { margin: 0; font-size: 18px; font-weight: 700; }
+  #prog .ringw { position: relative; width: 124px; height: 124px; margin: 14px auto 12px; }
+  #prog .ringw svg { transform: rotate(-90deg); }
+  #prog .pctw { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font: 700 26px ui-monospace, monospace; }
+  #progStat { color: var(--self-text-2); font-size: 14px; min-height: 20px; margin: 0; }
+  #progKofi { display: none; } #progKofi.show { display: block; margin-top: 14px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="big">
+    <a class="backbtn" href="index.html" aria-label="Zurück"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg><span data-i18n="ui.back">Zurück</span></a>
+    <img class="hlogo" src="brand/favicon-64.png" alt="SelfBike">
+    <div class="htext"><h1 id="pageTitle" data-i18n="ui.home">Mein E-Bike</h1><p class="sub" id="pageSub" data-bes="sub">BES2 · Gen2–4</p></div>
+    <div class="hright">
+      <span class="conn" id="conn"><span class="dot"></span> <span id="connText" data-i18n="conn.off">nicht verbunden</span></span>
+      <span class="badge hidden" id="demoBadge">DEMO</span>
+      <select id="lang" class="langsel" aria-label="Sprache / Language"></select>
+    </div>
+  </header>
+
+  <section id="tab-home">
+    <div class="card" id="connectCard">
+      <img class="logo" src="brand/favicon-192.png" alt="">
+      <h2 data-i18n="ui.connect">Verbinden</h2>
+      <p data-i18n="ui.connectText">Rad einschalten, USB-Kabel an die Bedieneinheit (Kiox/Nyon) stecken und hier tippen.</p>
+      <button class="btn-big" id="connect" data-i18n="ui.connect">Verbinden</button>
+      <button class="btn-text" id="demoStart" data-i18n="ui.demo">Ohne Fahrrad ausprobieren</button>
+      <div class="gen-hint" data-bes="pcHint">Nur am PC/Laptop mit Chrome oder Edge. Vor dem Auslesen: Kiox/Nyon aus → 15 Sek. → ein. Nur Lesen &amp; sichere Einstellungen, kein Tuning.</div>
+    </div>
+    <div id="home" class="hidden">
+      <div class="tiles" id="tiles"></div>
+      <div id="moreList"></div>
+    </div>
+  </section>
+
+  <section id="tab-settings" class="hidden">
+    <div class="beta-banner"><span class="bi">🧪</span><span><b data-bes="settingsBetaT">Beta</b> · <span data-bes="settingsBeta">Das Ändern von Einstellungen ist noch nicht an allen Rädern getestet. Auslesen ist sicher. Wenn etwas nicht klappt, erstelle unten ein Support-Paket.</span></span></div>
+    <p class="explain" data-i18n="ui.settingsExplain">Tippe auf etwas, das du am Rad ändern möchtest. Änderungen werden gesichert und sind mit „Zurücksetzen" rückgängig. Kein Tuning, keine Akku-Grenzen.</p>
+    <div id="settingsList" style="margin-top:12px"></div>
+  </section>
+
+  <footer class="foothelp">
+    <button id="showLegal" data-i18n="tools.legal">Rechtliche Hinweise anzeigen</button>
+    <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi">SelfBike unterstützen</span></a>
+    <p class="kofihint" data-bes="betaFoot">SelfBike · deine Daten bleiben im Browser.</p>
+  </footer>
+</div>
+
+<nav class="tabbar">
+  <button data-tab="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l-1.5-3H7M13 9l2 7"/></svg><span data-i18n="ui.home">Mein E-Bike</span></button>
+  <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="ui.settings">Einstellungen</span><span class="beta-badge">Beta</span></button>
+</nav>
+
+<!-- Einstellungs-Blatt (von unten) -->
+<div class="sheet" id="sheet"><div class="panel">
+  <div class="phead"><button id="sheetBack" data-i18n="ui.close">Schließen</button><h2 id="sheetTitle"></h2><span></span></div>
+  <div class="pbody" id="sheetBody"></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<!-- Fortschritts-Modal der Engine -->
+<div class="modal" id="prog"><div class="box">
+  <h3 id="progTitle" data-bes="reading">eBike wird ausgelesen …</h3>
+  <div class="ringw"><svg width="124" height="124" viewBox="0 0 124 124">
+    <circle cx="62" cy="62" r="52" fill="none" stroke="var(--self-bg-3)" stroke-width="9"></circle>
+    <circle id="progArc" cx="62" cy="62" r="52" fill="none" stroke="var(--self-teal-bright)" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .45s ease,stroke .3s ease"></circle>
+  </svg><div class="pctw" id="progPct">0%</div></div>
+  <p id="progStat"></p>
+  <div id="progKofi"></div>
+  <button id="progDone" class="btn-big" style="display:none;margin-top:16px" data-i18n="ui.done">Fertig</button>
+</div></div>
+
+<!-- Rechtshinweis: kommt beim „Verbinden & Auslesen" -->
+<div class="sheet" id="discSheet"><div class="panel">
+  <div class="dhead" data-i18n="tools.legal">Rechtliche Hinweise</div>
+  <div class="dbody">
+    <h2 data-i18n="disc.title">Wichtiger Hinweis – bitte lesen</h2>
+    <p data-i18n="disc.intro">Bevor du SelfBike nutzt, lies bitte die folgenden Hinweise und bestätige sie.</p>
+    <h3 data-i18n="disc.1t">Kein offizielles Produkt</h3>
+    <p data-i18n="disc.1">SelfBike ist ein privates, unabhängiges Projekt. Es steht in keiner Verbindung zur Robert Bosch GmbH, Bosch eBike Systems, Cube oder anderen Herstellern und wird von ihnen weder unterstützt noch geprüft. Marken- und Produktnamen gehören ihren Inhabern und werden nur genannt, um die Kompatibilität zu beschreiben.</p>
+    <h3 data-i18n="disc.2t">Nutzung auf eigene Gefahr</h3>
+    <p data-i18n="disc.2">SelfBike greift über USB direkt auf die Elektronik deines E-Bikes zu. Das Auslesen verändert nichts. Änderungen – zum Beispiel an Licht oder Service-Erinnerung – schreiben Werte in dein E-Bike. Trotz Sicherungen wie Backup und Rücklesung können Fehler, Fehlfunktionen oder Schäden, etwa an Beleuchtung, Elektronik oder Akku, nicht ausgeschlossen werden.</p>
+    <h3 data-i18n="disc.3t">Garantie und Gewährleistung</h3>
+    <p data-i18n="disc.3">Eingriffe mit Software, die nicht vom Hersteller freigegeben ist, können Garantie- und Gewährleistungsansprüche gegenüber Hersteller oder Händler beeinträchtigen.</p>
+    <h3 data-i18n="disc.4t">Verkehrssicherheit und Vorschriften</h3>
+    <p data-i18n="disc.4">Du bist selbst dafür verantwortlich, dass dein E-Bike nach jeder Änderung verkehrssicher ist und den geltenden Vorschriften entspricht, zum Beispiel bei der Beleuchtung. SelfBike bietet bewusst keine Funktionen zur Steigerung von Leistung oder Geschwindigkeit.</p>
+    <h3 data-i18n="disc.5t">Keine Gewähr</h3>
+    <p data-i18n="disc.5">SelfBike wird kostenlos und ohne jede Gewähr bereitgestellt („wie besehen"). Für Richtigkeit, Vollständigkeit und Eignung der angezeigten Daten – etwa Akkuzustand oder Fehlercodes – wird keine Gewähr übernommen. Sie ersetzen keine Prüfung durch einen Fachhändler.</p>
+    <h3 data-i18n="disc.6t">Haftungsausschluss</h3>
+    <p data-i18n="disc.6">Die Entwickler von SelfBike übernehmen keine Haftung für Schäden, die durch die Nutzung oder die Nichtnutzbarkeit von SelfBike entstehen – einschließlich Schäden am E-Bike, Datenverlust und Folgeschäden. Dies gilt nicht, soweit eine Haftung gesetzlich zwingend vorgeschrieben ist, insbesondere bei Vorsatz, grober Fahrlässigkeit sowie bei Verletzung von Leben, Körper oder Gesundheit.</p>
+    <h3 data-i18n="disc.7t">Deine Daten</h3>
+    <p data-i18n="disc.7">Das Auslesen und Ändern läuft vollständig in deinem Browser. Daten deines E-Bikes werden nicht an die Entwickler von SelfBike übertragen. Backups und Berichte speicherst du selbst.</p>
+    <div id="discGate">
+    <label class="dcheck"><input type="checkbox" class="sw" id="discCheck"><span data-i18n="disc.check">Ich habe die Hinweise gelesen und verstanden. Ich nutze SelfBike freiwillig und auf eigene Verantwortung.</span></label>
+    <button class="btn-big" id="discAccept" disabled data-i18n="disc.accept">Zustimmen und auslesen</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- Platzhalter, damit die Engine (Auslesen) nicht ins Leere greift -->
+<div id="stage" style="display:none"></div>
+<button id="scan" style="display:none"></button>
+
+<script src="bes2-faults.js"></script>
+<script src="gen2-gen4-engine.js"></script>
+<script type="module">
+import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
+(function(){
+  const DECODE_WORKER='https://bike-decode.s3lfcod3r.workers.dev';
+  const el=id=>document.getElementById(id);
+  // Demo-Datenpfad: liefert Rohwerte für die Einstellungen ohne echtes Rad, damit der Demo alles zeigt
+  const DEMO_RAW={
+    M0113:[1], M0211:[1,1], M0301:[2],                 // Licht: möglich, auto an, von Hand erlaubt, 12 V
+    M0225:[2],                                          // Schaltung: Start-Gang 2
+    M024d:[26,6,1,0x00,0x2d,0xc6,0xc0],                 // Service fällig: 01.06.2026, bei 3000 km
+    D024d:[0,5], D024f:[0,2], D024b:[0], D024a:[0], D024c:[80], D0250:[30], D0251:[50], D0243:[2], D0244:[2], D0252:[0], D0253:[0] // Anzeige
+  };
+  const DEMO_API={
+    async readFieldRaw(tk,did){ const v=DEMO_RAW[tk+did]; if(!v) throw new Error('im Demo nicht vorhanden'); return v.slice(); },
+    async writeField(tk,did,pos,bytes){ const k=tk+did, buf=(DEMO_RAW[k]||[]).slice(); for(let i=0;i<bytes.length;i++){ if(pos+i<buf.length) buf[pos+i]=bytes[i]&0xff; } DEMO_RAW[k]=buf; return {before:buf,after:buf}; },
+    async restoreField(tk,did,bytes){ DEMO_RAW[tk+did]=Array.from(bytes).map(x=>x&0xff); return {after:DEMO_RAW[tk+did]}; },
+    async readDTC(){ return { M:[], A:[], D:[] }; },
+    async clearFaults(){ return ['Demo: nichts zu löschen']; }
+  };
+  const api=()=>((window.__model&&window.__model.__demo)?DEMO_API:(window.__bikeWrite||{}));
+  // --- Mehrsprachigkeit: Smart-Übersetzungen (lib/i18n.js) + BES2-eigene Wörter ---
+  const L=(de,en,fr,it,es,pt,nl,pl,cs,da,sv,fi)=>({de,en,fr,it,es,pt,nl,pl,cs,da,sv,fi});
+  const BES={
+    sub:L('BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4'),
+    temp:L('Temperatur','Temperature','Température','Temperatura','Temperatura','Temperatura','Temperatuur','Temperatura','Teplota','Temperatur','Temperatur','Lämpötila'),
+    akkuDetail:L('Akku im Detail','Battery in detail','Batterie en détail','Batteria in dettaglio','Batería en detalle','Bateria em detalhe','Accu in detail','Akumulator szczegółowo','Baterie podrobně','Batteri i detaljer','Batteri i detalj','Akku yksityiskohtaisesti'),
+    akkuDetailSub:L('Spannung, Zellen, Ladezyklen','Voltage, cells, charge cycles','Tension, cellules, cycles','Tensione, celle, cicli','Tensión, celdas, ciclos','Tensão, células, ciclos','Spanning, cellen, laadcycli','Napięcie, ogniwa, cykle','Napětí, články, cykly','Spænding, celler, cyklusser','Spänning, celler, cykler','Jännite, kennot, lataussyklit'),
+    statsTitle:L('Fahr-Statistik','Ride statistics','Statistiques','Statistiche','Estadísticas','Estatísticas','Ritstatistiek','Statystyki jazdy','Statistika jízdy','Køre­statistik','Körstatistik','Ajotilastot'),
+    statsSub:L('Strecke pro Modus','Distance per mode','Distance par mode','Distanza per modalità','Distancia por modo','Distância por modo','Afstand per modus','Dystans na tryb','Vzdálenost na režim','Distance pr. tilstand','Sträcka per läge','Matka tilaa kohti'),
+    antriebSub:L('Motor, Rahmen, Unterstützung','Motor, frame, assistance','Moteur, cadre, assistance','Motore, telaio, assistenza','Motor, cuadro, asistencia','Motor, quadro, assistência','Motor, frame, ondersteuning','Silnik, rama, wspomaganie','Motor, rám, podpora','Motor, stel, hjælp','Motor, ram, hjälp','Moottori, runko, avustus'),
+    faultsSub:L('Fehlerspeicher','Fault memory','Mémoire de défauts','Memoria errori','Memoria de fallos','Memória de falhas','Foutgeheugen','Pamięć błędów','Paměť závad','Fejlhukommelse','Felminne','Vikamuisti'),
+    minCell:L('min. Zelle','min. cell','cellule min.','cella min.','celda mín.','célula mín.','min. cel','min. ogniwo','min. článek','min. celle','min. cell','min. kenno'),
+    maxCell:L('max. Zelle','max. cell','cellule max.','cella max.','celda máx.','célula máx.','max. cel','maks. ogniwo','max. článek','max. celle','max. cell','maks. kenno'),
+    frame:L('Rahmen/Typ','Frame/type','Cadre/type','Telaio/tipo','Cuadro/tipo','Quadro/tipo','Frame/type','Rama/typ','Rám/typ','Stel/type','Ram/typ','Runko/tyyppi'),
+    modelId:L('Modell-ID','Model ID','ID du modèle','ID modello','ID de modelo','ID do modelo','Model-ID','ID modelu','ID modelu','Model-ID','Modell-ID','Mallitunnus'),
+    motorNr:L('Motor-Nr.','Motor no.','N° moteur','N. motore','N.º motor','N.º motor','Motornr.','Nr silnika','Č. motoru','Motornr.','Motornr.','Moottorinro'),
+    modeOff:L('Ohne Unterstützung','Without assistance','Sans assistance','Senza assistenza','Sin asistencia','Sem assistência','Zonder ondersteuning','Bez wspomagania','Bez podpory','Uden hjælp','Utan hjälp','Ilman avustusta'),
+    modeUser:L('Eigener Modus {n}','Custom mode {n}','Mode perso {n}','Modalità personalizzata {n}','Modo propio {n}','Modo próprio {n}','Eigen modus {n}','Własny tryb {n}','Vlastní režim {n}','Egen tilstand {n}','Eget läge {n}','Oma tila {n}'),
+    saveProto:L('Protokoll speichern','Save report','Enregistrer le rapport','Salva rapporto','Guardar informe','Guardar relatório','Rapport opslaan','Zapisz raport','Uložit protokol','Gem rapport','Spara rapport','Tallenna raportti'),
+    reading:L('eBike wird ausgelesen …','Reading e-bike …','Lecture du vélo …','Lettura e-bike …','Leyendo e-bike …','A ler e-bike …','E-bike wordt uitgelezen …','Odczyt e-bike …','Načítání e-bike …','Læser e-bike …','Läser e-bike …','Luetaan e-bikeä …'),
+    back:L('← Auswahl','← Back','← Retour','← Indietro','← Volver','← Voltar','← Terug','← Wstecz','← Zpět','← Tilbage','← Tillbaka','← Takaisin'),
+    betaFoot:L('SelfBike · deine Daten bleiben im Browser.','SelfBike · your data stays in the browser.','SelfBike · tes données restent dans le navigateur.','SelfBike · i tuoi dati restano nel browser.','SelfBike · tus datos se quedan en el navegador.','SelfBike · os teus dados ficam no navegador.','SelfBike · je gegevens blijven in de browser.','SelfBike · Twoje dane zostają w przeglądarce.','SelfBike · tvá data zůstávají v prohlížeči.','SelfBike · dine data bliver i browseren.','SelfBike · dina data stannar i webbläsaren.','SelfBike · tietosi pysyvät selaimessa.'),
+    pcHint:L('Nur am PC/Laptop mit Chrome oder Edge. Vor dem Auslesen: Kiox/Nyon aus → 15 Sek. → ein. Nur Lesen & sichere Einstellungen, kein Tuning.','PC/laptop only, with Chrome or Edge. Before reading: Kiox/Nyon off → 15 s → on. Reading & safe settings only, no tuning.','Uniquement sur PC/portable avec Chrome ou Edge. Avant la lecture : Kiox/Nyon éteint → 15 s → allumé. Lecture et réglages sûrs uniquement, pas de tuning.','Solo su PC/laptop con Chrome o Edge. Prima della lettura: Kiox/Nyon off → 15 s → on. Solo lettura e impostazioni sicure, niente tuning.','Solo en PC/portátil con Chrome o Edge. Antes de leer: Kiox/Nyon apagado → 15 s → encendido. Solo lectura y ajustes seguros, sin tuning.','Apenas em PC/portátil com Chrome ou Edge. Antes de ler: Kiox/Nyon desligado → 15 s → ligado. Apenas leitura e definições seguras, sem tuning.','Alleen op pc/laptop met Chrome of Edge. Voor het uitlezen: Kiox/Nyon uit → 15 s → aan. Alleen lezen en veilige instellingen, geen tuning.','Tylko na PC/laptopie z Chrome lub Edge. Przed odczytem: Kiox/Nyon wył. → 15 s → wł. Tylko odczyt i bezpieczne ustawienia, bez tuningu.','Jen na PC/notebooku s Chrome nebo Edge. Před čtením: Kiox/Nyon vyp → 15 s → zap. Jen čtení a bezpečná nastavení, žádný tuning.','Kun på pc/laptop med Chrome eller Edge. Før aflæsning: Kiox/Nyon slukket → 15 s → tændt. Kun læsning og sikre indstillinger, ingen tuning.','Endast på dator/laptop med Chrome eller Edge. Före avläsning: Kiox/Nyon av → 15 s → på. Endast läsning och säkra inställningar, ingen trimning.','Vain tietokoneella/läppärillä Chromella tai Edgellä. Ennen lukemista: Kiox/Nyon pois → 15 s → päälle. Vain luku ja turvalliset asetukset, ei virittelyä.'),
+    statsNote:L('„Ohne Unterstützung" = alles über 25 km/h und ohne aktiven Motor — zählt nach tatsächlicher Unterstützung, nicht nach eingestelltem Modus.','"Without assistance" = everything above 25 km/h and without active motor — counted by actual assistance, not by the selected mode.','« Sans assistance » = tout au-dessus de 25 km/h et sans moteur actif — compté selon l’assistance réelle, pas selon le mode choisi.','"Senza assistenza" = tutto oltre 25 km/h e senza motore attivo — conteggiato in base all’assistenza effettiva, non alla modalità impostata.','"Sin asistencia" = todo por encima de 25 km/h y sin motor activo — se cuenta por la asistencia real, no por el modo seleccionado.','"Sem assistência" = tudo acima de 25 km/h e sem motor ativo — contado pela assistência real, não pelo modo selecionado.','"Zonder ondersteuning" = alles boven 25 km/h en zonder actieve motor — geteld op werkelijke ondersteuning, niet op de ingestelde modus.','„Bez wspomagania" = wszystko powyżej 25 km/h i bez aktywnego silnika — liczone wg rzeczywistego wspomagania, nie wg wybranego trybu.','„Bez podpory" = vše nad 25 km/h a bez aktivního motoru — počítá se podle skutečné podpory, ne podle nastaveného režimu.','"Uden hjælp" = alt over 25 km/h og uden aktiv motor — tælles efter faktisk hjælp, ikke efter den valgte tilstand.','"Utan hjälp" = allt över 25 km/h och utan aktiv motor — räknas efter faktisk hjälp, inte efter valt läge.','"Ilman avustusta" = kaikki yli 25 km/h ja ilman aktiivista moottoria — lasketaan todellisen avustuksen mukaan, ei valitun tilan mukaan.'),
+    demoFehler:L('Im Demo-Modus nicht verfügbar. Am echten Rad stehen hier gespeicherte Fehler aus Motor, Akku und Display in Klartext.','Not available in demo mode. On a real bike, stored faults from motor, battery and display appear here in plain text.','Non disponible en mode démo. Sur un vélo réel, les défauts enregistrés du moteur, de la batterie et de l’écran apparaissent ici en clair.','Non disponibile in modalità demo. Su una bici reale, qui compaiono gli errori memorizzati di motore, batteria e display in chiaro.','No disponible en modo demo. En una bici real, aquí aparecen los fallos guardados del motor, la batería y la pantalla en texto claro.','Não disponível no modo demo. Numa bicicleta real, aparecem aqui as falhas guardadas do motor, bateria e ecrã em texto claro.','Niet beschikbaar in demomodus. Op een echte fiets staan hier opgeslagen fouten van motor, accu en display in gewone taal.','Niedostępne w trybie demo. Na prawdziwym rowerze pojawią się tu zapisane błędy silnika, akumulatora i wyświetlacza otwartym tekstem.','Není k dispozici v režimu demo. Na skutečném kole se zde zobrazí uložené závady motoru, baterie a displeje v čitelné podobě.','Ikke tilgængelig i demotilstand. På en rigtig cykel vises gemte fejl fra motor, batteri og display her i klartekst.','Inte tillgängligt i demoläge. På en riktig cykel visas sparade fel från motor, batteri och display här i klartext.','Ei käytettävissä demotilassa. Oikeassa pyörässä tässä näkyvät moottorin, akun ja näytön tallennetut viat selkokielellä.'),
+    backupSave:L('Backup speichern','Save backup','Enregistrer la sauvegarde','Salva backup','Guardar copia','Guardar cópia','Back-up opslaan','Zapisz kopię','Uložit zálohu','Gem backup','Spara säkerhetskopia','Tallenna varmuuskopio'),
+    backupDone:L('Backup gespeichert ✓','Backup saved ✓','Sauvegarde enregistrée ✓','Backup salvato ✓','Copia guardada ✓','Cópia guardada ✓','Back-up opgeslagen ✓','Kopia zapisana ✓','Záloha uložena ✓','Backup gemt ✓','Säkerhetskopia sparad ✓','Varmuuskopio tallennettu ✓'),
+    backupNone:L('Bitte zuerst das Rad auslesen.','Please read the bike first.','Lis d’abord le vélo.','Leggi prima la bici.','Primero lee la bici.','Lê primeiro a bicicleta.','Lees eerst de fiets uit.','Najpierw odczytaj rower.','Nejprve načti kolo.','Aflæs cyklen først.','Läs av cykeln först.','Lue pyörä ensin.'),
+    settingsBetaT:L('Beta','Beta'),
+    settingsBeta:L('Das Ändern von Einstellungen ist noch nicht an allen Rädern getestet. Auslesen ist sicher. Wenn etwas nicht klappt, erstelle unten ein Support-Paket.','Changing settings is not yet tested on every bike. Reading is safe. If something goes wrong, create a support package below.','La modification des réglages n’est pas encore testée sur tous les vélos. La lecture est sûre. En cas de problème, crée un paquet d’assistance ci-dessous.','La modifica delle impostazioni non è ancora testata su tutte le bici. La lettura è sicura. Se qualcosa non va, crea un pacchetto di supporto qui sotto.','Cambiar los ajustes aún no está probado en todas las bicis. La lectura es segura. Si algo falla, crea un paquete de soporte abajo.','A alteração de definições ainda não foi testada em todas as bicicletas. A leitura é segura. Se algo correr mal, cria um pacote de suporte abaixo.','Het wijzigen van instellingen is nog niet op elke fiets getest. Uitlezen is veilig. Als er iets misgaat, maak hieronder een supportpakket.','Zmiana ustawień nie jest jeszcze przetestowana na każdym rowerze. Odczyt jest bezpieczny. Jeśli coś się nie uda, utwórz poniżej pakiet pomocy.','Změna nastavení zatím není otestována na všech kolech. Čtení je bezpečné. Když něco nevyjde, vytvoř níže balíček podpory.','Ændring af indstillinger er endnu ikke testet på alle cykler. Aflæsning er sikker. Hvis noget går galt, opret en supportpakke nedenfor.','Att ändra inställningar är ännu inte testat på alla cyklar. Avläsning är säker. Om något går fel, skapa ett supportpaket nedan.','Asetusten muuttamista ei ole vielä testattu kaikilla pyörillä. Lukeminen on turvallista. Jos jokin ei toimi, luo tukipaketti alta.')
+  };
+  let curLang=detectLang();
+  const tb=(k,v)=>{ const o=BES[k]; let s=(o&&(o[curLang]??o.de))||k; return v?s.replace(/\{(\w+)\}/g,(m,x)=>v[x]??m):s; };
+  function applyBes(root=document){ for(const e of root.querySelectorAll('[data-bes]')) e.textContent=tb(e.dataset.bes); }
+  function fillLangs(){ const s=el('lang'); if(!s)return; s.innerHTML=Object.entries(LANGS).map(([c,n])=>'<option value="'+c+'" title="'+esc(n)+'">'+c.toUpperCase()+'</option>').join(''); s.value=curLang; }
+  // Geschlossen nur das Kürzel (schmal), aufgeklappt „Kürzel · Name" – wie beim Smart-System
+  function langLabels(full){ const s=el('lang'); if(!s)return; s.style.width=full?s.offsetWidth+'px':''; for(const o of s.options) o.textContent=full?(o.value.toUpperCase()+' · '+LANGS[o.value]):o.value.toUpperCase(); }
+  function applyAll(){ applyStatic(); applyBes();
+    if(!readDone()){ el('pageTitle').textContent=t('ui.home'); el('pageSub').textContent=tb('sub'); el('conn').className='conn'; el('connText').textContent=t('conn.off'); }
+    else { buildHome(); if(el('tab-settings')&&!el('tab-settings').classList.contains('hidden')){ settingsBuilt=false; ensureSettings(); } } }
+  async function initI18n(){ await setLang(curLang); fillLangs(); applyAll(); const s=el('lang'); if(s){ s.addEventListener('pointerdown',()=>langLabels(true)); s.addEventListener('keydown',()=>langLabels(true)); s.addEventListener('blur',()=>langLabels(false)); s.onchange=async e=>{ langLabels(false); curLang=e.target.value; await setLang(curLang); applyAll(); }; } }
+  const M=()=>window.__model||{};
+  const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const cq=s=>String(s).replace(/"/g,'\\"');
+  const beInt=a=>{let n=0;for(const b of a)n=n*256+b;return n;};
+  function pick(tk,did,i){ const d=M()[tk]&&M()[tk].dids&&M()[tk].dids[did]; return d&&d.dec?d.dec.parts[i||0]:null; }
+  const num=(tk,did,i)=>{ const p=pick(tk,did,i); return p&&p.num!=null?p.num:null; };
+  const str=(tk,did,i)=>{ const p=pick(tk,did,i); return p?p.val:null; };
+  const nf=(v,d=1)=>v==null?'—':v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+  const ni=v=>v==null?'—':Math.round(v).toLocaleString('de-DE');
+  // Smart-Icon-Set (gleiche SVG-Glyphen wie das Smart-System) für einheitliche blaue Buttons
+  const SICON={ backup:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>', protocol:'<path d="M9 4h6a1 1 0 0 1 1 1v1h2v14H6V6h2V5a1 1 0 0 1 1-1zM8 10h8M8 14h8M8 18h5"/>', pdf:'<path d="M7 3h7l5 5v13H7zM14 3v5h5"/>', export:'<path d="M12 3v12M8 11l4 4 4-4M5 21h14"/>', refresh:'<path d="M20 11A8 8 0 0 0 5.6 6.6L4 8M4 4v4h4M4 13a8 8 0 0 0 14.4 4.4L20 16M20 20v-4h-4"/>' };
+  const svgIco=n=>'<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(SICON[n]||'')+'</svg>';
+  const readDone=()=>{ const m=M(); return m&&Object.keys(m).length; };
+
+  /* ---------- Tabs ---------- */
+  function showTab(name){
+    el('tab-home').classList.toggle('hidden',name!=='home');
+    el('tab-settings').classList.toggle('hidden',name!=='settings');
+    document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
+    if(name==='settings') ensureSettings();
+    window.scrollTo(0,0);
+  }
+  document.querySelectorAll('.tabbar button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+
+  /* ---------- Verbinden ---------- */
+  async function doScan(){ if(!window.__scan){ alert('Engine nicht geladen.'); return; } try{ await window.__scan(); }catch(e){} if(readDone()) buildHome(); }
+  function discAccepted(){ try{ const d=JSON.parse(localStorage.getItem('selfbike-disclaimer')); return !!(d&&d.v===1); }catch(e){ return false; } }
+  function openDisc(readOnly){ el('discGate').style.display=readOnly?'none':''; el('discCheck').checked=false; el('discAccept').disabled=true; el('discSheet').classList.add('open'); const b=el('discSheet').querySelector('.dbody'); if(b)b.scrollTop=0; }
+  function closeDisc(){ el('discSheet').classList.remove('open'); }
+  async function connect(){ openDisc(); } /* Rechtshinweis kommt bei JEDEM Verbinden */
+  el('connect').onclick=connect;
+  el('discCheck').onchange=e=>{ el('discAccept').disabled=!e.target.checked; };
+  el('discAccept').onclick=()=>{ closeDisc(); doScan(); }; /* nichts speichern – immer neu zustimmen */
+  el('discSheet').onclick=e=>{ if(e.target===el('discSheet')) closeDisc(); };
+  el('demoStart').onclick=()=>{ runDemo(); };
+  function runDemo(){
+    const m=el('prog'); if(!m){ window.__model=DEMO(); buildHome(); return; }
+    const arc=el('progArc'), pct=el('progPct'), RC=326.7;
+    el('progTitle').textContent=tb('reading');
+    el('progKofi').classList.remove('show'); el('progDone').style.display='none';
+    if(arc){ arc.style.stroke='var(--self-teal-bright)'; arc.style.strokeDashoffset=RC; }
+    if(pct) pct.textContent='0%';
+    el('progStat').textContent='';
+    m.classList.add('open');
+    const steps=[[t('reg.DriveUnit'),25],[t('reg.Battery'),60],[t('reg.RemoteControl'),85],['',100]];
+    let i=0;
+    const tmr=setInterval(()=>{
+      const s=steps[i], p=s[1];
+      if(arc) arc.style.strokeDashoffset=(RC*(1-p/100)).toFixed(1);
+      if(pct) pct.textContent=p+'%';
+      if(s[0]) el('progStat').textContent=s[0]+' …';
+      if(++i>=steps.length){ clearInterval(tmr); setTimeout(()=>{ window.__model=DEMO(); buildHome(); m.classList.remove('open'); }, 420); }
+    }, 420);
+  }
+  el('showLegal').onclick=()=>openDisc(true);
+
+  /* ---------- Dashboard ---------- */
+  function tile(k,n,unit,cls,x){ x=x||{}; return '<div class="tile'+(x.wide?' wide':'')+'"><div class="k">'+esc(k)+'</div><div class="n'+(cls?' '+cls:'')+'"'+(x.id?' id="'+x.id+'"':'')+'>'+n+(unit?'<small>'+unit+'</small>':'')+'</div>'+(x.meter!=null?'<div class="meter"><i style="width:'+Math.max(0,Math.min(100,x.meter||0))+'%'+(cls==='bad'?';background:var(--self-red)':cls==='warn'?';background:var(--self-yellow)':'')+'"></i></div>':'')+((x.c||x.cid)?'<div class="c"'+(x.cid?' id="'+x.cid+'"':'')+'>'+(x.c||'')+'</div>':'')+'</div>'; }
+  const kv=(k,v)=>'<div class="row static"><span class="t">'+esc(k)+'</span><span class="v">'+v+'</span></div>';
+  // Zusatz-Kacheln (Fehler-Anzahl, nächster Service, Licht) – lesen je Steuergerät nach, Ergebnis pro Auslesung gecacht
+  let enrichCache=null, enrichFor=null;
+  async function readEnrich(){
+    const r={faults:null, serviceKm:null, light:null};
+    try{ const d=await api().readDTC(); let n=0,bad=false; for(const k of ['M','A','D']){ const l=d&&d[k]; if(Array.isArray(l)){ n+=l.length; if(l.some(x=>(x.status&0x01)||(x.status&0x08))) bad=true; } } r.faults={n,bad}; }catch(e){}
+    try{ const raw=Uint8Array.from(await api().readFieldRaw('M','024d')); const km=beInt(raw.slice(3,7))*0.001; r.serviceKm=km>0?km:0; }catch(e){}
+    try{ const cap=Uint8Array.from(await api().readFieldRaw('M','0113'))[0];
+      let auto=0,hand=0,volt=0;
+      try{ const sw=Uint8Array.from(await api().readFieldRaw('M','0211')); auto=sw[0]; hand=sw[1]; }catch(e){}
+      try{ volt=Uint8Array.from(await api().readFieldRaw('M','0301'))[0]; }catch(e){}
+      r.light={cap,auto,hand,volt}; }catch(e){}
+    return r;
+  }
+  async function enrichTiles(odo){
+    const mdl=window.__model;
+    if(enrichFor!==mdl || !enrichCache){ try{ enrichCache=await readEnrich(); enrichFor=mdl; }catch(e){ return; } }
+    const e=enrichCache; if(!e) return;
+    const f=el('tFaults');
+    if(f){ if(e.faults){ f.textContent=e.faults.n; f.className='n '+(e.faults.n===0?'good':e.faults.bad?'bad':'warn'); } else f.textContent='—'; }
+    const s=el('tService'), ssub=el('tServiceSub');
+    if(s){ if(e.serviceKm==null){ s.textContent='—'; if(ssub)ssub.textContent=''; }
+      else if(e.serviceKm===0){ s.textContent='nicht gesetzt'; s.style.fontSize='20px'; if(ssub)ssub.textContent=''; }
+      else { const rem=Math.max(0,Math.round(e.serviceKm-(odo||0))); s.innerHTML=nf(rem,0)+'<small> km</small>'; if(ssub)ssub.textContent='fällig bei '+nf(e.serviceKm,0)+' km'; } }
+    const li=el('tLight'), lsub=el('tLightSub');
+    if(li){ if(!e.light){ li.textContent='—'; if(lsub)lsub.textContent=''; }
+      else if(e.light.cap===0){ li.textContent='Kein Licht'; li.style.fontSize='20px'; if(lsub)lsub.textContent=''; }
+      else { li.textContent=e.light.auto?'Automatik':'Manuell'; li.style.fontSize='22px';
+        if(lsub)lsub.textContent=[e.light.volt===2?'12 V':e.light.volt===1?'6 V':null, 'von Hand '+(e.light.hand?'Ja':'Nein')].filter(Boolean).join(' · '); } }
+  }
+  function buildHome(){
+    const soc=num('A','0510'), odo=num('M','0167'), cap=num('A','02a0'), volt=num('A','0413'), temp=num('A','0433');
+    const cyc=(num('A','0312')||0)+(num('A','0313')||0), mcell=num('A','07a1'), mcellMax=num('A','0610');
+    const assist=num('M','0143'), dmax=num('M','0210'), manip=num('M','0272');
+    const bike=str('M','5b7c')||str('M','0181')||'Dein eBike';
+    el('pageTitle').textContent=bike; el('pageSub').textContent=t('ui.homeSub');
+    el('conn').className='conn on'; el('connText').textContent=t('conn.on');
+    el('demoBadge').classList.toggle('hidden', !M().__demo);
+    const ok=(manip===0||manip==null);
+    let h='';
+    const rest=(soc!=null&&cap)?soc/100*cap:null;
+    const zust=(cyc!=null)?(cyc<300?'sehr gut':cyc<600?'gut':'mäßig'):null;
+    h+=tile(t('tile.battery')+' · '+t('bat.soc'), soc==null?'—':Math.round(soc), '%', soc>50?'good':soc>20?'warn':'bad', {meter:soc, c:[zust?'Zustand '+zust:null, rest!=null?'Rest '+ni(rest)+' Wh':null, cyc?t('tile.cycles',{n:Math.round(cyc)}):null].filter(Boolean).join(' · ')});
+    h+=tile(t('tile.check'), ok?t('check.ok'):t('check.warn'), '', ok?'good':'bad', {c:[t('check.speed',{v:nf(assist!=null?assist:dmax,1)+' km/h'}).trim(), dmax!=null?'Anzeige '+nf(dmax,1)+' km/h':null, ok?t('tuning.none'):'Manipulation!'].filter(Boolean).join(' · ')});
+    h+=tile(t('ui.km'), odo==null?'—':nf(odo,0), ' km');
+    h+=tile(t('ui.faults'), '…', '', '', {id:'tFaults'});
+    h+=tile('Nächster Service', '…', '', '', {id:'tService', cid:'tServiceSub'});
+    h+=tile('Licht', '…', '', '', {id:'tLight', cid:'tLightSub'});
+    el('tiles').innerHTML=h;
+    enrichTiles(odo);
+    // Daten für die Detail-Seiten (Aufklappen wie beim Smart System)
+    window.__akkuHtml='<div class="group noico">'
+      +kv(t('more.voltage'),nf(volt,2)+' V')+kv(tb('temp'),nf(temp,1)+' °C')+kv(t('more.capacity'),ni(cap)+' Wh')
+      +kv(t('bat.cycles'),nf(cyc,1))+kv(tb('minCell'),nf(mcell,2)+' V')+kv(tb('maxCell'),nf(mcellMax,2)+' V')+'</div>';
+    window.__antriebHtml='<div class="group noico">'
+      +kv(tb('frame'),esc(str('M','0181')||'—'))+kv(tb('modelId'),esc(str('M','0180')||'—'))
+      +kv(tb('motorNr'),esc(str('M','014a')||'—'))+kv(t('check.speed',{v:''}).trim(),nf(assist!=null?assist:dmax,1)+' km/h')+'</div>';
+    // Fahr-Statistik pro Modus (Strecke; Werte sind Meter → km)
+    const MODES=[['022a',tb('modeOff')],['0226','Eco'],['0227','Tour'],['0228','Sport / eMTB'],['0247','Turbo'],['0229',tb('modeUser',{n:1})],['0240',tb('modeUser',{n:2})],['0241',tb('modeUser',{n:3})],['0242',tb('modeUser',{n:4})]];
+    const stats=MODES.map(([did,name])=>({name,km:(num('M',did)||0)/1000})).filter(x=>x.km>=0.5).sort((a,b)=>b.km-a.km);
+    let sh='';
+    if(stats.length){ const tot=stats.reduce((s,x)=>s+x.km,0)||1;
+      sh='<div class="group noico">';
+      stats.forEach(x=>{ const pct=Math.round(x.km/tot*100);
+        sh+='<div class="statrow"><div class="sr-top"><span>'+esc(x.name)+'</span><span class="sr-km">'+nf(x.km,0)+' km · '+pct+'%</span></div><div class="meter"><i style="width:'+Math.max(2,pct)+'%;background:var(--self-teal-bright)"></i></div></div>';
+      });
+      sh+='</div><p class="foot">'+esc(tb('statsNote'))+'</p>';
+    } else sh='<p class="foot">'+esc(t('ride.noStats'))+'</p>';
+    window.__statsHtml=sh;
+    const drow=(ico,bg,title,sub,act)=>'<button class="row" data-info="'+act+'"><span class="ico" style="background:'+bg+'">'+ico+'</span><span class="t">'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</span><span class="chev">›</span></button>';
+    let g='<div class="gh">'+esc(t('tile.battery'))+'</div><div class="group">'+drow('🔋','#22a35a',tb('akkuDetail'),tb('akkuDetailSub'),'akku')+'</div>';
+    g+='<div class="gh">'+esc(t('nav.ride'))+'</div><div class="group">'+drow('📊','#3b82f6',tb('statsTitle'),tb('statsSub'),'stats')+'</div>';
+    g+='<div class="gh">'+esc(t('ui.groupBike'))+'</div><div class="group">'+drow('⚙️','#64748b',t('grp.Antrieb'),tb('antriebSub'),'antrieb')+drow('⚠️','#e5534b',t('ui.faults'),tb('faultsSub'),'fehler')+'</div>';
+    g+='<div class="gh">'+esc(t('ui.groupSafe'))+'</div><div class="group">'+drow(svgIco('backup'),'#0ea5e9','Backup jetzt speichern','Alle Werte als Datei sichern','backup')+drow(svgIco('protocol'),'#0ea5e9','Protokoll','Auslese-Protokoll speichern','save')+drow(svgIco('pdf'),'#0ea5e9','PDF-Bericht erstellen','Übersicht zum Ausdrucken / Speichern','pdf')+drow(svgIco('refresh'),'#0ea5e9','Aus Backup wiederherstellen','Einstellungen vom selben Rad zurückschreiben','restore')+drow(svgIco('protocol'),'#0ea5e9','Änderungs-Protokoll','Alle Änderungen – speichern & schicken','changelog')+drow(svgIco('export'),'#e5534b','Support-Paket (.zip)','Bei Problemen: alles gebündelt zum Schicken','support')+drow(svgIco('refresh'),'#0ea5e9',t('ui.refresh'),'','rescan')+'</div>';
+    el('moreList').innerHTML=g;
+    el('moreList').querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>onInfo(b.dataset.info));
+    el('connectCard').classList.add('hidden'); el('home').classList.remove('hidden');
+  }
+  function openInfo(title,html){ el('sheetTitle').textContent=title; el('sheetBody').innerHTML=html; el('sheet').classList.add('open'); el('sheetBody').scrollTop=0; }
+  function onInfo(key){
+    if(key==='akku') return openInfo(tb('akkuDetail'), window.__akkuHtml||'');
+    if(key==='antrieb') return openInfo(t('grp.Antrieb'), window.__antriebHtml||'');
+    if(key==='stats') return openInfo(tb('statsTitle'), window.__statsHtml||'');
+    if(key==='pdf') return openReport();
+    if(key==='changelog') return openChangeLog();
+    if(key==='support') return openSupport();
+    if(key==='save') return saveProto();
+    if(key==='backup') return saveBackup();
+    if(key==='restore') return restoreFromBackup();
+    if(key==='rescan'){ (async()=>{ try{ await window.__scan(); }catch(e){} if(readDone())buildHome(); })(); return; }
+    if(key==='fehler'){ if(M().__demo) return openInfo(t('ui.faults'),'<p class="foot" style="text-align:center">'+esc(tb('demoFehler'))+'</p>'); openInfo(t('ui.faults'),''); renderFehler(el('sheetBody')); }
+  }
+  window.__buildHome=buildHome;
+  function saveProto(){ const n=prompt('Dein Fahrrad (Marke & Modell):',''); if(n===null)return; let bi=el('bikeName'); if(!bi){ bi=document.createElement('input'); bi.id='bikeName'; bi.style.display='none'; document.body.appendChild(bi);} bi.value=n; if(window.saveReport)window.saveReport(); }
+  /* ---------- Backup: alle ausgelesenen Werte als Datei sichern ---------- */
+  const bkHex=a=>{ try{ return Array.from(a).map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ return ''; } };
+  function makeBackup(){
+    const m=M(); const NAMES={M:'Motor',A:'Akku',D:'Display'};
+    const out={ tool:'SelfBike · BES2 (Gen2–4)', version:'1.9.0', erstellt:new Date().toISOString(), demo:!!m.__demo, fahrrad:(str('M','5b7c')||str('M','0181')||''), systeme:{} };
+    for(const tk of ['M','A','D']){ const tgt=m[tk]; if(!tgt)continue; const sys={ werte:{}, routinen:[] };
+      for(const did in (tgt.dids||{})){ const o=tgt.dids[did]; if(!o)continue; const e={ name:(o.dec&&o.dec.n)||'', parts:((o.dec&&o.dec.parts)||[]).map(p=>({name:p.name,wert:p.val,zahl:p.num})) }; if(o.raw)e.hex=bkHex(o.raw); sys.werte[did]=e; }
+      for(const r of (tgt.rc||[])){ const e={ req:(r.req?Array.from(r.req).map(x=>x.toString(16).padStart(2,'0')).join(' '):''), parts:((r.dec&&r.dec.parts)||[]).map(p=>({name:p.name,wert:p.val})) }; if(r.raw)e.hex=bkHex(r.raw); sys.routinen.push(e); }
+      out.systeme[NAMES[tk]]=sys;
+    }
+    return out;
+  }
+  // Schreibbare Einstell-Werte (Licht/Service/Anzeige/Schaltung) als Roh-Hex lesen – nur diese lassen sich später zurückschreiben
+  async function readConfigForBackup(){
+    const cfg={}; const seen=new Set();
+    for(const s of (SPECS||[])){ const k=s.t+':'+s.did; if(seen.has(k))continue; seen.add(k);
+      try{ const raw=Uint8Array.from(await api().readFieldRaw(s.t,s.did)); cfg[k]=Array.from(raw).map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){} }
+    return cfg;
+  }
+  async function saveBackup(){
+    if(!readDone()){ toast(tb('backupNone'),'warn'); return; }
+    try{ await loadSpecs(); }catch(e){}
+    const out=makeBackup();
+    try{ out.einstellungen=await readConfigForBackup(); }catch(e){ out.einstellungen={}; }
+    const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    const bike=((str('M','5b7c')||'bes2').replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-+|-+$/g,''))||'bes2';
+    a.download='selfbike-bes2-backup-'+bike+'-'+new Date().toISOString().slice(0,10)+'.json';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    toast(tb('backupDone'),'ok');
+  }
+  // ---------- Wiederherstellen: nur schreibbare Einstell-Werte, nur gleiches Rad, mit Bestätigung + Protokoll ----------
+  function restoreFromBackup(){
+    let inp=el('restoreFileInp');
+    if(!inp){ inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json'; inp.id='restoreFileInp'; inp.style.display='none'; document.body.appendChild(inp);
+      inp.onchange=async()=>{ const f=inp.files&&inp.files[0]; inp.value=''; if(f) await doRestore(f); }; }
+    inp.click();
+  }
+  async function doRestore(file){
+    if(!readDone()){ toast('Bitte zuerst „Verbinden & Auslesen".','warn'); return; }
+    let bk; try{ bk=JSON.parse(await file.text()); }catch(e){ toast('Backup-Datei nicht lesbar.','err'); return; }
+    const cfg=bk.einstellungen||bk.config||null;
+    if(!cfg||!Object.keys(cfg).length){ toast('Dieses Backup enthält keine Einstell-Werte zum Wiederherstellen. Bitte ein neueres Backup verwenden.','warn'); return; }
+    const cur=(str('M','5b7c')||'').toUpperCase(), was=String(bk.fahrrad||'').toUpperCase();
+    if(was && cur && was!==cur){ toast('Backup gehört zu einem anderen Rad ('+esc(bk.fahrrad)+'). Wiederherstellung abgebrochen.','err'); return; }
+    const keys=Object.keys(cfg);
+    if(!confirm('Einstellungen aus dem Backup wiederherstellen?\n'+keys.length+' gespeicherte Werte (Licht, Service, Anzeige, Schaltung) werden ins Rad geschrieben. Nur am eigenen Rad.')) return;
+    let done=0; const errs=[];
+    for(const k of keys){ const i=k.indexOf(':'); if(i<0)continue; const tk=k.slice(0,i), did=k.slice(i+1); const hex=cfg[k];
+      if(!tk||!did||!hex||typeof api().restoreField!=='function'){ continue; }
+      const m=String(hex).match(/../g); if(!m)continue; const bytes=m.map(h=>parseInt(h,16));
+      try{ await api().restoreField(tk,did,bytes); done++; logChange(SYSNAME[tk]||tk,'Wiederhergestellt · '+did,'',hex); }
+      catch(e){ errs.push(did+': '+e.message); }
+    }
+    enrichFor=null; if(readDone()){ settingsBuilt=false; buildHome(); }
+    if(errs.length) toast('Teilweise wiederhergestellt: '+done+' ok · Fehler bei '+errs.length,'warn');
+    else toast('Wiederhergestellt ✓ ('+done+' Werte)','ok');
+  }
+
+  /* ---------- Support-Paket (.zip): alles Wichtige für die Fehlersuche, Seriennummern bleiben ausgeblendet ---------- */
+  function crc32(bytes){ let c=~0>>>0; for(let i=0;i<bytes.length;i++){ c^=bytes[i]; for(let k=0;k<8;k++) c=(c>>>1)^(0xEDB88320&-(c&1)); } return (~c)>>>0; }
+  function zipStore(files){ // files: [{name, data:Uint8Array}] – ZIP ohne Kompression
+    const enc=new TextEncoder(), parts=[], central=[]; let off=0;
+    const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+    for(const f of files){ const name=enc.encode(f.name), data=f.data, crc=crc32(data);
+      const lh=[0x50,0x4b,0x03,0x04,...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u32(crc),...u32(data.length),...u32(data.length),...u16(name.length),...u16(0)];
+      parts.push(new Uint8Array(lh),name,data); central.push({name,crc,size:data.length,off}); off+=lh.length+name.length+data.length; }
+    const cdStart=off; let cdSize=0;
+    for(const c of central){ const h=[0x50,0x4b,0x01,0x02,...u16(20),...u16(20),...u16(0),...u16(0),...u16(0),...u16(0),...u16(0),...u32(c.crc),...u32(c.size),...u32(c.size),...u16(c.name.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(c.off)];
+      parts.push(new Uint8Array(h),c.name); cdSize+=h.length+c.name.length; }
+    parts.push(new Uint8Array([0x50,0x4b,0x05,0x06,...u16(0),...u16(0),...u16(central.length),...u16(central.length),...u32(cdSize),...u32(cdStart),...u16(0)]));
+    let total=0; for(const p of parts) total+=p.length; const out=new Uint8Array(total); let o=0; for(const p of parts){ out.set(p,o); o+=p.length; }
+    return out;
+  }
+  /* ---------- Protokoll-Archiv (Browser): jedes ausgelesene/gespeicherte Protokoll sammeln.
+     Serien/IDs sind im Text bereits ausgeblendet (buildReport). Beide Systeme teilen denselben Browser-Speicher. ---------- */
+  const PROTO_KEY='selfbike-protos';
+  function protoLoad(){ try{ return JSON.parse(localStorage.getItem(PROTO_KEY)||'[]'); }catch(e){ return []; } }
+  function protoSave(list){ try{ localStorage.setItem(PROTO_KEY, JSON.stringify(list.slice(-60))); }catch(e){} }
+  function archiveProto(system,bike,text){
+    if(!text) return; let list=protoLoad();
+    const day=new Date().toISOString().slice(0,10), b=String(bike||'').trim();
+    list=list.filter(p=>!(p.system===system && String(p.bike||'').trim()===b && String(p.ts||'').slice(0,10)===day));
+    list.push({ts:new Date().toISOString(), system, bike:b, text:String(text)});
+    while(JSON.stringify(list).length>3000000 && list.length>1) list.shift();
+    protoSave(list);
+  }
+  function protoFiles(){ const enc=new TextEncoder(), out=[], seen={};
+    for(const p of protoLoad()){ const d=(String(p.ts||'').slice(0,10))||'datum'; const sys=p.system==='smart'?'smart':'bes2';
+      let b=((String(p.bike||'rad')).replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-+|-+$/g,''))||'rad';
+      let nm='protokolle/'+d+'_'+sys+'_'+b+'.txt'; if(seen[nm]){ nm='protokolle/'+d+'_'+sys+'_'+b+'-'+(++seen[nm])+'.txt'; } else seen[nm]=1;
+      out.push({name:nm, data:enc.encode(p.text)}); }
+    return out;
+  }
+  window.archiveProto=archiveProto;
+  // Automatisch nach jedem Auslesen archivieren (Fehlerspeicher best-effort), ohne die Oberfläche zu blockieren
+  window.__afterRead=function(){ try{ if(M()&&M().__demo) return; (async()=>{ let dtc={}; try{ dtc=await api().readDTC(); }catch(e){}
+    const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||'';
+    try{ if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); }catch(e){} })(); }catch(e){} };
+  function supportInfoText(){ const n=protoLoad().length; return ['SelfBike · BES2 (Gen2–4) — Support-Paket','Erstellt: '+new Date().toLocaleString('de-DE'),'Rad: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),'','Enthalten: alle im Browser gespeicherten Auslese-Protokolle ('+n+') mit ausgeblendeten Seriennummern/IDs, Änderungs-Protokoll'+(CHANGELOG.length?' ('+CHANGELOG.length+' Einträge)':' (leer)')+', Fehler-Protokoll'+(ERRLOG.length?' ('+ERRLOG.length+')':'')+', ggf. deine Anhänge.','Kontakt: info@selfcoder.de','','Erstellt mit SelfBike · bike.selfcoder.de'].join('\n'); }
+  function openSupport(){
+    const n=protoLoad().length;
+    openInfo('Support-Paket',
+      '<p class="desc">Packt automatisch alles zusammen, was bei einem Problem hilft — <b>alle im Browser gespeicherten Auslese-Protokolle</b> ('+n+', Seriennummern bleiben ausgeblendet) und das <b>Änderungs-Protokoll</b> — als eine <b>.zip</b> zum Schicken an info@selfcoder.de. <b>Du musst nichts anhängen.</b> Screenshots oder Fotos sind optional.</p>'
+      +'<div class="gh">Anhänge (optional)</div><div class="group noico" style="padding:10px"><input type="file" id="supAtt" multiple accept="image/*,.txt,.json,.pdf,.log"></div>'
+      +'<button class="btn-big" id="supMake" style="margin-top:14px">Support-Paket (.zip) erstellen</button>');
+    const b=el('supMake'); if(b) b.onclick=()=>buildSupportZip(Array.from((el('supAtt')&&el('supAtt').files)||[]));
+  }
+  async function buildSupportZip(attachments){
+    if(!readDone()){ toast('Bitte zuerst „Verbinden & Auslesen".','warn'); return; }
+    const enc=new TextEncoder(); const files=[];
+    let dtc={}; try{ dtc=await api().readDTC(); }catch(e){}
+    // aktuelles Protokoll archivieren, dann ALLE gespeicherten Protokolle (beider Systeme) beilegen
+    try{ if(!(M()&&M().__demo)){ const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||''; if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); } }catch(e){}
+    for(const f of protoFiles()) files.push(f);
+    files.push({name:'aenderungs-protokoll.txt', data:enc.encode(changeLogText())});
+    files.push({name:'fehler-log.txt', data:enc.encode(errLogText())});
+    files.push({name:'info.txt', data:enc.encode(supportInfoText())});
+    for(const f of (attachments||[])){ try{ const buf=new Uint8Array(await f.arrayBuffer()); files.push({name:'anhaenge/'+String(f.name).replace(/[^\w.\- ]+/g,'_'), data:buf}); }catch(e){} }
+    try{
+      const zip=zipStore(files); const blob=new Blob([zip],{type:'application/zip'});
+      const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+      const bike=((str('M','5b7c')||'bes2').replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-+|-+$/g,''))||'bes2';
+      a.download='selfbike-support-'+bike+'-'+new Date().toISOString().slice(0,10)+'.zip';
+      document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+      toast('Support-Paket erstellt ✓ ('+files.length+' Dateien)','ok');
+    }catch(e){ toast('Fehler: '+e.message,'err'); }
+  }
+
+  /* ---------- SelfBike-Bericht (druckbar → PDF), Struktur angelehnt an den Bosch-Händlerbericht, aber SelfBike-Marke ---------- */
+  function pdfVer(tk,did){ const d=M()[tk]&&M()[tk].dids&&M()[tk].dids[did]; const p=d&&d.dec&&d.dec.parts; if(!p||!p.length)return '—'; return [p[0],p[1],p[2]].map(x=>(x&&x.num!=null)?x.num:0).join('.'); }
+  function pdfMDate(tk,did){ const d=M()[tk]&&M()[tk].dids&&M()[tk].dids[did]; const p=d&&d.dec&&d.dec.parts; if(!p)return '—'; const g=n=>{const f=p.find(x=>x&&x.name&&x.name.toLowerCase().includes(n));return f&&f.num!=null?f.num:null;}; let y=g('year'),mo=g('month'),da=g('day'); if(y==null)return '—'; if(y<100)y+=2000; return String(da||0).padStart(2,'0')+'.'+String(mo||0).padStart(2,'0')+'.'+y; }
+  let reportTheme='dark';
+  async function openReport(){
+    if(!readDone()){ toast('Bitte zuerst „Verbinden & Auslesen" (Tab „Mein E-Bike").','warn'); return; }
+    let dtc={}; try{ dtc=await api().readDTC(); }catch(e){}
+    let serviceKm=0; try{ const r=Uint8Array.from(await api().readFieldRaw('M','024d')); serviceKm=beInt(r.slice(3,7))*0.001; }catch(e){}
+    let ov=el('reportOverlay');
+    if(!ov){
+      const st=document.createElement('style'); st.textContent=
+        '#reportOverlay{position:fixed;inset:0;z-index:999;background:#555;display:none;flex-direction:column}'
+        +'#reportOverlay.open{display:flex}'
+        +'#reportOverlay .rtop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:var(--self-bg-1);color:var(--self-text);border-bottom:1px solid #000}'
+        +'#reportOverlay .rtop button{background:var(--self-teal);color:#042;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}'
+        +'#reportOverlay .rtop button#rClose,#reportOverlay .rtop button#rTheme{background:transparent;color:var(--self-text);border:1px solid var(--self-line-strong)}'
+        +'#reportOverlay iframe{flex:1;width:100%;border:0;background:#fff}';
+      document.head.appendChild(st);
+      ov=document.createElement('div'); ov.id='reportOverlay';
+      ov.innerHTML='<div class="rtop"><button id="rClose">Schließen</button><button id="rTheme"></button><button id="rPrint">Als PDF speichern</button></div><iframe id="rFrame" title="Bericht"></iframe>';
+      document.body.appendChild(ov);
+      el('rClose').onclick=()=>ov.classList.remove('open');
+      el('rTheme').onclick=()=>{ reportTheme=reportTheme==='dark'?'light':'dark'; renderReport(); };
+      el('rPrint').onclick=()=>{ const f=el('rFrame'); try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){} };
+    }
+    ov._dtc=dtc; ov._svc=serviceKm;
+    try{ if(!(M()&&M().__demo)){ const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||''; if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); } }catch(e){}
+    renderReport();
+    ov.classList.add('open');
+  }
+  function renderReport(){ const ov=el('reportOverlay'); if(!ov)return; el('rFrame').srcdoc=buildPdfHtml(ov._dtc,ov._svc,reportTheme); const b=el('rTheme'); if(b) b.textContent=(reportTheme==='dark'?'☀ Hell':'🌙 Dunkel'); }
+  function buildPdfHtml(dtc,serviceKm,theme){
+    const root=theme==='light'
+      ? '--self-bg:#ffffff;--self-bg-2:#f4f7fa;--self-teal:#1f7763;--self-teal-deep:#1f7763;--self-text:#1a2230;--self-text-2:#5b6776;--self-line:#d6dde6'
+      : '--self-bg:#0d1117;--self-bg-2:#161b22;--self-teal:#33a78c;--self-teal-deep:#43d3ad;--self-text:#eef4f7;--self-text-2:#8a9caa;--self-line:rgba(157,189,208,.18)';
+    dtc=dtc||{};
+    const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||'eBike';
+    const now=new Date().toLocaleString('de-DE');
+    const odo=num('M','0167'), soc=num('A','0510'), cap=num('A','02a0');
+    const cyc=(num('A','0312')||0)+(num('A','0313')||0);
+    const assist=num('M','0143'), dmax=num('M','0210'), manip=num('M','0272');
+    const rtM=num('M','016b'), rtS=num('M','016c');
+    const motorCode=str('M','5b7c')||'—', akkuCode=str('A','5b7c')||'—', dispCode=str('D','5b7c')||'—';
+    let fCount=0; for(const k of ['M','A','D']){ const l=dtc[k]; if(Array.isArray(l)) fCount+=l.length; }
+    const ok=(manip===0||manip==null);
+    const MODES=[['Off','022a'],['Eco','0226'],['Tour','0227'],['Sport / eMTB','0228'],['Turbo','0247'],['User 1','0229'],['User 2','0240'],['User 3','0241'],['User 4','0242']];
+    const md=MODES.map(([n,d])=>({n,km:(num('M',d)||0)/1000})).filter(x=>x.km>=0.5).sort((a,b)=>b.km-a.km);
+    const maxkm=Math.max(1,...md.map(x=>x.km));
+    const E=s=>esc(s==null?'—':s);
+    const LOGO=new URL('brand/shield.png',location.href).href, YEAR=new Date().getFullYear();
+    const wmTxt=Array.from({length:16},(_,i)=>'<div style="margin-left:'+((i%2)*90)+'px">'+Array(6).fill('© '+YEAR+' SelfBike · SelfCoder').join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</div>').join('');
+    const tile=(k,v,good)=>'<div class="t"><div class="k">'+E(k)+'</div><div class="v">'+v+(good?' <span class="ok">✓</span>':'')+'</div></div>';
+    const kvp=(k,v)=>'<tr><td>'+E(k)+'</td><td>'+v+'</td></tr>';
+    const names={M:'Motor',A:'Akku',D:'Display'};
+    let faultRows='';
+    for(const tk of ['M','A','D']){ const l=dtc[tk]; let txt;
+      if(l==null) txt='nicht gelesen';
+      else if(l.error) txt='nicht lesbar';
+      else if(!l.length) txt='<span class="ok">keine Fehler gespeichert</span>';
+      else txt=l.map(d=>{ const a=(d.status&0x01)||(d.status&0x08); const info=(typeof faultText==='function')?faultText(tk,d.code):null; return 'Fehler '+d.code+' ('+(a?'aktiv':'gespeichert')+')'+(info&&info.d?' — '+esc(info.d):''); }).join('<br>');
+      faultRows+=kvp(names[tk],txt);
+    }
+    const bars=md.length?md.map(x=>'<div class="row"><span class="n">'+E(x.n)+'</span><span class="track"><span class="fill" style="width:'+(x.km/maxkm*100).toFixed(1)+'%"></span></span><span class="km">'+ni(x.km)+' km</span></div>').join(''):'<div class="n">keine Modus-Daten</div>';
+    return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>SelfBike · eBike-Bericht</title><style>'
+      +':root{'+root+'}'
+      +'*{box-sizing:border-box}@page{size:A4;margin:0}html,body{margin:0;background:var(--self-bg)}'
+      +'body{color:var(--self-text);font:10.5pt/1.45 "Exo 2","Segoe UI",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+      +'.wm{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}'
+      +'.wm .shield{position:absolute;left:50%;top:50%;width:140mm;height:165mm;transform:translate(-50%,-50%);background:radial-gradient(closest-side,var(--self-bg) 88%,transparent 100%);display:grid;place-items:center}'
+      +'.wm .shield img{width:120mm;opacity:.5}'
+      +'.wm .txt{position:absolute;inset:-40%;transform:rotate(-30deg);display:flex;flex-direction:column;justify-content:space-around}'
+      +'.wm .txt div{white-space:nowrap;font:600 13pt/1 "Exo 2","Segoe UI",sans-serif;color:var(--self-teal);opacity:.3;letter-spacing:.06em}'
+      +'.page{position:relative;z-index:1;max-width:210mm;margin:0 auto;padding:14mm}'
+      +'header{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--self-teal);padding-bottom:6px;margin-bottom:14px}'
+      +'.brand{color:var(--self-teal-deep);font-weight:700;font-size:14pt;letter-spacing:.02em;margin-bottom:4px}'
+      +'.logo{width:34px;height:41px;object-fit:contain;vertical-align:-13px;margin-right:8px}'
+      +'h1{font-size:18pt;margin:0}.sub{color:var(--self-text-2)}'
+      +'.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}'
+      +'.t{background:var(--self-bg-2);border:1px solid var(--self-line);border-left:3px solid var(--self-teal);border-radius:6px;padding:8px 10px}.t .k{color:var(--self-text-2);font-size:9pt}.t .v{display:block;font-size:12.5pt;font-weight:700;margin-top:2px}'
+      +'.ok{color:var(--self-teal-deep)}'
+      +'section{break-inside:avoid;margin-bottom:10px}h2{font-size:11.5pt;margin:14px 0 4px;color:var(--self-teal-deep)}'
+      +'table{width:100%;border-collapse:collapse}td{padding:3px 6px;border-bottom:1px solid var(--self-line);vertical-align:top}td:first-child{color:var(--self-text-2);width:45%}td:last-child{text-align:right}'
+      +'.bars .row{display:grid;grid-template-columns:96px 1fr 72px;align-items:center;gap:8px;margin:4px 0}.bars .n{color:var(--self-text-2);font-size:9pt}.bars .track{height:8px;background:var(--self-line);border-radius:5px;overflow:hidden;display:block}.bars .fill{height:100%;background:var(--self-teal);display:block}.bars .km{font-size:9pt;font-weight:700;text-align:right}'
+      +'.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.card{background:var(--self-bg-2);border:1px solid var(--self-line);border-left:3px solid var(--self-teal);border-radius:6px;padding:9px}.card h3{font-size:10.5pt;margin:0 0 5px;color:var(--self-teal-deep)}.card .r{display:flex;justify-content:space-between;font-size:9pt;margin:2px 0;color:var(--self-text-2)}.card .r b{color:var(--self-text)}'
+      +'.free{margin-top:14px;padding:8px 10px;border:1px solid var(--self-teal);border-radius:6px;background:var(--self-bg-2);font-size:9.5pt}'
+      +'.made{margin-top:14px;padding-top:8px;border-top:1px solid var(--self-line);font-size:9pt;color:var(--self-text-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px}.made img{width:13px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}a{color:var(--self-teal-deep)}'
+      +'</style></head><body>'
+      +'<div class="wm" aria-hidden="true"><div class="txt">'+wmTxt+'</div><div class="shield"><img src="'+LOGO+'" alt=""></div></div>'
+      +'<div class="page">'
+      +'<header><div><div class="brand"><img class="logo" src="'+LOGO+'" alt="">SelfBike</div><h1>eBike-Bericht</h1><div class="sub">'+E(bike)+' · Bosch BES2 (Gen 2–4)</div></div><div class="sub">Erstellt: '+E(now)+'</div></header>'
+      +'<section><h2>Übersicht</h2><div class="grid">'
+      +tile('Gesamtstrecke', ni(odo)+' km')
+      +tile('Nächster Service', serviceKm>0?('bei '+ni(serviceKm)+' km'):'nicht gesetzt')
+      +tile('Ladezustand Akku', (soc==null?'—':Math.round(soc)+' %'))
+      +tile('Software (Motor)', (pdfVer('M','0103')==='—'?'—':'v'+pdfVer('M','0103')))
+      +tile('Manipulation', ok?'keine erkannt':'erkannt', ok)
+      +tile('Fehlerspeicher', fCount===0?'keine Fehler':fCount+' Fehler', fCount===0)
+      +'</div></section>'
+      +'<section><h2>eBike-Informationen</h2><table>'
+      +kvp('Produktlinie / Motor', E(motorCode))
+      +kvp('Fahrrad', E(bike))
+      +kvp('Max. Unterstützung', (dmax!=null?nf(dmax,0)+' km/h':(assist!=null?nf(assist,0)+' km/h':'—')))
+      +kvp('Motor Baujahr', pdfMDate('M','014c'))
+      +kvp('Laufrad-Umfang', (num('M','0170')!=null?num('M','0170')+' mm':'—'))
+      +'</table></section>'
+      +'<section><h2>Fahrstrecke nach Modus</h2><div class="bars">'+bars+'</div><table>'
+      +kvp('Motor-Laufzeit', (rtM!=null?nf(rtM,1)+' h':'—'))
+      +kvp('System-Laufzeit', (rtS!=null?nf(rtS,1)+' h':'—'))
+      +'</table></section>'
+      +'<section><h2>Komponenten</h2><div class="cards">'
+      +'<div class="card"><h3>Motor</h3><div class="r"><span>Code</span><b>'+E(motorCode)+'</b></div><div class="r"><span>SW / HW</span><b>'+pdfVer('M','0103')+' / '+pdfVer('M','0104')+'</b></div></div>'
+      +'<div class="card"><h3>Display</h3><div class="r"><span>Code</span><b>'+E(dispCode)+'</b></div><div class="r"><span>SW / HW</span><b>'+pdfVer('D','0220')+' / '+pdfVer('D','0221')+'</b></div></div>'
+      +'<div class="card"><h3>Akku</h3><div class="r"><span>Code</span><b>'+E(akkuCode)+'</b></div><div class="r"><span>Kapazität</span><b>'+(cap!=null?ni(cap)+' Wh':'—')+'</b></div><div class="r"><span>Ladezyklen</span><b>'+(cyc?nf(cyc,1):'—')+'</b></div></div>'
+      +'</div></section>'
+      +'<section><h2>Fehlerspeicher</h2><table>'+faultRows+'</table></section>'
+      +'<div class="free"><b>SelfBike ist kostenlos.</b> Fragen oder Rückmeldungen gern an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></div>'
+      +'<div class="made"><span><img src="'+LOGO+'" alt="">© '+YEAR+' SelfCoder · SelfBike · <a href="https://github.com/s3lfcod3r/SelfBike">github.com/s3lfcod3r/SelfBike</a></span><span>☕ <a href="https://ko-fi.com/s3lfcod3r">ko-fi.com/s3lfcod3r</a></span></div>'
+      +'</div>'
+      +'</body></html>';
+  }
+
+  /* ---------- Änderungs-Protokoll: jede Schreib-Änderung mitloggen (lokal gesichert, speicherbar) ---------- */
+  const SYSNAME={M:'Motor',A:'Akku',D:'Display'};
+  let CHANGELOG=(function(){ try{ return JSON.parse(localStorage.getItem('selfbike-changelog')||'[]'); }catch(e){ return []; } })();
+  function saveLog(){ try{ localStorage.setItem('selfbike-changelog', JSON.stringify(CHANGELOG.slice(-500))); }catch(e){} }
+  function logChange(sys,feld,von,nach){ CHANGELOG.push({ts:new Date().toISOString(), rad:(str('M','5b7c')||str('M','0181')||''), sys:sys||'', feld:feld||'', von:(von==null?'':String(von)), nach:(nach==null?'':String(nach))}); saveLog(); }
+  function changeLogText(){
+    const L=['SelfBike · BES2 — Änderungs-Protokoll','Erstellt: '+new Date().toLocaleString('de-DE'),''];
+    if(!CHANGELOG.length) L.push('Noch keine Änderungen aufgezeichnet.');
+    else for(const e of CHANGELOG) L.push(new Date(e.ts).toLocaleString('de-DE')+'  ['+(e.rad||'?')+']  '+(e.sys?e.sys+' · ':'')+e.feld+': '+(e.von||'—')+'  →  '+e.nach);
+    L.push(''); L.push('Erstellt mit SelfBike · bike.selfcoder.de');
+    return L.join('\n');
+  }
+  function saveChangeLog(){
+    const blob=new Blob([changeLogText()],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    const bike=((str('M','5b7c')||'bes2').replace(/[^a-z0-9]+/gi,'-').toLowerCase().replace(/^-+|-+$/g,''))||'bes2';
+    a.download='selfbike-aenderungen-'+bike+'-'+new Date().toISOString().slice(0,10)+'.txt';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    toast('Änderungs-Protokoll gespeichert ✓','ok');
+  }
+  function openChangeLog(){
+    const rows=CHANGELOG.length
+      ? CHANGELOG.slice().reverse().map(e=>'<div class="fault"><b>'+esc((e.sys?e.sys+' · ':'')+e.feld)+'</b><span>'+esc(e.von||'—')+' → '+esc(e.nach)+'<br><small style="color:var(--self-text-3)">'+esc(new Date(e.ts).toLocaleString('de-DE'))+(e.rad?' · '+esc(e.rad):'')+'</small></span></div>').join('')
+      : '<p class="desc" style="text-align:center">Noch keine Änderungen aufgezeichnet.</p>';
+    openInfo('Änderungs-Protokoll','<p class="desc">Jede Änderung, die du ins Rad schreibst, wird hier festgehalten — zum Speichern und Schicken, falls mal etwas ist.</p><div class="group noico">'+rows+'</div>'
+      +'<button class="btn-big" id="logSave" style="margin-top:14px">Protokoll speichern</button>'
+      +(CHANGELOG.length?'<button class="btn-text" id="logClear" style="color:var(--self-red)">Protokoll leeren</button>':''));
+    const s=el('logSave'); if(s) s.onclick=saveChangeLog;
+    const c=el('logClear'); if(c) c.onclick=()=>{ if(confirm('Änderungs-Protokoll wirklich leeren?')){ CHANGELOG=[]; saveLog(); openChangeLog(); } };
+  }
+
+  /* ---------- Einstellungen (Schreiben) ---------- */
+  const CATS=[
+    {key:'licht',   ic:'💡', bg:'rgba(210,153,34,.95)',  title:'Licht',             sum:'Lichtverhalten und Lampen'},
+    {key:'service', ic:'🔧', bg:'rgba(124,92,236,.95)',   title:'Service-Erinnerung', sum:'Nächsten Service festlegen'},
+    {key:'anzeige', ic:'📱', bg:'rgba(99,120,150,1)',     title:'Anzeige und Start',  sum:'Sprache, Einheit, Helligkeit …'},
+    {key:'schaltung',ic:'⚙️', bg:'rgba(45,170,120,.95)',  title:'Schaltung',          sum:'Automatik-Schaltung'},
+    {key:'fehler',  ic:'⚠️', bg:'rgba(248,81,73,.95)',    title:'Fehler',             sum:'Fehlerspeicher löschen'},
+  ];
+  // Felder, die eigentlich zur Schaltung (eShift) gehören, nicht zur Anzeige
+  const SHIFT_FIELDS=['DU_DefaultStartGear'];
+  const catOfField=(s,f)=>SHIFT_FIELDS.includes(f.name)?'schaltung':s.cat;
+  function fieldsForCat(key){ const out=[]; for(const s of (SPECS||[])) for(const f of (s.fields||[])) if(catOfField(s,f)===key) out.push({s,f}); return out; }
+  // Freundliche Beschreibung je Feld (Titel/Erklärung/Steuerung)
+  const META={
+    LightCapability:       {t:'Licht am Rad',            d:'Ob dein Rad überhaupt ein Licht ansteuern kann. Muss auf „Licht möglich" stehen, damit das Licht funktioniert.', c:'choice'},
+    AutoSwitching:         {t:'Licht automatisch schalten', d:'Wenn „An", kümmert sich das System selbst ums Licht.', c:'choice'},
+    DriverSwitchingAllowed:{t:'Licht von Hand schaltbar', d:'Ob du das Licht selbst am Display ein- und ausschalten darfst.', c:'choice'},
+    LightPowerSupplyLevel: {t:'Licht-Spannung',          d:'Versorgungsspannung für deine Lampen. 6 V für ältere, 12 V für neuere Lampen — muss zu deinen Lampen passen. Falscher Wert: Licht geht nicht oder bleibt dunkel.', c:'choice'},
+    DistanceUnit:          {t:'Einheit',                 d:'Ob Strecken in Kilometern oder Meilen angezeigt werden.', c:'choice'},
+    language:              {t:'Sprache',                 d:'Anzeigesprache des Displays.', c:'choice'},
+    AutoPowerOffTime:      {t:'Automatisch ausschalten', d:'So viele Minuten ohne Nutzung, dann schaltet sich das Display selbst aus.', c:'step', u:'Min', min:0, max:60},
+    AutoSleepTime:         {t:'Standby-Zeit',            d:'So viele Minuten, dann geht das Display in den Ruhezustand.', c:'step', u:'Min', min:0, max:60},
+    DisplayBrightness_Day: {t:'Helligkeit bei Tag',      d:'Wie hell das Display tagsüber leuchtet.', c:'slide', u:'%', min:0, max:100},
+    DisplayBrightness_Night:{t:'Helligkeit bei Nacht',   d:'Wie hell das Display nachts leuchtet.', c:'slide', u:'%', min:0, max:100},
+    DisplayContrast:       {t:'Kontrast',               d:'Kontrast des Displays.', c:'slide', u:'', min:0, max:100},
+    ClockDisplayFormat:    {t:'Uhrzeit-Format',          d:'12- oder 24-Stunden-Anzeige.', c:'choice'},
+    DateDisplayMode:       {t:'Datum-Format',            d:'Reihenfolge von Tag, Monat und Jahr.', c:'choice'},
+    DU_DefaultStartGear:   {t:'Start-Gang',              d:'Mit welchem Gang eine Automatikschaltung nach dem Anhalten startet.', c:'step', u:'', min:1, max:30},
+    year:                  {t:'Jahr',  c:'step', u:'', min:2015, max:2035},
+    month:                 {t:'Monat', c:'step', u:'', min:1, max:12},
+    day:                   {t:'Tag',   c:'step', u:'', min:1, max:31},
+    odometer:              {t:'Service fällig bei',      d:'Bei welchem Kilometerstand die nächste Service-Erinnerung kommt.', c:'step', u:'km', min:0, max:100000, step:100},
+  };
+  const metaOf=(f,label)=>META[f.name]||{t:label||f.name, d:'', c:(f.type==='enum'?'choice':'step'), u:'', min:0, max:255};
+  let SPECS=null, settingsBuilt=false;
+  // Kategorien, die nur erscheinen, wenn das Rad die Werte wirklich liefert
+  const GATED_CATS=['licht','schaltung'];
+  let catAvail={};
+  async function probeAvail(){
+    catAvail={};
+    for(const key of GATED_CATS){
+      catAvail[key]=false; const seen=new Set();
+      for(const {s} of fieldsForCat(key)){ const id=s.t+s.did; if(seen.has(id)) continue; seen.add(id);
+        try{ await api().readFieldRaw(s.t,s.did); catAvail[key]=true; break; }catch(e){} }
+    }
+  }
+  async function loadSpecs(){ if(SPECS)return SPECS; const r=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'spec'})}); const j=await r.json().catch(()=>({})); SPECS=j.specs||[]; return SPECS; }
+  function decodeField(f,raw){ const seg=raw.slice(f.pos,f.pos+(f.len||1)); const c=beInt(seg); if(f.type==='enum'){ const o=(f.options||[]).find(o=>o.v===c); return {coded:c,label:o?o.label:('0x'+c.toString(16))}; } const phys=(c+(f.off||0))*(f.mult||1); return {coded:c,phys,label:String(Math.round(phys*1000)/1000)}; }
+  function renderSettings(){
+    const host=el('settingsList'); host.innerHTML='';
+    const grp=document.createElement('div'); grp.className='group';
+    CATS.forEach(c=>{
+      if(c.key==='fehler'){}
+      else if(c.key==='service'){ if(!(SPECS||[]).some(s=>s.cat==='service')) return; }
+      else if(GATED_CATS.includes(c.key)){ if(!catAvail[c.key]) return; }
+      else if(fieldsForCat(c.key).length===0) return;
+      const row=document.createElement('button'); row.className='row';
+      row.innerHTML='<span class="ico" style="background:'+c.bg+'">'+c.ic+'</span>'
+        +'<span class="t">'+c.title+'<span class="beta-pill">Beta</span><small>'+c.sum+'</small></span><span class="chev">›</span>';
+      row.onclick=()=>openSheet(c); grp.appendChild(row);
+    });
+    host.appendChild(grp);
+  }
+  async function ensureSettings(){
+    if(!readDone()){ el('settingsList').innerHTML='<p class="foot">Bitte zuerst „Verbinden & Auslesen" (Tab „Mein E-Bike").</p>'; settingsBuilt=false; return; }
+    if(settingsBuilt)return; settingsBuilt=true;
+    el('settingsList').innerHTML='<p class="foot">lade …</p>';
+    try{ await loadSpecs(); }catch(e){}
+    try{ await probeAvail(); }catch(e){}
+    renderSettings();
+  }
+
+  /* ---------- Blatt (iPhone-Stil): Frage, Auswahl mit Häkchen, Stepper/Schieber, Erklärung ---------- */
+  function toast(msg,kind){ const t=el('toast'); t.textContent=msg; t.className='toast show'+(kind?' '+kind:''); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),4000); if(kind==='err'||kind==='no') recordError('meldung',msg); }
+
+  /* ---------- Fehler auffangen → Hilfe-Banner + alles ins Support-Paket ---------- */
+  const ERRLOG_KEY='selfbike-errlog';
+  let ERRLOG=(function(){ try{ return JSON.parse(localStorage.getItem(ERRLOG_KEY)||'[]'); }catch(e){ return []; } })();
+  function errSave(){ try{ localStorage.setItem(ERRLOG_KEY, JSON.stringify(ERRLOG.slice(-200))); }catch(e){} }
+  function errLogText(){ const L=['SelfBike · BES2 (Gen2–4) — Fehler-Protokoll','Erstellt: '+new Date().toLocaleString('de-DE'),'']; if(!ERRLOG.length) L.push('Keine Fehler aufgezeichnet.'); else for(const e of ERRLOG) L.push(new Date(e.ts).toLocaleString('de-DE')+'  ['+(e.where||'?')+']  '+e.msg); L.push(''); L.push('Browser: '+(navigator.userAgent||'?')); return L.join('\n'); }
+  function recordError(where,msg){ try{ msg=String(msg==null?'':msg).slice(0,500); if(!msg) return; ERRLOG.push({ts:new Date().toISOString(), where:where||'', msg}); errSave(); showErrBanner(); }catch(e){} }
+  window.recordError=recordError;
+  function showErrBanner(){
+    if(el('errBanner')) return;
+    const b=document.createElement('div'); b.id='errBanner';
+    b.style.cssText='position:fixed;left:12px;right:12px;bottom:72px;z-index:1200;background:var(--self-bg-1,#161b22);border:1px solid var(--self-red,#f85149);border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 8px 30px rgba(0,0,0,.45);color:var(--self-text)';
+    b.innerHTML='<span style="font-size:13px;line-height:1.35">⚠️ Etwas ist schiefgelaufen. Erstelle ein <b>Support-Paket</b> — dann können wir helfen.</span>'
+      +'<span style="display:flex;gap:6px;flex-shrink:0"><button id="errSup" style="background:var(--self-red,#f85149);color:#fff;border:0;border-radius:8px;padding:8px 12px;font:inherit;font-weight:700;cursor:pointer">Support-Paket</button>'
+      +'<button id="errX" aria-label="schließen" style="background:transparent;color:var(--self-text-3,#8a9caa);border:0;font-size:18px;line-height:1;cursor:pointer;padding:0 4px">×</button></span>';
+    document.body.appendChild(b);
+    el('errSup').onclick=()=>{ b.remove(); openSupport(); };
+    el('errX').onclick=()=>b.remove();
+  }
+  window.addEventListener('error',e=>recordError('js',(e&&e.message)||'Fehler'));
+  window.addEventListener('unhandledrejection',e=>recordError('promise',(e&&e.reason&&(e.reason.message||e.reason))||'Fehler'));
+  const closeSheet=()=>el('sheet').classList.remove('open');
+  el('sheetBack').onclick=closeSheet;
+  el('sheet').onclick=e=>{ if(e.target===el('sheet'))closeSheet(); };
+
+  function buildBlock(s,f,m){
+    const wrap=document.createElement('div'); wrap.className='setblock';
+    const q=document.createElement('p'); q.className='q'; q.textContent=m.t; wrap.appendChild(q);
+    const blk={el:wrap,s,f,m};
+    if(m.c==='choice'){
+      const g=document.createElement('div'); g.className='group noico'; wrap.appendChild(g);
+      (f.options||[]).forEach(o=>{
+        const r=document.createElement('button'); r.className='row'; r.dataset.v=o.v;
+        r.innerHTML='<span class="t">'+esc(o.label)+'</span><span class="check">✓</span>';
+        r.onclick=()=>{ g.querySelectorAll('.row').forEach(x=>x.classList.remove('sel')); r.classList.add('sel'); };
+        g.appendChild(r);
+      });
+      blk.get=()=>{ const sel=g.querySelector('.row.sel'); return sel?Number(sel.dataset.v):null; };
+      blk.set=v=>g.querySelectorAll('.row').forEach(x=>x.classList.toggle('sel',Number(x.dataset.v)===Number(v)));
+    } else if(m.c==='slide'){
+      const g=document.createElement('div'); g.className='group';
+      g.innerHTML='<div class="slider"><div class="top"><span>'+esc(m.t)+'</span><span class="val">—</span></div>'
+        +'<input type="range" min="'+(m.min||0)+'" max="'+(m.max||100)+'" step="'+(m.step||1)+'">'
+        +'<div class="ends"><span>'+(m.min||0)+(m.u?' '+m.u:'')+'</span><span>'+(m.max||100)+(m.u?' '+m.u:'')+'</span></div></div>';
+      wrap.appendChild(g); const inp=g.querySelector('input'), val=g.querySelector('.val');
+      inp.oninput=()=>val.textContent=inp.value+(m.u?' '+m.u:'');
+      blk.get=()=>Number(inp.value); blk.set=v=>{ inp.value=v; val.textContent=v+(m.u?' '+m.u:''); };
+    } else {
+      const g=document.createElement('div'); g.className='group';
+      g.innerHTML='<div class="steprow"><span class="t">'+esc(m.t)+'</span><div class="stepper">'
+        +'<button type="button" class="dn">−</button><input class="numin" type="number" min="'+(m.min||0)+'" max="'+(m.max!=null?m.max:99999)+'" step="'+(m.step||1)+'">'
+        +'<button type="button" class="up">+</button></div><span class="u">'+(m.u||'')+'</span></div>';
+      wrap.appendChild(g); const inp=g.querySelector('input');
+      g.querySelector('.dn').onclick=()=>inp.value=Math.max(m.min||0,(Number(inp.value)||0)-(m.step||1));
+      g.querySelector('.up').onclick=()=>inp.value=Math.min(m.max!=null?m.max:99999,(Number(inp.value)||0)+(m.step||1));
+      blk.get=()=>Number(inp.value); blk.set=v=>inp.value=v;
+    }
+    if(m.d){ const d=document.createElement('p'); d.className='desc'; d.textContent=m.d; wrap.appendChild(d); }
+    const cur=document.createElement('p'); cur.className='desc'; cur.style.margin='8px 4px 0'; cur.innerHTML='aktuell: <b></b>';
+    wrap.appendChild(cur); blk.curEl=cur.querySelector('b');
+    return blk;
+  }
+  async function loadBlock(blk){
+    try{
+      const raw=Uint8Array.from(await api().readFieldRaw(blk.s.t,blk.s.did));
+      const cur=decodeField(blk.f,raw); blk.cur=cur;
+      if(blk.f.type==='enum'){ blk.set(cur.coded); blk.curEl.textContent=cur.label; }
+      else { blk.set(cur.phys); blk.curEl.textContent=cur.label+(blk.m.u?' '+blk.m.u:''); }
+      blk.ok=true;
+    }catch(e){ blk.ok=false; blk.el.style.display='none'; } // Feld gibt's auf diesem Bedienteil nicht → ausblenden
+  }
+  // Motor-Generation aus der Motornummer (BDU2xx=Gen2, BDU3xx=Gen3, BDU4xx=Gen4)
+  function motorGen(){ const m=(str('M','5b7c')||'').toUpperCase(); const mm=m.match(/BDU\s*([2-4])/); return mm?Number(mm[1]):null; }
+  // Baujahr des Antriebs aus dem Produktions-/Erstregistrierungs-Eintrag der Motor-Historie (odo===0)
+  function motorYear(){ const rc=(M().M&&M().M.rc)||[]; for(const r of rc){ const d=r&&r.dec; if(d&&!d.empty&&d.parts&&d.parts.length>=4){ const o=d.parts[3].num, y=d.parts[0].num; if(o===0&&y>2000&&y<2100) return y; } } return null; }
+  // Licht-Spannung 6V/12V gibt es laut Bosch nur bei Gen2; Gen3/4 sind fest 12 V.
+  function applyLightGen(blocks){
+    const blk=blocks.find(b=>b.f&&b.f.name==='LightPowerSupplyLevel'); if(!blk||blk.ok===false) return;
+    const gen=motorGen();
+    const info=document.createElement('p'); info.className='desc'; info.style.cssText='margin:6px 4px 0';
+    if(gen&&gen>=3){
+      const g=blk.el.querySelector('.group'); if(g) g.style.display='none';
+      blk.ok=false; // nicht mitschreiben
+      info.innerHTML='🔒 Bei deiner Motor-Generation (BDU'+gen+'xx, Gen'+gen+') ist die Licht-Spannung <b>fest 12 V</b> und lässt sich nicht umstellen. Nur Gen2-Motoren (BDU2xx) haben überhaupt 6 V / 12 V zur Wahl.';
+    } else {
+      const yr=(gen===2)?motorYear():null;
+      if(gen===2&&yr&&yr<2017){
+        info.innerHTML='ℹ️ Dein Antrieb ist von <b>'+yr+'</b>. Gen2-Antriebe vor ~2017 sind meist fest <b>6 V</b>. Stell 12 V nur um, wenn du sicher weißt, dass dein Antrieb das kann — sonst bleibt das Licht dunkel.';
+      } else if(gen===2&&yr){
+        info.innerHTML='ℹ️ Dein Antrieb ist von <b>'+yr+'</b> — ab ~2017 können die meisten Gen2-Antriebe <b>6 V oder 12 V</b>. Wähle die Spannung, die zu deinen Lampen passt.';
+      } else {
+        info.innerHTML='ℹ️ 6 V / 12 V gibt es nur bei Gen2-Antrieben, und ob beides geht, hängt vom Baujahr ab (vor ~2017 meist nur 6 V). Stell den Wert nur um, wenn du die Spannung deiner Lampen kennst — falsch bleibt das Licht dunkel.';
+      }
+    }
+    blk.el.appendChild(info);
+  }
+  async function openSheet(c){
+    el('sheetTitle').textContent=c.title; el('sheet').classList.add('open');
+    const body=el('sheetBody');
+    if(c.key==='fehler'){ renderFehler(body); return; }
+    if(c.key==='service'){ renderService(body); return; }
+    body.innerHTML='<p class="desc" style="text-align:center">Werte werden gelesen …</p>';
+    const items=fieldsForCat(c.key), blocks=[], frag=document.createDocumentFragment();
+    for(const {s,f} of items){ const blk=buildBlock(s,f,metaOf(f,s.label)); frag.appendChild(blk.el); blocks.push(blk); }
+    body.innerHTML=''; body.appendChild(frag);
+    for(const blk of blocks){ await loadBlock(blk); } // streng nacheinander
+    if(c.key==='licht') applyLightGen(blocks);
+    if(!blocks.some(b=>b.ok!==false)){ body.innerHTML='<p class="desc" style="text-align:center">Für dieses Rad gibt es hier nichts einzustellen.</p>'; return; }
+    const btn=document.createElement('button'); btn.className='btn-big'; btn.textContent='Ins Rad speichern';
+    const res=document.createElement('p'); res.className='desc'; res.style.textAlign='center';
+    btn.onclick=()=>saveBlocks(blocks,btn,res); body.appendChild(btn); body.appendChild(res);
+  }
+  async function saveBlocks(blocks,btn,res){
+    if(!confirm('Änderungen ins Rad schreiben?\nDie Originalwerte werden gesichert. Nur am eigenen Rad.')) return;
+    btn.disabled=true; res.textContent='schreibe …'; let done=0; const errs=[];
+    for(const blk of blocks){
+      if(blk.ok===false) continue;
+      const want=blk.get(); if(want==null||Number.isNaN(want)) continue;
+      const cur=blk.f.type==='enum'?(blk.cur&&blk.cur.coded):(blk.cur&&blk.cur.phys);
+      if(cur!=null && Number(cur)===Number(want)) continue;
+      try{
+        const enc=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'encode',t:blk.s.t,did:blk.s.did,field:blk.f.name,value:want})}).then(r=>r.json());
+        if(enc.error) throw new Error(enc.error);
+        const vonL=blk.f.type==='enum'?((blk.cur&&blk.cur.label)||'—'):(((blk.cur&&blk.cur.label)||'—')+(blk.m.u?' '+blk.m.u:''));
+        let nachL; if(blk.f.type==='enum'){ const o=(blk.f.options||[]).find(o=>Number(o.v)===Number(want)); nachL=o?o.label:String(want); } else { nachL=String(want)+(blk.m.u?' '+blk.m.u:''); }
+        await api().writeField(blk.s.t,blk.s.did,enc.pos,enc.bytes); done++; logChange(SYSNAME[blk.s.t]||blk.s.t, blk.m.t, vonL, nachL); await loadBlock(blk);
+      }catch(e){ errs.push(blk.m.t+': '+e.message); }
+    }
+    btn.disabled=false; res.textContent='';
+    if(errs.length) toast('Fehler: '+errs[0],'err');
+    else if(done) toast('Gespeichert ✓ ('+done+' geändert)','ok');
+    else toast('Nichts geändert.');
+  }
+  async function renderService(body){
+    body.innerHTML='<p class="desc">Das Display erinnert dich, wenn der Service fällig ist.</p><p class="desc" style="text-align:center">lese …</p>';
+    const spec=(SPECS||[]).find(s=>s.t==='M'&&s.did==='024d');
+    let cy=0,cm=0,cd=0,codo=0;
+    try{ const raw=Uint8Array.from(await api().readFieldRaw('M','024d'));
+      (spec?spec.fields:[]).forEach(f=>{ const d=decodeField(f,raw); const v=(f.type==='enum'?d.coded:d.phys);
+        if(f.name==='year')cy=v; else if(f.name==='month')cm=v; else if(f.name==='day')cd=v; else if(f.name==='odometer')codo=v; }); }catch(e){}
+    const motorKm=num('M','0167');
+    const fullY=cy>0?(cy<100?cy+2000:cy):0;
+    const curKmTxt=codo>0?nf(codo,1)+' km':null;
+    const curDateTxt=(cy&&cm&&cd)?(String(cd).padStart(2,'0')+'.'+String(cm).padStart(2,'0')+'.'+fullY):null;
+    const jetzt=[curKmTxt?('bei '+curKmTxt):null, curDateTxt?('am '+curDateTxt):null].filter(Boolean).join(' · ')||'nicht eingestellt';
+
+    body.innerHTML='';
+    const intro=document.createElement('p'); intro.className='desc'; intro.textContent='Das Display erinnert dich, wenn der Service fällig ist.'; body.appendChild(intro);
+    const g0=document.createElement('div'); g0.className='group noico'; g0.innerHTML='<div class="inrow"><span class="t">Jetzt eingestellt</span><span class="t" style="flex:0 0 auto;color:var(--self-text-2)">'+esc(jetzt)+'</span></div>'; body.appendChild(g0);
+    const lab=document.createElement('div'); lab.className='gh'; lab.textContent='Neue Erinnerung'; body.appendChild(lab);
+    const g=document.createElement('div'); g.className='group noico';
+    g.innerHTML='<label class="swrow"><span class="t">Nach Kilometern</span><input type="checkbox" class="sw" id="svcKmOn"></label>'
+      +'<div class="inrow"><span class="t">In wie vielen km'+(motorKm!=null?'<small>→ aktuell '+nf(motorKm,0)+' km Motor-km</small>':'')+'</span><input class="numin" type="number" id="svcKm" min="0" max="100000" step="100" value="1500"></div>'
+      +'<label class="swrow"><span class="t">An einem Datum</span><input type="checkbox" class="sw" id="svcDateOn"></label>'
+      +'<div class="inrow"><span class="t">Datum</span><input class="numin" type="date" id="svcDate"></div>';
+    body.appendChild(g);
+    el('svcKmOn').checked=curKmTxt!=null; el('svcDateOn').checked=curDateTxt!=null;
+    if(curDateTxt) el('svcDate').value=fullY+'-'+String(cm).padStart(2,'0')+'-'+String(cd).padStart(2,'0');
+    const save=document.createElement('button'); save.className='btn-big'; save.textContent='Ins Rad speichern';
+    const del=document.createElement('button'); del.className='btn-text'; del.textContent='Erinnerung löschen'; del.style.color='var(--self-red)';
+    const res=document.createElement('p'); res.className='desc'; res.style.textAlign='center';
+    body.appendChild(save); body.appendChild(del); body.appendChild(res);
+    async function wf(field,value){ const enc=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'encode',t:'M',did:'024d',field,value})}).then(r=>r.json()); if(enc.error)throw new Error(field+': '+enc.error); await api().writeField('M','024d',enc.pos,enc.bytes); }
+    save.onclick=async()=>{
+      if(!confirm('Service-Erinnerung ins Rad schreiben? Nur am eigenen Rad.'))return;
+      save.disabled=true; res.textContent='schreibe …';
+      try{
+        if(el('svcKmOn').checked){ const iv=Number(el('svcKm').value)||0; await wf('odometer',(motorKm||0)+iv); } else await wf('odometer',0);
+        if(el('svcDateOn').checked && el('svcDate').value){ const d=new Date(el('svcDate').value); await wf('year',d.getFullYear()-2000); await wf('month',d.getMonth()+1); await wf('day',d.getDate()); }
+        else { await wf('year',0); await wf('month',0); await wf('day',0); }
+        const neu=[el('svcKmOn').checked?('bei '+nf((motorKm||0)+(Number(el('svcKm').value)||0),0)+' km'):null,(el('svcDateOn').checked&&el('svcDate').value)?('am '+new Date(el('svcDate').value).toLocaleDateString('de-DE')):null].filter(Boolean).join(' · ')||'nicht eingestellt';
+        logChange('Motor','Service-Erinnerung',jetzt,neu);
+        toast('Service-Erinnerung gespeichert ✓','ok'); renderService(body);
+      }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ save.disabled=false; }
+    };
+    del.onclick=async()=>{
+      if(!confirm('Service-Erinnerung löschen?'))return; del.disabled=true; res.textContent='lösche …';
+      try{ await wf('odometer',0); await wf('year',0); await wf('month',0); await wf('day',0); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); toast('Erinnerung gelöscht ✓','ok'); renderService(body); }
+      catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ del.disabled=false; }
+    };
+  }
+  const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS'],D:['HMI']}, ECUNAME={M:'Motor',A:'Akku',D:'Display'};
+  function faultText(tk,code){ const F=window.BES2_FAULTS||{}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
+  async function renderFehler(body){
+    body.innerHTML='<p class="desc" style="text-align:center">Fehlerspeicher wird gelesen …</p>';
+    let dtc={};
+    try{ dtc=await api().readDTC(); }catch(e){ body.innerHTML='<p class="desc">Fehlerspeicher nicht lesbar: '+esc(e.message)+'</p>'; }
+    body.innerHTML='';
+    const intro=document.createElement('p'); intro.className='desc'; intro.textContent='Gespeicherte Fehler aus Motor, Akku und Display, in Klartext. Tippe „Was tun?" für Hinweise.'; body.appendChild(intro);
+    let total=0;
+    ['M','A','D'].forEach(tk=>{
+      const list=dtc[tk];
+      const gh=document.createElement('div'); gh.className='gh'; gh.textContent=ECUNAME[tk]; body.appendChild(gh);
+      const grp=document.createElement('div'); grp.className='group noico'; body.appendChild(grp);
+      if(!list || list.error){ grp.innerHTML='<div class="fault"><span>'+(list&&list.error?'nicht lesbar ('+esc(list.error)+')':'—')+'</span></div>'; return; }
+      if(!list.length){ grp.innerHTML='<div class="fault"><b style="color:var(--self-green)">✓ Keine Fehler gespeichert</b></div>'; return; }
+      list.forEach(d=>{ total++;
+        const info=faultText(tk,d.code); const active=(d.status&0x01)||(d.status&0x08);
+        const div=document.createElement('div'); div.className='fault';
+        div.innerHTML='<b><i class="sevtag'+(active?' sev-ERROR':'')+'">'+(active?'aktiv':'gespeichert')+'</i>Fehler '+d.code+'</b>'
+          +'<span>'+esc(info&&info.d?info.d:'Keine Beschreibung in der Bosch-Datenbank.')+'</span>'
+          +(info&&info.a?'<details><summary>Was tun?</summary><span>'+esc(info.a)+'</span></details>':'');
+        grp.appendChild(div);
+      });
+    });
+    const warn=document.createElement('p'); warn.className='desc'; warn.style.cssText='margin:16px 4px 0';
+    warn.innerHTML='ℹ️ Löscht nur <b>gespeicherte, behebbare</b> Einträge — genau wie das Bosch-Diagnosetool. Ein Fehler, dessen Ursache noch besteht, wird sofort wieder eingetragen. Richtig weg ist er erst, wenn die Ursache behoben ist.';
+    body.appendChild(warn);
+    const btn=document.createElement('button'); btn.className='btn-big'; btn.style.cssText='background:var(--self-red);margin-top:18px'; btn.textContent='Fehlerspeicher löschen';
+    const res=document.createElement('p'); res.className='desc'; res.style.textAlign='center';
+    btn.onclick=async()=>{ if(!confirm('Fehlerspeicher wirklich löschen?\nGespeicherte Fehler gehen verloren, aktive erscheinen wieder. Nur am eigenen Rad.'))return; btn.disabled=true; res.textContent='lösche …'; try{ await api().clearFaults(); logChange('—','Fehlerspeicher','','gelöscht'); toast('Fehlerspeicher gelöscht ✓','ok'); renderFehler(body); }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ btn.disabled=false; } };
+    body.appendChild(btn); body.appendChild(res);
+  }
+
+  /* ---------- Demo (ohne Rad) ---------- */
+  function P(n){ return {dec:{parts:[{num:n,val:String(n)}]}}; }
+  function S(s){ return {dec:{parts:[{val:s}]}}; }
+  function DEMO(){ return { __demo:true,
+    M:{dids:{'0510':null,'0167':P(2140),'0181':S('Cube Stereo Hybrid 160'),'0180':S('CBX-2021-0815'),'014a':S('••••••••'),'0143':P(25),'0210':P(27.4),'0272':P(0),'5b7c':S('BDU450CX'),'022a':P(16800000),'0226':P(8200000),'0227':P(2100000),'0228':P(650000),'0247':P(120000),'0229':P(4300000)}, rc:[]},
+    A:{dids:{'0510':P(81),'0413':P(36.2),'0433':P(24),'02a0':P(597),'0312':P(120),'0313':P(8),'07a1':P(3.78),'0610':P(3.81),'5b7c':S('PowerPack 400')}, rc:[]},
+    D:{dids:{'5b7c':S('Nyon')}, rc:[]} }; }
+
+  showTab('home');
+  initI18n();
+  if(new URLSearchParams(location.search).has('demo')) el('demoStart').onclick();
+})();
+</script>
+</body>
+</html>

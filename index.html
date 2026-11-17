@@ -1,288 +1,171 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Oy6g4OXIaQDph08Ijtpw/Me0412xgrYN66qoRS542h4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SelfBike</title>
 <link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
 <link rel="apple-touch-icon" href="brand/favicon-192.png">
 <link rel="stylesheet" href="brand/tokens.css">
 <style>
-  /* SelfBike – einfache Ansicht im iPhone-Stil. Farben nur aus brand/tokens.css */
-  * { box-sizing: border-box; }
-  html, body { margin: 0; background: var(--self-bg-0); color: var(--self-text); }
-  body { font: 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
-         -webkit-font-smoothing: antialiased; }
-  button, input, select { font: inherit; color: inherit; }
-  .hidden { display: none !important; }
-  .wrap { max-width: 560px; margin: 0 auto; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--self-bg-0);color:var(--self-text);
+  font-family:var(--self-font-sans);-webkit-font-smoothing:antialiased;
+  min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
 
-  header.big { display: flex; align-items: center; gap: 12px; padding: calc(14px + env(safe-area-inset-top)) 2px 12px; }
-  .hlogo { width: 40px; height: 40px; flex: none; }
-  .htext { flex: 1; min-width: 0; }
-  .htext h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .hright { display: flex; align-items: center; gap: 8px; flex: none; font-size: 13px; color: var(--self-text-3); }
-  .hright .langsel { margin-left: 4px; }
-  @media (max-width: 380px) { .hright #connText { display: none; } }
-  .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; display: inline-block; }
-  .conn.on { color: var(--self-green); } .conn.busy { color: var(--self-yellow); }
-  .langsel { margin-left: auto; background: var(--self-bg-2); color: var(--self-text); border: 1px solid var(--self-line-strong);
-             border-radius: 9px; padding: 5px 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  .langsel option { background: var(--self-bg-2); color: var(--self-text); }
-  .foothelp { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 34px 0 0; padding-top: 14px;
-              border-top: 1px solid var(--self-line); font-size: 14px; }
-  .foothelp a, .foothelp button { color: var(--self-teal-bright); background: none; border: 0; padding: 4px 0; cursor: pointer; text-decoration: none; }
-  .badge { font-size: 11px; font-weight: 600; color: var(--self-yellow); border: 1px solid currentColor; border-radius: 6px; padding: 1px 6px; }
-  h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin: 0; line-height: 1.2; }
-  .kofihint { margin: 8px 0 0; font-size: 12px; color: var(--self-text-2); }
-  .kofihint:empty { display: none; }
-  .foothelp .kofihint { flex-basis: 100%; margin: 0; text-align: center; }
-  .foothelp .kofihint a { padding: 0; }
-  .sub { color: var(--self-text-2); margin: 1px 0 0; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app{width:100%;max-width:470px;background:var(--self-bg-1);
+  border:1px solid var(--self-line);border-radius:22px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.55)}
 
-  /* Kacheln */
-  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
-  .tile { background: var(--self-bg-2); border-radius: 16px; padding: 14px; border: 1px solid var(--self-line); }
-  .tile.wide { grid-column: 1 / -1; }
-  .tile .k { font-size: 13px; color: var(--self-text-2); }
-  .tile .n { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
-  .tile .n small { font-size: 16px; font-weight: 600; color: var(--self-text-2); margin-left: 3px; }
-  .tile .c { font-size: 13px; color: var(--self-text-2); margin-top: 4px; }
-  .meter { height: 8px; border-radius: 4px; background: var(--self-bg-3); margin-top: 8px; overflow: hidden; }
-  .meter i { display: block; height: 100%; border-radius: 4px; background: var(--self-green); }
-  .good { color: var(--self-green); } .warn { color: var(--self-yellow); } .bad { color: var(--self-red); }
+/* Kopf */
+.top{display:flex;align-items:center;gap:11px;padding:16px 16px 14px;border-bottom:1px solid var(--self-line)}
+.top img{width:30px;height:30px;border-radius:9px;flex:none}
+.wm{font-family:var(--self-font-wordmark);font-weight:800;font-size:18px;letter-spacing:.01em;line-height:1}
+.wm .a{color:var(--self-ice)}.wm .b{color:var(--self-teal)}
+.sp{flex:1}
+.langsel{background:var(--self-bg-2);color:var(--self-text);border:1px solid var(--self-line-strong);
+  border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.langsel option{background:var(--self-bg-2);color:var(--self-text)}
 
-  /* Gruppierte Listen wie in den iPhone-Einstellungen */
-  .gh { font-size: 13px; color: var(--self-text-2); margin: 22px 16px 6px; text-transform: none; }
-  .group { background: var(--self-bg-2); border-radius: 14px; overflow: hidden; border: 1px solid var(--self-line); }
-  .row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 50px; padding: 10px 14px; background: none;
-         border: 0; text-align: left; cursor: pointer; position: relative; color: var(--self-text); text-decoration: none; }
-  .row + .row::before { content: ""; position: absolute; top: 0; left: 52px; right: 0; border-top: 1px solid var(--self-line); }
-  .row.noico + .row::before, .group.noico .row + .row::before { left: 14px; }
-  .row:active { background: var(--self-bg-3); }
-  .row .ico { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; flex: none; background: var(--self-teal); color: #fff; }
-  .row .ico svg { width: 17px; height: 17px; }
-  .row .t { flex: 1; min-width: 0; }
-  .row .t small { display: block; font-size: 13px; color: var(--self-text-2); }
-  .row .v { color: var(--self-text-2); font-size: 15px; text-align: right; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .row .chev { color: var(--self-text-3); font-size: 22px; line-height: 1; margin-left: -4px; }
-  .row.danger { color: var(--self-red); justify-content: center; }
-  .row.static { cursor: default; } .row.static:active { background: none; }
-  .row select { background: transparent; border: 0; color: var(--self-text-2); text-align: right; max-width: 60%; padding: 4px 0; }
-  .row select option { background: var(--self-bg-2); color: var(--self-text); }
-  .row .check { color: var(--self-teal-bright); font-size: 20px; visibility: hidden; }
-  .row.sel .check { visibility: visible; }
-  .foot { font-size: 13px; color: var(--self-text-2); margin: 6px 16px 0; }
-  .explain { font-size: 16px; color: var(--self-text-2); margin: 4px 4px 0; }
+/* Intro */
+.intro{padding:18px 18px 8px}
+.intro h1{font-size:21px;margin:0 0 5px;letter-spacing:-.01em}
+.intro p{color:var(--self-text-2);font-size:13.5px;line-height:1.5;margin:0}
 
-  /* Schalter */
-  input.sw { appearance: none; width: 51px; height: 31px; border-radius: 16px; background: var(--self-bg-3); position: relative;
-             flex: none; cursor: pointer; transition: background .2s; border: 1px solid var(--self-line-strong); }
-  input.sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 25px; height: 25px; border-radius: 50%; background: #fff; transition: left .2s; }
-  input.sw:checked { background: var(--self-green); border-color: transparent; }
-  input.sw:checked::after { left: 22px; }
-  input.sw:disabled { opacity: .4; cursor: default; }
+/* Auswahl – symmetrisch */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 6px;align-items:stretch}
+.card{background:var(--self-bg-2);border:1px solid var(--self-line);border-radius:var(--self-radius);
+  padding:15px 14px;display:flex;flex-direction:column}
+.ch{display:flex;align-items:center;gap:11px;min-height:46px;margin-bottom:12px}
+.ic{width:44px;height:44px;flex:none;border-radius:12px;background:var(--self-bg-3);
+  display:grid;place-items:center;font-size:22px;border:1px solid var(--self-line)}
+.tt h3{margin:0;font-size:15px;line-height:1.15;letter-spacing:-.01em}
+.tt .k{font-family:var(--self-font-mono);font-size:10.5px;color:var(--self-teal);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
 
-  /* Zahlen und Schieberegler */
-  .stepper { display: flex; align-items: center; gap: 6px; }
-  .stepper button { width: 34px; height: 34px; border-radius: 10px; border: 0; background: var(--self-bg-3); font-size: 20px; cursor: pointer; }
-  .stepper input, .numin { width: 74px; text-align: center; background: var(--self-bg-3); border: 0; border-radius: 10px; padding: 7px 4px; }
-  input[type=date].numin { width: auto; padding: 7px 10px; }
-  .slider { padding: 12px 14px; }
-  .slider .top { display: flex; justify-content: space-between; align-items: baseline; }
-  .slider .val { font-weight: 700; font-size: 20px; color: var(--self-teal-bright); }
-  .slider input[type=range] { width: 100%; accent-color: var(--self-teal); margin: 10px 0 2px; }
-  .slider .hint { font-size: 13px; color: var(--self-text-2); }
-  .slider .ends { display: flex; justify-content: space-between; font-size: 12px; color: var(--self-text-3); }
+.feat{list-style:none;padding:0;margin:0 0 14px;flex:1;display:flex;flex-direction:column;gap:9px}
+.feat li{font-size:12px;color:var(--self-text-2);line-height:1.35;display:grid;grid-template-columns:16px 1fr;gap:7px;align-items:start;min-height:17px}
+.feat li::before{content:"✓";color:var(--self-teal);font-weight:800;font-size:12px;line-height:1.35}
 
-  /* Knöpfe */
-  .btn-big { display: block; width: 100%; margin-top: 22px; padding: 15px; border: 0; border-radius: 14px; background: var(--self-teal);
-             color: #fff; font-size: 17px; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; }
-  .btn-big:disabled { opacity: .4; cursor: default; }
-  .btn-big.plain { background: var(--self-bg-2); color: var(--self-teal-bright); border: 1px solid var(--self-line); }
-  .btn-text { display: block; margin: 14px auto 0; background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 15px; }
-  .btn-text.red { color: var(--self-red); }
-  .gen-hint { display: block; margin: 22px 0 0; padding: 12px 14px; border: 1px solid color-mix(in oklab, var(--self-yellow) 55%, transparent); border-radius: 12px; background: color-mix(in oklab, var(--self-yellow) 14%, transparent); font-size: 14px; color: var(--self-text); text-decoration: none; }
-  .gen-hint b { display: block; color: var(--self-yellow); margin-bottom: 2px; }
-  .gen-hint:hover b, .gen-hint:focus-visible b { text-decoration: underline; }
+.acts{margin-top:auto;display:flex;flex-direction:column;gap:8px}
+.btn{display:block;width:100%;text-align:center;border:0;border-radius:var(--self-radius);
+  padding:11px;font-size:14px;font-weight:700;font-family:var(--self-font-sans);cursor:pointer;text-decoration:none;
+  transition:filter var(--self-dur-fast),border-color var(--self-dur-fast),color var(--self-dur-fast)}
+.btn-primary{background:linear-gradient(120deg,var(--self-teal),var(--self-teal-deep));color:#041310}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-ghost{background:transparent;color:var(--self-text-2);border:1px solid var(--self-line-strong)}
+.btn-ghost:hover{border-color:var(--self-teal);color:var(--self-text)}
 
-  .card { background: var(--self-bg-2); border: 1px solid var(--self-line); border-radius: 18px; padding: 22px 18px; margin-top: 10px; text-align: center; }
-  .card .logo { width: 64px; height: 64px; margin: 0 auto 8px; display: block; }
-  .card h2 { margin: 6px 0; font-size: 22px; }
-  .card p { color: var(--self-text-2); margin: 6px 0; }
-  .alert { background: color-mix(in oklab, var(--self-yellow) 14%, transparent); color: var(--self-text); border-radius: 12px; padding: 10px 12px; margin-top: 10px; font-size: 14px; }
+/* Fuß */
+.foot{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;
+  padding:16px 18px 20px;margin-top:8px;border-top:1px solid var(--self-line)}
+.foot .ver{font-family:var(--self-font-mono);font-size:11px;color:var(--self-text-3)}
+.foot a{font-size:12px;color:var(--self-text-2);text-decoration:none;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.foot a.kofi{color:var(--self-teal)}
+.foot a:hover{color:var(--self-text)}
 
-  /* Tab-Leiste unten */
-  nav.tabbar { position: fixed; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 0;
-               background: color-mix(in oklab, var(--self-bg-1) 88%, transparent); backdrop-filter: blur(18px);
-               border-top: 1px solid var(--self-line); padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); z-index: 5; }
-  nav.tabbar button { flex: 1; max-width: 160px; background: none; border: 0; color: var(--self-text-3); font-size: 11px; cursor: pointer; padding: 4px 0; }
-  nav.tabbar svg { display: block; margin: 0 auto 2px; width: 26px; height: 26px; }
-  nav.tabbar button.on { color: var(--self-teal-bright); }
+/* Rechtshinweis-Fenster */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal.open{display:flex}
+.box{width:100%;max-width:450px;max-height:88vh;display:flex;flex-direction:column;
+  background:var(--self-bg-1);border:1px solid var(--self-line-strong);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.mhead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--self-line)}
+.mhead b{font-size:15px}
+.mhead button{background:none;border:0;color:var(--self-text-2);font-size:20px;line-height:1;cursor:pointer;padding:0 2px}
+.mbody{overflow-y:auto;padding:16px 18px calc(18px + env(safe-area-inset-bottom))}
+.mbody h3{font-size:17px;margin:0 0 6px;letter-spacing:-.01em}
+.mbody h4{font-size:13.5px;margin:15px 0 2px;color:var(--self-text)}
+.mbody p{font-size:13px;color:var(--self-text-2);line-height:1.5;margin:0 0 4px}
+.mbody a{color:var(--self-teal);text-decoration:none}
+.lbl{display:flex;align-items:center;gap:11px;margin:18px 0 12px;font-size:13.5px;color:var(--self-text)}
+.lbl input{width:20px;height:20px;flex:none;accent-color:var(--self-teal)}
+.maccept{display:block;width:100%;padding:12px;border:0;border-radius:var(--self-radius);font-weight:700;font-size:14px;cursor:pointer;
+  font-family:var(--self-font-sans);background:linear-gradient(120deg,var(--self-teal),var(--self-teal-deep));color:#041310}
+.maccept:disabled{opacity:.45;cursor:default}
 
-  /* Blätter (von unten) */
-  .sheet { position: fixed; inset: 0; z-index: 10; display: none; background: rgba(0,0,0,.45); }
-  .sheet.open { display: flex; align-items: flex-end; justify-content: center; }
-  .panel { width: 100%; max-width: 560px; max-height: 94vh; background: var(--self-bg-0); border-radius: 18px 18px 0 0; display: flex; flex-direction: column;
-           animation: up .25s ease-out; }
-  @keyframes up { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
-  .phead { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--self-line); }
-  .phead h2 { margin: 0; font-size: 17px; font-weight: 600; text-align: center; }
-  .phead button { background: none; border: 0; color: var(--self-teal-bright); cursor: pointer; font-size: 16px; justify-self: start; padding: 4px 0; }
-  .phead button.r { justify-self: end; font-weight: 600; }
-  .pbody { overflow-y: auto; padding: 14px 16px calc(24px + env(safe-area-inset-bottom)); }
-
-  /* Vorher → nachher */
-  .chg { display: grid; grid-template-columns: 1fr; gap: 2px; }
-  .chg .b { color: var(--self-text-3); text-decoration: line-through; font-size: 14px; }
-  .chg .a { color: var(--self-teal-bright); font-weight: 600; }
-
-  /* Fortschrittskreis */
-  .ring { position: relative; width: 132px; height: 132px; margin: 14px auto 10px; }
-  .ring svg { transform: rotate(-90deg); }
-  .ring .pct { position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; font-weight: 700; }
-  .status { text-align: center; font-size: 16px; margin: 6px 8px 0; }
-  .status.ok { color: var(--self-green); } .status.err { color: var(--self-red); } .status.warn { color: var(--self-yellow); }
-  pre.log { font: 12px/1.5 ui-monospace, monospace; color: var(--self-text-2); white-space: pre-wrap; max-height: 200px; overflow: auto; margin: 8px 0 0; }
-  details summary { cursor: pointer; color: var(--self-text-2); font-size: 14px; margin-top: 16px; }
-
-  /* Meldungen unten */
-  .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 20;
-           max-width: min(520px, calc(100% - 32px)); background: var(--self-bg-3); border: 1px solid var(--self-line-strong);
-           border-radius: 14px; padding: 12px 16px; font-size: 15px; box-shadow: 0 12px 30px rgba(0,0,0,.35); display: none; }
-  .toast.show { display: block; }
-  .toast.ok { border-color: var(--self-green); } .toast.warn { border-color: var(--self-yellow); } .toast.err { border-color: var(--self-red); }
-
-  .fault { padding: 12px 14px; } .fault + .fault { border-top: 1px solid var(--self-line); }
-  .fault b { display: block; }
-  .sevtag { display: inline-block; font-style: normal; font-size: 12px; font-weight: 600; text-transform: capitalize; padding: 1px 8px; margin-right: 8px; border-radius: 99px; vertical-align: 2px; color: #fff; background: #3b4a5a; }
-  .sev-CRITICAL_ERROR { background: #d32f2f; } .sev-ERROR { background: #ef7d1a; } .sev-WARNING { background: #f2c230; color: #1d1a00; } .sev-INFO { background: #2e9d5b; } .fault span { display: block; color: var(--self-text-2); font-size: 14px; white-space: pre-line; }
-  .kvv { color: var(--self-text-2); text-align: right; font-size: 15px; }
-  .disc-body h3 { font-size: 16px; margin: 16px 0 4px; } .disc-body p { color: var(--self-text-2); margin: 0; font-size: 15px; }
+@media(max-width:400px){.grid{grid-template-columns:1fr}.ch{min-height:0}}
 </style>
 </head>
 <body>
+<div class="app">
+  <div class="top">
+    <img src="brand/favicon-64.png" alt="">
+    <span class="wm"><span class="a">Self</span><span class="b">Bike</span></span>
+    <span class="sp"></span>
+    <select id="lang" class="langsel" aria-label="Sprache / Language"></select>
+  </div>
 
-<div class="wrap">
-  <!-- Kopfleiste: links Logo + Name, rechts Status und Sprache -->
-  <header class="big">
-    <img class="hlogo" src="brand/favicon-64.png" alt="SelfBike">
-    <div class="htext"><h1 id="pageTitle"></h1><p class="sub" id="pageSub"></p></div>
-    <div class="hright">
-      <span class="conn" id="conn"><span class="dot"></span> <span id="connText"></span></span>
-      <span class="badge hidden" id="demoBadge" data-i18n="demo.badge"></span>
-      <select id="topLang" class="langsel" aria-label="Sprache / Language" title="Sprache / Language"></select>
+  <div class="intro">
+    <h1 id="t-title"></h1>
+    <p id="t-intro"></p>
+  </div>
+
+  <div class="grid">
+    <!-- BES2 -->
+    <div class="card">
+      <div class="ch">
+        <div class="ic">🔧</div>
+        <div class="tt"><h3>Kiox · Nyon · Intuvia</h3><div class="k" id="t-bes2k"></div></div>
+      </div>
+      <ul class="feat">
+        <li id="t-bes2f1"></li><li id="t-bes2f2"></li><li id="t-bes2f3"></li><li id="t-bes2f4"></li>
+      </ul>
+      <div class="acts">
+        <a class="btn btn-primary go" href="gen2-gen4.html" id="t-open1"></a>
+        <a class="btn btn-ghost go" href="gen2-gen4.html?demo=1" id="t-demo1"></a>
+      </div>
     </div>
-  </header>
 
-  <!-- Start / Übersicht -->
-  <section id="tab-home">
-    <div class="card" id="connectCard">
-      <img class="logo" src="brand/favicon-192.png" alt="">
-      <h2 data-i18n="ui.connect"></h2>
-      <p data-i18n="ui.connectText"></p>
-      <p class="alert hidden" id="insecure"></p>
-      <button class="btn-big" id="connect" data-i18n="ui.connect"></button>
-      <button class="btn-text" id="demoStart" data-i18n="ui.demo"></button>
-      <a class="gen-hint" href="gen2-gen4-diagnose.html"><b>BES2-Diagnose (Gen2–Gen4)</b><span>Dein Rad komplett auslesen und in Klartext anzeigen — Freischaltung inklusive, nur Lesen, kein Tuning. Protokoll speichern &amp; senden. <u>Nur am PC/Laptop (Chrome/Edge), nicht am Handy.</u></span></a>
+    <!-- Smart System -->
+    <div class="card">
+      <div class="ch">
+        <div class="ic">⚡</div>
+        <div class="tt"><h3>Smart System</h3><div class="k" id="t-ssk"></div></div>
+      </div>
+      <ul class="feat">
+        <li id="t-ssf1"></li><li id="t-ssf2"></li><li id="t-ssf3"></li><li id="t-ssf4"></li>
+      </ul>
+      <div class="acts">
+        <a class="btn btn-primary go" href="smart.html" id="t-open2"></a>
+        <a class="btn btn-ghost go" href="smart.html?demo=1" id="t-demo2"></a>
+      </div>
     </div>
-    <div id="home" class="hidden">
-      <div class="alert hidden" id="pendingHint"></div>
-      <div class="tiles" id="tiles"></div>
-      <div id="moreList"></div>
-    </div>
-  </section>
+  </div>
 
-  <section id="tab-settings" class="hidden">
-    <p class="explain" data-i18n="ui.settingsExplain"></p>
-    <div class="group" style="margin-top:14px" id="settingsList"></div>
-  </section>
-
-  <!-- Immer sichtbar: rechtliche Hinweise, Unterstützung, klassische Ansicht -->
-  <footer class="foothelp">
-    <button id="showLegal" data-i18n="tools.legal"></button>
-    <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi"></span></a>
-    <a id="appVersion" target="_blank" rel="noopener"></a>
-    <p class="kofihint"><span data-i18n="free.kofi"></span></p>
-    <p class="kofihint"><b data-i18n="free.title"></b> <span data-i18n="free.text"></span> <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>
-  </footer>
+  <div class="foot">
+    <span class="ver">SelfBike v1.8.6</span>
+    <a class="kofi" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span id="t-support"></span></a>
+    <a href="#" id="legalLink"><span data-i18n="tools.legal"></span></a>
+  </div>
 </div>
 
-<nav class="tabbar">
-  <button data-tab="home" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l-1.5-3H7M13 9l2 7"/></svg><span data-i18n="ui.home"></span></button>
-  <button data-tab="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span data-i18n="ui.settings"></span></button>
-</nav>
-
-<!-- Blatt für Einstellungen und Details -->
-<div class="sheet" id="sheet"><div class="panel">
-  <div class="phead"><button id="sheetBack"></button><h2 id="sheetTitle"></h2><span></span></div>
-  <div class="pbody" id="sheetBody"></div>
-</div></div>
-
-<!-- Bestätigen: vorher → nachher -->
-<div class="sheet" id="confirmSheet"><div class="panel">
-  <div class="phead"><button id="confirmCancel" data-i18n="preview.cancel"></button><h2 data-i18n="ui.confirmTitle"></h2><span></span></div>
-  <div class="pbody">
-    <p class="explain" id="confirmPlan" style="margin:0 4px 10px;font-weight:600;color:var(--self-text)"></p>
-    <div class="group noico" id="confirmList"></div>
-    <div id="confirmWarn"></div>
-    <p class="foot" id="confirmText"></p>
-    <button class="btn-big" id="confirmGo" data-i18n="ui.confirmGo"></button>
-  </div>
-</div></div>
-
-<!-- Fortschritt mit Kreis -->
-<div class="sheet" id="progSheet"><div class="panel">
-  <div class="phead"><span></span><h2 id="progTitle"></h2><span></span></div>
-  <div class="pbody">
-    <div class="ring">
-      <svg viewBox="0 0 132 132" width="132" height="132">
-        <circle cx="66" cy="66" r="58" fill="none" stroke="var(--self-bg-3)" stroke-width="11"/>
-        <circle id="ringArc" cx="66" cy="66" r="58" fill="none" stroke="var(--self-teal-bright)" stroke-width="11" stroke-linecap="round"
-                stroke-dasharray="364.4" stroke-dashoffset="364.4" style="transition:stroke-dashoffset .4s ease, stroke .3s"/>
-      </svg>
-      <div class="pct" id="ringPct">0%</div>
-    </div>
-    <p class="status" id="progStatus"></p>
-    <p class="status hidden" id="progNudge" style="color:#e5a33b;font-weight:600"></p>
-    <div class="card hidden" id="progKofi" style="padding:16px">
-      <p data-i18n="support.thanks" style="margin:0 0 10px"></p>
-      <a class="btn-big plain" style="margin:0" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi"></span></a>
-      <p class="kofihint"><span data-i18n="free.kofi"></span> <span data-i18n="support.kofiEn"></span></p>
-    </div>
-    <details><summary data-i18n="log.title"></summary><pre class="log" id="progLog"></pre></details>
-    <button class="btn-big danger hidden" id="progStop" data-i18n="diag.stop"></button>
-    <button class="btn-big hidden" id="progDone" data-i18n="ui.done"></button>
-  </div>
-</div></div>
-
-<!-- Rechtlicher Hinweis -->
-<div class="sheet" id="discSheet"><div class="panel">
-  <div class="phead"><span></span><h2 data-i18n="tools.legal"></h2><button class="r hidden" id="discClose" data-i18n="ui.done"></button></div>
-  <div class="pbody">
-    <div class="group noico"><label class="row"><span class="t" data-i18n="lang.label"></span><select id="discLang"></select></label></div>
-    <h2 data-i18n="disc.title" style="font-size:20px;margin:18px 4px 4px"></h2>
-    <p class="explain" data-i18n="disc.intro"></p>
-    <div class="disc-body" style="margin:0 4px">
-      <h3 data-i18n="disc.1t"></h3><p data-i18n="disc.1"></p><h3 data-i18n="disc.2t"></h3><p data-i18n="disc.2"></p>
-      <h3 data-i18n="disc.3t"></h3><p data-i18n="disc.3"></p><h3 data-i18n="disc.4t"></h3><p data-i18n="disc.4"></p>
-      <h3 data-i18n="disc.5t"></h3><p data-i18n="disc.5"></p><h3 data-i18n="disc.6t"></h3><p data-i18n="disc.6"></p>
-      <h3 data-i18n="disc.7t"></h3><p data-i18n="disc.7"></p>
-      <h3 data-i18n="disc.8t"></h3><p data-i18n="disc.8"></p>
+<!-- Rechtshinweis -->
+<div class="modal" id="legal" role="dialog" aria-modal="true">
+  <div class="box">
+    <div class="mhead"><b data-i18n="tools.legal"></b><button id="legalX" aria-label="X">✕</button></div>
+    <div class="mbody">
+      <h3 data-i18n="disc.title"></h3>
+      <p data-i18n="disc.intro"></p>
+      <h4 data-i18n="disc.1t"></h4><p data-i18n="disc.1"></p>
+      <h4 data-i18n="disc.2t"></h4><p data-i18n="disc.2"></p>
+      <h4 data-i18n="disc.3t"></h4><p data-i18n="disc.3"></p>
+      <h4 data-i18n="disc.4t"></h4><p data-i18n="disc.4"></p>
+      <h4 data-i18n="disc.5t"></h4><p data-i18n="disc.5"></p>
+      <h4 data-i18n="disc.6t"></h4><p data-i18n="disc.6"></p>
+      <h4 data-i18n="disc.7t"></h4><p data-i18n="disc.7"></p>
+      <h4 data-i18n="disc.8t"></h4><p data-i18n="disc.8"></p>
       <p><span data-i18n="disc.contact"></span>: <a href="mailto:info@selfcoder.de">info@selfcoder.de</a> ·
         <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener" data-i18n="disc.ghPrivacy"></a></p>
-      <p style="margin-top:14px;font-size:13px" data-i18n="disc.binding"></p>
-    </div>
-    <div id="discAcceptBox">
-      <div class="group noico" style="margin-top:16px"><label class="row"><span class="t" data-i18n="disc.check" style="font-size:15px"></span><input type="checkbox" class="sw" id="discCheck"></label></div>
-      <button class="btn-big" id="discAccept" disabled data-i18n="disc.accept"></button>
+      <p style="margin-top:12px;font-size:12px" data-i18n="disc.binding"></p>
+      <div id="legalAcceptBox">
+        <label class="lbl"><input type="checkbox" id="legalCheck"><span data-i18n="disc.check"></span></label>
+        <button class="maccept" id="legalAccept" disabled data-i18n="disc.accept"></button>
+      </div>
     </div>
   </div>
-</div></div>
+</div>
 
-<div class="toast" id="toast"></div>
-
-<script type="module" src="app.js"></script>
+<script type="module" src="chooser.js"></script>
 </body>
 </html>

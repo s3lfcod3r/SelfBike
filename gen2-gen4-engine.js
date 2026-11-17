@@ -1,5 +1,5 @@
 'use strict';
-/* SelfBike · BES2 Diagnose Gen2–4 (öffentlich).
+/* SelfBike · BES2 (Gen2–4) Diagnose (öffentlich).
    Liest Motor/Akku/Display über WebHID aus. Freischalt-Schlüssel UND die ODX-Decode-Tabelle
    liegen geschützt in Cloudflare-Workern — der Browser schickt nur Seed bzw. Rohbytes hin und
    bekommt den Key bzw. die fertigen Klartext-Werte zurück. Kein Schlüssel, keine Tabelle im Code. */
@@ -17,9 +17,9 @@ const DECODE_WORKER = 'https://bike-decode.s3lfcod3r.workers.dev';
 const TARGETS = [
   { key:'M', id:'motor', name:'Motor', tx:0x20, rx:0x21, slot:0, kontext:[0x22,0x05,0x01], shortKey:false,
     routines:[[3,0x60,0],[3,0x60,1],[3,0x60,2],[3,0x60,3],[3,0x60,4],[3,0x60,5],[3,0x60,6],[3,0x60,7],[3,0x60,8],[3,0x60,9]],
-    dids:[[1,3],[1,4],[1,5],[1,6],[1,0x13],[1,0x25],[1,0x43],[1,0x49],[1,0x4a],[1,0x4b],[1,0x4c],[1,0x4f],[1,0x50],[1,0x57],[1,0x58],[1,0x59],[1,0x67],[1,0x6b],[1,0x6c],[1,0x70],[1,0x72],[1,0x73],[1,0x74],[1,0x80],[1,0x81],[1,0x82],[1,0x85],[1,0xa8],[2,0x10],[2,0x11],[2,0x14],[2,0x16],[2,0x17],[2,0x18],[2,0x19],[2,0x20],[2,0x21],[2,0x24],[2,0x25],[2,0x26],[2,0x27],[2,0x28],[2,0x29],[2,0x2a],[2,0x2b],[2,0x2d],[2,0x40],[2,0x41],[2,0x42],[2,0x43],[2,0x44],[2,0x45],[2,0x46],[2,0x47],[2,0x48],[2,0x49],[2,0x4a],[2,0x4b],[2,0x4c],[2,0x4d],[2,0x51],[2,0x65],[2,0x67],[2,0x68],[2,0x72],[2,0x74],[2,0x80],[5,1],[0x11,0x72],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
+    dids:[[1,3],[1,4],[1,5],[1,6],[1,0x13],[1,0x25],[1,0x43],[1,0x49],[1,0x4a],[1,0x4b],[1,0x4c],[1,0x4f],[1,0x50],[1,0x57],[1,0x58],[1,0x59],[1,0x67],[1,0x6b],[1,0x6c],[1,0x70],[1,0x72],[1,0x73],[1,0x74],[1,0x80],[1,0x81],[1,0x82],[1,0x85],[2,0x10],[2,0x11],[2,0x14],[2,0x16],[2,0x17],[2,0x18],[2,0x19],[2,0x20],[2,0x21],[2,0x24],[2,0x25],[2,0x26],[2,0x27],[2,0x28],[2,0x29],[2,0x2a],[2,0x2b],[2,0x2d],[2,0x40],[2,0x41],[2,0x42],[2,0x43],[2,0x44],[2,0x45],[2,0x46],[2,0x47],[2,0x48],[2,0x49],[2,0x4a],[2,0x4b],[2,0x4c],[2,0x4d],[2,0x51],[2,0x65],[2,0x67],[2,0x68],[2,0x72],[2,0x74],[2,0x80],[5,1],[0x11,0x72],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
   { key:'A', id:'akku', name:'Akku', tx:0x22, rx:0x23, slot:1, kontext:[0x22,0x05,0x01], shortKey:false,
-    routines:[[3,0x3e,0,1],[3,0x3e,1,1],[3,0x3e,2,1],[3,0x3e,3,1],[3,0x3e,4,1],[3,0x3e,5,1]],
+    routines:[],
     dids:[[1,3],[1,4],[1,5],[1,6],[1,0x20],[1,0x21],[1,0x22],[1,0x50],[2,0x22],[2,0x24],[2,0x2e],[2,0x2f],[2,0x36],[2,0x64],[2,0x73],[2,0xa0],[3,0x12],[3,0x13],[3,0x19],[4,0x13],[4,0x33],[4,0x50],[5,1],[5,0x10],[6,0x10],[6,0],[7,0xa1],[7,0xa0],[0xda,0x10],[0xda,0x15],[0xda,0x16],[3,0x70],[2,0x1c],[0x42,1],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
   { key:'D', id:'display', name:'Display', tx:0x3a, rx:0x3d, slot:5, kontext:null, shortKey:false, routines:[],
     dids:[[0,4],[2,0x20],[2,0x21],[2,0x22],[2,0x30],[2,0x31],[2,0x32],[2,0x3a],[2,0x42],[2,0x43],[2,0x45],[2,0x52],[2,0x53],[2,0x60],[2,0x70],[2,0x71],[2,0x72],[2,0x88],[0x5b,0x7c],[0xde,0x95]] },
@@ -181,8 +181,9 @@ async function scan(){
     progMsg('Werte dekodieren …'); setStatus('Werte dekodieren …','busy'); await decodeAll();
     PROG.d=PROG.t; progTick();
     setStatus('fertig ✓','on'); render();
+    try{ if(typeof window.__afterRead==='function') window.__afterRead(); }catch(e){}
     progFinish('ok','Auslesen fertig ✓', true); progMsg('Alle Werte stehen bereit. Protokoll kannst du unten speichern.');
-  }catch(e){ setStatus('Fehler: '+e.message,'err'); log(e.message,'no'); progFinish('err','Fehler beim Auslesen',false); progMsg(e.message); }
+  }catch(e){ setStatus('Fehler: '+e.message,'err'); log(e.message,'no'); try{ if(typeof window.recordError==='function') window.recordError('auslesen', e.message); }catch(_){ } progFinish('err','Fehler beim Auslesen',false); progMsg(e.message); }
   finally{ reEnable(); }
 }
 function reEnable(){ el('scan').disabled=false; const s2=el('scan2'); if(s2)s2.disabled=false; el('scan').textContent='Neu auslesen'; }
@@ -340,7 +341,7 @@ function fullTables(){
     }
     for(const r of (m.rc||[])){
       const lbl=r.req.map(x=>x.toString(16).padStart(2,'0')).join(' ');
-      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>`${esc(p.name)}: ${esc(p.val||'unbekannt')}`).join(' · ');
+      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>`${esc(p.name)}: ${esc(/odometer/i.test(p.name||'')&&p.num!=null?nf(p.num/1000,1)+' km':(p.val||'unbekannt'))}`).join(' · ');
       h+=`<tr><td class="did">${lbl}</td><td class="svc">${esc(r.dec.n||'')}</td><td class="val">${dec}</td></tr>`;
     }
     h+='</tbody></table>';
@@ -351,7 +352,10 @@ function fullTables(){
 /* ---------- Protokoll speichern (Seriennummern/IDs ausgeblendet) ---------- */
 const BLUR=/serial|seriennumm|partnumber|teilenumm|idnumber|keynumber|rahmennumm|bike_id|number|label/i;
 function blurVal(name,svc,val,isStr){ if(!isStr)return val; if(BLUR.test(name||'')||BLUR.test(svc||''))return '•••••••• (ausgeblendet)'; return val; }
-function buildReport(){
+const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS'],D:['HMI']};
+function faultTextEng(tk,code){ const F=window.BES2_FAULTS||{}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
+function buildReport(dtc){
+  dtc=dtc||{};
   const names={M:'Motor',A:'Akku',D:'Display'};
   const bike=(el('bikeName')?el('bikeName').value.trim():'')||'—';
   const L=['SelfBike · BES2 (Gen2–4) — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
@@ -365,27 +369,118 @@ function buildReport(){
       L.push(('  '+did.slice(0,2)+' '+did.slice(2)).padEnd(8)+(o.dec.n||'').padEnd(40)+' '+parts);
     }
     for(const r of (m.rc||[])){ const lbl=r.req.map(x=>x.toString(16).padStart(2,'0')).join(' ');
-      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>p.name+': '+(p.val||'unbekannt')).join(' · ');
+      const dec=r.dec.empty?'leer':r.dec.parts.map(p=>p.name+': '+(/odometer/i.test(p.name||'')&&p.num!=null?nf(p.num/1000,1)+' km':(p.val||'unbekannt'))).join(' · ');
       L.push(('  '+lbl).padEnd(8)+(r.dec.n||'').padEnd(40)+' '+dec); }
     L.push('');
   }
+  L.push('=== Fehlerspeicher ===');
+  for(const tk of ['M','A','D']){ const list=dtc[tk];
+    if(list==null){ L.push('  '+names[tk]+': nicht gelesen'); continue; }
+    if(list.error){ L.push('  '+names[tk]+': nicht lesbar ('+list.error+')'); continue; }
+    if(!list.length){ L.push('  '+names[tk]+': keine Fehler gespeichert'); continue; }
+    for(const d of list){ const act=(d.status&0x01)||(d.status&0x08); const info=faultTextEng(tk,d.code);
+      L.push('  '+names[tk]+': Fehler '+d.code+' ('+(act?'aktiv':'gespeichert')+')'+(info&&info.d?' — '+info.d:'')); } }
+  L.push('');
   if(SEEDS.length){ L.push('=== SecurityAccess-Seeds (für Analyse, keine persönlichen Daten) ==='); SEEDS.forEach(x=>L.push('  '+x)); L.push(''); }
   L.push('Erstellt mit SelfBike · bike.selfcoder.de');
   return L.join('\n');
 }
-function saveReport(){
+async function saveReport(){
   if(!Object.keys(model).length){ alert('Erst auslesen.'); return; }
   const f=el('bikeName'); const bike=(f?f.value:'').trim();
   if(bike.length<3){ alert('Bitte gib dein Fahrrad ein (Marke und Modell) — damit wir das eingeschickte Protokoll zuordnen können.'); if(f){f.focus();f.style.borderColor='var(--self-red)';} return; }
   if(f)f.style.borderColor='';
   const slug=bike.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'rad';
-  const blob=new Blob([buildReport()],{type:'text/plain;charset=utf-8'});
+  progOpen('Protokoll wird erstellt …'); progMsg('Fehlerspeicher wird gelesen …');
+  let dtc={}; try{ dtc=await readDTC(); }catch(e){}
+  const rpt=buildReport(dtc);
+  try{ if(!(model&&model.__demo) && typeof window.archiveProto==='function') window.archiveProto('bes2',bike,rpt); }catch(e){}
+  const blob=new Blob([rpt],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='selfbike-protokoll-'+slug+'-'+new Date().toISOString().slice(0,10)+'.txt';
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-  progOpen('Protokoll gespeichert ✓'); progFinish('ok','Protokoll gespeichert ✓', true); progMsg('Danke! Schick uns die Datei gern an info@selfcoder.de.');
+  progFinish('ok','Protokoll gespeichert ✓', true); progMsg('Danke! Schick uns die Datei gern an info@selfcoder.de.');
 }
 window.saveReport=saveReport;
+window.__buildReport=(dtc)=>buildReport(dtc); // Protokoll-Text (Seriennummern ausgeblendet) für das Support-Paket
+
+/* ---------- Schreiben (Beta – nur sichere Wartung, Erlaubnis-Liste). KEIN Tuning, KEINE Akku-/BMS-Werte. ---------- */
+async function clearFaults(onLog){
+  if(!device) throw new Error('Nicht verbunden – bitte zuerst „Verbinden & Auslesen".');
+  const out=[]; busy++;
+  try{
+    for(const t of TARGETS){
+      try{
+        await openSession(t);
+        // ClearDiagnosticInformation: 0x14 FF FF FF (alle gespeicherten Fehler)
+        let r=await request(t,Uint8Array.of(0x14,0xff,0xff,0xff));
+        if(r[0]===0x7f && (r[2]===0x33||r[2]===0x22||r[2]===0x7f)){
+          try{ await precheck(t); await sendKey(t,0x11,t.slot); r=await request(t,Uint8Array.of(0x14,0xff,0xff,0xff)); }catch(e){}
+        }
+        let msg;
+        if(r[0]===0x54) msg=t.name+': Fehlerspeicher gelöscht ✓';
+        else if(r[0]===0x7f) msg=t.name+': abgelehnt (NRC 0x'+pad(r[2])+')';
+        else msg=t.name+': '+hex(r);
+        out.push(msg); if(onLog)onLog(msg);
+      }catch(e){ const m=t.name+': '+e.message; out.push(m); if(onLog)onLog(m); }
+      await sleep(T.SESSION_GAP);
+    }
+  } finally { busy--; }
+  return out;
+}
+// Engine-Allowlist (doppelter Boden – unabhängig vom Worker): nur diese DIDs dürfen geschrieben werden. KEIN Tuning/BMS.
+const WRITE_OK={ D:['024d','024f','024b','024a','024c','0250','0251','0243','0244','0252','0253'], M:['0225','0113','0211','0301','024d'] };
+function writeAllowed(tk,didHex){ return !!(WRITE_OK[tk] && WRITE_OK[tk].includes(didHex)); }
+function tgtOf(tk){ const t=TARGETS.find(x=>x.key===tk); if(!t)throw new Error('Ziel unbekannt'); return t; }
+function didArr(h){ return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16)]; }
+async function readRaw(t,did){ const r=await request(t,Uint8Array.of(0x22,did[0],did[1])); if(r[0]!==0x62)throw new Error('Lesen abgelehnt ('+hex(r)+')'); return r.subarray(3); }
+async function writeRawPdu(t,did,raw){ const r=await request(t,concat([Uint8Array.of(0x2e,did[0],did[1]),raw])); if(r[0]===0x6e)return true; if(r[0]===0x7f){ const e=new Error('NRC 0x'+pad(r[2])); e.nrc=r[2]; throw e; } throw new Error('unerwartet '+hex(r)); }
+async function ensureUnlock(t){ try{ await sendKey(t,0x11,t.slot); }catch(e){ if(!e.nrc) throw e; } }
+async function readFieldRaw(tk,didHex){ const t=tgtOf(tk); busy++; try{ await openSession(t); await precheck(t); return [...await readRaw(t,didArr(didHex))]; } finally{ busy--; } }
+async function writeField(tk,didHex,pos,bytes){
+  if(!writeAllowed(tk,didHex)) throw new Error('Diese Einstellung ist gesperrt (kein Tuning/BMS).');
+  if(!device) throw new Error('Nicht verbunden – bitte zuerst „Verbinden & Auslesen".');
+  const t=tgtOf(tk), did=didArr(didHex); busy++;
+  try{
+    await openSession(t); await precheck(t); await ensureUnlock(t);
+    const before=await readRaw(t,did); const buf=Uint8Array.from(before);
+    for(let i=0;i<bytes.length;i++){ if(pos+i<buf.length) buf[pos+i]=bytes[i]&0xff; }
+    await writeRawPdu(t,did,buf);
+    const after=await readRaw(t,did);
+    return { before:[...before], after:[...after] };
+  } finally{ busy--; }
+}
+async function restoreField(tk,didHex,rawBytes){
+  if(!writeAllowed(tk,didHex)) throw new Error('Gesperrt.');
+  const t=tgtOf(tk), did=didArr(didHex); busy++;
+  try{ await openSession(t); await precheck(t); await ensureUnlock(t); await writeRawPdu(t,did,Uint8Array.from(rawBytes)); return { after:[...await readRaw(t,did)] }; }
+  finally{ busy--; }
+}
+// Fehlerspeicher lesen (UDS 0x19 0x02 0xFF) – je Steuergerät, read-only
+async function readDTC(){
+  const out={};
+  for(const t of TARGETS){
+    busy++;
+    try{
+      await openSession(t);
+      const r=await request(t,Uint8Array.of(0x19,0x02,0xff));
+      const list=[];
+      if(r[0]===0x59 && r[1]===0x02){
+        for(let i=3;i+3<r.length;i+=4){
+          const code=(r[i]<<16)|(r[i+1]<<8)|r[i+2]; const status=r[i+3];
+          if(code===0) continue;
+          list.push({code:code.toString(16).toUpperCase().padStart(6,'0'), status});
+        }
+      } else if(r[0]===0x7f){ out[t.key]={error:'NRC 0x'+pad(r[2])}; busy--; await sleep(T.SESSION_GAP); continue; }
+      out[t.key]=list;
+    }catch(e){ out[t.key]={error:e.message}; }
+    finally{ busy--; }
+    await sleep(T.SESSION_GAP);
+  }
+  return out;
+}
+window.__bikeWrite={ clearFaults, readFieldRaw, writeField, restoreField, readDTC };
+window.__scan=scan; // damit die „Mein E-Bike"-Hülle den Scan starten und abwarten kann
 
 /* ---------- Init ---------- */
 function init(){

@@ -87,8 +87,36 @@ function toast(text, kind = '') {
   $('toast').className = `toast show ${kind}`;
   // Erfolg/Info verschwindet von selbst, Warnungen bleiben länger
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), kind === 'err' ? 9000 : kind === 'warn' ? 6000 : 3500);
+  if (kind === 'err') recordError('meldung', text);
 }
 $('toast').onclick = () => $('toast').classList.remove('show');
+
+// ---------- Fehler auffangen → Hilfe-Banner + alles ins Support-Paket ----------
+const ERRLOG_KEY = 'selfbike-errlog-smart';
+let ERRLOG = (() => { try { return JSON.parse(localStorage.getItem(ERRLOG_KEY) || '[]'); } catch { return []; } })();
+function errSave() { try { localStorage.setItem(ERRLOG_KEY, JSON.stringify(ERRLOG.slice(-200))); } catch {} }
+function errLogText() {
+  const L = ['SelfBike · Smart System — Fehler-Protokoll', 'Erstellt: ' + new Date().toLocaleString('de-DE'), ''];
+  if (!ERRLOG.length) L.push('Keine Fehler aufgezeichnet.');
+  else for (const e of ERRLOG) L.push(new Date(e.ts).toLocaleString('de-DE') + '  [' + (e.where || '?') + ']  ' + e.msg);
+  L.push(''); L.push('Browser: ' + (navigator.userAgent || '?')); return L.join('\n');
+}
+function recordError(where, msg) {
+  try { msg = String(msg == null ? '' : msg).slice(0, 500); if (!msg) return; ERRLOG.push({ ts: new Date().toISOString(), where: where || '', msg }); errSave(); showErrBanner(); } catch {}
+}
+function showErrBanner() {
+  if ($('errBanner')) return;
+  const b = document.createElement('div'); b.id = 'errBanner';
+  b.style.cssText = 'position:fixed;left:12px;right:12px;bottom:16px;z-index:1200;background:var(--self-bg-2,#161b22);border:1px solid var(--self-red,#f85149);border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 8px 30px rgba(0,0,0,.45);color:var(--self-text,#eef4f7)';
+  b.innerHTML = '<span style="font-size:13px;line-height:1.35">⚠️ Etwas ist schiefgelaufen. Erstelle ein <b>Support-Paket</b> — dann können wir helfen.</span>'
+    + '<span style="display:flex;gap:6px;flex-shrink:0"><button id="errSup" style="background:var(--self-red,#f85149);color:#fff;border:0;border-radius:8px;padding:8px 12px;font:inherit;font-weight:700;cursor:pointer">Support-Paket</button>'
+    + '<button id="errX" aria-label="schließen" style="background:transparent;color:var(--self-text-2,#8a9caa);border:0;font-size:18px;line-height:1;cursor:pointer;padding:0 4px">×</button></span>';
+  document.body.appendChild(b);
+  $('errSup').onclick = () => { b.remove(); openSupport(); };
+  $('errX').onclick = () => b.remove();
+}
+window.addEventListener('error', (e) => recordError('js', (e && e.message) || 'Fehler'));
+window.addEventListener('unhandledrejection', (e) => recordError('promise', (e && e.reason && (e.reason.message || e.reason)) || 'Fehler'));
 
 // ---------- Kopf, Tabs ----------
 
@@ -105,7 +133,7 @@ for (const b of document.querySelectorAll('nav.tabbar button')) b.onclick = () =
 function renderHead() {
   $('pageTitle').textContent = tab === 'home' && rows.length
     ? ([txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim() || t('ui.home')) : t(TITLES[tab]);
-  $('pageSub').textContent = tab === 'home' && rows.length ? t('ui.homeSub') : '';
+  $('pageSub').textContent = tab !== 'home' ? '' : (rows.length ? t('ui.homeSub') : 'Smart System · Gen 5');
   $('conn').className = `conn ${busy ? 'busy' : usb ? 'on' : ''}`;
   $('connText').textContent = t(busy ? 'conn.busy' : usb ? 'conn.on' : 'conn.off');
   $('demoBadge').classList.toggle('hidden', !demo);
@@ -280,6 +308,7 @@ function renderMore() {
       <button class="row" data-act="diagnose">${icon('export', '#0ea5e9')}<span class="t">${esc(t('diag.title'))}</span></button>
       <label class="row">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('restore.title'))}</span><span class="chev">›</span>
         <input type="file" id="restoreFile" accept=".json,application/json" class="hidden"></label>
+      <button class="row" data-act="support">${icon('export', '#e5534b')}<span class="t">Support-Paket (.zip)</span></button>
       <button class="row" data-act="refresh">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('ui.refresh'))}</span></button>
     </div>` : ''}
     ${usb ? `<div class="group" style="margin-top:22px"><button class="row danger" data-act="disconnect">${esc(t('ui.disconnect'))}</button></div>` : ''}`;
@@ -290,8 +319,9 @@ $('moreList').addEventListener('click', async (e) => {
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (act === 'legal') showDisclaimer();
   else if (act === 'protocol') openPage('protocol');
-  else if (act === 'pdf') openPage('pdf');
+  else if (act === 'pdf') openReportSmart();
   else if (act === 'diagnose') openPage('diagnose');
+  else if (act === 'support') openSupport();
   else if (act === 'backup') manualBackup();
   else if (act === 'refresh') { try { await refresh(); } catch (err) { await disconnect(); toast(t('msg.readError', { error: err.message }), 'err'); } }
   else if (act === 'disconnect') { await disconnect(); toast(t('msg.disconnected')); }
@@ -958,32 +988,6 @@ const PAGES = {
     };
   },
 
-  // PDF-Bericht: hell (zum Ausdrucken) oder dunkel (Self-Stil)
-  pdf() {
-    const choice = (theme, bg, fg) => `<button class="row" data-theme="${theme}">
-      <span class="ico" style="background:${bg};color:${fg};border:1px solid var(--self-line-strong)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS.pdf}</svg></span>
-      <span class="t">${esc(t(`ui.pdf.${theme}`))}<small>${esc(t(`ui.pdf.${theme}Hint`))}</small></span><span class="chev">›</span></button>`;
-    return {
-      title: t('tools.pdf'),
-      html: `<p class="explain">${esc(t('ui.pdf.ask'))}</p>
-        <div class="group" style="margin-top:12px">${choice('light', '#ffffff', '#1f7763')}${choice('dark', '#0d1117', '#43d3ad')}</div>
-        <p class="foot"><b>${esc(t('free.title'))}</b> ${esc(t('free.text'))} <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>`,
-      bind() {
-        $('sheetBody').onclick = async (e) => {
-          const b = e.target.closest('[data-theme]');
-          if (!b) return;
-          // Vollständiger Bericht: erst alle lazy Detailwerte nachladen, dann die kompletten Zeilen aus dem Cache bauen.
-          if (reader && ALL_LAZY.some((k) => S[k] === undefined)) { toast(t('ui.loadingDetails')); await ensureLazy(ALL_LAZY); }
-          const fullRows = READ_PLAN.map((p) => S[p.key]).filter(Boolean);
-          const html = buildReportHtml(fullRows, { maskIds: false, name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(), faults, theme: b.dataset.theme });
-          const url = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
-          if (!window.open(url, '_blank')) toast(t('msg.popup'), 'warn');
-          setTimeout(() => URL.revokeObjectURL(url), 60000);
-          closePage();
-        };
-      },
-    };
-  },
   stats() { return { title: t('ride.statsTitle'), html: statsHtml() }; },
   diagnose() {
     const n = diag.map.size;
@@ -1439,6 +1443,134 @@ function downloadTextFile(fileName, text) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
+// PDF-Bericht: Vollbild-Vorschau mit Hell/Dunkel-Umschalter und „Als PDF speichern" (wie bei Gen2–4).
+// Das Auto-Druck-Skript aus report.js wird entfernt; gedruckt/gespeichert wird erst auf Knopfdruck.
+let smartTheme = 'dark';
+let smartReport = null;
+function renderSmartReport() {
+  const ov = $('reportOverlay'); if (!ov || !smartReport) return;
+  const html = buildReportHtml(smartReport.rows, { maskIds: false, name: smartReport.name, faults, theme: smartTheme }).replace(/<script[\s\S]*?<\/script>/gi, '');
+  const f = $('rFrame'); if (f.dataset.url) URL.revokeObjectURL(f.dataset.url);
+  const url = URL.createObjectURL(new Blob([html], { type: 'text/html' })); f.dataset.url = url; f.src = url;
+  const b = $('rTheme'); if (b) b.textContent = smartTheme === 'dark' ? '☀ Hell' : '🌙 Dunkel';
+}
+async function openReportSmart() {
+  if (reader && ALL_LAZY.some((k) => S[k] === undefined)) { toast(t('ui.loadingDetails')); await ensureLazy(ALL_LAZY); }
+  smartReport = { rows: READ_PLAN.map((p) => S[p.key]).filter(Boolean), name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim() };
+  let ov = $('reportOverlay');
+  if (!ov) {
+    const st = document.createElement('style'); st.textContent =
+      '#reportOverlay{position:fixed;inset:0;z-index:999;background:#555;display:none;flex-direction:column}'
+      + '#reportOverlay.open{display:flex}'
+      + '#reportOverlay .rtop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:var(--self-bg-2);color:var(--self-text);border-bottom:1px solid #000}'
+      + '#reportOverlay .rtop button{background:var(--self-teal);color:#042;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}'
+      + '#reportOverlay .rtop button#rClose,#reportOverlay .rtop button#rTheme{background:transparent;color:var(--self-text);border:1px solid var(--self-line-strong)}'
+      + '#reportOverlay iframe{flex:1;width:100%;border:0;background:#fff}';
+    document.head.appendChild(st);
+    ov = document.createElement('div'); ov.id = 'reportOverlay';
+    ov.innerHTML = '<div class="rtop"><button id="rClose">Schließen</button><button id="rTheme"></button><button id="rPrint">Als PDF speichern</button></div><iframe id="rFrame" title="Bericht"></iframe>';
+    document.body.appendChild(ov);
+    $('rClose').onclick = () => { ov.classList.remove('open'); const f = $('rFrame'); if (f.dataset.url) URL.revokeObjectURL(f.dataset.url); f.removeAttribute('src'); f.dataset.url = ''; };
+    $('rTheme').onclick = () => { smartTheme = smartTheme === 'dark' ? 'light' : 'dark'; renderSmartReport(); };
+    $('rPrint').onclick = () => { const f = $('rFrame'); try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {} };
+  }
+  renderSmartReport();
+  ov.classList.add('open');
+}
+
+// ---------- Support-Paket (.zip): alles Wichtige für die Fehlersuche, personenbezogene Adressen bleiben ausgelassen ----------
+function crc32(bytes) { let c = ~0 >>> 0; for (let i = 0; i < bytes.length; i++) { c ^= bytes[i]; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ (0xEDB88320 & -(c & 1)); } return (~c) >>> 0; }
+function zipStore(files) { // files: [{name, data:Uint8Array}] – ZIP ohne Kompression
+  const enc = new TextEncoder(), parts = [], central = []; let off = 0;
+  const u16 = (n) => [n & 255, (n >> 8) & 255], u32 = (n) => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >> 24) & 255];
+  for (const f of files) {
+    const name = enc.encode(f.name), data = f.data, crc = crc32(data);
+    const lh = [0x50, 0x4b, 0x03, 0x04, ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)];
+    parts.push(new Uint8Array(lh), name, data); central.push({ name, crc, size: data.length, off }); off += lh.length + name.length + data.length;
+  }
+  const cdStart = off; let cdSize = 0;
+  for (const c of central) {
+    const h = [0x50, 0x4b, 0x01, 0x02, ...u16(20), ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(c.crc), ...u32(c.size), ...u32(c.size), ...u16(c.name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(c.off)];
+    parts.push(new Uint8Array(h), c.name); cdSize += h.length + c.name.length;
+  }
+  parts.push(new Uint8Array([0x50, 0x4b, 0x05, 0x06, ...u16(0), ...u16(0), ...u16(central.length), ...u16(central.length), ...u32(cdSize), ...u32(cdStart), ...u16(0)]));
+  let total = 0; for (const p of parts) total += p.length; const out = new Uint8Array(total); let o = 0; for (const p of parts) { out.set(p, o); o += p.length; } return out;
+}
+// Protokoll-Archiv (Browser): jedes Auslesen/gespeicherte Protokoll sammeln. Serien/IDs sind im Text bereits ausgelassen (diagText).
+// Beide Systeme (Smart + Gen2–4) teilen denselben Browser-Speicher, daher landen alle Protokolle gemeinsam im Support-Paket.
+const PROTO_KEY = 'selfbike-protos';
+function protoLoad() { try { return JSON.parse(localStorage.getItem(PROTO_KEY) || '[]'); } catch { return []; } }
+function protoSaveList(list) { try { localStorage.setItem(PROTO_KEY, JSON.stringify(list.slice(-60))); } catch {} }
+function archiveProto(system, bike, text) {
+  if (!text) return; let list = protoLoad();
+  const day = new Date().toISOString().slice(0, 10), b = String(bike || '').trim();
+  list = list.filter((p) => !(p.system === system && String(p.bike || '').trim() === b && String(p.ts || '').slice(0, 10) === day));
+  list.push({ ts: new Date().toISOString(), system, bike: b, text: String(text) });
+  while (JSON.stringify(list).length > 3000000 && list.length > 1) list.shift();
+  protoSaveList(list);
+}
+function protoFiles() {
+  const enc = new TextEncoder(), out = [], seen = {};
+  for (const p of protoLoad()) {
+    const d = (String(p.ts || '').slice(0, 10)) || 'datum', sys = p.system === 'smart' ? 'smart' : 'bes2';
+    const b = ((String(p.bike || 'rad')).replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-+|-+$/g, '')) || 'rad';
+    let nm = `protokolle/${d}_${sys}_${b}.txt`; if (seen[nm]) { nm = `protokolle/${d}_${sys}_${b}-${++seen[nm]}.txt`; } else seen[nm] = 1;
+    out.push({ name: nm, data: enc.encode(p.text) });
+  }
+  return out;
+}
+function supportChangeText() {
+  const cl = changeLog();
+  if (!cl.length) return 'Keine Änderungen aufgezeichnet.';
+  return cl.map((c) => {
+    const when = new Date(c.createdAt).toLocaleString('de-DE');
+    const steps = (c.steps || []).map((s) => `  - ${s.key || ''}: ${s.before != null ? s.before : '?'} → ${s.after != null ? s.after : '?'}`).join('\n');
+    return `${when}  ${c.title || ''}${c.outcome ? ' [' + c.outcome + ']' : ''}${steps ? '\n' + steps : ''}`;
+  }).join('\n\n');
+}
+function supportInfoTextSmart() {
+  const name = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim();
+  return ['SelfBike · Smart System — Support-Paket', 'Erstellt: ' + new Date().toLocaleString('de-DE'), name ? 'Rad: ' + name : null, 'Version ' + VERSION, '',
+    'Enthalten: alle im Browser gespeicherten Auslese-Protokolle (' + protoLoad().length + ', persönliche Adressen ausgelassen), Änderungs-Protokoll, Sitzungs-Log, Fehler-Protokoll' + (ERRLOG.length ? ' (' + ERRLOG.length + ')' : '') + ', ggf. deine Anhänge.', 'Kontakt: info@selfcoder.de', '', 'Erstellt mit SelfBike · bike.selfcoder.de'].filter((l) => l != null).join('\n');
+}
+async function buildSupportZip(attachments) {
+  const enc = new TextEncoder(); const files = [];
+  // aktuelles Protokoll archivieren (keine Demo-Daten), dann ALLE gespeicherten Protokolle (beider Systeme) beilegen
+  try { if (!demo) { const name = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(); archiveProto('smart', name, diagText()); } } catch (e) {}
+  for (const f of protoFiles()) files.push(f);
+  files.push({ name: 'aenderungs-protokoll.txt', data: enc.encode(supportChangeText()) });
+  files.push({ name: 'sitzungs-log.txt', data: enc.encode(logLines.join('\n')) });
+  files.push({ name: 'fehler-log.txt', data: enc.encode(errLogText()) });
+  files.push({ name: 'info.txt', data: enc.encode(supportInfoTextSmart()) });
+  for (const f of (attachments || [])) { try { const buf = new Uint8Array(await f.arrayBuffer()); files.push({ name: 'anhaenge/' + String(f.name).replace(/[^\w.\- ]+/g, '_'), data: buf }); } catch (e) {} }
+  try {
+    const url = URL.createObjectURL(new Blob([zipStore(files)], { type: 'application/zip' }));
+    const bike = ([txt('oemBrand', ''), txt('oemModel', '')].join('-').replace(/[^a-z0-9]+/gi, '-').toLowerCase().replace(/^-+|-+$/g, '')) || 'smart';
+    const a = document.createElement('a'); a.href = url; a.download = `selfbike-support-${bike}-${new Date().toISOString().slice(0, 10)}.zip`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 60000);
+    toast('Support-Paket erstellt ✓ (' + files.length + ' Dateien)', 'ok');
+  } catch (e) { toast('Fehler: ' + e.message, 'err'); }
+}
+function openSupport() {
+  let ov = $('supportOv');
+  if (!ov) {
+    ov = document.createElement('div'); ov.id = 'supportOv';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px';
+    ov.innerHTML = '<div style="max-width:440px;width:100%;background:var(--self-bg-1);border:1px solid var(--self-line-strong);border-radius:16px;padding:18px">'
+      + '<h3 style="margin:0 0 8px;font-size:16px">Support-Paket (.zip)</h3>'
+      + '<p class="explain" style="margin:0 0 12px">Packt automatisch alles für die Fehlersuche zusammen — <b>alle im Browser gespeicherten Auslese-Protokolle</b> (persönliche Adressen ausgelassen), Änderungs-Protokoll und Sitzungs-Log — als eine ZIP zum Schicken an info@selfcoder.de. <b>Du musst nichts anhängen.</b> Screenshots oder Fotos sind optional.</p>'
+      + '<input type="file" id="supAtt" multiple accept="image/*,.txt,.json,.pdf,.log" style="width:100%;margin-bottom:14px;color:var(--self-text)">'
+      + '<div style="display:flex;gap:8px">'
+      + '<button id="supCancel" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--self-line-strong);background:transparent;color:var(--self-text);font:inherit;cursor:pointer">Abbrechen</button>'
+      + '<button id="supMake" style="flex:1;padding:10px;border-radius:10px;border:0;background:var(--self-teal);color:#042;font:inherit;font-weight:700;cursor:pointer">Paket erstellen</button>'
+      + '</div></div>';
+    document.body.appendChild(ov);
+    $('supCancel').onclick = () => ov.remove();
+    ov.addEventListener('click', (e) => { if (e.target === ov) ov.remove(); });
+    $('supMake').onclick = async () => { const files = Array.from(($('supAtt') && $('supAtt').files) || []); await buildSupportZip(files); ov.remove(); };
+  }
+}
+
 // ---------- Verbinden und Auslesen ----------
 
 async function refresh() {
@@ -1474,11 +1606,12 @@ async function refresh() {
     $('progLog').classList.remove('hidden');
     releaseWake();
     busy = false;
+    try { recordError('verbinden', e && e.message); } catch {}
     throw e;
   }
   releaseWake();
   busy = false;
-  if (!demo) addSnapshot(snapshotFromRows(rows, new Date()));
+  if (!demo) { addSnapshot(snapshotFromRows(rows, new Date())); try { const nm = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(); archiveProto('smart', nm, diagText()); } catch (e) {} }
   renderAll();
   if (stack.length) drawPage();
   // kurz „Verbunden“ zeigen, dann automatisch schließen (kein OK-Klick nötig)
@@ -1519,8 +1652,8 @@ const isIos = () =>
 // (nicht iOS, navigator.usb vorhanden – z. B. fehlt es in Firefox –, und sicherer Kontext).
 const usbUsable = () => !isIos() && 'usb' in navigator && window.isSecureContext;
 
-$('connect').onclick = async () => {
-  if (!discAccepted()) return showDisclaimer();
+$('connect').onclick = () => { showDisclaimer(doConnect); }; // Rechtshinweis bei JEDEM Verbinden
+async function doConnect() {
   if (isIos()) return toast(t('msg.iosBlocked'), 'err');
   if (!('usb' in navigator)) return toast(t('msg.noWebusb'), 'err');
   let device;
@@ -1530,9 +1663,8 @@ $('connect').onclick = async () => {
     return toast(e.name === 'NotFoundError' ? t('msg.noDevice') : `${e.name}: ${e.message}`, 'warn');
   }
   await connectWith(new McspUsb(device, log), false);
-};
+}
 $('demoStart').onclick = async () => {
-  if (!discAccepted()) return showDisclaimer();
   await connectWith(new DemoUsb(log), true);
 };
 
@@ -1573,18 +1705,21 @@ const DISC_KEY = 'selfbike-disclaimer';
 function discAccepted() {
   try { const d = JSON.parse(localStorage.getItem(DISC_KEY)); return d?.v === 1 ? d : null; } catch { return null; }
 }
-function showDisclaimer() {
-  const accepted = !!discAccepted();
-  $('discAcceptBox').classList.toggle('hidden', accepted);
-  $('discClose').classList.toggle('hidden', !accepted);
+let pendingAfterDisc = null;
+function showDisclaimer(onAccept) {
+  pendingAfterDisc = typeof onAccept === 'function' ? onAccept : null;
+  const readOnly = !pendingAfterDisc; // ohne Aktion = nur lesen (Fußzeile)
+  $('discAcceptBox').classList.toggle('hidden', readOnly);
+  $('discClose').classList.toggle('hidden', !readOnly);
   $('discCheck').checked = false;
   $('discAccept').disabled = true;
   $('discSheet').classList.add('open');
 }
 $('discCheck').onchange = () => { $('discAccept').disabled = !$('discCheck').checked; };
 $('discAccept').onclick = () => {
-  try { localStorage.setItem(DISC_KEY, JSON.stringify({ v: 1, at: new Date().toISOString(), lang: lang() })); } catch { /* egal */ }
   $('discSheet').classList.remove('open');
+  const fn = pendingAfterDisc; pendingAfterDisc = null;
+  if (fn) fn(); // direkt verbinden – nichts gespeichert, kommt beim nächsten Mal wieder
 };
 $('discClose').onclick = () => $('discSheet').classList.remove('open');
 $('showLegal').onclick = () => showDisclaimer();
@@ -1642,6 +1777,8 @@ if (isIos()) {
   $('insecure').classList.remove('hidden');
 }
 renderAll();
-if (!discAccepted()) showDisclaimer();
+// Rechtshinweis kommt erst beim „Verbinden" (nicht beim Laden der Seite).
+// Von der Startseite kommend: Demo direkt starten (?demo)
+if (new URLSearchParams(location.search).has('demo')) $('demoStart').click();
 // Prüfen, ob auf dem Server schon eine neuere Version liegt (gegen gecachte alte Tabs)
 checkForUpdate();

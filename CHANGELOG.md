@@ -5,6 +5,16 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.0 · November 2026
+- 🇬🇧 Support package (.zip) now gathers **all** read protocols saved in the browser automatically (both systems), serial numbers hidden — nothing to attach by hand.
+- 🇩🇪 Support-Paket (.zip) sammelt jetzt **alle** im Browser gespeicherten Auslese-Protokolle automatisch (beide Systeme), Seriennummern ausgeblendet — nichts mehr von Hand anhängen.
+- 🇬🇧 When something goes wrong, a one-tap **"Support package"** button appears; an error log is included in the package.
+- 🇩🇪 Wenn etwas schiefläuft, erscheint ein **„Support-Paket"**-Knopf; ein Fehler-Protokoll liegt dem Paket bei.
+- 🇬🇧 PDF report: full-screen preview with a light/dark toggle, in both systems.
+- 🇩🇪 PDF-Bericht: Vollbild-Vorschau mit Hell/Dunkel-Umschalter, in beiden Systemen.
+- 🇬🇧 Gen 2–4: "Beta" now appears only on the settings-change area — reading stays stable.
+- 🇩🇪 Gen 2–4: „Beta" steht jetzt nur noch beim Ändern von Einstellungen — das Auslesen bleibt stabil.
+
 ## 1.8.6 · November 2026
 - 🇬🇧 Empty values (e.g. missing Bosch product codes on older hardware) now show "unbekannt" instead of a blank, including the "Typ:" line.
 - 🇩🇪 Leere Werte (z. B. fehlende Bosch-Produktcodes bei älterer Hardware) zeigen jetzt „unbekannt" statt leer — auch in der „Typ:"-Zeile.

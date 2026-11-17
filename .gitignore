@@ -7,3 +7,9 @@ Hier/
 
 # Bosch-Fehlertexte aus der eigenen Flow-App (gehören Bosch)
 data/private/
+
+# Private BES2-Dateien – NIE ins öffentliche Repo (Bosch-Fehlertexte, Freischalt-Tool)
+bes2-faults.js
+unlock.html
+unlock.js
+unlock.css
