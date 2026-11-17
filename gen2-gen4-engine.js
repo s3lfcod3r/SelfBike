@@ -158,6 +158,12 @@ async function scanTarget(t){
   }finally{ busy--; }
 }
 async function scan(){
+  if(typeof navigator==='undefined' || !navigator.hid){
+    setStatus('Browser unterstützt WebHID nicht','err');
+    try{ progOpen('Nicht unterstützt'); progFinish('err','Browser wird nicht unterstützt',false); progMsg('Bitte Chrome oder Edge am PC/Laptop verwenden — nicht Firefox, Safari oder Handy.'); }catch(e){}
+    try{ alert('Dieser Browser kann nicht mit dem E-Bike reden (WebHID fehlt).\n\nBitte am PC/Laptop mit Chrome oder Edge öffnen — nicht mit Firefox, Safari oder am Handy.'); }catch(e){}
+    reEnable(); return;
+  }
   try{
     el('scan').disabled=true; const s2d=el('scan2'); if(s2d)s2d.disabled=true;
     PROG.t=0; PROG.d=0; SEEDS.length=0; progOpen('eBike wird ausgelesen …');

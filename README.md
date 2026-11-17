@@ -5,7 +5,7 @@
 **Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
 *Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.9.0-33A78C)
+![Version](https://img.shields.io/badge/version-1.9.1-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -155,7 +155,7 @@ No build step, no dependencies — edit the files and reload. Start the local se
 .\start-server.ps1
 ```
 
-- `index.html` — the app; logic lives in `lib/` (ES modules)
+- `index.html` — the start page (system chooser); the apps are `smart.html` and `gen2-gen4.html`, shared logic lives in `lib/` (ES modules)
 - `data/fault-texts.csv` — own fault-code texts (`code;lang;title;hint`), loaded automatically; write them yourself, never copy Bosch texts
 - `lib/i18n/<lang>*.js` — translations, German is the source; missing keys fall back to German
 - `smart.html` — Bosch Smart System app (Gen5 / BES3)
@@ -321,7 +321,7 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 .\start-server.ps1
 ```
 
-- `index.html` — die App; die Logik liegt in `lib/` (ES-Module)
+- `index.html` — die Startseite (System-Auswahl); die Apps sind `smart.html` und `gen2-gen4.html`, gemeinsame Logik liegt in `lib/` (ES-Module)
 - `data/fault-texts.csv` — eigene Fehlertexte (`code;lang;title;hint`), werden automatisch geladen; selbst formulieren, keine Bosch-Texte kopieren
 - `lib/i18n/<sprache>*.js` — Übersetzungen, Deutsch ist die Quelle; fehlende Texte fallen auf Deutsch zurück
 - `smart.html` — Bosch-Smart-System-App (Gen5 / BES3)

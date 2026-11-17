@@ -265,6 +265,7 @@
 <script src="gen2-gen4-engine.js"></script>
 <script type="module">
 import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
+import { VERSION } from './lib/version.js';
 (function(){
   const DECODE_WORKER='https://bike-decode.s3lfcod3r.workers.dev';
   const el=id=>document.getElementById(id);
@@ -480,7 +481,7 @@ import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
   const bkHex=a=>{ try{ return Array.from(a).map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ return ''; } };
   function makeBackup(){
     const m=M(); const NAMES={M:'Motor',A:'Akku',D:'Display'};
-    const out={ tool:'SelfBike · BES2 (Gen2–4)', version:'1.9.0', erstellt:new Date().toISOString(), demo:!!m.__demo, fahrrad:(str('M','5b7c')||str('M','0181')||''), systeme:{} };
+    const out={ tool:'SelfBike · BES2 (Gen2–4)', version:VERSION, erstellt:new Date().toISOString(), demo:!!m.__demo, fahrrad:(str('M','5b7c')||str('M','0181')||''), systeme:{} };
     for(const tk of ['M','A','D']){ const tgt=m[tk]; if(!tgt)continue; const sys={ werte:{}, routinen:[] };
       for(const did in (tgt.dids||{})){ const o=tgt.dids[did]; if(!o)continue; const e={ name:(o.dec&&o.dec.n)||'', parts:((o.dec&&o.dec.parts)||[]).map(p=>({name:p.name,wert:p.val,zahl:p.num})) }; if(o.raw)e.hex=bkHex(o.raw); sys.werte[did]=e; }
       for(const r of (tgt.rc||[])){ const e={ req:(r.req?Array.from(r.req).map(x=>x.toString(16).padStart(2,'0')).join(' '):''), parts:((r.dec&&r.dec.parts)||[]).map(p=>({name:p.name,wert:p.val})) }; if(r.raw)e.hex=bkHex(r.raw); sys.routinen.push(e); }
@@ -689,7 +690,8 @@ import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
       +'table{width:100%;border-collapse:collapse}td{padding:3px 6px;border-bottom:1px solid var(--self-line);vertical-align:top}td:first-child{color:var(--self-text-2);width:45%}td:last-child{text-align:right}'
       +'.bars .row{display:grid;grid-template-columns:96px 1fr 72px;align-items:center;gap:8px;margin:4px 0}.bars .n{color:var(--self-text-2);font-size:9pt}.bars .track{height:8px;background:var(--self-line);border-radius:5px;overflow:hidden;display:block}.bars .fill{height:100%;background:var(--self-teal);display:block}.bars .km{font-size:9pt;font-weight:700;text-align:right}'
       +'.cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.card{background:var(--self-bg-2);border:1px solid var(--self-line);border-left:3px solid var(--self-teal);border-radius:6px;padding:9px}.card h3{font-size:10.5pt;margin:0 0 5px;color:var(--self-teal-deep)}.card .r{display:flex;justify-content:space-between;font-size:9pt;margin:2px 0;color:var(--self-text-2)}.card .r b{color:var(--self-text)}'
-      +'.free{margin-top:14px;padding:8px 10px;border:1px solid var(--self-teal);border-radius:6px;background:var(--self-bg-2);font-size:9.5pt}'
+      +'.note{margin-top:14px;font-size:9pt;line-height:1.4;color:var(--self-text-2)}'
+      +'.free{margin-top:10px;padding:8px 10px;border:1px solid var(--self-teal);border-radius:6px;background:var(--self-bg-2);font-size:9.5pt;line-height:1.4}'
       +'.made{margin-top:14px;padding-top:8px;border-top:1px solid var(--self-line);font-size:9pt;color:var(--self-text-2);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px}.made img{width:13px;height:16px;object-fit:contain;vertical-align:-3px;margin-right:4px}a{color:var(--self-teal-deep)}'
       +'</style></head><body>'
       +'<div class="wm" aria-hidden="true"><div class="txt">'+wmTxt+'</div><div class="shield"><img src="'+LOGO+'" alt=""></div></div>'
@@ -720,8 +722,9 @@ import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
       +'<div class="card"><h3>Akku</h3><div class="r"><span>Code</span><b>'+E(akkuCode)+'</b></div><div class="r"><span>Kapazität</span><b>'+(cap!=null?ni(cap)+' Wh':'—')+'</b></div><div class="r"><span>Ladezyklen</span><b>'+(cyc?nf(cyc,1):'—')+'</b></div></div>'
       +'</div></section>'
       +'<section><h2>Fehlerspeicher</h2><table>'+faultRows+'</table></section>'
-      +'<div class="free"><b>SelfBike ist kostenlos.</b> Fragen oder Rückmeldungen gern an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></div>'
-      +'<div class="made"><span><img src="'+LOGO+'" alt="">© '+YEAR+' SelfCoder · SelfBike · <a href="https://github.com/s3lfcod3r/SelfBike">github.com/s3lfcod3r/SelfBike</a></span><span>☕ <a href="https://ko-fi.com/s3lfcod3r">ko-fi.com/s3lfcod3r</a></span></div>'
+      +'<p class="note">Für diesen Bericht hat SelfBike die Werte per USB nur ausgelesen, nichts verändert. Werte wie vom E-Bike-System gemeldet. Der Bericht ersetzt keine mechanische Prüfung oder Wartung.</p>'
+      +'<div class="free"><b>SelfBike ist kostenlos.</b> Für das Auslesen, den PDF-Bericht oder Änderungen mit SelfBike darf niemand Geld verlangen – eine Werkstatt darf nur ihre eigene Arbeit berechnen. Hast du für SelfBike bezahlt? Dann melde dich bitte: <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></div>'
+      +'<div class="made"><span><img src="'+LOGO+'" alt="">© '+YEAR+' SelfCoder · SelfBike '+VERSION+' · kostenlos und offen auf <a href="https://github.com/s3lfcod3r/SelfBike">github.com/s3lfcod3r/SelfBike</a></span><span>☕ SelfBike unterstützen: <a href="https://ko-fi.com/s3lfcod3r">ko-fi.com/s3lfcod3r</a></span></div>'
       +'</div>'
       +'</body></html>';
   }
@@ -830,7 +833,7 @@ import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
   }
 
   /* ---------- Blatt (iPhone-Stil): Frage, Auswahl mit Häkchen, Stepper/Schieber, Erklärung ---------- */
-  function toast(msg,kind){ const t=el('toast'); t.textContent=msg; t.className='toast show'+(kind?' '+kind:''); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),4000); if(kind==='err'||kind==='no') recordError('meldung',msg); }
+  function toast(msg,kind){ const t=el('toast'); t.textContent=msg; t.className='toast show'+(kind?' '+kind:''); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),4000); }
 
   /* ---------- Fehler auffangen → Hilfe-Banner + alles ins Support-Paket ---------- */
   const ERRLOG_KEY='selfbike-errlog';

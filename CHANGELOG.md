@@ -5,6 +5,14 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.1 · November 2026
+- 🇬🇧 Gen 2–4 PDF report now has the same footer as Smart (disclaimer note, full "nobody may charge for SelfBike" text, version line).
+- 🇩🇪 Gen 2–4 PDF-Bericht hat jetzt denselben Footer wie Smart (Hinweis-Satz, voller „niemand darf für SelfBike Geld verlangen"-Text, Versionszeile).
+- 🇬🇧 Browsers without WebHID (Firefox, Safari, phones) now get a clear "use Chrome/Edge on a PC" message instead of a generic error.
+- 🇩🇪 Browser ohne WebHID (Firefox, Safari, Handy) bekommen jetzt eine klare „nutze Chrome/Edge am PC"-Meldung statt eines allgemeinen Fehlers.
+- 🇬🇧 The error → support-package banner now appears only on real failures, not on expected messages (no device, unsupported browser, invalid file).
+- 🇩🇪 Das Fehler-→-Support-Paket-Banner erscheint jetzt nur bei echten Fehlern, nicht bei erwarteten Hinweisen (kein Gerät, nicht unterstützter Browser, unlesbare Datei).
+
 ## 1.9.0 · November 2026
 - 🇬🇧 Support package (.zip) now gathers **all** read protocols saved in the browser automatically (both systems), serial numbers hidden — nothing to attach by hand.
 - 🇩🇪 Support-Paket (.zip) sammelt jetzt **alle** im Browser gespeicherten Auslese-Protokolle automatisch (beide Systeme), Seriennummern ausgeblendet — nichts mehr von Hand anhängen.

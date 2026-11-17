@@ -87,7 +87,6 @@ function toast(text, kind = '') {
   $('toast').className = `toast show ${kind}`;
   // Erfolg/Info verschwindet von selbst, Warnungen bleiben länger
   toastTimer = setTimeout(() => $('toast').classList.remove('show'), kind === 'err' ? 9000 : kind === 'warn' ? 6000 : 3500);
-  if (kind === 'err') recordError('meldung', text);
 }
 $('toast').onclick = () => $('toast').classList.remove('show');
 
