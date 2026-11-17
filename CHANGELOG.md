@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.3 · November 2026
+- 🇬🇧 Start page now shows the current version from `lib/version.js` (it was stuck at v1.8.6).
+- 🇩🇪 Startseite zeigt jetzt die aktuelle Version aus `lib/version.js` (sie hing fest auf v1.8.6).
+
 ## 1.9.2 · November 2026
 - 🇬🇧 Gen 2–4 now reads more battery-health and motor values (state-of-health flag, current/nominal capacity, measured-capacity test, internal resistance, charge/discharge hours; motor generation, total riding time, PCB/motor temperatures) so they show up in the protocol. Values a bike doesn't have are simply skipped.
 - 🇩🇪 Gen 2–4 liest jetzt mehr Akku-Gesundheits- und Motor-Werte (SOH-Flag, aktuelle/nominale Kapazität, Kapazitätstest, Innenwiderstand, Lade-/Entladestunden; Motor-Generation, Gesamt-Fahrzeit, Platinen-/Motor-Temperaturen) — sie erscheinen jetzt im Protokoll. Werte, die ein Rad nicht hat, werden einfach übersprungen.

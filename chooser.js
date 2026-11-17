@@ -1,9 +1,11 @@
 // Startseite / Auswahl – nutzt die echten App-Übersetzungen (lib/i18n.js) für den Rechtshinweis.
 import { LANGS, setLang, detectLang } from './lib/i18n.js';
+import { VERSION } from './lib/version.js';
 
 const STORE = 'selfbike-lang';
 const DISC  = 'selfbike-disclaimer';
 const $ = (id) => document.getElementById(id);
+{ const v = $('verLabel'); if (v) v.textContent = 'SelfBike v' + VERSION; }
 
 // Karten-Texte (nur hier, nicht in der App-i18n)
 const S = {
