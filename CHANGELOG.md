@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.10 · November 2026
+- 🇬🇧 Smart System: fixed a regression from 1.9.9. The new fault-read addresses were blocked by SelfBike's internal safety check (its allowlist still had the old addresses), so every control unit showed "unreadable". The allowlist is now tied directly to the fault sources, and the fault read works. Verified byte-for-byte against a real bike.
+- 🇩🇪 Smart System: Regression aus 1.9.9 behoben. Die neuen Fehler-Adressen wurden von SelfBikes interner Sicherheitsprüfung blockiert (die Freigabeliste hatte noch die alten Adressen), deshalb stand bei jedem Steuergerät „nicht lesbar". Die Liste hängt jetzt direkt an den Fehlerquellen, das Lesen funktioniert. Byte-für-byte gegen ein echtes Rad geprüft.
+
 ## 1.9.9 · November 2026
 - 🇬🇧 Smart System: fixed fault reading. The fault memory was queried at the wrong address for every control unit, so SelfBike reported "no faults" even when faults were stored (this is why some bikes stayed green while a dealer reader found entries). Corrected against a real bike — stored faults now show up, including the ones the Flow app/display hide. Also reads the second battery and the connect module now.
 - 🇬🇧 Gen 2–4: more robust fault reading — if the USB connection drops right before the fault memory is read ("device closed"/timeout), SelfBike reopens it and retries once per control unit instead of giving up.
