@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.32 · November 2026
+- 🇬🇧 BES2: fixed the state of charge showing "255 %" on some (older Gen2) batteries. 255 is the sentinel for "value not available" — it's now ignored, and SelfBike falls back to another charge source (battery or display) or shows "—". Affects both the start screen and the PDF report.
+- 🇩🇪 BES2: Ladezustand „255 %" auf manchen (älteren Gen2-)Akkus behoben. 255 ist der Platzhalter für „Wert nicht verfügbar" – er wird jetzt ignoriert, und SelfBike nimmt eine andere Ladestands-Quelle (Akku oder Display) oder zeigt „—". Betrifft Startseite und PDF-Bericht.
+
 ## 1.9.31 · November 2026
 - 🇬🇧 BES2: two display fixes on the start screen. If the fault memory can't be read (e.g. a timeout), the tile now says "not readable" instead of a green "0" that looked like "no faults". And the "Next service" tile now reads the service date/kilometres from the data already scanned, instead of a second read that sometimes came back incomplete and wrongly showed "not set".
 - 🇩🇪 BES2: zwei Anzeige-Fixes auf der Startseite. Lässt sich der Fehlerspeicher nicht lesen (z. B. Timeout), zeigt die Kachel jetzt „nicht lesbar" statt einer grünen „0", die wie „keine Fehler" aussah. Und die Kachel „Nächster Service" nimmt Datum/Kilometer aus den schon ausgelesenen Daten, statt aus einem zweiten Lesevorgang, der manchmal unvollständig zurückkam und fälschlich „nicht gesetzt" zeigte.

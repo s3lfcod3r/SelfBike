@@ -384,6 +384,9 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   function pick(tk,did,i){ const d=M()[tk]&&M()[tk].dids&&M()[tk].dids[did]; return d&&d.dec?d.dec.parts[i||0]:null; }
   const num=(tk,did,i)=>{ const p=pick(tk,did,i); return p&&p.num!=null?p.num:null; };
   const str=(tk,did,i)=>{ const p=pick(tk,did,i); return p?p.val:null; };
+  // Ladezustand robust: manche (ältere Gen2-)Akkus liefern bei 0510 den Sentinel 255 (0xFF = nicht verfügbar) –
+  // das zeigte SelfBike früher als „255 %". Nur 0..100 gilt; sonst nächste Quelle: Akku 0415, dann Display 0004.
+  function batSoc(){ for(const [tk,did] of [['A','0510'],['A','0415'],['D','0004']]){ const v=num(tk,did); if(v!=null&&v>=0&&v<=100) return v; } return null; }
   const nf=(v,d=1)=>v==null?'—':v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
   const ni=v=>v==null?'—':Math.round(v).toLocaleString('de-DE');
   // Smart-Icon-Set (gleiche SVG-Glyphen wie das Smart-System) für einheitliche blaue Buttons
@@ -469,7 +472,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
         if(lsub)lsub.textContent=[e.light.volt===2?'12 V':e.light.volt===1?'6 V':null, 'von Hand '+(e.light.hand?'Ja':'Nein')].filter(Boolean).join(' · '); } }
   }
   function buildHome(){
-    const soc=num('A','0510'), odo=num('M','0167'), cap=num('A','02a0'), volt=num('A','0413'), temp=num('A','0433');
+    const soc=batSoc(), odo=num('M','0167'), cap=num('A','02a0'), volt=num('A','0413'), temp=num('A','0433');
     const cyc=(num('A','0312')||0)+(num('A','0313')||0), mcell=num('A','07a1'), mcellMax=num('A','0610');
     const assist=num('M','0143'), dmax=num('M','0210'), manip=num('M','0272');
     const bike=str('M','5b7c')||str('M','0181')||'Dein eBike';
@@ -718,7 +721,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     dtc=dtc||{};
     const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||'eBike';
     const now=new Date().toLocaleString(curLang);
-    const odo=num('M','0167'), soc=num('A','0510'), cap=num('A','02a0');
+    const odo=num('M','0167'), soc=batSoc(), cap=num('A','02a0');
     const cyc=(num('A','0312')||0)+(num('A','0313')||0);
     const assist=num('M','0143'), dmax=num('M','0210'), manip=num('M','0272');
     const rtM=num('M','016b'), rtS=num('M','016c');
