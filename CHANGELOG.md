@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.31 · November 2026
+- 🇬🇧 BES2: two display fixes on the start screen. If the fault memory can't be read (e.g. a timeout), the tile now says "not readable" instead of a green "0" that looked like "no faults". And the "Next service" tile now reads the service date/kilometres from the data already scanned, instead of a second read that sometimes came back incomplete and wrongly showed "not set".
+- 🇩🇪 BES2: zwei Anzeige-Fixes auf der Startseite. Lässt sich der Fehlerspeicher nicht lesen (z. B. Timeout), zeigt die Kachel jetzt „nicht lesbar" statt einer grünen „0", die wie „keine Fehler" aussah. Und die Kachel „Nächster Service" nimmt Datum/Kilometer aus den schon ausgelesenen Daten, statt aus einem zweiten Lesevorgang, der manchmal unvollständig zurückkam und fälschlich „nicht gesetzt" zeigte.
+
 ## 1.9.30 · November 2026
 - 🇬🇧 BES2: clearing the fault memory now also works on bikes with a BUI350 display. These displays expect a different security key than the older ones, so until now the display refused the clear ("key doesn't match") while motor and battery cleared fine. SelfBike now recognises the display model (via its product code, read without unlocking) and uses the right key — no extra unlock attempt, so the lockout counter stays untouched.
 - 🇩🇪 BES2: Das Löschen des Fehlerspeichers klappt jetzt auch an Rädern mit BUI350-Display. Diese Displays erwarten einen anderen Freischalt-Schlüssel als die älteren – darum hat das Display das Löschen bisher abgelehnt („Schlüssel passt nicht"), während Motor und Akku sauber gelöscht wurden. SelfBike erkennt jetzt das Display-Modell (am Produktcode, ohne Freischaltung lesbar) und nimmt den passenden Schlüssel – ohne Zusatzversuch, der Sperrzähler bleibt unberührt.

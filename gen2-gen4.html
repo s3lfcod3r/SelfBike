@@ -440,8 +440,11 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   let enrichCache=null, enrichFor=null;
   async function readEnrich(){
     const r={faults:null, serviceKm:null, light:null};
-    try{ const d=await api().readDTC(); let n=0,bad=false; for(const k of ['M','A','D']){ const l=d&&d[k]; if(Array.isArray(l)){ n+=l.length; if(l.some(x=>(x.status&0x01)||(x.status&0x08))) bad=true; } } r.faults={n,bad}; }catch(e){}
-    try{ const raw=Uint8Array.from(await api().readFieldRaw('M','024d')); const km=beInt(raw.slice(3,7))*0.001; r.serviceKm=km>0?km:0; }catch(e){}
+    try{ const d=await api().readDTC(); let n=0,bad=false,anyRead=false; for(const k of ['M','A','D']){ const l=d&&d[k]; if(Array.isArray(l)){ anyRead=true; n+=l.length; if(l.some(x=>(x.status&0x01)||(x.status&0x08))) bad=true; } } r.faults=anyRead?{n,bad}:{unreadable:true}; }catch(e){}
+    // Service-Fälligkeit aus dem bereits ausgelesenen 024d (Jahr·Monat·Tag·Kilometer) nehmen – nicht per
+    // separatem Re-Read, der an manchen Rädern nach dem großen Auslesen unvollständig zurückkommt und dann
+    // fälschlich „nicht gesetzt" ergab. Fallback auf den Roh-Read, falls der Scan 024d nicht hatte (z. B. Demo).
+    { let km=num('M','024d',3); if(km==null){ try{ const raw=Uint8Array.from(await api().readFieldRaw('M','024d')); km=beInt(raw.slice(3,7))*0.001; }catch(e){} } r.serviceKm=(km!=null&&km>0)?km:0; }
     try{ const cap=Uint8Array.from(await api().readFieldRaw('M','0113'))[0];
       let auto=0,hand=0,volt=0;
       try{ const sw=Uint8Array.from(await api().readFieldRaw('M','0211')); auto=sw[0]; hand=sw[1]; }catch(e){}
@@ -454,7 +457,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     if(enrichFor!==mdl || !enrichCache){ try{ enrichCache=await readEnrich(); enrichFor=mdl; }catch(e){ return; } }
     const e=enrichCache; if(!e) return;
     const f=el('tFaults');
-    if(f){ if(e.faults){ f.textContent=e.faults.n; f.className='n '+(e.faults.n===0?'good':e.faults.bad?'bad':'warn'); } else f.textContent='—'; }
+    if(f){ if(e.faults&&e.faults.unreadable){ f.textContent='nicht lesbar'; f.className='n warn'; f.style.fontSize='17px'; } else if(e.faults){ f.textContent=e.faults.n; f.className='n '+(e.faults.n===0?'good':e.faults.bad?'bad':'warn'); } else f.textContent='—'; }
     const s=el('tService'), ssub=el('tServiceSub');
     if(s){ if(e.serviceKm==null){ s.textContent='—'; if(ssub)ssub.textContent=''; }
       else if(e.serviceKm===0){ s.textContent='nicht gesetzt'; s.style.fontSize='20px'; if(ssub)ssub.textContent=''; }
