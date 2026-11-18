@@ -299,6 +299,10 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   const L=(de,en,fr,it,es,pt,nl,pl,cs,da,sv,fi)=>({de,en,fr,it,es,pt,nl,pl,cs,da,sv,fi});
   const BES={
     sub:L('BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4'),
+    chgModel:L('Modell','Model','Modèle','Modello','Modelo','Modelo','Model','Model','Model','Model','Modell','Malli'),
+    chgBuilt:L('Baudatum','Build date','Date de fabrication','Data di produzione','Fecha de fabricación','Data de fabrico','Bouwdatum','Data produkcji','Datum výroby','Byggedato','Tillverkningsdatum','Valmistuspäivä'),
+    chgEnergy:L('Abgegebene Energie','Energy delivered','Énergie fournie','Energia erogata','Energía suministrada','Energia fornecida','Geleverde energie','Dostarczona energia','Dodaná energie','Leveret energi','Levererad energi','Luovutettu energia'),
+    chgNote:L('Nur sichtbar, wenn ein Fast Charger angesteckt war.','Only shown when a Fast Charger was plugged in.','Visible uniquement si un Fast Charger était branché.','Visibile solo se era collegato un Fast Charger.','Solo visible si había un Fast Charger conectado.','Só visível se um Fast Charger estava ligado.','Alleen zichtbaar als er een Fast Charger was aangesloten.','Widoczne tylko, gdy podłączono Fast Charger.','Zobrazí se jen, když byl připojen Fast Charger.','Vises kun, når en Fast Charger var tilsluttet.','Visas bara när en Fast Charger var ansluten.','Näkyy vain, kun Fast Charger oli kytkettynä.'),
     'pdf.overview': L('Übersicht','Overview','Aperçu','Panoramica','Resumen','Visão geral','Overzicht','Przegląd','Přehled','Oversigt','Översikt','Yleiskatsaus'),
     'pdf.info': L('eBike-Informationen','eBike information','Informations eBike','Informazioni eBike','Información de la eBike','Informações da eBike','eBike-informatie','Informacje o eBike','Informace o eBike','eBike-information','eBike-information','eBike-tiedot'),
     'pdf.byMode': L('Fahrstrecke nach Modus','Distance by mode','Distance par mode','Distanza per modalità','Distancia por modo','Distância por modo','Afstand per modus','Dystans według trybu','Vzdálenost podle režimu','Distance pr. tilstand','Sträcka per läge','Matka tilan mukaan'),
@@ -484,6 +488,19 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     window.__antriebHtml='<div class="group noico">'
       +kv(tb('frame'),esc(str('M','0181')||'—'))+kv(tb('modelId'),esc(str('M','0180')||'—'))
       +kv(tb('motorNr'),esc(str('M','014a')||'—'))+kv(t('check.speed',{v:''}).trim(),nf(assist!=null?assist:dmax,1)+' km/h')+'</div>';
+    // Fast Charger (nur wenn beim Auslesen ein Charger angesteckt war)
+    window.__chargerHtml=null;
+    if(M().C){
+      const cd=M().C.dids['0120'], dp=cd&&cd.dec&&cd.dec.parts; const energyWh=num('C','4420');
+      const verOf=(did)=>{ const o=M().C.dids[did], q=o&&o.dec&&o.dec.parts; return (q&&q.length>=3)?q.slice(0,4).map(x=>x.num!=null?x.num:x.val).join('.'):'—'; };
+      const dateStr=dp&&dp.length>=3?String(dp[0].num).padStart(2,'0')+'.'+String(dp[1].num).padStart(2,'0')+'.'+dp[2].num:'—';
+      window.__chargerHtml='<div class="group noico">'
+        +kv(tb('chgModel'),esc(str('C','5b7c')||'—'))
+        +kv('SW',esc(verOf('0103')))+kv('HW',esc(verOf('0104')))
+        +kv(tb('chgBuilt'),dateStr)
+        +kv(tb('chgEnergy'),energyWh!=null?nf(energyWh/1000,1)+' kWh':'—')
+        +'</div><p class="foot">'+esc(tb('chgNote'))+'</p>';
+    }
     // Fahr-Statistik pro Modus (Strecke; Werte sind Meter → km)
     const MODES=[['022a',tb('modeOff')],['0226','Eco'],['0227','Tour'],['0228','Sport / eMTB'],['0247','Turbo'],['0229',tb('modeUser',{n:1})],['0240',tb('modeUser',{n:2})],['0241',tb('modeUser',{n:3})],['0242',tb('modeUser',{n:4})]];
     const stats=MODES.map(([did,name])=>({name,km:(num('M',did)||0)/1000})).filter(x=>x.km>=0.5).sort((a,b)=>b.km-a.km);
@@ -499,7 +516,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     const drow=(ico,bg,title,sub,act)=>'<button class="row" data-info="'+act+'"><span class="ico" style="background:'+bg+'">'+ico+'</span><span class="t">'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</span><span class="chev">›</span></button>';
     let g='<div class="gh">'+esc(t('tile.battery'))+'</div><div class="group">'+drow('🔋','#22a35a',tb('akkuDetail'),tb('akkuDetailSub'),'akku')+'</div>';
     g+='<div class="gh">'+esc(t('nav.ride'))+'</div><div class="group">'+drow('📊','#3b82f6',tb('statsTitle'),tb('statsSub'),'stats')+'</div>';
-    g+='<div class="gh">'+esc(t('ui.groupBike'))+'</div><div class="group">'+drow('⚙️','#64748b',t('grp.Antrieb'),tb('antriebSub'),'antrieb')+drow('⚠️','#e5534b',t('ui.faults'),tb('faultsSub'),'fehler')+'</div>';
+    g+='<div class="gh">'+esc(t('ui.groupBike'))+'</div><div class="group">'+drow('⚙️','#64748b',t('grp.Antrieb'),tb('antriebSub'),'antrieb')+drow('⚠️','#e5534b',t('ui.faults'),tb('faultsSub'),'fehler')+(M().C?drow('⚡','#f0a500','Fast Charger',str('C','5b7c')||'','charger'):'')+'</div>';
     g+='<div class="gh">'+esc(t('ui.groupSafe'))+'</div><div class="group">'+drow(svgIco('backup'),'#0ea5e9','Backup jetzt speichern','Alle Werte als Datei sichern','backup')+drow(svgIco('protocol'),'#0ea5e9','Protokoll','Auslese-Protokoll speichern','save')+drow(svgIco('pdf'),'#0ea5e9','PDF-Bericht erstellen','Übersicht zum Ausdrucken / Speichern','pdf')+drow(svgIco('refresh'),'#0ea5e9','Aus Backup wiederherstellen','Einstellungen vom selben Rad zurückschreiben','restore')+drow(svgIco('protocol'),'#0ea5e9','Änderungs-Protokoll','Alle Änderungen – speichern & schicken','changelog')+drow(svgIco('export'),'#e5534b','Support-Paket (.zip)','Bei Problemen: alles gebündelt zum Schicken','support')+drow(svgIco('refresh'),'#0ea5e9',t('ui.refresh'),'','rescan')+'</div>';
     el('moreList').innerHTML=g;
     el('moreList').querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>onInfo(b.dataset.info));
@@ -509,6 +526,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   function onInfo(key){
     if(key==='akku') return openInfo(tb('akkuDetail'), window.__akkuHtml||'');
     if(key==='antrieb') return openInfo(t('grp.Antrieb'), window.__antriebHtml||'');
+    if(key==='charger') return openInfo('Fast Charger', window.__chargerHtml||'');
     if(key==='stats') return openInfo(tb('statsTitle'), window.__statsHtml||'');
     if(key==='pdf') return openReport();
     if(key==='changelog') return openChangeLog();
@@ -524,9 +542,9 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   /* ---------- Backup: alle ausgelesenen Werte als Datei sichern ---------- */
   const bkHex=a=>{ try{ return Array.from(a).map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ return ''; } };
   function makeBackup(){
-    const m=M(); const NAMES={M:'Motor',A:'Akku',D:'Display'};
+    const m=M(); const NAMES={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
     const out={ tool:'SelfBike · BES2 (Gen2–4)', version:VERSION, erstellt:new Date().toISOString(), demo:!!m.__demo, fahrrad:(str('M','5b7c')||str('M','0181')||''), systeme:{} };
-    for(const tk of ['M','A','D']){ const tgt=m[tk]; if(!tgt)continue; const sys={ werte:{}, routinen:[] };
+    for(const tk of ['M','A','D','C']){ const tgt=m[tk]; if(!tgt)continue; const sys={ werte:{}, routinen:[] };
       for(const did in (tgt.dids||{})){ const o=tgt.dids[did]; if(!o)continue; const e={ name:(o.dec&&o.dec.n)||'', parts:((o.dec&&o.dec.parts)||[]).map(p=>({name:p.name,wert:p.val,zahl:p.num})) }; if(o.raw)e.hex=bkHex(o.raw); sys.werte[did]=e; }
       for(const r of (tgt.rc||[])){ const e={ req:(r.req?Array.from(r.req).map(x=>x.toString(16).padStart(2,'0')).join(' '):''), parts:((r.dec&&r.dec.parts)||[]).map(p=>({name:p.name,wert:p.val})) }; if(r.raw)e.hex=bkHex(r.raw); sys.routinen.push(e); }
       out.systeme[NAMES[tk]]=sys;
@@ -1064,7 +1082,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ del.disabled=false; }
     };
   }
-  const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']}, ECUNAME={M:'Motor',A:'Akku',D:'Display'};
+  const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI'],C:['BCS']}, ECUNAME={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
   function faultText(tk,code){ const L=(window.__bes2lang||'de'); const F=(L!=='de' && window['BES2_FAULTS_'+L.toUpperCase()]) || window.BES2_FAULTS || {}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
   // Fehlertexte je Sprache: Deutsch ist eingebettet (bes2-faults.js), andere Sprachen werden bei Bedarf nachgeladen.
   window.__bes2lang='de';
@@ -1078,7 +1096,8 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     body.innerHTML='';
     const intro=document.createElement('p'); intro.className='desc'; intro.textContent='Gespeicherte Fehler aus Motor, Akku und Display, in Klartext. Tippe „Was tun?" für Hinweise.'; body.appendChild(intro);
     let total=0;
-    ['M','A','D'].forEach(tk=>{
+    const ecus=['M','A','D'].concat(dtc.C!==undefined?['C']:[]); // Fast Charger nur, wenn angesteckt gelesen
+    ecus.forEach(tk=>{
       const list=dtc[tk];
       const gh=document.createElement('div'); gh.className='gh'; gh.textContent=ECUNAME[tk]; body.appendChild(gh);
       const grp=document.createElement('div'); grp.className='group noico'; body.appendChild(grp);
@@ -1120,7 +1139,12 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   function DEMO(){ return { __demo:true,
     M:{dids:{'0510':null,'0167':P(2140),'0181':S('Cube Stereo Hybrid 160'),'0180':S('CBX-2021-0815'),'014a':S('••••••••'),'0143':P(25),'0210':P(27.4),'0272':P(0),'5b7c':S('BDU450CX'),'022a':P(16800000),'0226':P(8200000),'0227':P(2100000),'0228':P(650000),'0247':P(120000),'0229':P(4300000)}, rc:[]},
     A:{dids:{'0510':P(81),'0413':P(36.2),'0433':P(24),'02a0':P(597),'0312':P(120),'0313':P(8),'07a1':P(3.78),'0610':P(3.81),'5b7c':S('PowerPack 400')}, rc:[]},
-    D:{dids:{'5b7c':S('Nyon')}, rc:[]} }; }
+    D:{dids:{'5b7c':S('Nyon')}, rc:[]},
+    C:{dids:{'5b7c':S('Fast Charger · BCS250'),
+      '0103':{dec:{parts:[{name:'Major',num:1,val:'1'},{name:'Minor',num:0,val:'0'},{name:'Bugfix',num:5,val:'5'},{name:'Internal',num:0,val:'0'}]}},
+      '0104':{dec:{parts:[{name:'Major',num:2,val:'2'},{name:'Minor',num:1,val:'1'},{name:'Bugfix',num:1,val:'1'},{name:'Internal',num:2,val:'2'}]}},
+      '0120':{dec:{parts:[{name:'Tag',num:12,val:'12'},{name:'Monat',num:3,val:'3'},{name:'Jahr',num:2022,val:'2022'}]}},
+      '4420':{dec:{parts:[{name:'Wh',num:275108.3,val:'275.108,3'}]}}}, rc:[]} }; }
 
   showTab('home');
   initI18n();

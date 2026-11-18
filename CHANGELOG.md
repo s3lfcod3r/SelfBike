@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.21 · November 2026
+- 🇬🇧 Gen 2–4: reads the **Fast Charger** too (BCS250) when it is plugged in — product code, HW/SW version, build date, energy delivered over its lifetime, and its own fault memory. The charger is a separate control unit; if none is attached it is silently skipped. Shown as its own card, in the full table, the report and the support package.
+- 🇩🇪 Gen 2–4: liest jetzt auch den **Fast Charger** (BCS250), wenn er angesteckt ist — Produktcode, HW-/SW-Version, Baudatum, über die Lebenszeit abgegebene Energie und seinen eigenen Fehlerspeicher. Der Charger ist ein eigenes Steuergerät; ist keiner dran, wird er stillschweigend übersprungen. Als eigene Karte, in der Volltabelle, im Protokoll und im Support-Paket.
+
 ## 1.9.20 · November 2026
 - 🇬🇧 Gen 2–4: clearing the fault memory now records the real per-ECU result (cleared ✓ / rejected + NRC) in the persistent change log, so the support package always shows what actually happened — even after a page reload. The live TX/RX log is lost on reload; this is not.
 - 🇩🇪 Gen 2–4: beim Löschen des Fehlerspeichers wird jetzt das echte Ergebnis pro Steuergerät (gelöscht ✓ / abgelehnt + NRC) dauerhaft im Änderungs-Protokoll gespeichert — so zeigt das Support-Paket immer, was wirklich passiert ist, auch nach einem Neuladen. Das Live-TX/RX-Log geht beim Neuladen verloren, dies nicht.

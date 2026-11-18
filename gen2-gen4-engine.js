@@ -23,6 +23,11 @@ const TARGETS = [
     dids:[[1,3],[1,4],[1,5],[1,6],[1,0x20],[1,0x21],[1,0x22],[1,0x50],[2,0x22],[2,0x24],[2,0x2e],[2,0x2f],[2,0x36],[2,0x64],[2,0x73],[2,0xa0],[3,0x12],[3,0x13],[3,0x19],[4,0x13],[4,0x33],[4,0x50],[5,1],[5,0x10],[6,0x10],[6,0],[7,0xa1],[7,0xa0],[0xda,0x10],[0xda,0x15],[0xda,0x16],[3,0x70],[2,0x1c],[2,0x27],[2,0x26],[2,0x39],[2,0x50],[2,0x7c],[2,0x82],[3,0x11],[3,0x14],[3,0x16],[3,0x17],[0x42,1],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
   { key:'D', id:'display', name:'Display', tx:0x3a, rx:0x3d, slot:5, kontext:null, shortKey:false, routines:[],
     dids:[[0,4],[2,0x20],[2,0x21],[2,0x22],[2,0x30],[2,0x31],[2,0x32],[2,0x3a],[2,0x42],[2,0x43],[2,0x45],[2,0x52],[2,0x53],[2,0x60],[2,0x70],[2,0x71],[2,0x72],[2,0x88],[0x5b,0x7c],[0xde,0x95]] },
+  // Fast Charger (BCS, Adresse aus Bosch-ODX: tx 0x6E / rx 0x6F). Optional: nur vorhanden, wenn der
+  // Charger angesteckt ist — antwortet er nicht, wird das Ziel sauber übersprungen. Keine Freischaltung
+  // nötig (slot:null → kein SecurityAccess). Dekodierung lokal in decodeCharger().
+  { key:'C', id:'charger', name:'Fast Charger', tx:0x6e, rx:0x6f, slot:null, kontext:null, shortKey:false, optional:true, routines:[],
+    dids:[[1,3],[1,4],[1,7],[1,0x20],[1,0x22],[1,0x23],[0x44,0x20],[0x5b,0x7c]] },
 ];
 
 /* ---------- Schlüssel über den geschützten Worker (Keys bleiben serverseitig) ---------- */
@@ -116,6 +121,7 @@ async function sendKey(t,sub,slot){
 
 /* ---------- Decode über den geschützten Worker (ODX-Tabelle bleibt serverseitig) ---------- */
 async function decodeAll(){
+  try{ decodeCharger(); }catch(e){}
   const items=[], refs=[];
   for(const tk of ['M','A','D']){ const m=model[tk]; if(!m)continue;
     for(const did in m.dids){ items.push({t:tk,did,b:[...m.dids[did].raw]}); refs.push(m.dids[did]); }
@@ -133,6 +139,21 @@ async function decodeAll(){
   j.results.forEach((dec,i)=>{ if(refs[i]) norm(refs[i],dec); });
   refs.forEach((ref)=>{ if(!ref.dec) norm(ref,null); }); // falls der Worker weniger Ergebnisse liefert
 }
+// Fast Charger lokal dekodieren (Byte-Layout aus dem Bosch-ODX BCS.odx-gt, nicht geraten). Der Decode-Worker
+// kennt nur Motor/Akku/Display; den Charger machen wir hier selbst, mit eigenen Feldnamen (kein Bosch-Verbatim).
+function decodeCharger(){
+  const m=model.C; if(!m)return; const D=m.dids;
+  const put=(did,n,parts)=>{ if(D[did]) D[did].dec={n,parts}; };
+  const raw=did=>(D[did]?D[did].raw:null);
+  const ver=(did,n)=>{ const r=raw(did); if(!r||r.length<4)return; put(did,n,[{name:'Major',num:r[0],val:''+r[0]},{name:'Minor',num:r[1],val:''+r[1]},{name:'Bugfix',num:r[2],val:''+r[2]},{name:'Internal',num:r[3],val:''+r[3]}]); };
+  ver('0103','BCS_SW_Version'); ver('0104','BCS_HW_Version'); ver('0107','FBL_SW_Version');
+  if(D['5b7c']) put('5b7c','BCS_BoschProductCode',[{val:asciiOf(raw('5b7c'))||'—'}]);
+  { const r=raw('0120'); if(r&&r.length>=4){ const y=(r[2]<<8)|r[3]; put('0120','BCS_ManufacturingDate',[{name:'Tag',num:r[0],val:''+r[0]},{name:'Monat',num:r[1],val:''+r[1]},{name:'Jahr',num:y,val:''+y}]); } }
+  { const r=raw('4420'); if(r&&r.length>=4){ const u=((r[0]<<24)|(r[1]<<16)|(r[2]<<8)|r[3])>>>0; const wh=u/10; put('4420','BCS_ProvidedEnergyLifetime',[{name:'Wh',num:wh,val:nf(wh,1)}]); } }
+  // Serien-/Teilenummer als String markiert → wird im Protokoll ausgeblendet (wie bei den anderen Steuergeräten)
+  if(D['0122']) put('0122','BCS_PartNumber',[{name:'PartNumber',str:true,val:asciiOf(raw('0122'))||'—'}]);
+  if(D['0123']) put('0123','BCS_SerialNumber',[{name:'SerialNumber',str:true,val:asciiOf(raw('0123'))||'—'}]);
+}
 
 /* ---------- Auslesen ---------- */
 const model={};
@@ -143,7 +164,7 @@ async function scanTarget(t){
     setStatus(t.name+' – Sitzung …','busy'); progMsg(t.name+' – Sitzung & Freischaltung …');
     await openSession(t); await precheck(t);
     let unlocked=false;
-    try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ log(t.name+': Freischaltung übersprungen ('+e.message+')','warn'); }
+    if(t.slot!=null){ try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ log(t.name+': Freischaltung übersprungen ('+e.message+')','warn'); } }
     const tm={unlocked,dids:{},rc:[]};
     // Routinen
     for(const r of t.routines){
@@ -214,7 +235,7 @@ async function scan(){
     if(!n){ setStatus('kein Gerät im Diagnosemodus – Kiox aus/15s/ein','err');
       progFinish('err','Kein Gerät gefunden',false); progMsg('Kiox aus → 15 Sek. warten → ein, dann erneut auslesen.'); reEnable(); return; }
     PROG.t=TARGETS.reduce((a,t)=>a+t.routines.length+t.dids.length,0)+1; PROG.d=0; progTick();
-    for(const t of TARGETS){ await scanTarget(t); await sleep(T.SESSION_GAP); }
+    for(const t of TARGETS){ try{ await scanTarget(t); }catch(e){ if(!t.optional) throw e; log(t.name+': nicht gefunden ('+e.message+') – übersprungen','warn'); } await sleep(T.SESSION_GAP); }
     progMsg('Werte dekodieren …'); setStatus('Werte dekodieren …','busy'); await decodeAll();
     PROG.d=PROG.t; progTick();
     setStatus('fertig ✓','on'); render();
@@ -352,6 +373,18 @@ function render(){
     </div>
   </div>`;
 
+  // Fast-Charger-Karte – nur wenn ein Fast Charger angesteckt war (sonst gar nicht gelesen)
+  if(model.C){
+    const energy=num('C','4420');
+    h+=`<div class="card"><h3><span class="ico">⚡</span> Fast Charger</h3><p class="cardsub">${esc(str('C','5b7c')||'angeschlossen')}</p>
+    <div class="chips">
+      <div class="chip"><span>SW</span> <b>${esc(verStr('C','0103'))}</b></div>
+      <div class="chip"><span>HW</span> <b>${esc(verStr('C','0104'))}</b></div>
+      ${energy!=null?`<div class="chip"><span>Abgegeben</span> <b>${nf(energy/1000,1)} <small>kWh</small></b></div>`:''}
+    </div>
+  </div>`;
+  }
+
   stage.innerHTML=h;
 
   // Volltabellen + Log anhängen
@@ -365,10 +398,10 @@ function render(){
 function verStr(tk,didhex){ const p=model[tk]&&model[tk].dids[didhex]; if(!p)return '—'; const q=p.dec.parts; if(q.length>=3)return q.slice(0,4).map(x=>x.num!=null?x.num:x.val).join('.'); return q[0]?q[0].val:'—'; }
 
 function fullTables(){
-  const names={M:'Motor',A:'Akku',D:'Display'};
+  const names={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
   const det=document.createElement('details');
   let h='<summary>Alle Werte ('+Object.values(model).reduce((a,m)=>a+Object.keys(m.dids).length,0)+' Kennungen) <span class="arr">▾</span></summary>';
-  for(const tk of ['M','A','D']){
+  for(const tk of ['M','A','D','C']){
     const m=model[tk]; if(!m)continue;
     h+=`<table class="tbl"><thead><tr><th colspan="3">${names[tk]}</th></tr></thead><tbody>`;
     for(const [did,o] of Object.entries(m.dids)){
@@ -393,13 +426,13 @@ const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']};
 function faultTextEng(tk,code){ const L=(window.__bes2lang||'de'); const F=(L!=='de' && window['BES2_FAULTS_'+L.toUpperCase()]) || window.BES2_FAULTS || {}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
 function buildReport(dtc){
   dtc=dtc||{};
-  const names={M:'Motor',A:'Akku',D:'Display'};
+  const names={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
   const bike=(el('bikeName')?el('bikeName').value.trim():'')||'—';
   const L=['SelfBike · BES2 (Gen2–4) — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
     'Seriennummern/IDs sind zum Schutz ausgeblendet. Senden an: info@selfcoder.de','',
     'Typ: '+(str('M','5b7c')||'unbekannt')+' / '+(str('A','5b7c')||'unbekannt')+' / '+(str('D','5b7c')||'unbekannt'),
     'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),''];
-  for(const tk of ['M','A','D']){ const m=model[tk]; if(!m)continue;
+  for(const tk of ['M','A','D','C']){ const m=model[tk]; if(!m)continue;
     L.push('=== '+names[tk]+' ===');
     for(const [did,o] of Object.entries(m.dids)){
       const parts=o.dec.parts.map(p=>(p.name?p.name+': ':'')+blurVal(p.name,o.dec.n,p.val,p.str)).join(' · ');
@@ -411,7 +444,7 @@ function buildReport(dtc){
     L.push('');
   }
   L.push('=== Fehlerspeicher ===');
-  for(const tk of ['M','A','D']){ const list=dtc[tk];
+  for(const tk of ['M','A','D','C']){ if(tk==='C' && !model.C) continue; const list=dtc[tk];
     if(list==null){ L.push('  '+names[tk]+': nicht gelesen'); continue; }
     if(list.error){ L.push('  '+names[tk]+': nicht lesbar ('+list.error+')'); continue; }
     if(!list.length){ L.push('  '+names[tk]+': keine Fehler gespeichert'); continue; }
@@ -447,6 +480,7 @@ async function clearFaults(onLog){
   const out=[]; busy++;
   try{
     for(const t of TARGETS){
+      if(t.optional && !model[t.key]) continue; // Charger nur, wenn er beim Auslesen da war
       try{
         await openSession(t);
         // ClearDiagnosticInformation: 0x14 FF FF FF (alle gespeicherten Fehler)
@@ -500,6 +534,7 @@ async function reopenIfClosed(){ try{ if(device && device.opened===false) await 
 async function readDTC(){
   const out={};
   for(const t of TARGETS){
+    if(t.optional && !model[t.key]) continue; // Charger nur, wenn er beim Auslesen da war
     busy++;
     try{
       // USB kann zwischen dem langen Auslesen und hier zumachen ("device closed"/Timeout):
