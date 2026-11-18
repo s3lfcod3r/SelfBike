@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.17 · November 2026
+- 🇬🇧 Updates arrive faster: the "new version – reload" button now forces a genuinely fresh load instead of possibly showing the cached (old) page. On Gen 2–4 the scripts reload fresh too. (The site is hosted on GitHub Pages, which caches files for about 10 minutes; this works around it.)
+- 🇩🇪 Updates kommen schneller an: der „neue Version – neu laden"-Knopf lädt jetzt wirklich frisch, statt evtl. die gecachte (alte) Seite zu zeigen. Bei Gen 2–4 werden auch die Skripte frisch geladen. (Die Seite liegt auf GitHub Pages, das Dateien ~10 Minuten cacht; das umgeht es.)
+
 ## 1.9.16 · November 2026
 - 🇬🇧 Languages: filled in missing translations (second battery, Connect Module, display and gears labels) that previously fell back to German in 10 languages. The Gen 2–4 PDF's "free / support" footer now follows the app language too.
 - 🇬🇧 Support: Gen 2–4 now shows the thank-you + Ko-fi card after a successful read (it was empty before). The donation note now gently says SelfBike runs on its own servers in the background and still stays free — in all languages.

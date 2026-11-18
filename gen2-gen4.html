@@ -271,8 +271,9 @@
 <div id="stage" style="display:none"></div>
 <button id="scan" style="display:none"></button>
 
-<script src="bes2-faults.js"></script>
-<script src="gen2-gen4-engine.js"></script>
+<script>/* Skripte erben die Seiten-Query (?v=…) – so holt „Neu laden" vom Update-Banner wirklich frische Dateien (GitHub Pages cacht sonst 10 Min). */
+document.write('<' + 'script src="bes2-faults.js' + location.search + '"></' + 'script>');
+document.write('<' + 'script src="gen2-gen4-engine.js' + location.search + '"></' + 'script>');</script>
 <script type="module">
 import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
 import { VERSION, CHANGELOG_URL } from './lib/version.js';
