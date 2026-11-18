@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.5 · November 2026
+- 🇬🇧 Gen 2–4 footer now matches Smart: version as a "What's new?" link, "SelfBike stays free" note, and the full "nobody may charge for SelfBike" text with contact.
+- 🇩🇪 Gen 2–4-Fußzeile sieht jetzt aus wie bei Smart: Version als „Was ist neu?"-Link, „SelfBike bleibt kostenlos"-Hinweis und der volle „niemand darf für SelfBike Geld verlangen"-Text mit Kontakt.
+
 ## 1.9.4 · November 2026
 - 🇬🇧 Version is now shown consistently everywhere as "SelfBike v1.9.4" — the Gen 2–4 footer was missing it and the Smart footer lacked the "v". All read from `lib/version.js`.
 - 🇩🇪 Die Version steht jetzt überall einheitlich als „SelfBike v1.9.4" — in der Gen 2–4-Fußzeile fehlte sie, bei Smart fehlte das „v". Alles aus `lib/version.js`.

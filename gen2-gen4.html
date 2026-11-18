@@ -202,7 +202,9 @@
   <footer class="foothelp">
     <button id="showLegal" data-i18n="tools.legal">Rechtliche Hinweise anzeigen</button>
     <a href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi">SelfBike unterstützen</span></a>
-    <p class="kofihint"><span id="gvLabel">SelfBike</span> · <span data-bes="betaFoot">deine Daten bleiben im Browser.</span></p>
+    <a id="appVersion" target="_blank" rel="noopener"></a>
+    <p class="kofihint"><span data-i18n="free.kofi"></span></p>
+    <p class="kofihint"><b data-i18n="free.title"></b> <span data-i18n="free.text"></span> <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></p>
   </footer>
 </div>
 
@@ -265,7 +267,7 @@
 <script src="gen2-gen4-engine.js"></script>
 <script type="module">
 import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
-import { VERSION } from './lib/version.js';
+import { VERSION, CHANGELOG_URL } from './lib/version.js';
 (function(){
   const DECODE_WORKER='https://bike-decode.s3lfcod3r.workers.dev';
   const el=id=>document.getElementById(id);
@@ -317,7 +319,7 @@ import { VERSION } from './lib/version.js';
   };
   let curLang=detectLang();
   const tb=(k,v)=>{ const o=BES[k]; let s=(o&&(o[curLang]??o.de))||k; return v?s.replace(/\{(\w+)\}/g,(m,x)=>v[x]??m):s; };
-  function applyBes(root=document){ for(const e of root.querySelectorAll('[data-bes]')) e.textContent=tb(e.dataset.bes); const gv=el('gvLabel'); if(gv) gv.textContent='SelfBike v'+VERSION; }
+  function applyBes(root=document){ for(const e of root.querySelectorAll('[data-bes]')) e.textContent=tb(e.dataset.bes); const av=el('appVersion'); if(av){ av.href=CHANGELOG_URL; av.textContent='SelfBike v'+VERSION+' · '+t('ui.whatsNew'); } }
   function fillLangs(){ const s=el('lang'); if(!s)return; s.innerHTML=Object.entries(LANGS).map(([c,n])=>'<option value="'+c+'" title="'+esc(n)+'">'+c.toUpperCase()+'</option>').join(''); s.value=curLang; }
   // Geschlossen nur das Kürzel (schmal), aufgeklappt „Kürzel · Name" – wie beim Smart-System
   function langLabels(full){ const s=el('lang'); if(!s)return; s.style.width=full?s.offsetWidth+'px':''; for(const o of s.options) o.textContent=full?(o.value.toUpperCase()+' · '+LANGS[o.value]):o.value.toUpperCase(); }
