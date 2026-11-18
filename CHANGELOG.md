@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.6 · November 2026
+- 🇬🇧 Smart System: reworded the "rarely used / obsolete" fault codes (346 codes, 12 languages). They are no longer dismissed as "not a defect" — instead: usually harmless, but if the counter keeps rising it can point to a real problem, so save the protocol/screenshots (e.g. when assist cuts out) for your dealer. Added 3 new codes.
+- 🇩🇪 Smart System: die „selten genutzten / veralteten" Fehlercodes neu formuliert (346 Codes, 12 Sprachen). Sie werden nicht mehr als „kein Defekt" abgetan — stattdessen: meist harmlos, aber wenn der Zähler steigt, kann ein echtes Problem dahinterstecken; dann Protokoll/Screenshots sichern (z. B. wenn die Unterstützung aussetzt). 3 neue Codes ergänzt.
+
 ## 1.9.5 · November 2026
 - 🇬🇧 Gen 2–4 footer now matches Smart: version as a "What's new?" link, "SelfBike stays free" note, and the full "nobody may charge for SelfBike" text with contact.
 - 🇩🇪 Gen 2–4-Fußzeile sieht jetzt aus wie bei Smart: Version als „Was ist neu?"-Link, „SelfBike bleibt kostenlos"-Hinweis und der volle „niemand darf für SelfBike Geld verlangen"-Text mit Kontakt.
