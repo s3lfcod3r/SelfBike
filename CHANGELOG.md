@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.19 · November 2026
+- 🇬🇧 Gen 2–4: the PDF report now follows the app language as well — headings, labels and the note (it was German only before; the fault plain-text already followed the language). 32 report labels translated into all 12 languages.
+- 🇩🇪 Gen 2–4: der PDF-Bericht folgt jetzt auch der App-Sprache — Überschriften, Labels und der Hinweis (vorher nur Deutsch; der Fehler-Klartext folgte schon). 32 Bericht-Labels in alle 12 Sprachen übersetzt.
+
 ## 1.9.18 · November 2026
 - 🇬🇧 Gen 2–4: the fault plain-text explanations are now available in all 12 languages (376 codes with description and "what to do"). They used to be German only; now they follow the app language, with German as the fallback. The matching language pack loads on demand.
 - 🇩🇪 Gen 2–4: die Fehler-Klartexte gibt es jetzt in allen 12 Sprachen (376 Codes mit Beschreibung und „Was tun?"). Vorher nur Deutsch; jetzt folgen sie der App-Sprache, Deutsch bleibt Rückfall. Das passende Sprachpaket wird bei Bedarf geladen.

@@ -299,6 +299,38 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   const L=(de,en,fr,it,es,pt,nl,pl,cs,da,sv,fi)=>({de,en,fr,it,es,pt,nl,pl,cs,da,sv,fi});
   const BES={
     sub:L('BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4','BES2 · Gen2–4'),
+    'pdf.overview': L('Übersicht','Overview','Aperçu','Panoramica','Resumen','Visão geral','Overzicht','Przegląd','Přehled','Oversigt','Översikt','Yleiskatsaus'),
+    'pdf.info': L('eBike-Informationen','eBike information','Informations eBike','Informazioni eBike','Información de la eBike','Informações da eBike','eBike-informatie','Informacje o eBike','Informace o eBike','eBike-information','eBike-information','eBike-tiedot'),
+    'pdf.byMode': L('Fahrstrecke nach Modus','Distance by mode','Distance par mode','Distanza per modalità','Distancia por modo','Distância por modo','Afstand per modus','Dystans według trybu','Vzdálenost podle režimu','Distance pr. tilstand','Sträcka per läge','Matka tilan mukaan'),
+    'pdf.components': L('Komponenten','Components','Composants','Componenti','Componentes','Componentes','Componenten','Komponenty','Komponenty','Komponenter','Komponenter','Komponentit'),
+    'pdf.distance': L('Gesamtstrecke','Total distance','Distance totale','Distanza totale','Distancia total','Distância total','Totale afstand','Całkowity dystans','Celková vzdálenost','Samlet distance','Total sträcka','Kokonaismatka'),
+    'pdf.swMotor': L('Software (Motor)','Software (motor)','Logiciel (moteur)','Software (motore)','Software (motor)','Software (motor)','Software (motor)','Oprogramowanie (silnik)','Software (motor)','Software (motor)','Programvara (motor)','Ohjelmisto (moottori)'),
+    'pdf.manip': L('Manipulation','Tampering','Manipulation','Manomissione','Manipulación','Manipulação','Manipulatie','Manipulacja','Manipulace','Manipulation','Manipulation','Peukalointi'),
+    'pdf.manipNo': L('keine erkannt','none detected','aucune détectée','nessuna rilevata','no detectada','nenhuma detetada','geen gedetecteerd','nie wykryto','nezjištěna','ingen registreret','ingen upptäckt','ei havaittu'),
+    'pdf.manipYes': L('erkannt','detected','détectée','rilevata','detectada','detetada','gedetecteerd','wykryto','zjištěna','registreret','upptäckt','havaittu'),
+    'pdf.faultsTile': L('Fehlerspeicher','Fault memory','Mémoire de défauts','Memoria errori','Memoria de fallos','Memória de falhas','Foutgeheugen','Pamięć błędów','Paměť závad','Fejlhukommelse','Felminne','Vikamuisti'),
+    'pdf.faultsNone': L('keine Fehler','no faults','aucun défaut','nessun errore','sin fallos','sem falhas','geen fouten','brak błędów','žádné závady','ingen fejl','inga fel','ei vikoja'),
+    'pdf.faultsN': L('{n} Fehler','{n} faults','{n} défauts','{n} errori','{n} fallos','{n} falhas','{n} fouten','{n} błędów','{n} závad','{n} fejl','{n} fel','{n} vikaa'),
+    'pdf.prodMotor': L('Produktlinie / Motor','Product line / motor','Gamme / moteur','Linea di prodotto / motore','Línea de producto / motor','Linha de produto / motor','Productlijn / motor','Linia produktu / silnik','Produktová řada / motor','Produktlinje / motor','Produktlinje / motor','Tuotelinja / moottori'),
+    'pdf.bike': L('Fahrrad','Bike','Vélo','Bici','Bicicleta','Bicicleta','Fiets','Rower','Kolo','Cykel','Cykel','Pyörä'),
+    'pdf.maxAssist': L('Max. Unterstützung','Max. assistance','Assistance max.','Assistenza max.','Asistencia máx.','Assistência máx.','Max. ondersteuning','Maks. wspomaganie','Max. podpora','Maks. understøttelse','Max. assistans','Enimmäisavustus'),
+    'pdf.motorYear': L('Motor Baujahr','Motor year','Année du moteur','Anno del motore','Año del motor','Ano do motor','Bouwjaar motor','Rok silnika','Rok výroby motoru','Motorårgang','Motorårsmodell','Moottorin vuosimalli'),
+    'pdf.wheelCirc': L('Laufrad-Umfang','Wheel circumference','Circonférence de roue','Circonferenza ruota','Circunferencia de la rueda','Circunferência da roda','Wielomtrek','Obwód koła','Obvod kola','Hjulomkreds','Hjulomkrets','Pyörän ympärysmitta'),
+    'pdf.motorRt': L('Motor-Laufzeit','Motor runtime','Temps de fonctionnement moteur','Ore di funzionamento motore','Horas de funcionamiento del motor','Tempo de funcionamento do motor','Looptijd motor','Czas pracy silnika','Doba provozu motoru','Motordriftstid','Motorns drifttid','Moottorin käyttöaika'),
+    'pdf.sysRt': L('System-Laufzeit','System runtime','Temps de fonctionnement système','Ore di funzionamento sistema','Horas de funcionamiento del sistema','Tempo de funcionamento do sistema','Looptijd systeem','Czas pracy systemu','Doba provozu systému','Systemdriftstid','Systemets drifttid','Järjestelmän käyttöaika'),
+    'pdf.code': L('Code','Code','Code','Codice','Código','Código','Code','Kod','Kód','Kode','Kod','Koodi'),
+    'pdf.capacity': L('Kapazität','Capacity','Capacité','Capacità','Capacidad','Capacidade','Capaciteit','Pojemność','Kapacita','Kapacitet','Kapacitet','Kapasiteetti'),
+    'pdf.cycles': L('Ladezyklen','Charge cycles','Cycles de charge','Cicli di carica','Ciclos de carga','Ciclos de carga','Laadcycli','Cykle ładowania','Nabíjecí cykly','Opladningscyklusser','Laddningscykler','Latausjaksot'),
+    'pdf.svcAt': L('bei {v} km','at {v} km','à {v} km','a {v} km','a {v} km','a {v} km','bij {v} km','przy {v} km','při {v} km','ved {v} km','vid {v} km','{v} km:n kohdalla'),
+    'pdf.svcUnset': L('nicht gesetzt','not set','non défini','non impostato','no establecido','não definido','niet ingesteld','nie ustawiono','nenastaveno','ikke angivet','ej inställt','ei asetettu'),
+    'pdf.notRead': L('nicht gelesen','not read','non lu','non letto','no leído','não lido','niet gelezen','nie odczytano','nenačteno','ikke aflæst','ej avläst','ei luettu'),
+    'pdf.faultsOk': L('keine Fehler gespeichert','no faults stored','aucun défaut enregistré','nessun errore memorizzato','sin fallos almacenados','nenhuma falha armazenada','geen fouten opgeslagen','brak zapisanych błędów','žádné uložené závady','ingen fejl gemt','inga fel lagrade','ei tallennettuja vikoja'),
+    'pdf.active': L('aktiv','active','actif','attivo','activo','ativo','actief','aktywny','aktivní','aktiv','aktiv','aktiivinen'),
+    'pdf.stored': L('gespeichert','stored','enregistré','memorizzato','almacenado','armazenado','opgeslagen','zapisany','uloženo','gemt','lagrat','tallennettu'),
+    'pdf.faultWord': L('Fehler','Fault','Défaut','Errore','Fallo','Falha','Fout','Błąd','Závada','Fejl','Fel','Vika'),
+    'pdf.noModeData': L('keine Modus-Daten','no mode data','aucune donnée de mode','nessun dato modalità','sin datos de modo','sem dados de modo','geen modusgegevens','brak danych o trybie','žádná data režimu','ingen tilstandsdata','inga lägesdata','ei tilatietoja'),
+    'pdf.created': L('Erstellt','Created','Créé le','Creato il','Creado','Criado','Aangemaakt','Utworzono','Vytvořeno','Oprettet','Skapad','Luotu'),
+    'pdf.note': L('Für diesen Bericht hat SelfBike die Werte per USB nur ausgelesen, nichts verändert. Werte wie vom E-Bike-System gemeldet. Der Bericht ersetzt keine mechanische Prüfung oder Wartung.','For this report, SelfBike only read the values via USB and changed nothing. Values as reported by the e-bike system. The report does not replace a mechanical inspection or service.','Pour ce rapport, SelfBike a uniquement lu les valeurs via USB, sans rien modifier. Valeurs telles que signalées par le système eBike. Ce rapport ne remplace pas un contrôle mécanique ni un entretien.','Per questo rapporto SelfBike ha solo letto i valori via USB, senza modificare nulla. Valori come segnalati dal sistema eBike. Il rapporto non sostituisce un controllo meccanico o la manutenzione.','Para este informe, SelfBike solo leyó los valores por USB y no modificó nada. Valores según los indica el sistema de la eBike. El informe no sustituye una inspección mecánica ni un mantenimiento.','Para este relatório, o SelfBike apenas leu os valores via USB e não alterou nada. Valores conforme indicados pelo sistema da eBike. O relatório não substitui uma inspeção mecânica nem a manutenção.','Voor dit rapport heeft SelfBike de waarden alleen via USB uitgelezen en niets gewijzigd. Waarden zoals gemeld door het eBike-systeem. Het rapport vervangt geen mechanische inspectie of onderhoud.','Na potrzeby tego raportu SelfBike tylko odczytał wartości przez USB i niczego nie zmienił. Wartości zgodnie ze wskazaniami systemu eBike. Raport nie zastępuje przeglądu mechanicznego ani serwisu.','Pro tuto zprávu SelfBike hodnoty pouze načetl přes USB a nic nezměnil. Hodnoty dle hlášení systému eBike. Zpráva nenahrazuje mechanickou kontrolu ani servis.','Til denne rapport har SelfBike kun aflæst værdierne via USB og ikke ændret noget. Værdier som rapporteret af eBike-systemet. Rapporten erstatter ikke et mekanisk eftersyn eller service.','För den här rapporten har SelfBike endast läst av värdena via USB och inte ändrat något. Värden enligt eBike-systemets rapportering. Rapporten ersätter inte en mekanisk kontroll eller service.','Tätä raporttia varten SelfBike vain luki arvot USB:n kautta eikä muuttanut mitään. Arvot eBike-järjestelmän ilmoittamina. Raportti ei korvaa mekaanista tarkastusta tai huoltoa.'),
     temp:L('Temperatur','Temperature','Température','Temperatura','Temperatura','Temperatura','Temperatuur','Temperatura','Teplota','Temperatur','Temperatur','Lämpötila'),
     akkuDetail:L('Akku im Detail','Battery in detail','Batterie en détail','Batteria in dettaglio','Batería en detalle','Bateria em detalhe','Accu in detail','Akumulator szczegółowo','Baterie podrobně','Batteri i detaljer','Batteri i detalj','Akku yksityiskohtaisesti'),
     akkuDetailSub:L('Spannung, Zellen, Ladezyklen','Voltage, cells, charge cycles','Tension, cellules, cycles','Tensione, celle, cicli','Tensión, celdas, ciclos','Tensão, células, ciclos','Spanning, cellen, laadcycli','Napięcie, ogniwa, cykle','Napětí, články, cykly','Spænding, celler, cyklusser','Spänning, celler, cykler','Jännite, kennot, lataussyklit'),
@@ -660,7 +692,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       : '--self-bg:#0d1117;--self-bg-2:#161b22;--self-teal:#33a78c;--self-teal-deep:#43d3ad;--self-text:#eef4f7;--self-text-2:#8a9caa;--self-line:rgba(157,189,208,.18)';
     dtc=dtc||{};
     const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||'eBike';
-    const now=new Date().toLocaleString('de-DE');
+    const now=new Date().toLocaleString(curLang);
     const odo=num('M','0167'), soc=num('A','0510'), cap=num('A','02a0');
     const cyc=(num('A','0312')||0)+(num('A','0313')||0);
     const assist=num('M','0143'), dmax=num('M','0210'), manip=num('M','0272');
@@ -676,17 +708,17 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     const wmTxt=Array.from({length:16},(_,i)=>'<div style="margin-left:'+((i%2)*90)+'px">'+Array(6).fill('© '+YEAR+' SelfBike · SelfCoder').join('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</div>').join('');
     const tile=(k,v,good)=>'<div class="t"><div class="k">'+E(k)+'</div><div class="v">'+v+(good?' <span class="ok">✓</span>':'')+'</div></div>';
     const kvp=(k,v)=>'<tr><td>'+E(k)+'</td><td>'+v+'</td></tr>';
-    const names={M:'Motor',A:'Akku',D:'Display'};
+    const names={M:t('fault.Motor'),A:t('fault.Akku'),D:t('fault.Display')};
     let faultRows='';
     for(const tk of ['M','A','D']){ const l=dtc[tk]; let txt;
-      if(l==null) txt='nicht gelesen';
-      else if(l.error) txt='nicht lesbar';
-      else if(!l.length) txt='<span class="ok">keine Fehler gespeichert</span>';
-      else txt=l.map(d=>{ const a=(d.status&0x01)||(d.status&0x08); const info=(typeof faultText==='function')?faultText(tk,d.code):null; return 'Fehler '+d.code+' ('+(a?'aktiv':'gespeichert')+')'+(info&&info.d?' — '+esc(info.d):''); }).join('<br>');
+      if(l==null) txt=esc(tb('pdf.notRead'));
+      else if(l.error) txt=esc(t('fault.unreadable'));
+      else if(!l.length) txt='<span class="ok">'+esc(tb('pdf.faultsOk'))+'</span>';
+      else txt=l.map(d=>{ const a=(d.status&0x01)||(d.status&0x08); const info=(typeof faultText==='function')?faultText(tk,d.code):null; return esc(tb('pdf.faultWord'))+' '+d.code+' ('+(a?esc(tb('pdf.active')):esc(tb('pdf.stored')))+')'+(info&&info.d?' — '+esc(info.d):''); }).join('<br>');
       faultRows+=kvp(names[tk],txt);
     }
-    const bars=md.length?md.map(x=>'<div class="row"><span class="n">'+E(x.n)+'</span><span class="track"><span class="fill" style="width:'+(x.km/maxkm*100).toFixed(1)+'%"></span></span><span class="km">'+ni(x.km)+' km</span></div>').join(''):'<div class="n">keine Modus-Daten</div>';
-    return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>SelfBike '+E(bike)+' '+new Date().toISOString().slice(0,10)+'</title><style>'
+    const bars=md.length?md.map(x=>'<div class="row"><span class="n">'+E(x.n)+'</span><span class="track"><span class="fill" style="width:'+(x.km/maxkm*100).toFixed(1)+'%"></span></span><span class="km">'+ni(x.km)+' km</span></div>').join(''):'<div class="n">'+esc(tb('pdf.noModeData'))+'</div>';
+    return '<!doctype html><html lang="'+curLang+'"><head><meta charset="utf-8"><title>SelfBike '+E(bike)+' '+new Date().toISOString().slice(0,10)+'</title><style>'
       +':root{'+root+'}'
       +'*{box-sizing:border-box}@page{size:A4;margin:0}html,body{margin:0;background:var(--self-bg)}'
       +'body{color:var(--self-text);font:10.5pt/1.45 "Exo 2","Segoe UI",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
@@ -713,33 +745,33 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       +'</style></head><body>'
       +'<div class="wm" aria-hidden="true"><div class="txt">'+wmTxt+'</div><div class="shield"><img src="'+LOGO+'" alt=""></div></div>'
       +'<div class="page">'
-      +'<header><div><div class="brand"><img class="logo" src="'+LOGO+'" alt="">SelfBike</div><h1>eBike-Bericht</h1><div class="sub">'+E(bike)+' · Bosch BES2 (Gen 2–4)</div></div><div class="sub">Erstellt: '+E(now)+'</div></header>'
-      +'<section><h2>Übersicht</h2><div class="grid">'
-      +tile('Gesamtstrecke', ni(odo)+' km')
-      +tile('Nächster Service', serviceKm>0?('bei '+ni(serviceKm)+' km'):'nicht gesetzt')
-      +tile('Ladezustand Akku', (soc==null?'—':Math.round(soc)+' %'))
-      +tile('Software (Motor)', (pdfVer('M','0103')==='—'?'—':'v'+pdfVer('M','0103')))
-      +tile('Manipulation', ok?'keine erkannt':'erkannt', ok)
-      +tile('Fehlerspeicher', fCount===0?'keine Fehler':fCount+' Fehler', fCount===0)
+      +'<header><div><div class="brand"><img class="logo" src="'+LOGO+'" alt="">SelfBike</div><h1>'+esc(t('rep.title'))+'</h1><div class="sub">'+E(bike)+' · Bosch BES2 (Gen 2–4)</div></div><div class="sub">'+esc(tb('pdf.created'))+': '+E(now)+'</div></header>'
+      +'<section><h2>'+esc(tb('pdf.overview'))+'</h2><div class="grid">'
+      +tile(tb('pdf.distance'), ni(odo)+' km')
+      +tile(t('dp.serviceDue'), serviceKm>0?tb('pdf.svcAt',{v:ni(serviceKm)}):tb('pdf.svcUnset'))
+      +tile(t('bat.soc'), (soc==null?'—':Math.round(soc)+' %'))
+      +tile(tb('pdf.swMotor'), (pdfVer('M','0103')==='—'?'—':'v'+pdfVer('M','0103')))
+      +tile(tb('pdf.manip'), ok?tb('pdf.manipNo'):tb('pdf.manipYes'), ok)
+      +tile(tb('pdf.faultsTile'), fCount===0?tb('pdf.faultsNone'):tb('pdf.faultsN',{n:fCount}), fCount===0)
       +'</div></section>'
-      +'<section><h2>eBike-Informationen</h2><table>'
-      +kvp('Produktlinie / Motor', E(motorCode))
-      +kvp('Fahrrad', E(bike))
-      +kvp('Max. Unterstützung', (dmax!=null?nf(dmax,0)+' km/h':(assist!=null?nf(assist,0)+' km/h':'—')))
-      +kvp('Motor Baujahr', pdfMDate('M','014c'))
-      +kvp('Laufrad-Umfang', (num('M','0170')!=null?num('M','0170')+' mm':'—'))
+      +'<section><h2>'+esc(tb('pdf.info'))+'</h2><table>'
+      +kvp(tb('pdf.prodMotor'), E(motorCode))
+      +kvp(tb('pdf.bike'), E(bike))
+      +kvp(tb('pdf.maxAssist'), (dmax!=null?nf(dmax,0)+' km/h':(assist!=null?nf(assist,0)+' km/h':'—')))
+      +kvp(tb('pdf.motorYear'), pdfMDate('M','014c'))
+      +kvp(tb('pdf.wheelCirc'), (num('M','0170')!=null?num('M','0170')+' mm':'—'))
       +'</table></section>'
-      +'<section><h2>Fahrstrecke nach Modus</h2><div class="bars">'+bars+'</div><table>'
-      +kvp('Motor-Laufzeit', (rtM!=null?nf(rtM,1)+' h':'—'))
-      +kvp('System-Laufzeit', (rtS!=null?nf(rtS,1)+' h':'—'))
+      +'<section><h2>'+esc(tb('pdf.byMode'))+'</h2><div class="bars">'+bars+'</div><table>'
+      +kvp(tb('pdf.motorRt'), (rtM!=null?nf(rtM,1)+' h':'—'))
+      +kvp(tb('pdf.sysRt'), (rtS!=null?nf(rtS,1)+' h':'—'))
       +'</table></section>'
-      +'<section><h2>Komponenten</h2><div class="cards">'
-      +'<div class="card"><h3>Motor</h3><div class="r"><span>Code</span><b>'+E(motorCode)+'</b></div><div class="r"><span>SW / HW</span><b>'+pdfVer('M','0103')+' / '+pdfVer('M','0104')+'</b></div></div>'
-      +'<div class="card"><h3>Display</h3><div class="r"><span>Code</span><b>'+E(dispCode)+'</b></div><div class="r"><span>SW / HW</span><b>'+pdfVer('D','0220')+' / '+pdfVer('D','0221')+'</b></div></div>'
-      +'<div class="card"><h3>Akku</h3><div class="r"><span>Code</span><b>'+E(akkuCode)+'</b></div><div class="r"><span>Kapazität</span><b>'+(cap!=null?ni(cap)+' Wh':'—')+'</b></div><div class="r"><span>Ladezyklen</span><b>'+(cyc?nf(cyc,1):'—')+'</b></div></div>'
+      +'<section><h2>'+esc(tb('pdf.components'))+'</h2><div class="cards">'
+      +'<div class="card"><h3>'+esc(t('fault.Motor'))+'</h3><div class="r"><span>'+esc(tb('pdf.code'))+'</span><b>'+E(motorCode)+'</b></div><div class="r"><span>SW / HW</span><b>'+pdfVer('M','0103')+' / '+pdfVer('M','0104')+'</b></div></div>'
+      +'<div class="card"><h3>'+esc(t('fault.Display'))+'</h3><div class="r"><span>'+esc(tb('pdf.code'))+'</span><b>'+E(dispCode)+'</b></div><div class="r"><span>SW / HW</span><b>'+pdfVer('D','0220')+' / '+pdfVer('D','0221')+'</b></div></div>'
+      +'<div class="card"><h3>'+esc(t('fault.Akku'))+'</h3><div class="r"><span>'+esc(tb('pdf.code'))+'</span><b>'+E(akkuCode)+'</b></div><div class="r"><span>'+esc(tb('pdf.capacity'))+'</span><b>'+(cap!=null?ni(cap)+' Wh':'—')+'</b></div><div class="r"><span>'+esc(tb('pdf.cycles'))+'</span><b>'+(cyc?nf(cyc,1):'—')+'</b></div></div>'
       +'</div></section>'
-      +'<section><h2>Fehlerspeicher</h2><table>'+faultRows+'</table></section>'
-      +'<p class="note">Für diesen Bericht hat SelfBike die Werte per USB nur ausgelesen, nichts verändert. Werte wie vom E-Bike-System gemeldet. Der Bericht ersetzt keine mechanische Prüfung oder Wartung.</p>'
+      +'<section><h2>'+esc(tb('pdf.faultsTile'))+'</h2><table>'+faultRows+'</table></section>'
+      +'<p class="note">'+esc(tb('pdf.note'))+'</p>'
       +'<div class="free"><b>'+E(t('free.title'))+'</b> '+E(t('free.text'))+' <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></div>'
       +'<div class="made"><span><img src="'+LOGO+'" alt="">© '+YEAR+' SelfCoder · SelfBike '+VERSION+' · <a href="https://github.com/s3lfcod3r/SelfBike">github.com/s3lfcod3r/SelfBike</a></span><span>☕ '+E(t('support.kofi'))+': <a href="https://ko-fi.com/s3lfcod3r">ko-fi.com/s3lfcod3r</a></span></div>'
       +'</div>'
