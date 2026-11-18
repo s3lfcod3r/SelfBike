@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.24 · November 2026
+- 🇬🇧 Fast Charger: the fault memory and all values read correctly on a real bike. The lifetime energy value needs a scale check (differs from the Bosch tool), so the protocol now also prints its raw bytes for diagnosis.
+- 🇩🇪 Fast Charger: Fehlerspeicher und alle Werte am echten Rad korrekt gelesen. Der Lebenszeit-Energiewert braucht noch eine Skalen-Prüfung (weicht vom Bosch-Tool ab); das Protokoll zeigt dafür jetzt zusätzlich die Rohbytes.
+
 ## 1.9.23 · November 2026
 - 🇬🇧 Applied the 4K/VRR anti-flicker background layer to the two app pages (Smart System and Gen 2–4) as well, not just the start page.
 - 🇩🇪 Den 4K/VRR-Anti-Flacker-Hintergrundlayer auch auf die beiden App-Seiten (Smart System und Gen 2–4) angewendet, nicht nur auf die Startseite.

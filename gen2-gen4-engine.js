@@ -149,7 +149,10 @@ function decodeCharger(){
   ver('0103','BCS_SW_Version'); ver('0104','BCS_HW_Version'); ver('0107','FBL_SW_Version');
   if(D['5b7c']) put('5b7c','BCS_BoschProductCode',[{val:asciiOf(raw('5b7c'))||'—'}]);
   { const r=raw('0120'); if(r&&r.length>=4){ const y=(r[2]<<8)|r[3]; put('0120','BCS_ManufacturingDate',[{name:'Tag',num:r[0],val:''+r[0]},{name:'Monat',num:r[1],val:''+r[1]},{name:'Jahr',num:y,val:''+y}]); } }
-  { const r=raw('4420'); if(r&&r.length>=4){ const u=((r[0]<<24)|(r[1]<<16)|(r[2]<<8)|r[3])>>>0; const wh=u/10; put('4420','BCS_ProvidedEnergyLifetime',[{name:'Wh',num:wh,val:nf(wh,1)}]); } }
+  // Abgegebene Energie: ODX sagt uint32 ×0,1 Wh. An einem echten Charger wich der Wert aber um ~Faktor 3,6
+  // vom Bosch-IBD ab (18.11.2026). Bis das geklärt ist, geben wir zusätzlich die Rohbytes + Länge aus, damit
+  // ein eingeschicktes Protokoll zeigt, was der Charger wirklich sendet.
+  { const r=raw('4420'); if(r&&r.length>=4){ const u=((r[0]<<24)|(r[1]<<16)|(r[2]<<8)|r[3])>>>0; const wh=u/10; put('4420','BCS_ProvidedEnergyLifetime',[{name:'Wh',num:wh,val:nf(wh,1)},{name:'roh',val:'0x'+hex(r)+' ('+r.length+' Byte)'}]); } }
   // Serien-/Teilenummer als String markiert → wird im Protokoll ausgeblendet (wie bei den anderen Steuergeräten)
   if(D['0122']) put('0122','BCS_PartNumber',[{name:'PartNumber',str:true,val:asciiOf(raw('0122'))||'—'}]);
   if(D['0123']) put('0123','BCS_SerialNumber',[{name:'SerialNumber',str:true,val:asciiOf(raw('0123'))||'—'}]);
