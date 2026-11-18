@@ -631,7 +631,11 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       document.body.appendChild(ov);
       el('rClose').onclick=()=>ov.classList.remove('open');
       el('rTheme').onclick=()=>{ reportTheme=reportTheme==='dark'?'light':'dark'; renderReport(); };
-      el('rPrint').onclick=()=>{ const f=el('rFrame'); try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){} };
+      el('rPrint').onclick=()=>{ const f=el('rFrame'); const prev=document.title;
+        const nm=((el('bikeName')&&el('bikeName').value.trim())||str('M','5b7c')||'').trim();
+        document.title=('SelfBike '+(nm?nm+' ':'')+new Date().toISOString().slice(0,10)).trim();
+        try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){}
+        setTimeout(()=>{ document.title=prev; },1500); };
     }
     ov._dtc=dtc; ov._svc=serviceKm;
     try{ if(!(M()&&M().__demo)){ const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||''; if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); } }catch(e){}
@@ -671,7 +675,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       faultRows+=kvp(names[tk],txt);
     }
     const bars=md.length?md.map(x=>'<div class="row"><span class="n">'+E(x.n)+'</span><span class="track"><span class="fill" style="width:'+(x.km/maxkm*100).toFixed(1)+'%"></span></span><span class="km">'+ni(x.km)+' km</span></div>').join(''):'<div class="n">keine Modus-Daten</div>';
-    return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>SelfBike · eBike-Bericht</title><style>'
+    return '<!doctype html><html lang="de"><head><meta charset="utf-8"><title>SelfBike '+E(bike)+' '+new Date().toISOString().slice(0,10)+'</title><style>'
       +':root{'+root+'}'
       +'*{box-sizing:border-box}@page{size:A4;margin:0}html,body{margin:0;background:var(--self-bg)}'
       +'body{color:var(--self-text);font:10.5pt/1.45 "Exo 2","Segoe UI",system-ui,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}'

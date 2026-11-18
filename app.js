@@ -1471,7 +1471,15 @@ async function openReportSmart() {
     document.body.appendChild(ov);
     $('rClose').onclick = () => { ov.classList.remove('open'); const f = $('rFrame'); if (f.dataset.url) URL.revokeObjectURL(f.dataset.url); f.removeAttribute('src'); f.dataset.url = ''; };
     $('rTheme').onclick = () => { smartTheme = smartTheme === 'dark' ? 'light' : 'dark'; renderSmartReport(); };
-    $('rPrint').onclick = () => { const f = $('rFrame'); try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {} };
+    $('rPrint').onclick = () => {
+      // Dateiname des PDFs = Titel. Manche Browser nehmen beim iframe-Druck den Titel der ELTERNseite,
+      // nicht den des Berichts → vor dem Druck Elterntitel auf „SelfBike <Rad> <Datum>" setzen, danach zurück.
+      const f = $('rFrame'); const prev = document.title;
+      const nm = ((smartReport && smartReport.name) || '').trim();
+      document.title = ('SelfBike ' + (nm ? nm + ' ' : '') + new Date().toISOString().slice(0, 10)).trim();
+      try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) {}
+      setTimeout(() => { document.title = prev; }, 1500);
+    };
   }
   renderSmartReport();
   ov.classList.add('open');

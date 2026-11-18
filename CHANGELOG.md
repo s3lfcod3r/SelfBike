@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.12 · November 2026
+- 🇬🇧 PDF export: the saved file is named after the bike and date again ("SelfBike <bike> <date>") instead of just "SelfBike". Some browsers use the parent page's title when printing the report frame, so the title is now set correctly right before printing (both Smart and Gen 2–4).
+- 🇩🇪 PDF-Export: die gespeicherte Datei heißt wieder nach Rad und Datum („SelfBike <Rad> <Datum>") statt nur „SelfBike". Manche Browser nehmen beim Drucken des Bericht-Frames den Titel der Elternseite — der wird jetzt direkt vor dem Druck korrekt gesetzt (Smart und Gen 2–4).
+
 ## 1.9.11 · November 2026
 - 🇬🇧 Support package: fixed the .zip. The central directory header had one field too many, so Windows called the file "corrupt" and Gmail couldn't scan it ("virus"). The zip is now valid (verified). Please create and send a fresh support package.
 - 🇬🇧 Smart System: the demo now lists faults again (the demo's canned faults still used the old addresses after the fix). This also confirms the whole fault-read chain works end to end.
