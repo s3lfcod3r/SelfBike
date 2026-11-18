@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.25 · November 2026
+- 🇬🇧 Fast Charger: the lifetime energy value now matches the Bosch tool. The correct scale turned out to be ÷36 (the ODX's ×0.1 is wrong for this field), confirmed on two real BCS250 chargers. Raw-byte diagnostic removed again.
+- 🇩🇪 Fast Charger: der Lebenszeit-Energiewert stimmt jetzt mit dem Bosch-Tool überein. Die richtige Skala ist ÷36 (die ×0,1 aus dem ODX passt für dieses Feld nicht), an zwei echten BCS250-Chargern bestätigt. Roh-Byte-Diagnose wieder entfernt.
+
 ## 1.9.24 · November 2026
 - 🇬🇧 Fast Charger: the fault memory and all values read correctly on a real bike. The lifetime energy value needs a scale check (differs from the Bosch tool), so the protocol now also prints its raw bytes for diagnosis.
 - 🇩🇪 Fast Charger: Fehlerspeicher und alle Werte am echten Rad korrekt gelesen. Der Lebenszeit-Energiewert braucht noch eine Skalen-Prüfung (weicht vom Bosch-Tool ab); das Protokoll zeigt dafür jetzt zusätzlich die Rohbytes.
