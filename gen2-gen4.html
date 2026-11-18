@@ -1017,7 +1017,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ del.disabled=false; }
     };
   }
-  const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS'],D:['HMI']}, ECUNAME={M:'Motor',A:'Akku',D:'Display'};
+  const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']}, ECUNAME={M:'Motor',A:'Akku',D:'Display'};
   function faultText(tk,code){ const F=window.BES2_FAULTS||{}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
   async function renderFehler(body){
     body.innerHTML='<p class="desc" style="text-align:center">Fehlerspeicher wird gelesen …</p>';
@@ -1036,7 +1036,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
         const info=faultText(tk,d.code); const active=(d.status&0x01)||(d.status&0x08);
         const div=document.createElement('div'); div.className='fault';
         div.innerHTML='<b><i class="sevtag'+(active?' sev-ERROR':'')+'">'+(active?'aktiv':'gespeichert')+'</i>Fehler '+d.code+'</b>'
-          +'<span>'+esc(info&&info.d?info.d:'Keine Beschreibung in der Bosch-Datenbank.')+'</span>'
+          +'<span>'+esc(info&&info.d?info.d:'Für diesen Code liegt uns noch kein Klartext vor — bitte Protokoll speichern und einschicken.')+'</span>'
           +(info&&info.a?'<details><summary>Was tun?</summary><span>'+esc(info.a)+'</span></details>':'');
         grp.appendChild(div);
       });

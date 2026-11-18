@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.8 · November 2026
+- 🇬🇧 Gen 2–4: fault codes now show readable plain text instead of just a hex number. 376 codes across drive unit, battery and display are explained in our own words with a "What to do?" hint — restart, check for an update, see a dealer. Codes we don't have text for yet still show up with the note to save and send in the protocol.
+- 🇩🇪 Gen 2–4: Fehlercodes zeigen jetzt lesbaren Klartext statt nur einer Hex-Zahl. 376 Codes aus Antrieb, Akku und Display sind in eigenen Worten erklärt, mit „Was tun?"-Hinweis — neu starten, auf Update prüfen, zum Händler. Codes ohne Text erscheinen weiter mit dem Hinweis, das Protokoll zu speichern und einzuschicken.
+
 ## 1.9.7 · November 2026
 - 🇬🇧 Smart System: the fault memory is now read until the control unit signals the end of the list, instead of stopping at a reported count. Some bikes report no count but still have stored faults — those were missed before (the bike looked "clean"). Now they show up. (Same method as the reference BES3 reader.)
 - 🇩🇪 Smart System: der Fehlerspeicher wird jetzt bis zum Listenende des Steuergeräts gelesen, statt bei einer gemeldeten Anzahl aufzuhören. Manche Räder melden keine Anzahl, haben aber gespeicherte Fehler — die wurden vorher übersehen (Rad sah „sauber" aus). Jetzt tauchen sie auf.

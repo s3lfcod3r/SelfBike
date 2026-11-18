@@ -358,7 +358,7 @@ function fullTables(){
 /* ---------- Protokoll speichern (Seriennummern/IDs ausgeblendet) ---------- */
 const BLUR=/serial|seriennumm|partnumber|teilenumm|idnumber|keynumber|rahmennumm|bike_id|number|label/i;
 function blurVal(name,svc,val,isStr){ if(!isStr)return val; if(BLUR.test(name||'')||BLUR.test(svc||''))return '•••••••• (ausgeblendet)'; return val; }
-const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS'],D:['HMI']};
+const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']};
 function faultTextEng(tk,code){ const F=window.BES2_FAULTS||{}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
 function buildReport(dtc){
   dtc=dtc||{};
