@@ -12,6 +12,10 @@
   /* SelfBike – einfache Ansicht im iPhone-Stil. Farben nur aus brand/tokens.css */
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--self-bg-0); color: var(--self-text); }
+  /* 4K + VRR: große, flache Dunkelflächen flackern. Eigener, dauerhaft GPU-kompositierter
+     Hintergrund-Layer stabilisiert das Bild. NICHT auf <body> (sonst verlieren die vielen
+     position:fixed-Elemente – Tabbar, Sheets, Toast, prog – ihren Viewport-Bezug). */
+  body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: var(--self-bg-0); transform: translateZ(0); }
   body { font: 16px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, "Segoe UI", sans-serif;
          -webkit-font-smoothing: antialiased; }
   button, input, select { font: inherit; color: inherit; }

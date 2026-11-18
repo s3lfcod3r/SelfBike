@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.23 · November 2026
+- 🇬🇧 Applied the 4K/VRR anti-flicker background layer to the two app pages (Smart System and Gen 2–4) as well, not just the start page.
+- 🇩🇪 Den 4K/VRR-Anti-Flacker-Hintergrundlayer auch auf die beiden App-Seiten (Smart System und Gen 2–4) angewendet, nicht nur auf die Startseite.
+
 ## 1.9.22 · November 2026
 - 🇬🇧 Start page: fixed flickering on 4K screens with variable refresh rate (VRR). The large, flat dark background is now its own GPU-composited layer, which keeps the image stable. No layout change.
 - 🇩🇪 Startseite: Flackern auf 4K-Bildschirmen mit variabler Bildwiederholrate (VRR) behoben. Der große, flache dunkle Hintergrund liegt jetzt in einem eigenen GPU-Layer, der das Bild stabil hält. Keine Layout-Änderung.
