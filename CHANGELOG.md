@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.7 · November 2026
+- 🇬🇧 Smart System: the fault memory is now read until the control unit signals the end of the list, instead of stopping at a reported count. Some bikes report no count but still have stored faults — those were missed before (the bike looked "clean"). Now they show up. (Same method as the reference BES3 reader.)
+- 🇩🇪 Smart System: der Fehlerspeicher wird jetzt bis zum Listenende des Steuergeräts gelesen, statt bei einer gemeldeten Anzahl aufzuhören. Manche Räder melden keine Anzahl, haben aber gespeicherte Fehler — die wurden vorher übersehen (Rad sah „sauber" aus). Jetzt tauchen sie auf.
+
 ## 1.9.6 · November 2026
 - 🇬🇧 Smart System: reworded the "rarely used / obsolete" fault codes (346 codes, 12 languages). They are no longer dismissed as "not a defect" — instead: usually harmless, but if the counter keeps rising it can point to a real problem, so save the protocol/screenshots (e.g. when assist cuts out) for your dealer. Added 3 new codes.
 - 🇩🇪 Smart System: die „selten genutzten / veralteten" Fehlercodes neu formuliert (346 Codes, 12 Sprachen). Sie werden nicht mehr als „kein Defekt" abgetan — stattdessen: meist harmlos, aber wenn der Zähler steigt, kann ein echtes Problem dahinterstecken; dann Protokoll/Screenshots sichern (z. B. wenn die Unterstützung aussetzt). 3 neue Codes ergänzt.
