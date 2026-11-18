@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.26 · November 2026
+- 🇬🇧 Start page: corrected the system labels. BES2 is now "before Smart System" and Smart System is "BES3" (the old "Gen 2–4" / "Gen 5" tags were misleading — Gen 3/4 motors exist in both systems, and there is no "Gen 5"). Thanks to the pedelec forum for the hint.
+- 🇩🇪 Startseite: System-Beschriftung korrigiert. BES2 heißt jetzt „vor Smart System", Smart System ist „BES3" (die alten „Gen 2–4" / „Gen 5"-Label waren irreführend — Gen-3/4-Motoren gibt es in beiden Systemen, und „Gen 5" gibt es nicht). Danke ans Pedelecforum für den Hinweis.
+
 ## 1.9.25 · November 2026
 - 🇬🇧 Fast Charger: the lifetime energy value now matches the Bosch tool. The correct scale turned out to be ÷36 (the ODX's ×0.1 is wrong for this field), confirmed on two real BCS250 chargers. Raw-byte diagnostic removed again.
 - 🇩🇪 Fast Charger: der Lebenszeit-Energiewert stimmt jetzt mit dem Bosch-Tool überein. Die richtige Skala ist ÷36 (die ×0,1 aus dem ODX passt für dieses Feld nicht), an zwei echten BCS250-Chargern bestätigt. Roh-Byte-Diagnose wieder entfernt.
