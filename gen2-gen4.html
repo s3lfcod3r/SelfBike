@@ -596,6 +596,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     for(const f of protoFiles()) files.push(f);
     files.push({name:'aenderungs-protokoll.txt', data:enc.encode(changeLogText())});
     files.push({name:'fehler-log.txt', data:enc.encode(errLogText())});
+    files.push({name:'uebertragungs-log.txt', data:enc.encode((typeof window.__diagLog==='function'?window.__diagLog():'')||'(kein Übertragungs-Log)')});
     files.push({name:'info.txt', data:enc.encode(supportInfoText())});
     for(const f of (attachments||[])){ try{ const buf=new Uint8Array(await f.arrayBuffer()); files.push({name:'anhaenge/'+String(f.name).replace(/[^\w.\- ]+/g,'_'), data:buf}); }catch(e){} }
     try{

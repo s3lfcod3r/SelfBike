@@ -492,6 +492,8 @@ async function readDTC(){
 }
 window.__bikeWrite={ clearFaults, readFieldRaw, writeField, restoreField, readDTC };
 window.__scan=scan; // damit die „Mein E-Bike"-Hülle den Scan starten und abwarten kann
+// TX/RX-Übertragungsverlauf als Text (für das Support-Paket, damit man sieht, wo z. B. das Fehlerlesen hängt).
+window.__diagLog=()=>{ try{ return logEl ? Array.from(logEl.children).map(d=>d.textContent).join('\n') : ''; }catch(e){ return ''; } };
 
 /* ---------- Init ---------- */
 function init(){

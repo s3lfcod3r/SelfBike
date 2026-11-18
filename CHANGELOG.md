@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.13 · November 2026
+- 🇬🇧 Gen 2–4: the support package now also includes the transmission log (TX/RX), so when the fault memory can't be read we can see exactly where it stalls. Helps diagnose the "fault memory unreadable" reports.
+- 🇩🇪 Gen 2–4: das Support-Paket enthält jetzt auch den Übertragungs-Log (TX/RX) — so sehen wir bei „Fehlerspeicher nicht lesbar" genau, wo es hängt. Hilft bei der Fehlersuche.
+
 ## 1.9.12 · November 2026
 - 🇬🇧 PDF export: the saved file is named after the bike and date again ("SelfBike <bike> <date>") instead of just "SelfBike". Some browsers use the parent page's title when printing the report frame, so the title is now set correctly right before printing (both Smart and Gen 2–4).
 - 🇩🇪 PDF-Export: die gespeicherte Datei heißt wieder nach Rad und Datum („SelfBike <Rad> <Datum>") statt nur „SelfBike". Manche Browser nehmen beim Drucken des Bericht-Frames den Titel der Elternseite — der wird jetzt direkt vor dem Druck korrekt gesetzt (Smart und Gen 2–4).
