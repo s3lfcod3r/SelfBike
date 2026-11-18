@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.27 · November 2026
+- 🇬🇧 Start page: fixed the two cards being misaligned. The system labels are now short (BES2 / BES3) so the headers are the same height and both checkmark lists start at the same line.
+- 🇩🇪 Startseite: die beiden Karten waren verschoben. Die System-Label sind jetzt kurz (BES2 / BES3), damit die Köpfe gleich hoch sind und beide Häkchen-Listen auf derselben Höhe beginnen.
+
 ## 1.9.26 · November 2026
 - 🇬🇧 Start page: corrected the system labels. BES2 is now "before Smart System" and Smart System is "BES3" (the old "Gen 2–4" / "Gen 5" tags were misleading — Gen 3/4 motors exist in both systems, and there is no "Gen 5"). Thanks to the pedelec forum for the hint.
 - 🇩🇪 Startseite: System-Beschriftung korrigiert. BES2 heißt jetzt „vor Smart System", Smart System ist „BES3" (die alten „Gen 2–4" / „Gen 5"-Label waren irreführend — Gen-3/4-Motoren gibt es in beiden Systemen, und „Gen 5" gibt es nicht). Danke ans Pedelecforum für den Hinweis.

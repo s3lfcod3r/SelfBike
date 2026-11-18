@@ -31,12 +31,12 @@ function applyCards(code){
   const s = S[code] || S.de;
   $('t-title').textContent = s.title;
   $('t-intro').textContent = s.intro;
-  $('t-bes2k').textContent = 'BES2 · ' + s.preSmart;
+  $('t-bes2k').textContent = 'BES2';
   $('t-bes2f1').textContent = 'Active · Performance · Cargo';
   $('t-bes2f2').textContent = 'Purion · BDU2xx–4xx';
   $('t-bes2f3').textContent = s.year + ' ~2014–2021';
   $('t-bes2f4').textContent = s.pcOnly;
-  $('t-ssk').textContent = 'BES3 · Smart System';
+  $('t-ssk').textContent = 'BES3';
   $('t-ssf1').textContent = s.disp + ': Kiox 300 / 500';
   $('t-ssf2').textContent = 'Controller & LED-Remote';
   $('t-ssf3').textContent = s.year + ' ' + s.since + ' ~2022';
