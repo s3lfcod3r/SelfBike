@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.18 · November 2026
+- 🇬🇧 Gen 2–4: the fault plain-text explanations are now available in all 12 languages (376 codes with description and "what to do"). They used to be German only; now they follow the app language, with German as the fallback. The matching language pack loads on demand.
+- 🇩🇪 Gen 2–4: die Fehler-Klartexte gibt es jetzt in allen 12 Sprachen (376 Codes mit Beschreibung und „Was tun?"). Vorher nur Deutsch; jetzt folgen sie der App-Sprache, Deutsch bleibt Rückfall. Das passende Sprachpaket wird bei Bedarf geladen.
+
 ## 1.9.17 · November 2026
 - 🇬🇧 Updates arrive faster: the "new version – reload" button now forces a genuinely fresh load instead of possibly showing the cached (old) page. On Gen 2–4 the scripts reload fresh too. (The site is hosted on GitHub Pages, which caches files for about 10 minutes; this works around it.)
 - 🇩🇪 Updates kommen schneller an: der „neue Version – neu laden"-Knopf lädt jetzt wirklich frisch, statt evtl. die gecachte (alte) Seite zu zeigen. Bei Gen 2–4 werden auch die Skripte frisch geladen. (Die Seite liegt auf GitHub Pages, das Dateien ~10 Minuten cacht; das umgeht es.)

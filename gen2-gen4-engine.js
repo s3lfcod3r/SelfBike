@@ -390,7 +390,7 @@ function fullTables(){
 const BLUR=/serial|seriennumm|partnumber|teilenumm|idnumber|keynumber|rahmennumm|bike_id|number|label/i;
 function blurVal(name,svc,val,isStr){ if(!isStr)return val; if(BLUR.test(name||'')||BLUR.test(svc||''))return '•••••••• (ausgeblendet)'; return val; }
 const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']};
-function faultTextEng(tk,code){ const F=window.BES2_FAULTS||{}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
+function faultTextEng(tk,code){ const L=(window.__bes2lang||'de'); const F=(L!=='de' && window['BES2_FAULTS_'+L.toUpperCase()]) || window.BES2_FAULTS || {}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
 function buildReport(dtc){
   dtc=dtc||{};
   const names={M:'Motor',A:'Akku',D:'Display'};

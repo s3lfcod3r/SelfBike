@@ -336,7 +336,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   function applyAll(){ applyStatic(); applyBes();
     if(!readDone()){ el('pageTitle').textContent=t('ui.home'); el('pageSub').textContent=tb('sub'); el('conn').className='conn'; el('connText').textContent=t('conn.off'); }
     else { buildHome(); if(el('tab-settings')&&!el('tab-settings').classList.contains('hidden')){ settingsBuilt=false; ensureSettings(); } } }
-  async function initI18n(){ await setLang(curLang); fillLangs(); applyAll(); const s=el('lang'); if(s){ s.addEventListener('pointerdown',()=>langLabels(true)); s.addEventListener('keydown',()=>langLabels(true)); s.addEventListener('blur',()=>langLabels(false)); s.onchange=async e=>{ langLabels(false); curLang=e.target.value; await setLang(curLang); applyAll(); }; } }
+  async function initI18n(){ await setLang(curLang); await loadBes2Lang(curLang); fillLangs(); applyAll(); const s=el('lang'); if(s){ s.addEventListener('pointerdown',()=>langLabels(true)); s.addEventListener('keydown',()=>langLabels(true)); s.addEventListener('blur',()=>langLabels(false)); s.onchange=async e=>{ langLabels(false); curLang=e.target.value; await setLang(curLang); await loadBes2Lang(curLang); applyAll(); }; } }
   const M=()=>window.__model||{};
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const cq=s=>String(s).replace(/"/g,'\\"');
@@ -1033,7 +1033,12 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     };
   }
   const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']}, ECUNAME={M:'Motor',A:'Akku',D:'Display'};
-  function faultText(tk,code){ const F=window.BES2_FAULTS||{}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
+  function faultText(tk,code){ const L=(window.__bes2lang||'de'); const F=(L!=='de' && window['BES2_FAULTS_'+L.toUpperCase()]) || window.BES2_FAULTS || {}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
+  // Fehlertexte je Sprache: Deutsch ist eingebettet (bes2-faults.js), andere Sprachen werden bei Bedarf nachgeladen.
+  window.__bes2lang='de';
+  async function loadBes2Lang(lang){ window.__bes2lang=lang||'de'; const U=(lang||'de').toUpperCase();
+    if(!lang || lang==='de' || window['BES2_FAULTS_'+U]) return;
+    try{ await new Promise((res,rej)=>{ const sc=document.createElement('script'); sc.src='bes2-faults-'+lang+'.js'+location.search; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); }); }catch(e){ /* Fallback: Deutsch */ } }
   async function renderFehler(body){
     body.innerHTML='<p class="desc" style="text-align:center">Fehlerspeicher wird gelesen …</p>';
     let dtc={};
