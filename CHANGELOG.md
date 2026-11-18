@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.16 · November 2026
+- 🇬🇧 Languages: filled in missing translations (second battery, Connect Module, display and gears labels) that previously fell back to German in 10 languages. The Gen 2–4 PDF's "free / support" footer now follows the app language too.
+- 🇬🇧 Support: Gen 2–4 now shows the thank-you + Ko-fi card after a successful read (it was empty before). The donation note now gently says SelfBike runs on its own servers in the background and still stays free — in all languages.
+- 🇩🇪 Sprachen: fehlende Übersetzungen ergänzt (Zusatzakku, Connect Module, Display- und Gang-Labels), die in 10 Sprachen vorher auf Deutsch zurückfielen. Der „kostenlos / unterstützen"-Fuß im Gen-2-4-PDF folgt jetzt auch der App-Sprache.
+- 🇩🇪 Unterstützen: Gen 2–4 zeigt nach erfolgreichem Auslesen jetzt die Danke-+-Ko-fi-Karte (vorher leer). Der Spenden-Hinweis sagt jetzt freundlich, dass SelfBike im Hintergrund auf eigenen Servern läuft und trotzdem kostenlos bleibt — in allen Sprachen.
+
 ## 1.9.15 · November 2026
 - 🇬🇧 Gen 2–4: fixed fault reading on control units with many stored faults. Asking for all faults at once made the control unit answer "response too long" (so it showed as unreadable). Now, in that case, SelfBike asks per status group and merges the results — the faults come through. (Found via a real bike's transmission log.)
 - 🇩🇪 Gen 2–4: Fehlerlesen bei Steuergeräten mit vielen gespeicherten Fehlern repariert. Die Abfrage „alle Fehler auf einmal" beantwortete das Steuergerät mit „Antwort zu lang" (darum „nicht lesbar"). SelfBike fragt jetzt in dem Fall gruppenweise ab und führt zusammen — die Fehler kommen durch. (Über den Übertragungs-Log eines echten Rads gefunden.)

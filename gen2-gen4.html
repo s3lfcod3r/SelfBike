@@ -232,7 +232,11 @@
     <circle id="progArc" cx="62" cy="62" r="52" fill="none" stroke="var(--self-teal-bright)" stroke-width="9" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" style="transition:stroke-dashoffset .45s ease,stroke .3s ease"></circle>
   </svg><div class="pctw" id="progPct">0%</div></div>
   <p id="progStat"></p>
-  <div id="progKofi"></div>
+  <div id="progKofi">
+    <p data-i18n="support.thanks" style="margin:0 0 12px;font-size:14px;line-height:1.4"></p>
+    <a class="btn-big" style="margin:0;background:var(--self-teal)" href="https://ko-fi.com/s3lfcod3r" target="_blank" rel="noopener">☕ <span data-i18n="support.kofi">SelfBike unterstützen</span></a>
+    <p class="kofihint" style="margin:10px 0 0;font-size:12px;color:var(--self-text-2);text-align:center"><span data-i18n="free.kofi"></span></p>
+  </div>
   <button id="progDone" class="btn-big" style="display:none;margin-top:16px" data-i18n="ui.done">Fertig</button>
 </div></div>
 
@@ -735,8 +739,8 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       +'</div></section>'
       +'<section><h2>Fehlerspeicher</h2><table>'+faultRows+'</table></section>'
       +'<p class="note">Für diesen Bericht hat SelfBike die Werte per USB nur ausgelesen, nichts verändert. Werte wie vom E-Bike-System gemeldet. Der Bericht ersetzt keine mechanische Prüfung oder Wartung.</p>'
-      +'<div class="free"><b>SelfBike ist kostenlos.</b> Für das Auslesen, den PDF-Bericht oder Änderungen mit SelfBike darf niemand Geld verlangen – eine Werkstatt darf nur ihre eigene Arbeit berechnen. Hast du für SelfBike bezahlt? Dann melde dich bitte: <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></div>'
-      +'<div class="made"><span><img src="'+LOGO+'" alt="">© '+YEAR+' SelfCoder · SelfBike '+VERSION+' · kostenlos und offen auf <a href="https://github.com/s3lfcod3r/SelfBike">github.com/s3lfcod3r/SelfBike</a></span><span>☕ SelfBike unterstützen: <a href="https://ko-fi.com/s3lfcod3r">ko-fi.com/s3lfcod3r</a></span></div>'
+      +'<div class="free"><b>'+E(t('free.title'))+'</b> '+E(t('free.text'))+' <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></div>'
+      +'<div class="made"><span><img src="'+LOGO+'" alt="">© '+YEAR+' SelfCoder · SelfBike '+VERSION+' · <a href="https://github.com/s3lfcod3r/SelfBike">github.com/s3lfcod3r/SelfBike</a></span><span>☕ '+E(t('support.kofi'))+': <a href="https://ko-fi.com/s3lfcod3r">ko-fi.com/s3lfcod3r</a></span></div>'
       +'</div>'
       +'</body></html>';
   }
