@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.11 · November 2026
+- 🇬🇧 Support package: fixed the .zip. The central directory header had one field too many, so Windows called the file "corrupt" and Gmail couldn't scan it ("virus"). The zip is now valid (verified). Please create and send a fresh support package.
+- 🇬🇧 Smart System: the demo now lists faults again (the demo's canned faults still used the old addresses after the fix). This also confirms the whole fault-read chain works end to end.
+- 🇩🇪 Support-Paket: die .zip repariert. Im zentralen Verzeichnis-Header war ein Feld zu viel, deshalb nannte Windows die Datei „beschädigt" und Gmail konnte sie nicht scannen („Virus"). Die Zip ist jetzt gültig (geprüft). Bitte ein neues Support-Paket erstellen und schicken.
+- 🇩🇪 Smart System: die Demo listet wieder Fehler (die Demo-Fehler lagen nach dem Fix noch auf den alten Adressen). Das bestätigt zugleich die ganze Fehlerlese-Kette end-to-end.
+
 ## 1.9.10 · November 2026
 - 🇬🇧 Smart System: fixed a regression from 1.9.9. The new fault-read addresses were blocked by SelfBike's internal safety check (its allowlist still had the old addresses), so every control unit showed "unreadable". The allowlist is now tied directly to the fault sources, and the fault read works. Verified byte-for-byte against a real bike.
 - 🇩🇪 Smart System: Regression aus 1.9.9 behoben. Die neuen Fehler-Adressen wurden von SelfBikes interner Sicherheitsprüfung blockiert (die Freigabeliste hatte noch die alten Adressen), deshalb stand bei jedem Steuergerät „nicht lesbar". Die Liste hängt jetzt direkt an den Fehlerquellen, das Lesen funktioniert. Byte-für-byte gegen ein echtes Rad geprüft.

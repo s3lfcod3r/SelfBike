@@ -859,7 +859,7 @@ const PAGES = {
     // Nicht verbaute Steuergeräte (Status 'none', z. B. Display/HeadUnit, hier Kiox als Bedieneinheit) und ABS, das
     // auf diesem System nicht auf den Löschkanal antwortet (bekannter, harmloser Zustand), ganz ausblenden – kein
     // echter Fehler, nicht löschbar, nur Rauschen. Ein installiertes, lesbares ABS mit Fehlern (Status 'ok') bleibt sichtbar.
-    const body = faults.filter((f) => f.status !== 'none' && !(f.status !== 'ok' && f.address === 2337)).map((f) => {
+    const body = faults.filter((f) => f.status !== 'none' && !(f.status !== 'ok' && f.address === 2340)).map((f) => {
       let inner;
       if (f.status !== 'ok') inner = `<div class="fault"><span>${esc(t('fault.unreadable'))}</span></div>`;
       else if (!f.faults.length) inner = `<div class="fault"><span class="good">${esc(t('fault.none'))}</span></div>`;
@@ -881,7 +881,7 @@ const PAGES = {
           : `<div class="fault">${inner2}${reader ? `<span style="color:var(--self-text-dim,#8a9cab);font-size:.85rem;margin-top:4px">${esc(t('clr.notSupported'))}</span>` : ''}</div>`;
       }).join('');
       // Bedieneinheit (RemoteControl 8485): Löschen trifft auch die Visualisierungsereignisse → LED-Hinweis.
-      const ledWarn = reader && f.address === 8485 && f.status === 'ok' && f.faults.length ? `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('clr.ledWarn'))}</p>` : '';
+      const ledWarn = reader && f.address === 8488 && f.status === 'ok' && f.faults.length ? `<p class="foot" style="color:var(--self-warn,#9a6700)">${esc(t('clr.ledWarn'))}</p>` : '';
       return `<p class="gh">${esc(t(`fault.${f.component}`))}</p>${ledWarn}<div class="group">${inner}</div>`;
     }).join('') + (faultCount() ? `<p class="foot">${esc(t('fcat.note'))}</p>` : '');
     const canClear = !!reader && faults.some((f) => isClearable(f.address) && f.status === 'ok' && f.faults.length);
@@ -1489,7 +1489,7 @@ function zipStore(files) { // files: [{name, data:Uint8Array}] – ZIP ohne Komp
   }
   const cdStart = off; let cdSize = 0;
   for (const c of central) {
-    const h = [0x50, 0x4b, 0x01, 0x02, ...u16(20), ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(c.crc), ...u32(c.size), ...u32(c.size), ...u16(c.name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(c.off)];
+    const h = [0x50, 0x4b, 0x01, 0x02, ...u16(20), ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(c.crc), ...u32(c.size), ...u32(c.size), ...u16(c.name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(c.off)];
     parts.push(new Uint8Array(h), c.name); cdSize += h.length + c.name.length;
   }
   parts.push(new Uint8Array([0x50, 0x4b, 0x05, 0x06, ...u16(0), ...u16(0), ...u16(central.length), ...u16(central.length), ...u32(cdSize), ...u32(cdStart), ...u16(0)]));
