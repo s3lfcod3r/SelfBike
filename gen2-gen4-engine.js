@@ -493,7 +493,9 @@ async function restoreField(tk,didHex,rawBytes){
   try{ await openSession(t); await precheck(t); await ensureUnlock(t); await writeRawPdu(t,did,Uint8Array.from(rawBytes)); return { after:[...await readRaw(t,did)] }; }
   finally{ busy--; }
 }
-// Fehlerspeicher lesen (UDS 0x19 0x02 0xFF) – je Steuergerät, read-only
+// Fehlerspeicher lesen (UDS 0x19 0x02, ReportDtcByStatusMask) – je Steuergerät, read-only.
+// Bei „alle Status" (0xFF) antworten Steuergeräte mit SEHR vielen Fehlern NRC 0x14 (ResponseTooLong);
+// dann je Status-Bit einzeln abfragen und zusammenführen (s. u.).
 async function reopenIfClosed(){ try{ if(device && device.opened===false) await device.open(); }catch(_){ } }
 async function readDTC(){
   const out={};
@@ -507,14 +509,19 @@ async function readDTC(){
       try{ await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff)); }
       catch(e1){ await reopenIfClosed(); await sleep(T.SESSION_GAP); await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff)); }
       const list=[];
-      if(r[0]===0x59 && r[1]===0x02){
-        for(let i=3;i+3<r.length;i+=4){
-          const code=(r[i]<<16)|(r[i+1]<<8)|r[i+2]; const status=r[i+3];
-          if(code===0) continue;
-          list.push({code:code.toString(16).toUpperCase().padStart(6,'0'), status});
+      const absorb=(resp)=>{ if(!(resp[0]===0x59 && resp[1]===0x02))return; for(let i=3;i+3<resp.length;i+=4){ const code=(resp[i]<<16)|(resp[i+1]<<8)|resp[i+2]; const status=resp[i+3]; if(code===0)continue; const h=code.toString(16).toUpperCase().padStart(6,'0'); if(!list.some(x=>x.code===h)) list.push({code:h,status}); } };
+      if(r[0]===0x59 && r[1]===0x02){ absorb(r); out[t.key]=list; }
+      else if(r[0]===0x7f && r[2]===0x14){
+        // ResponseTooLong: zu viele Fehler für „alle Status" (0xFF) auf einmal. Je Status-Bit einzeln
+        // abfragen (kleinere Antworten) und zusammenführen; Doppelte werden verworfen.
+        for(const m of [0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80]){
+          try{ const rr=await request(t,Uint8Array.of(0x19,0x02,m)); absorb(rr); }catch(e){}
+          await sleep(T.DID_GAP);
         }
-      } else if(r[0]===0x7f){ out[t.key]={error:'NRC 0x'+pad(r[2])}; busy--; await sleep(T.SESSION_GAP); continue; }
-      out[t.key]=list;
+        out[t.key]=list;
+      }
+      else if(r[0]===0x7f){ out[t.key]={error:'NRC 0x'+pad(r[2])}; busy--; await sleep(T.SESSION_GAP); continue; }
+      else out[t.key]=list;
     }catch(e){ out[t.key]={error:e.message}; }
     finally{ busy--; }
     await sleep(T.SESSION_GAP);

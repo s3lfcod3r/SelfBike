@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.15 · November 2026
+- 🇬🇧 Gen 2–4: fixed fault reading on control units with many stored faults. Asking for all faults at once made the control unit answer "response too long" (so it showed as unreadable). Now, in that case, SelfBike asks per status group and merges the results — the faults come through. (Found via a real bike's transmission log.)
+- 🇩🇪 Gen 2–4: Fehlerlesen bei Steuergeräten mit vielen gespeicherten Fehlern repariert. Die Abfrage „alle Fehler auf einmal" beantwortete das Steuergerät mit „Antwort zu lang" (darum „nicht lesbar"). SelfBike fragt jetzt in dem Fall gruppenweise ab und führt zusammen — die Fehler kommen durch. (Über den Übertragungs-Log eines echten Rads gefunden.)
+
 ## 1.9.14 · November 2026
 - 🇬🇧 Gen 2–4: new optional "full scan" — a checkbox on the start screen. On top of the known values it sweeps the address ranges of each control unit and keeps everything that answers, so the protocol is more complete (e.g. shows multi-battery flags). Takes longer; the normal read stays fast. Unknown entries are shown as raw values instead of breaking the report.
 - 🇩🇪 Gen 2–4: neuer optionaler „Vollscan" — Häkchen auf der Startseite. Zusätzlich zu den bekannten Werten fährt er die Adressbereiche jedes Steuergeräts ab und behält alles, was antwortet, für ein vollständigeres Protokoll (z. B. Mehrakku-Kennungen). Dauert länger; das normale Auslesen bleibt schnell. Unbekannte Einträge werden als Rohwert gezeigt, statt den Bericht abstürzen zu lassen.
