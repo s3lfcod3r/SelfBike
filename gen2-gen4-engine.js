@@ -53,6 +53,7 @@ let PROG={t:0,d:0};
 const SEEDS=[]; // nicht-standardmäßige SecurityAccess-Seeds (z. B. Nyon 4 Byte) fürs Protokoll
 const assembly=new Map();
 let logEl=null;
+let DEEP=false; // Vollscan: nach der festen Liste zusätzlich die DID-Bereiche je Steuergerät abfahren
 function log(msg,cls){ if(!logEl)return; const d=document.createElement('div'); if(cls)d.className=cls; d.textContent=new Date().toLocaleTimeString()+'  '+msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; }
 function setStatus(text,state){ const dot=el('dot'),st=el('statustext'); if(st)st.textContent=text; if(dot)dot.className='dot'+(state?' '+state:''); }
 
@@ -124,7 +125,13 @@ async function decodeAll(){
   const res=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})});
   const j=await res.json().catch(()=>({}));
   if(!res.ok||!Array.isArray(j.results))throw new Error('Decode-Dienst: '+(j.error||('HTTP '+res.status)));
-  j.results.forEach((dec,i)=>{ refs[i].dec=dec; });
+  // Pro Kennung absichern: der Vollscan findet auch DIDs, die die Decode-Tabelle nicht kennt.
+  // Solche bekommen die Rohbytes als Wert statt den Bericht abstürzen zu lassen.
+  const norm=(ref,dec)=>{ const d=(dec&&typeof dec==='object')?dec:{}; if(!Array.isArray(d.parts))d.parts=[];
+    if(d.parts.length===0 && ref.raw && ref.raw.length) d.parts=[{name:'',val:'0x'+hex(ref.raw)}];
+    if(!d.n)d.n='unbekannte Kennung'; ref.dec=d; };
+  j.results.forEach((dec,i)=>{ if(refs[i]) norm(refs[i],dec); });
+  refs.forEach((ref)=>{ if(!ref.dec) norm(ref,null); }); // falls der Worker weniger Ergebnisse liefert
 }
 
 /* ---------- Auslesen ---------- */
@@ -154,10 +161,34 @@ async function scanTarget(t){
       }catch(e){}
       await sleep(T.DID_GAP); if(PROG.t){PROG.d++;progTick();}
     }
+    // Vollscan: Seiten (erste DID-Bytes der ECU ∪ 0x00–0x07) × Index 0x00–0xAF abfahren, Treffer behalten.
+    // Früh-Stopp nach vielen Fehlschlägen am Stück, damit leere/dünne Seiten nicht ewig dauern. Nur Lesen (0x22).
+    if(DEEP){
+      setStatus(t.name+' – Vollscan …','busy');
+      const pages=[...new Set([0,1,2,3,4,5,6,7,...t.dids.map(d=>d[0])])].sort((a,b)=>a-b);
+      const MAXI=0xaf, MISS_STOP=48;
+      if(PROG.t) PROG.t+=pages.length*(MAXI+1);
+      for(const pg of pages){
+        let miss=0;
+        for(let ix=0; ix<=MAXI; ix++){
+          if(PROG.t){PROG.d++; if((ix&7)===0)progTick();}
+          const didhex=pg.toString(16).padStart(2,'0')+ix.toString(16).padStart(2,'0');
+          if(!tm.dids[didhex]){
+            let hit=false;
+            try{ const res=await request(t,Uint8Array.of(0x22,pg,ix),700); if(res[0]===0x62){ tm.dids[didhex]={raw:res.subarray(3)}; hit=true; } }catch(e){}
+            miss = hit ? 0 : miss+1;
+            progMsg(t.name+' – Vollscan Seite 0x'+pg.toString(16)+' · '+Object.keys(tm.dids).length+' gefunden');
+            await sleep(T.DID_GAP);
+            if(miss>=MISS_STOP) break;
+          }
+        }
+      }
+    }
     model[t.key]=tm;
   }finally{ busy--; }
 }
 async function scan(){
+  DEEP=!!(el('deepScan') && el('deepScan').checked); // Vollscan-Haken auswerten
   if(typeof navigator==='undefined' || !navigator.hid){
     setStatus('Browser unterstützt WebHID nicht','err');
     try{ progOpen('Nicht unterstützt'); progFinish('err','Browser wird nicht unterstützt',false); progMsg('Bitte Chrome oder Edge am PC/Laptop verwenden — nicht Firefox, Safari oder Handy.'); }catch(e){}

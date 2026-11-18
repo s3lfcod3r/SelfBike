@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.14 · November 2026
+- 🇬🇧 Gen 2–4: new optional "full scan" — a checkbox on the start screen. On top of the known values it sweeps the address ranges of each control unit and keeps everything that answers, so the protocol is more complete (e.g. shows multi-battery flags). Takes longer; the normal read stays fast. Unknown entries are shown as raw values instead of breaking the report.
+- 🇩🇪 Gen 2–4: neuer optionaler „Vollscan" — Häkchen auf der Startseite. Zusätzlich zu den bekannten Werten fährt er die Adressbereiche jedes Steuergeräts ab und behält alles, was antwortet, für ein vollständigeres Protokoll (z. B. Mehrakku-Kennungen). Dauert länger; das normale Auslesen bleibt schnell. Unbekannte Einträge werden als Rohwert gezeigt, statt den Bericht abstürzen zu lassen.
+
 ## 1.9.13 · November 2026
 - 🇬🇧 Gen 2–4: the support package now also includes the transmission log (TX/RX), so when the fault memory can't be read we can see exactly where it stalls. Helps diagnose the "fault memory unreadable" reports.
 - 🇩🇪 Gen 2–4: das Support-Paket enthält jetzt auch den Übertragungs-Log (TX/RX) — so sehen wir bei „Fehlerspeicher nicht lesbar" genau, wo es hängt. Hilft bei der Fehlersuche.
