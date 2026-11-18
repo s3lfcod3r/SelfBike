@@ -12,3 +12,7 @@ data/private/
 unlock.html
 unlock.js
 unlock.css
+
+# Lokale Experimente / Testskripte – bleiben nur lokal
+can-tap/
+tools/gen24.selftest.mjs

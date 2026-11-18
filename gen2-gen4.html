@@ -276,7 +276,7 @@
 <button id="scan" style="display:none"></button>
 
 <script>/* Skripte erben die Seiten-Query (?v=…) – so holt „Neu laden" vom Update-Banner wirklich frische Dateien (GitHub Pages cacht sonst 10 Min). */
-document.write('<' + 'script src="bes2-faults.js' + location.search + '"></' + 'script>');
+document.write('<' + 'script src="faults/bes2-faults.js' + location.search + '"></' + 'script>');
 document.write('<' + 'script src="gen2-gen4-engine.js' + location.search + '"></' + 'script>');</script>
 <script type="module">
 import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
@@ -1092,7 +1092,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   window.__bes2lang='de';
   async function loadBes2Lang(lang){ window.__bes2lang=lang||'de'; const U=(lang||'de').toUpperCase();
     if(!lang || lang==='de' || window['BES2_FAULTS_'+U]) return;
-    try{ await new Promise((res,rej)=>{ const sc=document.createElement('script'); sc.src='bes2-faults-'+lang+'.js'+location.search; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); }); }catch(e){ /* Fallback: Deutsch */ } }
+    try{ await new Promise((res,rej)=>{ const sc=document.createElement('script'); sc.src='faults/bes2-faults-'+lang+'.js'+location.search; sc.onload=res; sc.onerror=rej; document.head.appendChild(sc); }); }catch(e){ /* Fallback: Deutsch */ } }
   async function renderFehler(body){
     body.innerHTML='<p class="desc" style="text-align:center">Fehlerspeicher wird gelesen …</p>';
     let dtc={};

@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.28 · November 2026
+- 🇬🇧 Housekeeping: the 12 BES2 fault-text files moved from the root into a `faults/` folder (tidier repo, same behaviour). README brought up to date — it now covers both systems (BES2 + Smart System), the Fast Charger, and a corrected architecture diagram.
+- 🇩🇪 Aufräumen: die 12 BES2-Fehlertext-Dateien aus dem Wurzelverzeichnis in einen `faults/`-Ordner verschoben (aufgeräumteres Repo, gleiches Verhalten). README aktualisiert — deckt jetzt beide Systeme (BES2 + Smart System), den Fast Charger und ein korrigiertes Architektur-Diagramm ab.
+
 ## 1.9.27 · November 2026
 - 🇬🇧 Start page: fixed the two cards being misaligned. The system labels are now short (BES2 / BES3) so the headers are the same height and both checkmark lists start at the same line.
 - 🇩🇪 Startseite: die beiden Karten waren verschoben. Die System-Label sind jetzt kurz (BES2 / BES3), damit die Köpfe gleich hoch sind und beide Häkchen-Listen auf derselben Höhe beginnen.

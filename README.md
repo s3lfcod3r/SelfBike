@@ -2,10 +2,10 @@
 
 <img src="assets/logo.png" width="240" alt="SelfBike logo" />
 
-**Read out your Bosch Smart System e-bike in the browser and change a few settings safely — WebUSB, no install, no account.**<br>
-*Dein Bosch-Smart-System-E-Bike im Browser auslesen und sicher einstellen — WebUSB, ohne Installation, ohne Konto.*
+**Read out your Bosch e-bike in the browser — the Smart System (BES3) and the older BES2 (Gen 2–4) — and change a few settings safely. WebUSB, no install, no account.**<br>
+*Dein Bosch-E-Bike im Browser auslesen — Smart System (BES3) und das ältere BES2 (Gen 2–4) — und wenige Einstellungen sicher ändern. WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.9.27-33A78C)
+![Version](https://img.shields.io/badge/version-1.9.28-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)
@@ -25,7 +25,7 @@
 
 ## 🇬🇧 English
 
-SelfBike reads your **own Bosch Smart System e-bike** over USB and lets you change a handful of settings safely — directly in the browser. No install, no server, no account: everything runs locally on your PC. Live at **[bike.selfcoder.de](https://bike.selfcoder.de)** (Chrome or Edge on a PC).
+SelfBike reads your **own Bosch e-bike** over USB and lets you change a handful of settings safely — directly in the browser. It covers two systems: the current **Smart System (BES3)** and the older **BES2 (Gen 2–4)** — a start page lets you pick. No install, no server, no account: everything runs locally on your PC. Live at **[bike.selfcoder.de](https://bike.selfcoder.de)** (Chrome or Edge on a PC).
 
 Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker …) — same design system; deployed as a static site on GitHub Pages.
 
@@ -45,7 +45,8 @@ Part of the **Self** family (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker 
 - **Overview** — motor, battery, display/remote, ABS, eShift, odometer
 - **Battery** — state of charge, health, charge cycles, battery check with rules of thumb, range estimate
 - **Ride data** — ride statistics, distance and energy per assist mode, history over time (stored in your browser)
-- **Fault memory** — read, **and clear by selection** (verified on the bike for motor, control unit and battery); every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature")
+- **Fault memory** — read and clear (verified on the bike for motor, control unit and battery); every code gets SelfBike's own area and a general tip (e.g. "Battery – temperature")
+- **Fast Charger (BES2)** — if a Bosch fast charger is plugged in, it is read too as its own unit: product code, hardware/software version, build date, lifetime energy and its own fault memory (confirmed against the Bosch tool on two chargers)
 
 **🩺 Diagnostics & export**
 - **Quick scan** of the known address ranges (battery, motor, display, Connect …) in about a minute — reads every answering value without touching the ~30,000 noise addresses, so the bike doesn't hit its ~10-minute auto-off mid-scan
@@ -90,19 +91,20 @@ No bike at hand? Click **"View demo without bike"**.
 ```text
 Browser (bike.selfcoder.de, Chrome/Edge)
 ┌─────────────────────────────────────────────────────────────┐
-│ index.html         UI: overview · battery · ride · faults … │
-│ lib/bike-writer.js plan (before → after), write, read back  │
-│ lib/bike-reader.js data points + safety guard (#guard)      │
-│ lib/messagebus.js  Smart System MessageBus: build / decode  │
-│ lib/mcsp-usb.js    WebUSB transport (MCSP over bulk EPs)    │
-│ lib/demo-usb.js    same interface, answers from demo data   │
+│ index.html              start page — pick your system       │
+│                                                             │
+│ smart.html + app.js          Smart System (BES3) app        │
+│  └ lib/messagebus · mcsp-usb · bike-reader · bike-writer    │
+│ gen2-gen4.html + …-engine.js      BES2 (Gen 2–4) app        │
+│  └ UDS over the display gateway · own fault texts (faults/) │
+│ lib/demo-usb.js         same interface, answers from demo   │
 └──────────────────────────────┬──────────────────────────────┘
                                │ WebUSB
                                ▼
-        Display / remote (e.g. Kiox 400C, BRC3200) → e-bike
+      Display / remote (Kiox, Nyon, Intuvia, Purion …) → e-bike
 ```
 
-Every write goes through **one** guard right before sending: reads are allowed for any address, writes only for the addresses and payloads in `WRITE_RULES`.
+Reads are allowed for any address; every **write** (Smart System only) goes through **one** guard right before sending, allowing only the addresses and payloads in `WRITE_RULES`.
 
 <a id="en-quick-start"></a>
 
@@ -159,7 +161,7 @@ No build step, no dependencies — edit the files and reload. Start the local se
 - `data/fault-texts.csv` — own fault-code texts (`code;lang;title;hint`), loaded automatically; write them yourself, never copy Bosch texts
 - `lib/i18n/<lang>*.js` — translations, German is the source; missing keys fall back to German
 - `smart.html` — Bosch Smart System app (Gen5 / BES3)
-- `gen2-gen4.html` — Bosch BES2 app (Gen2–Gen4): reading is stable, changing settings is marked **Beta**; clearing the fault memory is built into the app's fault page (selection-based, a readable snapshot is downloaded first)
+- `gen2-gen4.html` — Bosch BES2 app (Gen2–Gen4): reading is stable, changing settings is marked **Beta**; clearing the fault memory is built into the app's fault page (a readable snapshot is downloaded first). Own fault-code texts live in `faults/` (German embedded, other languages lazy-loaded)
 - Without a bike: demo mode (`lib/demo-usb.js` + `lib/demo-data.js`) runs the full app including the safety guard
 
 <a id="en-roadmap"></a>
@@ -189,7 +191,7 @@ SelfBike is free and without ads. If it helps you and you'd like to support furt
 
 ## 🇩🇪 Deutsch
 
-SelfBike liest dein **eigenes Bosch-Smart-System-E-Bike** per USB aus und ändert wenige Einstellungen sicher — direkt im Browser. Ohne Installation, ohne Server, ohne Konto: Alles läuft lokal auf deinem PC. Live unter **[bike.selfcoder.de](https://bike.selfcoder.de)** (Chrome oder Edge am PC).
+SelfBike liest dein **eigenes Bosch-E-Bike** per USB aus und ändert wenige Einstellungen sicher — direkt im Browser. Es deckt zwei Systeme ab: das aktuelle **Smart System (BES3)** und das ältere **BES2 (Gen 2–4)** — eine Startseite lässt dich wählen. Ohne Installation, ohne Server, ohne Konto: Alles läuft lokal auf deinem PC. Live unter **[bike.selfcoder.de](https://bike.selfcoder.de)** (Chrome oder Edge am PC).
 
 Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker …) — gleiches Design-System; läuft als statische Seite auf GitHub Pages.
 
@@ -209,7 +211,8 @@ Teil der **Self**-Familie (SelfMailer, SelfStream, SelfStorm, SelfPoolTracker �
 - **Übersicht** — Motor, Akku, Bedieneinheit, ABS, eShift, Kilometer
 - **Akku** — Ladezustand, Gesundheit, Ladezyklen, Akku-Check mit Faustregeln, Reichweiten-Schätzung
 - **Fahrdaten** — Fahrstatistik, Strecke und Energie je Fahrmodus, Verlauf über die Zeit (im Browser gespeichert)
-- **Fehlerspeicher** — lesen **und gezielt löschen** (am Rad belegt für Motor, Bedieneinheit und Akku); jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“)
+- **Fehlerspeicher** — lesen und löschen (am Rad belegt für Motor, Bedieneinheit und Akku); jeder Code bekommt eine eigene Einordnung mit Bereich und allgemeinem Hinweis (z. B. „Akku – Temperatur“)
+- **Fast Charger (BES2)** — ist ein Bosch Fast Charger angesteckt, wird er als eigenes Steuergerät mitgelesen: Produktcode, Hard-/Software-Version, Baudatum, abgegebene Lebenszeit-Energie und sein eigener Fehlerspeicher (gegen das Bosch-Tool an zwei Chargern bestätigt)
 
 **🩺 Diagnose & Export**
 - **Schnell-Scan** der bekannten Adressbereiche (Akku, Motor, Display, Connect …) in etwa einer Minute — liest jeden antwortenden Wert, ohne die ~30.000 Rausch-Adressen abzuklappern, damit das E-Bike nicht mitten im Scan nach ~10 Minuten abschaltet
@@ -255,20 +258,20 @@ Kein Fahrrad zur Hand? **„Demo ohne Fahrrad ansehen“** klicken.
 ```text
 Browser (bike.selfcoder.de, Chrome/Edge)
 ┌─────────────────────────────────────────────────────────────┐
-│ index.html         Oberfläche: Übersicht · Akku · Fahrdaten │
-│ lib/bike-writer.js planen (vorher → nachher), schreiben,    │
-│                    zurücklesen                              │
-│ lib/bike-reader.js Datenpunkte + Sicherheits-Guard (#guard) │
-│ lib/messagebus.js  Smart-System-MessageBus: bauen/zerlegen  │
-│ lib/mcsp-usb.js    WebUSB-Transport (MCSP über Bulk-EPs)    │
-│ lib/demo-usb.js    gleiche Schnittstelle, Demo-Antworten    │
+│ index.html              Startseite — System auswählen       │
+│                                                             │
+│ smart.html + app.js          Smart-System-App (BES3)        │
+│  └ lib/messagebus · mcsp-usb · bike-reader · bike-writer    │
+│ gen2-gen4.html + …-engine.js      BES2-App (Gen 2–4)        │
+│  └ UDS über das Display-Gateway · eigene Fehlertexte (faults/) │
+│ lib/demo-usb.js         gleiche Schnittstelle, Demo-Antworten │
 └──────────────────────────────┬──────────────────────────────┘
                                │ WebUSB
                                ▼
-      Bedieneinheit (z. B. Kiox 400C, BRC3200) → E-Bike
+   Bedieneinheit (Kiox, Nyon, Intuvia, Purion …) → E-Bike
 ```
 
-Jedes Schreiben läuft durch **eine** Prüfstelle direkt vor dem Senden: Lesen ist für jede Adresse erlaubt, Schreiben nur für die Adressen und Nutzlasten in `WRITE_RULES`.
+Lesen ist für jede Adresse erlaubt; jedes **Schreiben** (nur Smart System) läuft durch **eine** Prüfstelle direkt vor dem Senden und lässt nur die Adressen und Nutzlasten aus `WRITE_RULES` zu.
 
 <a id="de-schnellstart"></a>
 
@@ -325,7 +328,7 @@ Kein Build, keine Abhängigkeiten — Dateien ändern und neu laden. Lokalen Ser
 - `data/fault-texts.csv` — eigene Fehlertexte (`code;lang;title;hint`), werden automatisch geladen; selbst formulieren, keine Bosch-Texte kopieren
 - `lib/i18n/<sprache>*.js` — Übersetzungen, Deutsch ist die Quelle; fehlende Texte fallen auf Deutsch zurück
 - `smart.html` — Bosch-Smart-System-App (Gen5 / BES3)
-- `gen2-gen4.html` — Bosch-BES2-App (Gen2–Gen4): Auslesen ist stabil, das Ändern von Einstellungen ist als **Beta** gekennzeichnet; das Löschen des Fehlerspeichers ist in die Fehler-Seite der App integriert (per Auswahl, vorher wird ein lesbarer Export heruntergeladen)
+- `gen2-gen4.html` — Bosch-BES2-App (Gen2–Gen4): Auslesen ist stabil, das Ändern von Einstellungen ist als **Beta** gekennzeichnet; das Löschen des Fehlerspeichers ist in die Fehler-Seite der App integriert (vorher wird ein lesbarer Export heruntergeladen). Eigene Fehlertexte liegen in `faults/` (Deutsch eingebettet, andere Sprachen bei Bedarf nachgeladen)
 - Ohne Fahrrad: Demo-Modus (`lib/demo-usb.js` + `lib/demo-data.js`) fährt die ganze App samt Sicherheits-Guard
 
 <a id="de-roadmap"></a>
