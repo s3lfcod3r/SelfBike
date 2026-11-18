@@ -14,6 +14,11 @@ body{background:var(--self-bg-0);color:var(--self-text);
   font-family:var(--self-font-sans);-webkit-font-smoothing:antialiased;
   min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
   padding:calc(24px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
+/* 4k + VRR (variable Bildwiederholrate): große, flache Dunkelflächen flackern, weil der flache
+   Seitenhintergrund bei variabler Bildrate ungleichmäßig dargestellt wird. Ein eigener, dauerhaft
+   GPU-kompositierter Layer (fixed + translateZ(0)) hält das Bild stabil. Bewusst NICHT auf <body>
+   selbst – sonst würden die position:fixed-Dialoge (.modal) ihren Viewport-Bezug verlieren. */
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--self-bg-0);transform:translateZ(0)}
 
 .app{width:100%;max-width:470px;background:var(--self-bg-1);
   border:1px solid var(--self-line);border-radius:22px;overflow:hidden;

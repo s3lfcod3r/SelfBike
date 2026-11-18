@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.22 · November 2026
+- 🇬🇧 Start page: fixed flickering on 4K screens with variable refresh rate (VRR). The large, flat dark background is now its own GPU-composited layer, which keeps the image stable. No layout change.
+- 🇩🇪 Startseite: Flackern auf 4K-Bildschirmen mit variabler Bildwiederholrate (VRR) behoben. Der große, flache dunkle Hintergrund liegt jetzt in einem eigenen GPU-Layer, der das Bild stabil hält. Keine Layout-Änderung.
+
 ## 1.9.21 · November 2026
 - 🇬🇧 Gen 2–4: reads the **Fast Charger** too (BCS250) when it is plugged in — product code, HW/SW version, build date, energy delivered over its lifetime, and its own fault memory. The charger is a separate control unit; if none is attached it is silently skipped. Shown as its own card, in the full table, the report and the support package.
 - 🇩🇪 Gen 2–4: liest jetzt auch den **Fast Charger** (BCS250), wenn er angesteckt ist — Produktcode, HW-/SW-Version, Baudatum, über die Lebenszeit abgegebene Energie und seinen eigenen Fehlerspeicher. Der Charger ist ein eigenes Steuergerät; ist keiner dran, wird er stillschweigend übersprungen. Als eigene Karte, in der Volltabelle, im Protokoll und im Support-Paket.
