@@ -1751,7 +1751,7 @@ async function changeLang(code) {
 // Version unten auf der Startseite, verlinkt auf die Liste der Änderungen
 function showVersion() {
   $('appVersion').href = CHANGELOG_URL;
-  $('appVersion').textContent = `SelfBike ${VERSION} · ${t('ui.whatsNew')}`;
+  $('appVersion').textContent = `SelfBike v${VERSION} · ${t('ui.whatsNew')}`;
 }
 
 // ---------- Start ----------

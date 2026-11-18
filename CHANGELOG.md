@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.4 · November 2026
+- 🇬🇧 Version is now shown consistently everywhere as "SelfBike v1.9.4" — the Gen 2–4 footer was missing it and the Smart footer lacked the "v". All read from `lib/version.js`.
+- 🇩🇪 Die Version steht jetzt überall einheitlich als „SelfBike v1.9.4" — in der Gen 2–4-Fußzeile fehlte sie, bei Smart fehlte das „v". Alles aus `lib/version.js`.
+
 ## 1.9.3 · November 2026
 - 🇬🇧 Start page now shows the current version from `lib/version.js` (it was stuck at v1.8.6).
 - 🇩🇪 Startseite zeigt jetzt die aktuelle Version aus `lib/version.js` (sie hing fest auf v1.8.6).
