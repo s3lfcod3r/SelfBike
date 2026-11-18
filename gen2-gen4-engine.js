@@ -162,13 +162,24 @@ function decodeCharger(){
 /* ---------- Auslesen ---------- */
 const model={};
 window.__model=model; window.__render=()=>render();
+/* ---------- Display-Key-Slot nach Modell ---------- */
+// BUI35x-Displays (z. B. Michaels BUI350) nutzen SecurityAccess-Key-Slot 6, BUI33x/BUI330 dagegen Slot 5.
+// Der Produktcode (DID 5b 7c) ist OHNE Freischaltung lesbar → vorher lesen und den Slot bestimmen, damit
+// kein falscher Freischalt-Versuch den Sperrzähler hochzählt. Alle anderen Displays bleiben wie bisher auf Slot 5.
+// (asciiOf ist weiter oben definiert.)
+function slotOf(t){ return t._slot!=null?t._slot:t.slot; }
+async function detectDisplaySlot(t){
+  if(t.key!=='D'||t._slot!=null)return;
+  t._slot=t.slot;
+  try{ const r=await request(t,Uint8Array.of(0x22,0x5b,0x7c)); if(r[0]===0x62 && /BUI35/i.test(asciiOf(r.subarray(3)))){ t._slot=6; log(t.name+': BUI35x erkannt – Key-Slot 6','lock'); } }catch(e){}
+}
 async function scanTarget(t){
   busy++;
   try{
     setStatus(t.name+' – Sitzung …','busy'); progMsg(t.name+' – Sitzung & Freischaltung …');
     await openSession(t); await precheck(t);
     let unlocked=false;
-    if(t.slot!=null){ try{ unlocked=await sendKey(t,0x11,t.slot); }catch(e){ log(t.name+': Freischaltung übersprungen ('+e.message+')','warn'); } }
+    if(t.slot!=null){ await detectDisplaySlot(t); try{ unlocked=await sendKey(t,0x11,slotOf(t)); }catch(e){ log(t.name+': Freischaltung übersprungen ('+e.message+')','warn'); } }
     const tm={unlocked,dids:{},rc:[]};
     // Routinen
     for(const r of t.routines){
@@ -260,6 +271,9 @@ function progMsg(txt){ const s=el('progStat'); if(s)s.textContent=txt||''; }
 function progOpen(title){ const m=el('prog'); if(!m)return; el('progTitle').textContent=title||'Auslesen …'; progMsg(''); el('progKofi').classList.remove('show'); el('progDone').style.display='none'; progSet(0); m.classList.add('open'); }
 function progFinish(kind,title,kofi){ if(title&&el('progTitle'))el('progTitle').textContent=title; progSet(kind==='err'?(PROG.t?PROG.d/PROG.t:0):1,kind); if(el('progKofi'))el('progKofi').classList.toggle('show',!!kofi); if(el('progDone'))el('progDone').style.display=''; }
 function progClose(){ const m=el('prog'); if(m)m.classList.remove('open'); }
+// Für die Aktions-Handler in gen2-gen4.html (eigenes Skript), damit auch Schreiben/Löschen/Wiederherstellen
+// mit demselben „erledigt + Ko-fi“-Abschluss enden wie das Auslesen, statt nur mit einem kurzen Toast.
+window.__progOpen=progOpen; window.__progFinish=progFinish; window.__progMsg=progMsg;
 function pick(tk,didhex,i=0){ const d=model[tk]&&model[tk].dids[didhex]; if(!d)return null; return d.dec.parts[i]||null; }
 function num(tk,didhex,i=0){ const p=pick(tk,didhex,i); return p&&p.num!=null?p.num:null; }
 function str(tk,didhex,i=0){ const p=pick(tk,didhex,i); return p?p.val:null; }
@@ -490,7 +504,7 @@ async function clearFaults(onLog){
         // ClearDiagnosticInformation: 0x14 FF FF FF (alle gespeicherten Fehler)
         let r=await request(t,Uint8Array.of(0x14,0xff,0xff,0xff));
         if(r[0]===0x7f && (r[2]===0x33||r[2]===0x22||r[2]===0x7f)){
-          try{ await precheck(t); await sendKey(t,0x11,t.slot); r=await request(t,Uint8Array.of(0x14,0xff,0xff,0xff)); }catch(e){}
+          try{ await detectDisplaySlot(t); await precheck(t); await sendKey(t,0x11,slotOf(t)); r=await request(t,Uint8Array.of(0x14,0xff,0xff,0xff)); }catch(e){}
         }
         let msg;
         if(r[0]===0x54) msg=t.name+': Fehlerspeicher gelöscht ✓';
@@ -510,7 +524,7 @@ function tgtOf(tk){ const t=TARGETS.find(x=>x.key===tk); if(!t)throw new Error('
 function didArr(h){ return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16)]; }
 async function readRaw(t,did){ const r=await request(t,Uint8Array.of(0x22,did[0],did[1])); if(r[0]!==0x62)throw new Error('Lesen abgelehnt ('+hex(r)+')'); return r.subarray(3); }
 async function writeRawPdu(t,did,raw){ const r=await request(t,concat([Uint8Array.of(0x2e,did[0],did[1]),raw])); if(r[0]===0x6e)return true; if(r[0]===0x7f){ const e=new Error('NRC 0x'+pad(r[2])); e.nrc=r[2]; throw e; } throw new Error('unerwartet '+hex(r)); }
-async function ensureUnlock(t){ try{ await sendKey(t,0x11,t.slot); }catch(e){ if(!e.nrc) throw e; } }
+async function ensureUnlock(t){ try{ await detectDisplaySlot(t); await sendKey(t,0x11,slotOf(t)); }catch(e){ if(!e.nrc) throw e; } }
 async function readFieldRaw(tk,didHex){ const t=tgtOf(tk); busy++; try{ await openSession(t); await precheck(t); return [...await readRaw(t,didArr(didHex))]; } finally{ busy--; } }
 async function writeField(tk,didHex,pos,bytes){
   if(!writeAllowed(tk,didHex)) throw new Error('Diese Einstellung ist gesperrt (kein Tuning/BMS).');

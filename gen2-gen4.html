@@ -599,7 +599,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     }
     enrichFor=null; if(readDone()){ settingsBuilt=false; buildHome(); }
     if(errs.length) toast('Teilweise wiederhergestellt: '+done+' ok · Fehler bei '+errs.length,'warn');
-    else toast('Wiederhergestellt ✓ ('+done+' Werte)','ok');
+    else doneKofi('Wiederhergestellt ✓ ('+done+' Werte)','Die Originalwerte sind zurück im Rad.');
   }
 
   /* ---------- Support-Paket (.zip): alles Wichtige für die Fehlersuche, Seriennummern bleiben ausgeblendet ---------- */
@@ -905,6 +905,9 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
 
   /* ---------- Blatt (iPhone-Stil): Frage, Auswahl mit Häkchen, Stepper/Schieber, Erklärung ---------- */
   function toast(msg,kind){ const t=el('toast'); t.textContent=msg; t.className='toast show'+(kind?' '+kind:''); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),4000); }
+  // Eine Aktion abschließen wie das Auslesen: „erledigt“ + Ko-fi-Unterstützen im Fortschritts-Fenster
+  // (liegt über der Detailseite). Fällt auf einen Toast zurück, falls die Engine (noch) nicht geladen ist.
+  function doneKofi(title,msg){ if(window.__progOpen){ window.__progOpen(title); window.__progFinish('ok',title,true); if(msg)window.__progMsg(msg); } else { toast(title,'ok'); } }
 
   /* ---------- Fehler auffangen → Hilfe-Banner + alles ins Support-Paket ---------- */
   const ERRLOG_KEY='selfbike-errlog';
@@ -1035,7 +1038,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     }
     btn.disabled=false; res.textContent='';
     if(errs.length) toast('Fehler: '+errs[0],'err');
-    else if(done) toast('Gespeichert ✓ ('+done+' geändert)','ok');
+    else if(done) doneKofi('Gespeichert ✓ ('+done+' geändert)','Die Änderung ist im Rad gespeichert.');
     else toast('Nichts geändert.');
   }
   async function renderService(body){
@@ -1077,12 +1080,12 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
         else { await wf('year',0); await wf('month',0); await wf('day',0); }
         const neu=[el('svcKmOn').checked?('bei '+nf((motorKm||0)+(Number(el('svcKm').value)||0),0)+' km'):null,(el('svcDateOn').checked&&el('svcDate').value)?('am '+new Date(el('svcDate').value).toLocaleDateString('de-DE')):null].filter(Boolean).join(' · ')||'nicht eingestellt';
         logChange('Motor','Service-Erinnerung',jetzt,neu);
-        toast('Service-Erinnerung gespeichert ✓','ok'); renderService(body);
+        renderService(body); doneKofi('Service-Erinnerung gespeichert ✓','Die Erinnerung ist im Rad gespeichert.');
       }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ save.disabled=false; }
     };
     del.onclick=async()=>{
       if(!confirm('Service-Erinnerung löschen?'))return; del.disabled=true; res.textContent='lösche …';
-      try{ await wf('odometer',0); await wf('year',0); await wf('month',0); await wf('day',0); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); toast('Erinnerung gelöscht ✓','ok'); renderService(body); }
+      try{ await wf('odometer',0); await wf('year',0); await wf('month',0); await wf('day',0); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); renderService(body); doneKofi('Service-Erinnerung gelöscht ✓','Die Erinnerung ist entfernt.'); }
       catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ del.disabled=false; }
     };
   }
@@ -1131,8 +1134,9 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
         else logChange('—','Fehlerspeicher löschen','','ausgeführt');
         const okN=lines.filter(m=>/✓/.test(m)).length;
         const rejN=lines.filter(m=>/abgelehnt/i.test(m)).length;
-        toast(rejN ? ('Teilweise abgelehnt — '+okN+' ok, '+rejN+' abgelehnt (siehe Support-Paket)') : 'Fehlerspeicher gelöscht ✓', rejN?'warn':'ok');
         renderFehler(body);
+        if(rejN) toast('Teilweise abgelehnt — '+okN+' ok, '+rejN+' abgelehnt (siehe Support-Paket)','warn');
+        else doneKofi('Fehlerspeicher gelöscht ✓','Die gespeicherten Fehler sind gelöscht.');
       }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ btn.disabled=false; } };
     body.appendChild(btn); body.appendChild(res);
   }

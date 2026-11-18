@@ -5,6 +5,14 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.30 · November 2026
+- 🇬🇧 BES2: clearing the fault memory now also works on bikes with a BUI350 display. These displays expect a different security key than the older ones, so until now the display refused the clear ("key doesn't match") while motor and battery cleared fine. SelfBike now recognises the display model (via its product code, read without unlocking) and uses the right key — no extra unlock attempt, so the lockout counter stays untouched.
+- 🇩🇪 BES2: Das Löschen des Fehlerspeichers klappt jetzt auch an Rädern mit BUI350-Display. Diese Displays erwarten einen anderen Freischalt-Schlüssel als die älteren – darum hat das Display das Löschen bisher abgelehnt („Schlüssel passt nicht"), während Motor und Akku sauber gelöscht wurden. SelfBike erkennt jetzt das Display-Modell (am Produktcode, ohne Freischaltung lesbar) und nimmt den passenden Schlüssel – ohne Zusatzversuch, der Sperrzähler bleibt unberührt.
+
+## 1.9.29 · November 2026
+- 🇬🇧 BES2: every change on the bike now ends the same way as a read-out — a clear "done ✓" screen with a thank-you and the Ko-fi support button. Until now, clearing the fault memory, saving settings, the service reminder and restoring a backup only showed a short toast without the support note. Now they all match.
+- 🇩🇪 BES2: Jede Änderung am Rad endet jetzt genauso wie das Auslesen — mit einem klaren „erledigt ✓"-Fenster samt Dank und Ko-fi-Unterstützen-Knopf. Bisher zeigten Fehlerspeicher löschen, Einstellungen speichern, die Service-Erinnerung und das Wiederherstellen nur einen kurzen Hinweis ohne Unterstützen-Teil. Jetzt sind alle gleich.
+
 ## 1.9.28 · November 2026
 - 🇬🇧 Housekeeping: the 12 BES2 fault-text files moved from the root into a `faults/` folder (tidier repo, same behaviour). README brought up to date — it now covers both systems (BES2 + Smart System), the Fast Charger, and a corrected architecture diagram.
 - 🇩🇪 Aufräumen: die 12 BES2-Fehlertext-Dateien aus dem Wurzelverzeichnis in einen `faults/`-Ordner verschoben (aufgeräumteres Repo, gleiches Verhalten). README aktualisiert — deckt jetzt beide Systeme (BES2 + Smart System), den Fast Charger und ein korrigiertes Architektur-Diagramm ab.
