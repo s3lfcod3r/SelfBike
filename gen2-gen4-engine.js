@@ -463,13 +463,18 @@ async function restoreField(tk,didHex,rawBytes){
   finally{ busy--; }
 }
 // Fehlerspeicher lesen (UDS 0x19 0x02 0xFF) – je Steuergerät, read-only
+async function reopenIfClosed(){ try{ if(device && device.opened===false) await device.open(); }catch(_){ } }
 async function readDTC(){
   const out={};
   for(const t of TARGETS){
     busy++;
     try{
-      await openSession(t);
-      const r=await request(t,Uint8Array.of(0x19,0x02,0xff));
+      // USB kann zwischen dem langen Auslesen und hier zumachen ("device closed"/Timeout):
+      // einmal neu öffnen + erneut versuchen, bevor wir für dieses Steuergerät aufgeben.
+      let r;
+      await reopenIfClosed();
+      try{ await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff)); }
+      catch(e1){ await reopenIfClosed(); await sleep(T.SESSION_GAP); await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff)); }
       const list=[];
       if(r[0]===0x59 && r[1]===0x02){
         for(let i=3;i+3<r.length;i+=4){

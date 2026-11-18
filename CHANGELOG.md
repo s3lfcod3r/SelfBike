@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.9 · November 2026
+- 🇬🇧 Smart System: fixed fault reading. The fault memory was queried at the wrong address for every control unit, so SelfBike reported "no faults" even when faults were stored (this is why some bikes stayed green while a dealer reader found entries). Corrected against a real bike — stored faults now show up, including the ones the Flow app/display hide. Also reads the second battery and the connect module now.
+- 🇬🇧 Gen 2–4: more robust fault reading — if the USB connection drops right before the fault memory is read ("device closed"/timeout), SelfBike reopens it and retries once per control unit instead of giving up.
+- 🇩🇪 Smart System: Fehlerlesen repariert. Der Fehlerspeicher wurde bei jedem Steuergerät an der falschen Adresse abgefragt, deshalb meldete SelfBike „keine Fehler", obwohl welche gespeichert waren (daher blieb manches Rad grün, während ein Händler-Reader Einträge fand). An einem echten Rad korrigiert — gespeicherte Fehler tauchen jetzt auf, auch die, die Flow-App/Display verstecken. Liest jetzt auch Zweitakku und Connect-Modul.
+- 🇩🇪 Gen 2–4: robusteres Fehlerlesen — bricht die USB-Verbindung kurz vor dem Fehlerspeicher ab („device closed"/Timeout), öffnet SelfBike sie neu und versucht es je Steuergerät einmal erneut, statt aufzugeben.
+
 ## 1.9.8 · November 2026
 - 🇬🇧 Gen 2–4: fault codes now show readable plain text instead of just a hex number. 376 codes across drive unit, battery and display are explained in our own words with a "What to do?" hint — restart, check for an update, see a dealer. Codes we don't have text for yet still show up with the note to save and send in the protocol.
 - 🇩🇪 Gen 2–4: Fehlercodes zeigen jetzt lesbaren Klartext statt nur einer Hex-Zahl. 376 Codes aus Antrieb, Akku und Display sind in eigenen Worten erklärt, mit „Was tun?"-Hinweis — neu starten, auf Update prüfen, zum Händler. Codes ohne Text erscheinen weiter mit dem Hinweis, das Protokoll zu speichern und einzuschicken.
