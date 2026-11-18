@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.20 · November 2026
+- 🇬🇧 Gen 2–4: clearing the fault memory now records the real per-ECU result (cleared ✓ / rejected + NRC) in the persistent change log, so the support package always shows what actually happened — even after a page reload. The live TX/RX log is lost on reload; this is not.
+- 🇩🇪 Gen 2–4: beim Löschen des Fehlerspeichers wird jetzt das echte Ergebnis pro Steuergerät (gelöscht ✓ / abgelehnt + NRC) dauerhaft im Änderungs-Protokoll gespeichert — so zeigt das Support-Paket immer, was wirklich passiert ist, auch nach einem Neuladen. Das Live-TX/RX-Log geht beim Neuladen verloren, dies nicht.
+
 ## 1.9.19 · November 2026
 - 🇬🇧 Gen 2–4: the PDF report now follows the app language as well — headings, labels and the note (it was German only before; the fault plain-text already followed the language). 32 report labels translated into all 12 languages.
 - 🇩🇪 Gen 2–4: der PDF-Bericht folgt jetzt auch der App-Sprache — Überschriften, Labels und der Hinweis (vorher nur Deutsch; der Fehler-Klartext folgte schon). 32 Bericht-Labels in alle 12 Sprachen übersetzt.

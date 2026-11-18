@@ -1098,7 +1098,19 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     body.appendChild(warn);
     const btn=document.createElement('button'); btn.className='btn-big'; btn.style.cssText='background:var(--self-red);margin-top:18px'; btn.textContent='Fehlerspeicher löschen';
     const res=document.createElement('p'); res.className='desc'; res.style.textAlign='center';
-    btn.onclick=async()=>{ if(!confirm('Fehlerspeicher wirklich löschen?\nGespeicherte Fehler gehen verloren, aktive erscheinen wieder. Nur am eigenen Rad.'))return; btn.disabled=true; res.textContent='lösche …'; try{ await api().clearFaults(); logChange('—','Fehlerspeicher','','gelöscht'); toast('Fehlerspeicher gelöscht ✓','ok'); renderFehler(body); }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ btn.disabled=false; } };
+    btn.onclick=async()=>{ if(!confirm('Fehlerspeicher wirklich löschen?\nGespeicherte Fehler gehen verloren, aktive erscheinen wieder. Nur am eigenen Rad.'))return; btn.disabled=true; res.textContent='lösche …'; try{
+        const r=await api().clearFaults();
+        const lines=Array.isArray(r)?r:[];
+        // Echtes Ergebnis pro Steuergerät (0x54 ✓ / abgelehnt) dauerhaft ins Änderungs-Protokoll —
+        // so landet es im Support-Paket, auch wenn die Seite danach neu geladen wird. Das flüchtige
+        // TX/RX-Log (uebertragungs-log.txt) ist nach einem Reload weg; das hier bleibt erhalten.
+        if(lines.length) lines.forEach(m=>logChange('—','Fehlerspeicher löschen','',m));
+        else logChange('—','Fehlerspeicher löschen','','ausgeführt');
+        const okN=lines.filter(m=>/✓/.test(m)).length;
+        const rejN=lines.filter(m=>/abgelehnt/i.test(m)).length;
+        toast(rejN ? ('Teilweise abgelehnt — '+okN+' ok, '+rejN+' abgelehnt (siehe Support-Paket)') : 'Fehlerspeicher gelöscht ✓', rejN?'warn':'ok');
+        renderFehler(body);
+      }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ btn.disabled=false; } };
     body.appendChild(btn); body.appendChild(res);
   }
 
