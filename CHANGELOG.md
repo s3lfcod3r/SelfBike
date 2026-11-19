@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.34 · November 2026
+- 🇬🇧 BES2: the PDF report no longer contradicts the read-out. If the fault memory can't be read (e.g. a timeout), the overview now says "not readable" instead of a green "no faults", and the next service is taken from the already-scanned data instead of a second live read that sometimes timed out and wrongly showed "not set". The fault memory also gets a longer time window when reading, which helps on bikes where it timed out right after a full scan.
+- 🇩🇪 BES2: Der PDF-Bericht widerspricht nicht mehr dem Auslesen. Lässt sich der Fehlerspeicher nicht lesen (z. B. Timeout), steht in der Übersicht jetzt „nicht lesbar" statt einem grünen „keine Fehler", und der nächste Service wird aus den schon ausgelesenen Daten genommen statt aus einem zweiten Live-Read, der manchmal in den Timeout lief und fälschlich „nicht gesetzt" zeigte. Außerdem bekommt das Fehlerlesen ein längeres Zeitfenster – das hilft an Rädern, wo es direkt nach einem Vollscan in den Timeout lief.
+
 ## 1.9.33 · November 2026
 - 🇬🇧 BES2: the read-out no longer gets stuck at 82 % on bikes with a non-Bosch / accessory display (e.g. COBI). If the display doesn't answer the Bosch identifiers, SelfBike now skips it after a few tries and finishes with motor and battery fully read, instead of hanging. The service reminder also writes more reliably: all fields now go to the bike in a single session with a longer time window, which fixes the "timeout" some riders saw when resetting the service.
 - 🇩🇪 BES2: Das Auslesen bleibt nicht mehr bei 82 % hängen, wenn ein Fremd-/Zubehör-Display (z. B. COBI) verbaut ist. Antwortet das Display nicht auf die Bosch-Kennungen, überspringt SelfBike es jetzt nach wenigen Versuchen und liefert Motor und Akku vollständig, statt festzuhängen. Außerdem schreibt die Service-Erinnerung zuverlässiger: alle Felder gehen jetzt in einer Sitzung mit längerem Zeitfenster ins Rad – das behebt den „Timeout" beim Service-Zurücksetzen.

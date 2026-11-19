@@ -687,7 +687,11 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   async function openReport(){
     if(!readDone()){ toast('Bitte zuerst „Verbinden & Auslesen" (Tab „Mein E-Bike").','warn'); return; }
     let dtc={}; try{ dtc=await api().readDTC(); }catch(e){}
-    let serviceKm=0; try{ const r=Uint8Array.from(await api().readFieldRaw('M','024d')); serviceKm=beInt(r.slice(3,7))*0.001; }catch(e){}
+    // Service-Fälligkeit aus den bereits ausgelesenen Daten nehmen (wie die Startseite seit 1.9.31). Der
+    // frühere zweite Live-Read lief auf manchen Rädern in den Timeout und zeigte dann fälschlich „nicht gesetzt".
+    let serviceKm=num('M','024d',3);
+    if(serviceKm==null){ try{ const r=Uint8Array.from(await api().readFieldRaw('M','024d')); serviceKm=beInt(r.slice(3,7))*0.001; }catch(e){} }
+    if(!(serviceKm>0)) serviceKm=0;
     let ov=el('reportOverlay');
     if(!ov){
       const st=document.createElement('style'); st.textContent=
@@ -727,7 +731,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     const assist=num('M','0143'), dmax=num('M','0210'), manip=num('M','0272');
     const rtM=num('M','016b'), rtS=num('M','016c');
     const motorCode=str('M','5b7c')||'—', akkuCode=str('A','5b7c')||'—', dispCode=str('D','5b7c')||'—';
-    let fCount=0; for(const k of ['M','A','D']){ const l=dtc[k]; if(Array.isArray(l)) fCount+=l.length; }
+    let fCount=0, fUnread=false; for(const k of ['M','A','D']){ const l=dtc[k]; if(Array.isArray(l)) fCount+=l.length; else fUnread=true; }
     const ok=(manip===0||manip==null);
     const MODES=[['Off','022a'],['Eco','0226'],['Tour','0227'],['Sport / eMTB','0228'],['Turbo','0247'],['User 1','0229'],['User 2','0240'],['User 3','0241'],['User 4','0242']];
     const md=MODES.map(([n,d])=>({n,km:(num('M',d)||0)/1000})).filter(x=>x.km>=0.5).sort((a,b)=>b.km-a.km);
@@ -781,7 +785,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
       +tile(t('bat.soc'), (soc==null?'—':Math.round(soc)+' %'))
       +tile(tb('pdf.swMotor'), (pdfVer('M','0103')==='—'?'—':'v'+pdfVer('M','0103')))
       +tile(tb('pdf.manip'), ok?tb('pdf.manipNo'):tb('pdf.manipYes'), ok)
-      +tile(tb('pdf.faultsTile'), fCount===0?tb('pdf.faultsNone'):tb('pdf.faultsN',{n:fCount}), fCount===0)
+      +tile(tb('pdf.faultsTile'), fCount>0?tb('pdf.faultsN',{n:fCount}):(fUnread?esc(t('fault.unreadable')):tb('pdf.faultsNone')), fCount===0 && !fUnread)
       +'</div></section>'
       +'<section><h2>'+esc(tb('pdf.info'))+'</h2><table>'
       +kvp(tb('pdf.prodMotor'), E(motorCode))

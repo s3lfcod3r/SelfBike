@@ -7,7 +7,7 @@
 const VID = 0x108c, PID = 0x193;
 const SF_MAX = 13, FF_MAX = 6, CF_MAX = 7, KSTORE = 'bes2.slots';
 const T = { SESSION_GAP:25, CONTEXT_GAP:20, KEY_GAP:15, DID_GAP:28, RESPONSE_TIMEOUT:1500,
-            PENDING_EXTEND:40000, KEEPALIVE_BUSY:1800, FC_TIMEOUT:1500, LOCKOUT:12000 };
+            PENDING_EXTEND:40000, KEEPALIVE_BUSY:1800, FC_TIMEOUT:1500, LOCKOUT:12000, DTC_TIMEOUT:3000 };
 const SID_REPLY = {0x10:0x50,0x11:0x51,0x14:0x54,0x19:0x59,0x22:0x62,0x27:0x67,0x28:0x68,0x2e:0x6e,0x31:0x71,0x3e:0x7e};
 
 // Schlüssel UND Decode-Tabelle liegen NICHT im Browser/Repo — sie kommen von geschützten Cloudflare-Workern.
@@ -584,8 +584,8 @@ async function readDTC(){
       // einmal neu öffnen + erneut versuchen, bevor wir für dieses Steuergerät aufgeben.
       let r;
       await reopenIfClosed();
-      try{ await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff)); }
-      catch(e1){ await reopenIfClosed(); await sleep(T.SESSION_GAP); await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff)); }
+      try{ await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff),T.DTC_TIMEOUT); }
+      catch(e1){ await reopenIfClosed(); await sleep(T.SESSION_GAP); await openSession(t); r=await request(t,Uint8Array.of(0x19,0x02,0xff),T.DTC_TIMEOUT); }
       const list=[];
       const absorb=(resp)=>{ if(!(resp[0]===0x59 && resp[1]===0x02))return; for(let i=3;i+3<resp.length;i+=4){ const code=(resp[i]<<16)|(resp[i+1]<<8)|resp[i+2]; const status=resp[i+3]; if(code===0)continue; const h=code.toString(16).toUpperCase().padStart(6,'0'); if(!list.some(x=>x.code===h)) list.push({code:h,status}); } };
       if(r[0]===0x59 && r[1]===0x02){ absorb(r); out[t.key]=list; }
@@ -593,7 +593,7 @@ async function readDTC(){
         // ResponseTooLong: zu viele Fehler für „alle Status" (0xFF) auf einmal. Je Status-Bit einzeln
         // abfragen (kleinere Antworten) und zusammenführen; Doppelte werden verworfen.
         for(const m of [0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80]){
-          try{ const rr=await request(t,Uint8Array.of(0x19,0x02,m)); absorb(rr); }catch(e){}
+          try{ const rr=await request(t,Uint8Array.of(0x19,0x02,m),T.DTC_TIMEOUT); absorb(rr); }catch(e){}
           await sleep(T.DID_GAP);
         }
         out[t.key]=list;
