@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.33 · November 2026
+- 🇬🇧 BES2: the read-out no longer gets stuck at 82 % on bikes with a non-Bosch / accessory display (e.g. COBI). If the display doesn't answer the Bosch identifiers, SelfBike now skips it after a few tries and finishes with motor and battery fully read, instead of hanging. The service reminder also writes more reliably: all fields now go to the bike in a single session with a longer time window, which fixes the "timeout" some riders saw when resetting the service.
+- 🇩🇪 BES2: Das Auslesen bleibt nicht mehr bei 82 % hängen, wenn ein Fremd-/Zubehör-Display (z. B. COBI) verbaut ist. Antwortet das Display nicht auf die Bosch-Kennungen, überspringt SelfBike es jetzt nach wenigen Versuchen und liefert Motor und Akku vollständig, statt festzuhängen. Außerdem schreibt die Service-Erinnerung zuverlässiger: alle Felder gehen jetzt in einer Sitzung mit längerem Zeitfenster ins Rad – das behebt den „Timeout" beim Service-Zurücksetzen.
+
 ## 1.9.32 · November 2026
 - 🇬🇧 BES2: fixed the state of charge showing "255 %" on some (older Gen2) batteries. 255 is the sentinel for "value not available" — it's now ignored, and SelfBike falls back to another charge source (battery or display) or shows "—". Affects both the start screen and the PDF report.
 - 🇩🇪 BES2: Ladezustand „255 %" auf manchen (älteren Gen2-)Akkus behoben. 255 ist der Platzhalter für „Wert nicht verfügbar" – er wird jetzt ignoriert, und SelfBike nimmt eine andere Ladestands-Quelle (Akku oder Display) oder zeigt „—". Betrifft Startseite und PDF-Bericht.

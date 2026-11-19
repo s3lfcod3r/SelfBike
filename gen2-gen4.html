@@ -294,6 +294,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
   const DEMO_API={
     async readFieldRaw(tk,did){ const v=DEMO_RAW[tk+did]; if(!v) throw new Error('im Demo nicht vorhanden'); return v.slice(); },
     async writeField(tk,did,pos,bytes){ const k=tk+did, buf=(DEMO_RAW[k]||[]).slice(); for(let i=0;i<bytes.length;i++){ if(pos+i<buf.length) buf[pos+i]=bytes[i]&0xff; } DEMO_RAW[k]=buf; return {before:buf,after:buf}; },
+    async writeFieldMulti(tk,did,patches){ const k=tk+did, buf=(DEMO_RAW[k]||[]).slice(); for(const p of (patches||[])){ const bs=p.bytes||[]; for(let i=0;i<bs.length;i++){ if((p.pos|0)+i<buf.length) buf[(p.pos|0)+i]=bs[i]&0xff; } } DEMO_RAW[k]=buf; return {before:buf,after:buf}; },
     async restoreField(tk,did,bytes){ DEMO_RAW[tk+did]=Array.from(bytes).map(x=>x&0xff); return {after:DEMO_RAW[tk+did]}; },
     async readDTC(){ return { M:[], A:[], D:[] }; },
     async clearFaults(){ return ['Demo: nichts zu löschen']; }
@@ -1076,14 +1077,28 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     const del=document.createElement('button'); del.className='btn-text'; del.textContent='Erinnerung löschen'; del.style.color='var(--self-red)';
     const res=document.createElement('p'); res.className='desc'; res.style.textAlign='center';
     body.appendChild(save); body.appendChild(del); body.appendChild(res);
-    async function wf(field,value){ const enc=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'encode',t:'M',did:'024d',field,value})}).then(r=>r.json()); if(enc.error)throw new Error(field+': '+enc.error); await api().writeField('M','024d',enc.pos,enc.bytes); }
+    // Alle Teilfelder EINMAL kodieren und in EINER Sitzung ins Rad schreiben (robust, kein Timeout durch
+    // vier getrennte Freischalt-/Schreibvorgänge wie bisher). list: [{field,value}, …].
+    async function wfAll(list){
+      const patches=[];
+      for(const it of list){
+        const enc=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'encode',t:'M',did:'024d',field:it.field,value:it.value})}).then(r=>r.json());
+        if(enc.error)throw new Error(it.field+': '+enc.error);
+        patches.push({pos:enc.pos,bytes:enc.bytes});
+      }
+      const a=api();
+      if(typeof a.writeFieldMulti==='function') return a.writeFieldMulti('M','024d',patches,6000);
+      for(const p of patches) await a.writeField('M','024d',p.pos,p.bytes); // Fallback (alter Pfad)
+    }
     save.onclick=async()=>{
       if(!confirm('Service-Erinnerung ins Rad schreiben? Nur am eigenen Rad.'))return;
       save.disabled=true; res.textContent='schreibe …';
       try{
-        if(el('svcKmOn').checked){ const iv=Number(el('svcKm').value)||0; await wf('odometer',(motorKm||0)+iv); } else await wf('odometer',0);
-        if(el('svcDateOn').checked && el('svcDate').value){ const d=new Date(el('svcDate').value); await wf('year',d.getFullYear()-2000); await wf('month',d.getMonth()+1); await wf('day',d.getDate()); }
-        else { await wf('year',0); await wf('month',0); await wf('day',0); }
+        const list=[];
+        if(el('svcKmOn').checked){ const iv=Number(el('svcKm').value)||0; list.push({field:'odometer',value:(motorKm||0)+iv}); } else list.push({field:'odometer',value:0});
+        if(el('svcDateOn').checked && el('svcDate').value){ const d=new Date(el('svcDate').value); list.push({field:'year',value:d.getFullYear()-2000},{field:'month',value:d.getMonth()+1},{field:'day',value:d.getDate()}); }
+        else { list.push({field:'year',value:0},{field:'month',value:0},{field:'day',value:0}); }
+        await wfAll(list);
         const neu=[el('svcKmOn').checked?('bei '+nf((motorKm||0)+(Number(el('svcKm').value)||0),0)+' km'):null,(el('svcDateOn').checked&&el('svcDate').value)?('am '+new Date(el('svcDate').value).toLocaleDateString('de-DE')):null].filter(Boolean).join(' · ')||'nicht eingestellt';
         logChange('Motor','Service-Erinnerung',jetzt,neu);
         renderService(body); doneKofi('Service-Erinnerung gespeichert ✓','Die Erinnerung ist im Rad gespeichert.');
@@ -1091,7 +1106,7 @@ import { VERSION, CHANGELOG_URL } from './lib/version.js';
     };
     del.onclick=async()=>{
       if(!confirm('Service-Erinnerung löschen?'))return; del.disabled=true; res.textContent='lösche …';
-      try{ await wf('odometer',0); await wf('year',0); await wf('month',0); await wf('day',0); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); renderService(body); doneKofi('Service-Erinnerung gelöscht ✓','Die Erinnerung ist entfernt.'); }
+      try{ await wfAll([{field:'odometer',value:0},{field:'year',value:0},{field:'month',value:0},{field:'day',value:0}]); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); renderService(body); doneKofi('Service-Erinnerung gelöscht ✓','Die Erinnerung ist entfernt.'); }
       catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ del.disabled=false; }
     };
   }

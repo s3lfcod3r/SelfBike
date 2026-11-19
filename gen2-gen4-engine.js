@@ -21,7 +21,7 @@ const TARGETS = [
   { key:'A', id:'akku', name:'Akku', tx:0x22, rx:0x23, slot:1, kontext:[0x22,0x05,0x01], shortKey:false,
     routines:[],
     dids:[[1,3],[1,4],[1,5],[1,6],[1,0x20],[1,0x21],[1,0x22],[1,0x50],[2,0x22],[2,0x24],[2,0x2e],[2,0x2f],[2,0x36],[2,0x64],[2,0x73],[2,0xa0],[3,0x12],[3,0x13],[3,0x19],[4,0x13],[4,0x33],[4,0x50],[5,1],[5,0x10],[6,0x10],[6,0],[7,0xa1],[7,0xa0],[0xda,0x10],[0xda,0x15],[0xda,0x16],[3,0x70],[2,0x1c],[2,0x27],[2,0x26],[2,0x39],[2,0x50],[2,0x7c],[2,0x82],[3,0x11],[3,0x14],[3,0x16],[3,0x17],[0x42,1],[0x5b,0x7c],[0xde,0x82],[0xde,0x95]] },
-  { key:'D', id:'display', name:'Display', tx:0x3a, rx:0x3d, slot:5, kontext:null, shortKey:false, routines:[],
+  { key:'D', id:'display', name:'Display', tx:0x3a, rx:0x3d, slot:5, kontext:null, shortKey:false, soft:true, routines:[],
     dids:[[0,4],[2,0x20],[2,0x21],[2,0x22],[2,0x30],[2,0x31],[2,0x32],[2,0x3a],[2,0x42],[2,0x43],[2,0x45],[2,0x52],[2,0x53],[2,0x60],[2,0x70],[2,0x71],[2,0x72],[2,0x88],[0x5b,0x7c],[0xde,0x95]] },
   // Fast Charger (BCS, Adresse aus Bosch-ODX: tx 0x6E / rx 0x6F). Optional: nur vorhanden, wenn der
   // Charger angesteckt ist — antwortet er nicht, wird das Ziel sauber übersprungen. Keine Freischaltung
@@ -190,11 +190,18 @@ async function scanTarget(t){
     }
     // DIDs
     setStatus(t.name+' – lese Kennungen …','busy'); progMsg(t.name+' – Kennungen lesen …');
+    let miss=0, got=0;
     for(const did of t.dids){
       const didhex=did.map(x=>x.toString(16).padStart(2,'0')).join('');
+      let ok=false;
       try{ const res=await request(t,Uint8Array.of(0x22,did[0],did[1]));
-        if(res[0]===0x62){ tm.dids[didhex]={raw:res.subarray(3)}; }
+        if(res[0]===0x62){ tm.dids[didhex]={raw:res.subarray(3)}; ok=true; }
       }catch(e){}
+      if(ok){ got++; miss=0; } else { miss++; }
+      // Weiches Ziel (Display): ein Fremd-/Zubehör-Display wie COBI antwortet nicht auf die Bosch-Kennungen.
+      // Nach einigen Fehlversuchen am Stück ohne einen einzigen Treffer dieses Ziel zügig überspringen,
+      // statt bei ~82 % hängen zu bleiben — Motor und Akku sind dann trotzdem vollständig.
+      if(t.soft && got===0 && miss>=6) throw new Error('antwortet nicht (Fremd-/Zubehör-Display?)');
       await sleep(T.DID_GAP); if(PROG.t){PROG.d++;progTick();}
     }
     // Vollscan: Seiten (erste DID-Bytes der ECU ∪ 0x00–0x07) × Index 0x00–0xAF abfahren, Treffer behalten.
@@ -250,7 +257,9 @@ async function scan(){
     if(!n){ setStatus('kein Gerät im Diagnosemodus – Kiox aus/15s/ein','err');
       progFinish('err','Kein Gerät gefunden',false); progMsg('Kiox aus → 15 Sek. warten → ein, dann erneut auslesen.'); reEnable(); return; }
     PROG.t=TARGETS.reduce((a,t)=>a+t.routines.length+t.dids.length,0)+1; PROG.d=0; progTick();
-    for(const t of TARGETS){ try{ await scanTarget(t); }catch(e){ if(!t.optional) throw e; log(t.name+': nicht gefunden ('+e.message+') – übersprungen','warn'); } await sleep(T.SESSION_GAP); }
+    // Motor/Akku sind Pflicht; Display (soft) und Fast Charger (optional) dürfen fehlen/nicht antworten,
+    // ohne das ganze Auslesen abzubrechen — sonst bleibt der Lauf bei einem Fremd-Display (COBI) hängen.
+    for(const t of TARGETS){ try{ await scanTarget(t); }catch(e){ if(!t.optional && !t.soft) throw e; log(t.name+': übersprungen ('+e.message+')','warn'); } await sleep(T.SESSION_GAP); }
     progMsg('Werte dekodieren …'); setStatus('Werte dekodieren …','busy'); await decodeAll();
     PROG.d=PROG.t; progTick();
     setStatus('fertig ✓','on'); render();
@@ -523,7 +532,7 @@ function writeAllowed(tk,didHex){ return !!(WRITE_OK[tk] && WRITE_OK[tk].include
 function tgtOf(tk){ const t=TARGETS.find(x=>x.key===tk); if(!t)throw new Error('Ziel unbekannt'); return t; }
 function didArr(h){ return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16)]; }
 async function readRaw(t,did){ const r=await request(t,Uint8Array.of(0x22,did[0],did[1])); if(r[0]!==0x62)throw new Error('Lesen abgelehnt ('+hex(r)+')'); return r.subarray(3); }
-async function writeRawPdu(t,did,raw){ const r=await request(t,concat([Uint8Array.of(0x2e,did[0],did[1]),raw])); if(r[0]===0x6e)return true; if(r[0]===0x7f){ const e=new Error('NRC 0x'+pad(r[2])); e.nrc=r[2]; throw e; } throw new Error('unerwartet '+hex(r)); }
+async function writeRawPdu(t,did,raw,ms){ const r=await request(t,concat([Uint8Array.of(0x2e,did[0],did[1]),raw]),ms); if(r[0]===0x6e)return true; if(r[0]===0x7f){ const e=new Error('NRC 0x'+pad(r[2])); e.nrc=r[2]; throw e; } throw new Error('unerwartet '+hex(r)); }
 async function ensureUnlock(t){ try{ await detectDisplaySlot(t); await sendKey(t,0x11,slotOf(t)); }catch(e){ if(!e.nrc) throw e; } }
 async function readFieldRaw(tk,didHex){ const t=tgtOf(tk); busy++; try{ await openSession(t); await precheck(t); return [...await readRaw(t,didArr(didHex))]; } finally{ busy--; } }
 async function writeField(tk,didHex,pos,bytes){
@@ -535,6 +544,22 @@ async function writeField(tk,didHex,pos,bytes){
     const before=await readRaw(t,did); const buf=Uint8Array.from(before);
     for(let i=0;i<bytes.length;i++){ if(pos+i<buf.length) buf[pos+i]=bytes[i]&0xff; }
     await writeRawPdu(t,did,buf);
+    const after=await readRaw(t,did);
+    return { before:[...before], after:[...after] };
+  } finally{ busy--; }
+}
+// Mehrere Teilfelder EINER Kennung in EINER Sitzung + Freischaltung schreiben (statt pro Feld neu
+// öffnen/freischalten/lesen/schreiben). Robuster und ohne die Timeouts beim Service-Reset, wo bisher
+// vier Felder nacheinander je eigene Sitzung brauchten. patches: [{pos,bytes}, …]. ms: längeres Zeitfenster.
+async function writeFieldMulti(tk,didHex,patches,ms){
+  if(!writeAllowed(tk,didHex)) throw new Error('Diese Einstellung ist gesperrt (kein Tuning/BMS).');
+  if(!device) throw new Error('Nicht verbunden – bitte zuerst „Verbinden & Auslesen".');
+  const t=tgtOf(tk), did=didArr(didHex); busy++;
+  try{
+    await openSession(t); await precheck(t); await ensureUnlock(t);
+    const before=await readRaw(t,did); const buf=Uint8Array.from(before);
+    for(const p of (patches||[])){ const pos=p.pos|0; const bs=p.bytes||[]; for(let i=0;i<bs.length;i++){ if(pos+i<buf.length) buf[pos+i]=bs[i]&0xff; } }
+    await writeRawPdu(t,did,buf,ms);
     const after=await readRaw(t,did);
     return { before:[...before], after:[...after] };
   } finally{ busy--; }
@@ -581,7 +606,7 @@ async function readDTC(){
   }
   return out;
 }
-window.__bikeWrite={ clearFaults, readFieldRaw, writeField, restoreField, readDTC };
+window.__bikeWrite={ clearFaults, readFieldRaw, writeField, writeFieldMulti, restoreField, readDTC };
 window.__scan=scan; // damit die „Mein E-Bike"-Hülle den Scan starten und abwarten kann
 // TX/RX-Übertragungsverlauf als Text (für das Support-Paket, damit man sieht, wo z. B. das Fehlerlesen hängt).
 window.__diagLog=()=>{ try{ return logEl ? Array.from(logEl.children).map(d=>d.textContent).join('\n') : ''; }catch(e){ return ''; } };
