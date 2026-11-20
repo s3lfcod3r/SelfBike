@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.53 · November 2026
+- 🇬🇧 The compatibility list now shows an "Accessories" category per system with the confirmed extras from contributions (ABS, eShift, fast charger).
+- 🇩🇪 Die Kompatibilitätsliste zeigt jetzt pro System eine „Zubehör"-Kategorie mit den bestätigten Extras aus den Beiträgen (ABS, eShift, Fast Charger).
+
 ## 1.9.52 · November 2026
 - 🇬🇧 Contributing to the list is now blocked in demo mode, so the demo's placeholder data can no longer end up in the review queue.
 - 🇩🇪 Beitragen zur Liste ist im Demo-Modus jetzt gesperrt, damit keine Demo-Platzhalterdaten mehr in der Warteliste landen.

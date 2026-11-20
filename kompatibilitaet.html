@@ -141,7 +141,8 @@ var SYS = [
     cats:[
       { tKey:'catMotors', kind:'motors', chips:['BDU250PCX','BDU350','BDU365','BDU450CX'] },
       { tKey:'catBatteries', kind:'batteries', chips:['BBP281','BBP290','BBP291','BBS275','PowerPack 400'] },
-      { tKey:'catDisplays', kind:'displays', chips:['Intuvia (BUI255)','Kiox (BUI330)','Kiox (BUI350)','Purion (BUI215)','Nyon','COBI *'] }
+      { tKey:'catDisplays', kind:'displays', chips:['Intuvia (BUI255)','Kiox (BUI330)','Kiox (BUI350)','Purion (BUI215)','Nyon','COBI *'] },
+      { tKey:'catExtras', kind:'extras', chips:[] }
     ],
     noteKey:'bes2Note', readsKey:'bes2Reads'
   },
@@ -150,7 +151,8 @@ var SYS = [
       { tKey:'catMotors', kind:'motors', chips:['BDU3740','BDU3741'] },
       { tKey:'catBatteries', kind:'batteries', chips:['BBP3580 (PowerPack 800)','BBP3760'] },
       { tKey:'catDisplays', kind:'displays', chips:[] },
-      { tKey:'catUnits', plain:true, uchips:['uMotor','uBattery','uBattery2','uDisplay','uRemote','uConnect','uAbs','uGearing'] }
+      { tKey:'catUnits', plain:true, uchips:['uMotor','uBattery','uBattery2','uDisplay','uRemote','uConnect','uAbs','uGearing'] },
+      { tKey:'catExtras', kind:'extras', chips:[] }
     ],
     noteKey:'smartNote', readsKey:'smartReads'
   }
@@ -158,7 +160,9 @@ var SYS = [
 
 // Freigegebene Community-Beiträge (nur Modell-Codes) werden hier eingemischt.
 var LIST_WORKER = 'https://bike-list.s3lfcod3r.workers.dev';
-var COMM = { bes2:{motors:[],batteries:[],displays:[]}, smart:{motors:[],batteries:[],displays:[]}, bikes:[] };
+var COMM = { bes2:{motors:[],batteries:[],displays:[],extras:[]}, smart:{motors:[],batteries:[],displays:[],extras:[]}, bikes:[] };
+// Label „Zubehör" (die Kategorie-Überschriften stehen sonst in TR; Extras kommen nur aus Beiträgen).
+var CE = { de:'Zubehör', en:'Accessories', fr:'Accessoires', it:'Accessori', es:'Accesorios', pt:'Acessórios', nl:'Accessoires', pl:'Akcesoria', cs:'Příslušenství', da:'Tilbehør', sv:'Tillbehör', fi:'Lisävarusteet' };
 function normKey(s){ return String(s).split('(')[0].replace(/\s+/g,' ').trim().toLowerCase(); }
 // Vereinigung ohne Dubletten (nach Code-Teil vor der Klammer), erste Schreibweise gewinnt.
 function union(base, extra){
@@ -200,7 +204,8 @@ function render(){
       if (!merged.length) return '';
       if (c.kind === 'motors') merged.forEach(function(m){ motorSet[normKey(m)] = 1; });
       var chipHtml = merged.map(function(ch){ return chip(ch, !!c.plain); }).join('');
-      return '<div class="cat"><p class="ct">'+esc(T(c.tKey))+'</p><div class="chips">'+chipHtml+'</div></div>';
+      var label = c.kind === 'extras' ? (CE[cur] || CE.en) : T(c.tKey);
+      return '<div class="cat"><p class="ct">'+esc(label)+'</p><div class="chips">'+chipHtml+'</div></div>';
     }).join('');
     var reads = '<p class="reads"><b>'+esc(T('readsLabel'))+':</b> '+esc(T(sy.readsKey))+'</p>';
     var note = sy.noteKey ? '<p class="foot-note">'+esc(T(sy.noteKey))+'</p>' : '';
@@ -226,6 +231,7 @@ async function loadCommunity(){
       if (e.battery2) tgt.batteries.push(e.battery2);
       if (e.display) tgt.displays.push(e.display);
       if (sys === 'smart' && e.remote) tgt.displays.push(e.remote);
+      if (Array.isArray(e.extras)) e.extras.forEach(function(x){ if (x) tgt.extras.push(x); });
       var bike = [e.brand, e.model].filter(Boolean).join(' ').trim();
       if (bike) COMM.bikes.push(bike);
     });
