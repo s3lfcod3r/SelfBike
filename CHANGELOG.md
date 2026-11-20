@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.43 · November 2026
+- 🇬🇧 "Tested bikes" list extended: Smart System battery BBP3760 and the Focus Thron² 6.7 (Smart, BDU3741 Performance Line CX) added from a new community report.
+- 🇩🇪 Liste „Getestete Räder" erweitert: Smart-System-Akku BBP3760 und das Focus Thron² 6.7 (Smart, BDU3741 Performance Line CX) aus einem neuen Community-Protokoll ergänzt.
+
 ## 1.9.42 · November 2026
 - 🇬🇧 "Tested bikes" page is now fully multilingual (12 languages), with the same language selector as the rest of the app instead of just DE/EN. Headings, categories and notes are translated; hardware codes stay neutral.
 - 🇩🇪 Seite „Getestete Räder" jetzt vollständig mehrsprachig (12 Sprachen), mit demselben Sprachumschalter wie der Rest der App statt nur DE/EN. Überschriften, Kategorien und Hinweise sind übersetzt; Hardware-Codes bleiben neutral.

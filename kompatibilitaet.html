@@ -148,13 +148,13 @@ var SYS = [
   { icon:'⚡', acc:'var(--self-teal-bright)', name:'Smart System (BES3)', k:'Kiox 300/500 · LED Remote',
     cats:[
       { tKey:'catMotors', chips:['BDU3740','BDU3741'] },
-      { tKey:'catBatteries', chips:['BBP3580 (PowerPack 800)'] },
+      { tKey:'catBatteries', chips:['BBP3580 (PowerPack 800)','BBP3760'] },
       { tKey:'catUnits', plain:true, uchips:['uMotor','uBattery','uBattery2','uDisplay','uRemote','uConnect','uAbs','uGearing'] }
     ],
     noteKey:'smartNote', readsKey:'smartReads'
   }
 ];
-var BIKES = ['Cube Reaction Hybrid Pro','Cube Nutrail Hybrid','Radon ZR Team','Radon Relate 8.0','Winora Sinus R5','HNF UD4 (Rohloff)','Nicolai G16 EBOXX','Victoria eTrekking 7.8','Riese & Müller Delite','Cannondale (Smart Cargo)'];
+var BIKES = ['Cube Reaction Hybrid Pro','Cube Nutrail Hybrid','Radon ZR Team','Radon Relate 8.0','Winora Sinus R5','HNF UD4 (Rohloff)','Nicolai G16 EBOXX','Victoria eTrekking 7.8','Focus Thron² 6.7','Riese & Müller Delite','Cannondale (Smart Cargo)'];
 
 var cur = detectLang(); if (!TR[cur]) cur = 'en';
 function T(k){ return (TR[cur] && TR[cur][k]) || TR.en[k] || TR.de[k] || k; }

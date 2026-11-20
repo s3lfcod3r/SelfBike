@@ -52,6 +52,7 @@
 
 **Akkus / Batteries**
 - PowerPack 800 (BBP3580)
+- BBP3760
 
 **Steuergeräte, die abgefragt werden / Units that are queried** (werden gelesen, sofern verbaut / read when installed)
 - Motor (DriveUnit)
@@ -85,6 +86,7 @@
 - HNF UD4 (Rohloff)
 - Nicolai G16 EBOXX
 - Victoria eTrekking 7.8
+- Focus Thron² 6.7 (Smart System)
 - Riese & Müller Delite (Touring GX, DualAkku)
 - Cannondale (Smart System, Cargo)
 
