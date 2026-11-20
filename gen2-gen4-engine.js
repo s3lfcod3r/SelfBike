@@ -59,6 +59,8 @@ const SEEDS=[]; // nicht-standardmäßige SecurityAccess-Seeds (z. B. Nyon 4 Byt
 const assembly=new Map();
 let logEl=null;
 let DEEP=false; // Vollscan: nach der festen Liste zusätzlich die DID-Bereiche je Steuergerät abfahren
+let SNIFF=null; // Akku-2-Suche: wenn gesetzt (Array), werden ALLE Antwort-Frames (src+Nutzbytes) mitgeschrieben,
+                // unabhängig von pending — so sehen wir auch Antworten von unbekannten Adressen (zweiter Akku-Knoten).
 function log(msg,cls){ if(!logEl)return; const d=document.createElement('div'); if(cls)d.className=cls; d.textContent=new Date().toLocaleTimeString()+'  '+msg; logEl.appendChild(d); logEl.scrollTop=logEl.scrollHeight; }
 function setStatus(text,state){ const dot=el('dot'),st=el('statustext'); if(st)st.textContent=text; if(dot)dot.className='dot'+(state?' '+state:''); }
 
@@ -85,11 +87,11 @@ function onReport(ev){
   if(d.length>=4&&d[0]===0&&d[1]===1){log('Handshake quittiert','ok');return;}
   if(d.length<5)return;
   const src=d[2],hdr=d[4];
-  if(src===0x3d){const len=d[4],data=d.slice(5,5+len);if(!data.length)return;log('RX 3d '+hex(data),'rx');handlePdu(src,data);return;}
+  if(src===0x3d){const len=d[4],data=d.slice(5,5+len);if(!data.length)return;if(SNIFF)SNIFF.push({src,bytes:[...data]});log('RX 3d '+hex(data),'rx');handlePdu(src,data);return;}
   if((hdr&0xf0)===0x30){const fc={bs:d[5],stmin:d[6]};if(fcWait&&fcWait.rx===src)fcWait.done(fc);return;}
   if((hdr&0xf0)===0x10){const total=((hdr&0x0f)<<8)|d[5];const first=d.slice(6,6+FF_MAX);assembly.set(src,{buf:[...first],total});rawWrite(frame(src-1,Uint8Array.of(0x30,0,0))).catch(()=>{});return;}
   if((hdr&0xf0)===0x20){const a=assembly.get(src);if(!a)return;const take=Math.min(CF_MAX,a.total-a.buf.length);for(let i=0;i<take;i++)a.buf.push(d[5+i]);if(a.buf.length>=a.total){assembly.delete(src);handlePdu(src,Uint8Array.from(a.buf));}return;}
-  const data=d.slice(5,5+hdr);if(!data.length)return;log('RX '+hex(data),'rx');handlePdu(src,data);
+  const data=d.slice(5,5+hdr);if(!data.length)return;if(SNIFF)SNIFF.push({src,bytes:[...data]});log('RX '+hex(data),'rx');handlePdu(src,data);
 }
 function handlePdu(src,pdu){
   if(!pending)return;
@@ -606,6 +608,96 @@ async function readDTC(){
   }
   return out;
 }
+/* ---------- Experiment: Zweiten Akku suchen (read-only) ----------
+   Doppelakku-Räder (DualBattery) haben einen zweiten Akku, der über eine eigene CAN-Adresse
+   redet. Der normale Auslese-Lauf fragt nur Motor 0x20 / Akku 0x22 / Display 0x3a ab und sieht
+   deshalb immer nur EINEN Akku. Diese Suche macht NUR LESENDE Dinge:
+     1) Adress-Sonde: an eine Reihe weiterer CAN-Adressen ein harmloses „10 03" (Sitzung öffnen)
+        schicken und JEDE Antwort (auch negative 7F) mitschneiden. Antwortet eine unbekannte
+        Adresse, ist das ein Kandidat für den zweiten Akku-Knoten.
+     2) MULTIID des erkannten Akkus mitlesen (22 01 10 / 22 01 11) — die 29-Bit-Kennung, über die
+        Doppelakkus sich unterscheiden. Dient als Vergleichswert.
+   Es wird nichts geschrieben, nichts freigeschaltet, nichts verändert. */
+function probeOne(tx,uds,ms){
+  return new Promise(async resolve=>{
+    SNIFF=[];
+    try{ await rawWrite(frame(tx,concat([Uint8Array.of(uds.length),Uint8Array.from(uds)]))); }catch(e){}
+    setTimeout(()=>{ const got=SNIFF||[]; SNIFF=null;
+      const seen=new Set(), out=[];
+      for(const g of got){ if(seen.has(g.src))continue; seen.add(g.src); out.push(g); }
+      resolve(out);
+    }, ms||260);
+  });
+}
+async function akku2Probe(){
+  const lines=[]; const add=(s,cls)=>{ lines.push(s); log(s,cls||''); };
+  busy++; // Keepalive (3e 00 an alle Ziele) während der Sonde aussetzen – sonst Querantworten
+  try{
+    await reopenIfClosed();
+    add('=== Akku-2-Suche · Adress-Sonde (nur gelesen: 10 03 = Sitzung öffnen) ===');
+    const known=new Set([0x20,0x21,0x22,0x23,0x3a,0x3d,0x6e,0x6f]); // Motor/Akku/Display/Charger TX+RX
+    const addrs=[]; for(let a=0x10;a<=0x4e;a+=2){ if(!known.has(a)) addrs.push(a); }
+    let hits=0, news=0;
+    for(const tx of addrs){
+      progMsg('Adress-Sonde … 0x'+pad(tx));
+      const got=await probeOne(tx,[0x10,0x03]);
+      for(const g of got){
+        const isNew=!known.has(g.src); if(isNew)news++; hits++;
+        add('  TX 0x'+pad(tx)+' → Antwort von Adresse 0x'+pad(g.src)+': '+hex(Uint8Array.from(g.bytes))+(isNew?'   << NEUE ADRESSE':'   (bekannt)'), isNew?'ok':'rx');
+      }
+      await sleep(40);
+    }
+    add('Adress-Sonde fertig: '+hits+' Antwort(en), davon '+news+' von neuer Adresse'
+        +(news?' — vielversprechend, hier könnte der zweite Akku sitzen.':' — über USB ist kein zweiter Knoten sichtbar.'));
+    add('');
+    add('=== Akku-2-Suche · MULTIID des erkannten Akkus (nur gelesen) ===');
+    const akku=TARGETS.find(x=>x.key==='A');
+    try{
+      await reopenIfClosed(); await openSession(akku);
+      const fields=[['Unique29BitCanIdentifier (22 01 10)',[1,0x10]],['LastWorkingIdentity (22 01 11)',[1,0x11]]];
+      for(const [lbl,did] of fields){
+        try{ const r=await request(akku,Uint8Array.of(0x22,did[0],did[1]));
+          add('  '+lbl+': '+hex(r), r[0]===0x62?'ok':'warn'); }
+        catch(e){ add('  '+lbl+': '+e.message,'no'); }
+        await sleep(T.DID_GAP);
+      }
+    }catch(e){ add('  Akku-Sitzung fehlgeschlagen: '+e.message,'no'); }
+    return lines.join('\n');
+  } finally { busy--; }
+}
+async function runAkku2(){
+  const bikeEl=el('bikeName'); const bike=(bikeEl&&bikeEl.value.trim())||str('M','0181')||str('M','5b7c')||'—';
+  if(!device){ try{ alert('Bitte zuerst im Tab „Mein E-Bike" auf „Verbinden" tippen und das Rad auslesen. Danach hier die Suche starten.'); }catch(e){} return; }
+  progOpen('Zweiten Akku suchen …');
+  try{
+    progMsg('Suche läuft … (nur gelesen)'); setStatus('Akku-2-Suche …','busy');
+    const body=await akku2Probe();
+    const hdr=[
+      'SelfBike · BES2 (Gen2–4) — Experiment: Zweiten Akku suchen',
+      'Fahrrad: '+bike,
+      'Datum: '+new Date().toLocaleString('de-DE'),
+      'Hinweis: Es wurde nur gelesen/gesucht — nichts geschrieben oder verändert.',
+      'Bitte diese Datei an info@selfcoder.de senden.',
+      ''
+    ].join('\n');
+    const txt=hdr+body+'\n\nErstellt mit SelfBike · bike.selfcoder.de';
+    const slug=(String(bike).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40)||'rad');
+    const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+    a.download='selfbike-akku2-'+slug+'-'+new Date().toISOString().slice(0,10)+'.txt';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+    try{ if(typeof window.archiveProto==='function') window.archiveProto('bes2-akku2',bike,txt); }catch(e){}
+    setStatus('Akku-2-Suche fertig ✓','on');
+    progFinish('ok','Suche fertig ✓', false);
+    progMsg('Ergebnis gespeichert. Schick die Datei bitte an info@selfcoder.de.');
+  }catch(e){
+    setStatus('Fehler: '+e.message,'err'); log(e.message,'no');
+    progFinish('err','Fehler bei der Suche',false); progMsg(e.message);
+    try{ if(typeof window.recordError==='function') window.recordError('akku2',e.message); }catch(_){}
+  }
+}
+window.runAkku2=runAkku2;
+
 window.__bikeWrite={ clearFaults, readFieldRaw, writeField, writeFieldMulti, restoreField, readDTC };
 window.__scan=scan; // damit die „Mein E-Bike"-Hülle den Scan starten und abwarten kann
 // TX/RX-Übertragungsverlauf als Text (für das Support-Paket, damit man sieht, wo z. B. das Fehlerlesen hängt).
@@ -615,6 +707,7 @@ window.__diagLog=()=>{ try{ return logEl ? Array.from(logEl.children).map(d=>d.t
 function init(){
   logEl=document.createElement('div'); logEl.style.display='none'; document.body.appendChild(logEl);
   el('scan').onclick=scan; const s2=el('scan2'); if(s2)s2.onclick=scan;
+  const a2=el('akku2'); if(a2)a2.onclick=runAkku2; // Experiment „Zweiten Akku suchen" (read-only)
   const pd=el('progDone'); if(pd)pd.onclick=progClose;
   const pm=el('prog'); if(pm)pm.addEventListener('click',e=>{ if(e.target===pm && el('progDone').style.display!=='none') progClose(); });
 }

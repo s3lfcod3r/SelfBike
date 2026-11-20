@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.38 · November 2026
+- 🇬🇧 New read-only experiment "Find second battery" (Settings tab) for dual-battery bikes: probes further CAN addresses for a second battery node and reads the battery's MULTIID, then saves a small report to send in. It only reads — nothing is written or changed.
+- 🇩🇪 Neues read-only Experiment „Zweiten Akku suchen" (Tab Einstellungen) für Doppelakku-Räder: klopft weitere CAN-Adressen nach einem zweiten Akku-Knoten ab und liest die MULTIID des Akkus, dann wird ein kleines Protokoll zum Einschicken gespeichert. Es wird nur gelesen — nichts geschrieben oder verändert.
+
 ## 1.9.37 · November 2026
 - 🇬🇧 Start page: fixed the footer note landing next to the card instead of below it on wide screens. The page centers its content with flexbox, so the note is now wrapped together with the card in one column — it sits directly under the card again.
 - 🇩🇪 Startseite: der Fußzeilen-Hinweis landete auf breiten Bildschirmen neben dem Kasten statt darunter. Die Seite zentriert ihren Inhalt per Flexbox; der Hinweis steckt jetzt mit dem Kasten in einer gemeinsamen Spalte und steht wieder direkt darunter.
