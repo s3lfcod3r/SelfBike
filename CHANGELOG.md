@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.36 · November 2026
+- 🇬🇧 Start page: the new contact / support note now sits below the card instead of inside it, matching the two tool pages.
+- 🇩🇪 Startseite: der neue Kontakt-/Unterstützen-Hinweis steht jetzt unter dem Kasten statt darin – genau wie auf den beiden Tool-Seiten.
+
 ## 1.9.35 · November 2026
 - 🇬🇧 Footer: clearer, friendlier note on both tool pages and the start page. It now says where to go with questions or problems (by mail, best with your read-out log) and that SelfBike runs on its own servers and stays free — with a soft, no-pressure note that Ko-fi support keeps the servers running and development going. In all 12 languages.
 - 🇩🇪 Fußzeile: klarerer, freundlicherer Hinweis auf beiden Tool-Seiten und der Startseite. Sie sagt jetzt, wohin man sich bei Fragen oder Problemen wendet (per Mail, am besten mit dem Auslese-Protokoll) und dass SelfBike auf eigenen Servern läuft und kostenlos bleibt — mit einem ruhigen, unaufdringlichen Hinweis, dass Ko-fi-Unterstützung die Server am Laufen und die Weiterentwicklung in Gang hält. In allen 12 Sprachen.
