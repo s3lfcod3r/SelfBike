@@ -1459,6 +1459,7 @@ function renderSmartReport() {
 function contribLabel() { return (window.SelfBikeContribute && window.SelfBikeContribute.t(lang(), 'title')) || 'Zur Liste beitragen'; }
 function openContributeSmart(opts) {
   if (!rows.length) return toast(t('ui.notConnected'), 'warn');
+  if (demo) { if (opts && opts.auto) return; return toast((window.SelfBikeContribute && window.SelfBikeContribute.demoMsg(lang())) || 'Demo', 'warn'); }
   const extras = [];
   if (ok('absName') || ok('absMode')) extras.push('ABS');
   if (ok('gearCount') && Number(val('gearCount')) > 0) extras.push('eShift');

@@ -504,6 +504,7 @@ window.saveReport=saveReport;
 // Opt-in: erkannte Modell-Codes (keine Seriennummern) zur Kompatibilitätsliste beitragen.
 function contributeBES2(opts){
   opts=opts||{};
+  if(model&&model.__demo){ if(opts.auto)return; if(window.SelfBikeContribute)alert(window.SelfBikeContribute.demoMsg(window.__bes2lang||'de')); return; }
   if(!Object.keys(model).length){ if(opts.auto)return; alert('Erst auslesen.'); return; }
   const bike=(el('bikeName')?el('bikeName').value.trim():'');
   const extras=[];

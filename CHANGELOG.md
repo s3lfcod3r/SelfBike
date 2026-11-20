@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.52 · November 2026
+- 🇬🇧 Contributing to the list is now blocked in demo mode, so the demo's placeholder data can no longer end up in the review queue.
+- 🇩🇪 Beitragen zur Liste ist im Demo-Modus jetzt gesperrt, damit keine Demo-Platzhalterdaten mehr in der Warteliste landen.
+
 ## 1.9.51 · November 2026
 - 🇬🇧 Found read-out protocols for the remaining example bikes too, so every listed bike now shows its year (Winora Sinus R5 2023, Focus Thron² 6.7 2023, Riese & Müller Delite 2017, Cannondale 2024).
 - 🇩🇪 Auch für die übrigen Beispiel-Räder die Auslese-Protokolle gefunden – jetzt zeigt jedes gelistete Rad sein Baujahr (Winora Sinus R5 2023, Focus Thron² 6.7 2023, Riese & Müller Delite 2017, Cannondale 2024).
