@@ -1463,12 +1463,14 @@ function openContributeSmart(opts) {
   if (ok('absName') || ok('absMode')) extras.push('ABS');
   if (ok('gearCount') && Number(val('gearCount')) > 0) extras.push('eShift');
   const prod = (k) => (ok(k) ? withProductName(txt(k, '')) : '');
+  // Baujahr aus den „hergestellt"-Datumsfeldern der Komponenten (sofern geladen).
+  const madeYm = [txt('motorMade', ''), txt('controllerMade', ''), txt('batteryMade', '')].join(' ').match(/\b(20\d{2})\b/);
   const payload = {
     sys: 'smart',
     brand: txt('oemBrand', ''), model: txt('oemModel', ''),
     motor: prod('controllerProduct'), battery: prod('batteryProduct'), battery2: prod('battery2Product'),
     display: prod('headProduct'), connect: prod('connectProduct'),
-    extras, ver: VERSION, lang: lang(),
+    extras, year: madeYm ? madeYm[1] : '', ver: VERSION, lang: lang(),
   };
   if (typeof window.openContribute === 'function') window.openContribute(payload, payload.lang, opts || {});
   else if (!(opts && opts.auto)) toast(t('ui.notConnected'), 'warn');

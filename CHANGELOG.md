@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.49 · November 2026
+- 🇬🇧 Contribution now fills in the bike's year automatically from the read-out (motor production date from the motor history, battery date as fallback; Smart System from the components' "manufactured" dates) and appends it to the model name, e.g. "… Delite 2020" – so the motor generation is clear at a glance. The name-field example now includes a year too.
+- 🇩🇪 Der Beitrag ergänzt jetzt automatisch das Baujahr aus dem Auslesen (Motor-Produktionsdatum aus der Motor-Historie, Akku-Datum als Fallback; Smart System aus den „hergestellt"-Daten der Komponenten) und hängt es an den Radnamen an, z. B. „… Delite 2020" – so ist die Motor-Generation auf einen Blick klar. Das Beispiel im Namensfeld nennt jetzt auch ein Baujahr.
+
 ## 1.9.48 · November 2026
 - 🇬🇧 Compatibility list: removed the redundant "CX Gen 2" motor chip (it is the same motor as BDU250PCX); the dual-battery note now sits on BDU250PCX.
 - 🇩🇪 Kompatibilitätsliste: doppelten Motor-Chip „CX Gen 2" entfernt (ist derselbe Motor wie BDU250PCX); der Doppelakku-Hinweis steht jetzt bei BDU250PCX.

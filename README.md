@@ -5,7 +5,7 @@
 **Read out your Bosch e-bike in the browser — the Smart System (BES3) and the older BES2 (Gen 2–4) — and change a few settings safely. WebUSB, no install, no account.**<br>
 *Dein Bosch-E-Bike im Browser auslesen — Smart System (BES3) und das ältere BES2 (Gen 2–4) — und wenige Einstellungen sicher ändern. WebUSB, ohne Installation, ohne Konto.*
 
-![Version](https://img.shields.io/badge/version-1.9.48-33A78C)
+![Version](https://img.shields.io/badge/version-1.9.49-33A78C)
 [![Live](https://img.shields.io/badge/live-bike.selfcoder.de-33A78C?logo=githubpages&logoColor=white)](https://bike.selfcoder.de)
 [![License](https://img.shields.io/badge/license-All%20rights%20reserved-8A9CAA)](LICENSE)
 ![Web](https://img.shields.io/badge/web-HTML%20%2B%20JS-43D3AD)

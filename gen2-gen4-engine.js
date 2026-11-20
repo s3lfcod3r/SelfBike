@@ -508,8 +508,13 @@ function contributeBES2(opts){
   const bike=(el('bikeName')?el('bikeName').value.trim():'');
   const extras=[];
   if(model.C){ const cc=str('C','5b7c'); extras.push(cc?('Fast Charger '+cc):'Fast Charger'); }
+  // Baujahr: aus dem Produktions-Eintrag der Motor-Historie (odo===0), sonst aus dem Akku-Herstelldatum (DID 0120).
+  let year=null;
+  try{ const rc=(model.M&&model.M.rc)||[]; for(const r of rc){ const d=r&&r.dec; if(d&&!d.empty&&d.parts&&d.parts.length>=4&&d.parts[3].num===0){ const y=d.parts[0].num; if(y>2000&&y<2100){ year=y; break; } } }
+    if(!year){ const bd=model.A&&model.A.dids&&model.A.dids['0120']; const p=bd&&bd.dec&&bd.dec.parts; if(p&&p.length>=3&&p[2].num>2000&&p[2].num<2100) year=p[2].num; }
+  }catch(e){}
   const payload={ sys:'bes2', model:bike, motor:str('M','5b7c'), battery:str('A','5b7c'), display:str('D','5b7c'),
-    extras, ver:(window.__sbver||''), lang:(window.__bes2lang||'de') };
+    extras, year, ver:(window.__sbver||''), lang:(window.__bes2lang||'de') };
   if(typeof window.openContribute==='function') window.openContribute(payload, payload.lang, opts);
   else if(!opts.auto) alert('Beitragen ist gerade nicht verfügbar.');
 }
