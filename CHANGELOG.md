@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.35 · November 2026
+- 🇬🇧 Footer: clearer, friendlier note on both tool pages and the start page. It now says where to go with questions or problems (by mail, best with your read-out log) and that SelfBike runs on its own servers and stays free — with a soft, no-pressure note that Ko-fi support keeps the servers running and development going. In all 12 languages.
+- 🇩🇪 Fußzeile: klarerer, freundlicherer Hinweis auf beiden Tool-Seiten und der Startseite. Sie sagt jetzt, wohin man sich bei Fragen oder Problemen wendet (per Mail, am besten mit dem Auslese-Protokoll) und dass SelfBike auf eigenen Servern läuft und kostenlos bleibt — mit einem ruhigen, unaufdringlichen Hinweis, dass Ko-fi-Unterstützung die Server am Laufen und die Weiterentwicklung in Gang hält. In allen 12 Sprachen.
+
 ## 1.9.34 · November 2026
 - 🇬🇧 BES2: the PDF report no longer contradicts the read-out. If the fault memory can't be read (e.g. a timeout), the overview now says "not readable" instead of a green "no faults", and the next service is taken from the already-scanned data instead of a second live read that sometimes timed out and wrongly showed "not set". The fault memory also gets a longer time window when reading, which helps on bikes where it timed out right after a full scan.
 - 🇩🇪 BES2: Der PDF-Bericht widerspricht nicht mehr dem Auslesen. Lässt sich der Fehlerspeicher nicht lesen (z. B. Timeout), steht in der Übersicht jetzt „nicht lesbar" statt einem grünen „keine Fehler", und der nächste Service wird aus den schon ausgelesenen Daten genommen statt aus einem zweiten Live-Read, der manchmal in den Timeout lief und fälschlich „nicht gesetzt" zeigte. Außerdem bekommt das Fehlerlesen ein längeres Zeitfenster – das hilft an Rädern, wo es direkt nach einem Vollscan in den Timeout lief.
