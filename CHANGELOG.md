@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.37 · November 2026
+- 🇬🇧 Start page: fixed the footer note landing next to the card instead of below it on wide screens. The page centers its content with flexbox, so the note is now wrapped together with the card in one column — it sits directly under the card again.
+- 🇩🇪 Startseite: der Fußzeilen-Hinweis landete auf breiten Bildschirmen neben dem Kasten statt darunter. Die Seite zentriert ihren Inhalt per Flexbox; der Hinweis steckt jetzt mit dem Kasten in einer gemeinsamen Spalte und steht wieder direkt darunter.
+
 ## 1.9.36 · November 2026
 - 🇬🇧 Start page: the new contact / support note now sits below the card instead of inside it, matching the two tool pages.
 - 🇩🇪 Startseite: der neue Kontakt-/Unterstützen-Hinweis steht jetzt unter dem Kasten statt darin – genau wie auf den beiden Tool-Seiten.
