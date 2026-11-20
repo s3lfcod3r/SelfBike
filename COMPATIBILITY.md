@@ -77,14 +77,14 @@
 🇩🇪 Beispiele (ohne Namen/Seriennummern) – zeigt die Bandbreite, nicht jedes Modell einzeln:
 🇬🇧 Examples (no names/serials) – shows the range, not every single model:
 
-- Cube Reaction Hybrid Pro
-- Cube Nutrail Hybrid
-- Radon ZR Team
-- Radon Relate 8.0
+- Cube Reaction Hybrid Pro 2021
+- Cube Nutrail Hybrid 2016
+- Radon ZR Team 2021
+- Radon Relate 8.0 2021
 - Winora Sinus R5
-- HNF UD4 (Rohloff)
-- Nicolai G16 EBOXX
-- Victoria eTrekking 7.8
+- HNF UD4 (Rohloff) 2023
+- Nicolai G16 EBOXX 2020
+- Victoria eTrekking 7.8 2021
 - Focus Thron² 6.7 (Smart System)
 - Riese & Müller Delite (Touring GX, DualAkku)
 - Cannondale (Smart System, Cargo)

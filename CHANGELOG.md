@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.50 · November 2026
+- 🇬🇧 Added the build year to the existing example bikes where a read-out protocol was on file (e.g. "Cube Reaction Hybrid Pro 2021"), so the motor generation is visible at a glance; bikes without a protocol stay as they are.
+- 🇩🇪 Bei den bestehenden Beispiel-Rädern das Baujahr nachgetragen, wo ein Auslese-Protokoll vorlag (z. B. „Cube Reaction Hybrid Pro 2021"), damit die Motor-Generation sichtbar ist; Räder ohne Protokoll bleiben unverändert.
+
 ## 1.9.49 · November 2026
 - 🇬🇧 Contribution now fills in the bike's year automatically from the read-out (motor production date from the motor history, battery date as fallback; Smart System from the components' "manufactured" dates) and appends it to the model name, e.g. "… Delite 2020" – so the motor generation is clear at a glance. The name-field example now includes a year too.
 - 🇩🇪 Der Beitrag ergänzt jetzt automatisch das Baujahr aus dem Auslesen (Motor-Produktionsdatum aus der Motor-Historie, Akku-Datum als Fallback; Smart System aus den „hergestellt"-Daten der Komponenten) und hängt es an den Radnamen an, z. B. „… Delite 2020" – so ist die Motor-Generation auf einen Blick klar. Das Beispiel im Namensfeld nennt jetzt auch ein Baujahr.
