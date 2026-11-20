@@ -1457,7 +1457,7 @@ function renderSmartReport() {
 }
 // Opt-in: erkannte Modell-Codes (keine Seriennummern) zur Kompatibilitätsliste beitragen.
 function contribLabel() { return (window.SelfBikeContribute && window.SelfBikeContribute.t(lang(), 'title')) || 'Zur Liste beitragen'; }
-function openContributeSmart() {
+function openContributeSmart(opts) {
   if (!rows.length) return toast(t('ui.notConnected'), 'warn');
   const extras = [];
   if (ok('absName') || ok('absMode')) extras.push('ABS');
@@ -1470,8 +1470,8 @@ function openContributeSmart() {
     display: prod('headProduct'), connect: prod('connectProduct'),
     extras, ver: VERSION, lang: lang(),
   };
-  if (typeof window.openContribute === 'function') window.openContribute(payload, payload.lang);
-  else toast(t('ui.notConnected'), 'warn');
+  if (typeof window.openContribute === 'function') window.openContribute(payload, payload.lang, opts || {});
+  else if (!(opts && opts.auto)) toast(t('ui.notConnected'), 'warn');
 }
 
 async function openReportSmart() {
@@ -1640,6 +1640,7 @@ async function refresh() {
   releaseWake();
   busy = false;
   if (!demo) { addSnapshot(snapshotFromRows(rows, new Date())); try { const nm = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(); archiveProto('smart', nm, diagText()); } catch (e) {} }
+  if (!demo) setTimeout(() => { try { openContributeSmart({ auto: true }); } catch (e) {} }, 1200);
   renderAll();
   if (stack.length) drawPage();
   // kurz „Verbunden“ zeigen, dann automatisch schließen (kein OK-Klick nötig)

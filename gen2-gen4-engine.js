@@ -323,8 +323,7 @@ function render(){
   let h='';
 
   // Aktionsleiste
-  const contribLbl=(window.SelfBikeContribute?window.SelfBikeContribute.t(window.__bes2lang||'de','send'):'Beitragen');
-  h+=`<div class="actions"><input id="bikeName" class="bikein" maxlength="80" placeholder="Dein Fahrrad – Marke &amp; Modell (z. B. Cube Stereo Hybrid 2021)"><button class="btn-save" onclick="saveReport()">⬇ Protokoll speichern</button><button class="btn-save" id="contribBtn" onclick="contributeBES2()" style="background:transparent;border:1px solid var(--self-teal);color:var(--self-teal-bright)">✅ ${esc(contribLbl)}</button><span class="actions-note">Fahrrad eingeben, Seriennummern werden ausgeblendet · senden an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></span></div>`;
+  h+=`<div class="actions"><input id="bikeName" class="bikein" maxlength="80" placeholder="Dein Fahrrad – Marke &amp; Modell (z. B. Cube Stereo Hybrid 2021)"><button class="btn-save" onclick="saveReport()">⬇ Protokoll speichern</button><span class="actions-note">Fahrrad eingeben, Seriennummern werden ausgeblendet · senden an <a href="mailto:info@selfcoder.de">info@selfcoder.de</a></span></div>`;
 
   // Banner
   h+=`<div class="banner">`;
@@ -503,15 +502,16 @@ async function saveReport(){
 }
 window.saveReport=saveReport;
 // Opt-in: erkannte Modell-Codes (keine Seriennummern) zur Kompatibilitätsliste beitragen.
-function contributeBES2(){
-  if(!Object.keys(model).length){ alert('Erst auslesen.'); return; }
+function contributeBES2(opts){
+  opts=opts||{};
+  if(!Object.keys(model).length){ if(opts.auto)return; alert('Erst auslesen.'); return; }
   const bike=(el('bikeName')?el('bikeName').value.trim():'');
   const extras=[];
   if(model.C){ const cc=str('C','5b7c'); extras.push(cc?('Fast Charger '+cc):'Fast Charger'); }
   const payload={ sys:'bes2', model:bike, motor:str('M','5b7c'), battery:str('A','5b7c'), display:str('D','5b7c'),
     extras, ver:(window.__sbver||''), lang:(window.__bes2lang||'de') };
-  if(typeof window.openContribute==='function') window.openContribute(payload, payload.lang);
-  else alert('Beitragen ist gerade nicht verfügbar.');
+  if(typeof window.openContribute==='function') window.openContribute(payload, payload.lang, opts);
+  else if(!opts.auto) alert('Beitragen ist gerade nicht verfügbar.');
 }
 window.contributeBES2=contributeBES2;
 window.__buildReport=(dtc)=>buildReport(dtc); // Protokoll-Text (Seriennummern ausgeblendet) für das Support-Paket

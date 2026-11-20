@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.45 · November 2026
+- 🇬🇧 After a read-out a one-time popup now invites you to contribute your bike to the compatibility list (remembered per device, so it won't nag on every read). The popup has an editable "Bike (brand & model)" field so your model name is included, not just the codes. On BES2 the contribute entry now sits in the visible protocol list.
+- 🇩🇪 Nach dem Auslesen lädt jetzt ein einmaliges Popup zum Beitragen zur Kompatibilitätsliste ein (pro Gerät gemerkt, nervt also nicht bei jedem Auslesen). Das Popup hat ein editierbares Feld „Rad (Marke & Modell)", damit auch der Modellname dabei ist, nicht nur die Codes. Bei BES2 sitzt der Beitrags-Eintrag jetzt in der sichtbaren Protokoll-Liste.
+
 ## 1.9.44 · November 2026
 - 🇬🇧 New opt-in "Contribute to the list" button after a read-out: with one tap you can add your bike’s detected model codes (system, motor, battery, display, extras) to the compatibility list – anonymously, no serial numbers, no personal data. You see exactly what will be sent first; entries appear after a short review. The "Tested hardware" page now merges these community entries automatically.
 - 🇩🇪 Neuer freiwilliger Knopf „Zur Liste beitragen" nach dem Auslesen: mit einem Tipp trägst du die erkannten Modell-Codes deines Rads (System, Motor, Akku, Display, Zubehör) zur Kompatibilitätsliste bei – anonym, ohne Seriennummern, ohne persönliche Daten. Du siehst vorher genau, was gesendet wird; Einträge erscheinen nach kurzer Prüfung. Die Seite „Getestete Hardware" mischt diese Community-Einträge automatisch ein.

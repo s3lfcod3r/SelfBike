@@ -539,7 +539,7 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     let g='<div class="gh">'+esc(t('tile.battery'))+'</div><div class="group">'+drow('🔋','#22a35a',tb('akkuDetail'),tb('akkuDetailSub'),'akku')+'</div>';
     g+='<div class="gh">'+esc(t('nav.ride'))+'</div><div class="group">'+drow('📊','#3b82f6',tb('statsTitle'),tb('statsSub'),'stats')+'</div>';
     g+='<div class="gh">'+esc(t('ui.groupBike'))+'</div><div class="group">'+drow('⚙️','#64748b',t('grp.Antrieb'),tb('antriebSub'),'antrieb')+drow('⚠️','#e5534b',t('ui.faults'),tb('faultsSub'),'fehler')+(M().C?drow('⚡','#f0a500','Fast Charger',str('C','5b7c')||'','charger'):'')+'</div>';
-    g+='<div class="gh">'+esc(t('ui.groupSafe'))+'</div><div class="group">'+drow(svgIco('backup'),'#0ea5e9','Backup jetzt speichern','Alle Werte als Datei sichern','backup')+drow(svgIco('protocol'),'#0ea5e9','Protokoll','Auslese-Protokoll speichern','save')+drow(svgIco('pdf'),'#0ea5e9','PDF-Bericht erstellen','Übersicht zum Ausdrucken / Speichern','pdf')+drow(svgIco('refresh'),'#0ea5e9','Aus Backup wiederherstellen','Einstellungen vom selben Rad zurückschreiben','restore')+drow(svgIco('protocol'),'#0ea5e9','Änderungs-Protokoll','Alle Änderungen – speichern & schicken','changelog')+drow(svgIco('export'),'#e5534b','Support-Paket (.zip)','Bei Problemen: alles gebündelt zum Schicken','support')+drow(svgIco('refresh'),'#0ea5e9',t('ui.refresh'),'','rescan')+'</div>';
+    g+='<div class="gh">'+esc(t('ui.groupSafe'))+'</div><div class="group">'+drow(svgIco('backup'),'#0ea5e9','Backup jetzt speichern','Alle Werte als Datei sichern','backup')+drow(svgIco('protocol'),'#0ea5e9','Protokoll','Auslese-Protokoll speichern','save')+drow(svgIco('export'),'#33a78c',(window.SelfBikeContribute?window.SelfBikeContribute.t(curLang,'title'):'Zur Liste beitragen'),(window.SelfBikeContribute?window.SelfBikeContribute.t(curLang,'consent'):''),'contribute')+drow(svgIco('pdf'),'#0ea5e9','PDF-Bericht erstellen','Übersicht zum Ausdrucken / Speichern','pdf')+drow(svgIco('refresh'),'#0ea5e9','Aus Backup wiederherstellen','Einstellungen vom selben Rad zurückschreiben','restore')+drow(svgIco('protocol'),'#0ea5e9','Änderungs-Protokoll','Alle Änderungen – speichern & schicken','changelog')+drow(svgIco('export'),'#e5534b','Support-Paket (.zip)','Bei Problemen: alles gebündelt zum Schicken','support')+drow(svgIco('refresh'),'#0ea5e9',t('ui.refresh'),'','rescan')+'</div>';
     el('moreList').innerHTML=g;
     el('moreList').querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>onInfo(b.dataset.info));
     el('connectCard').classList.add('hidden'); el('home').classList.remove('hidden');
@@ -554,6 +554,7 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     if(key==='changelog') return openChangeLog();
     if(key==='support') return openSupport();
     if(key==='save') return saveProto();
+    if(key==='contribute') return window.contributeBES2?window.contributeBES2():null;
     if(key==='backup') return saveBackup();
     if(key==='restore') return restoreFromBackup();
     if(key==='rescan'){ (async()=>{ try{ await window.__scan(); }catch(e){} if(readDone())buildHome(); })(); return; }
@@ -659,7 +660,8 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
   // Automatisch nach jedem Auslesen archivieren (Fehlerspeicher best-effort), ohne die Oberfläche zu blockieren
   window.__afterRead=function(){ try{ if(M()&&M().__demo) return; (async()=>{ let dtc={}; try{ dtc=await api().readDTC(); }catch(e){}
     const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||'';
-    try{ if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); }catch(e){} })(); }catch(e){} };
+    try{ if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); }catch(e){} })();
+    setTimeout(function(){ try{ window.contributeBES2&&window.contributeBES2({auto:true}); }catch(e){} }, 1200); }catch(e){} };
   function supportInfoText(){ const n=protoLoad().length; return ['SelfBike · BES2 (Gen2–4) — Support-Paket','Erstellt: '+new Date().toLocaleString('de-DE'),'Rad: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),'','Enthalten: alle im Browser gespeicherten Auslese-Protokolle ('+n+') mit ausgeblendeten Seriennummern/IDs, Änderungs-Protokoll'+(CHANGELOG.length?' ('+CHANGELOG.length+' Einträge)':' (leer)')+', Fehler-Protokoll'+(ERRLOG.length?' ('+ERRLOG.length+')':'')+', ggf. deine Anhänge.','Kontakt: info@selfcoder.de','','Erstellt mit SelfBike · bike.selfcoder.de'].join('\n'); }
   function openSupport(){
     const n=protoLoad().length;
