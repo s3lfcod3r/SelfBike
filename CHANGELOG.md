@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.46 · November 2026
+- 🇬🇧 Security hardening of the contribution path: inputs are normalised and stripped of invisible/bidirectional characters, serial-/VIN-like runs are dropped, so the preview shows exactly what gets stored. (Server side adds a pending cap, auto-expiry, stronger de-duplication and clickjacking/no-index protection on the review page.)
+- 🇩🇪 Sicherheits-Härtung des Beitrags-Wegs: Eingaben werden normalisiert und von unsichtbaren/umkehrenden Zeichen befreit, serien-/rahmennummern-artige Folgen verworfen – die Vorschau zeigt also genau, was gespeichert wird. (Serverseitig zusätzlich Warteschlangen-Obergrenze, Auto-Ablauf, stärkere Dedupe und Clickjacking-/No-Index-Schutz der Freigabeseite.)
+
 ## 1.9.45 · November 2026
 - 🇬🇧 After a read-out a one-time popup now invites you to contribute your bike to the compatibility list (remembered per device, so it won't nag on every read). The popup has an editable "Bike (brand & model)" field so your model name is included, not just the codes. On BES2 the contribute entry now sits in the visible protocol list.
 - 🇩🇪 Nach dem Auslesen lädt jetzt ein einmaliges Popup zum Beitragen zur Kompatibilitätsliste ein (pro Gerät gemerkt, nervt also nicht bei jedem Auslesen). Das Popup hat ein editierbares Feld „Rad (Marke & Modell)", damit auch der Modellname dabei ist, nicht nur die Codes. Bei BES2 sitzt der Beitrags-Eintrag jetzt in der sichtbaren Protokoll-Liste.
