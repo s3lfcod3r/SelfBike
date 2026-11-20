@@ -73,7 +73,7 @@
 
 ---
 
-## 🚲 Räder, von denen schon Protokolle da sind / Bikes with reports so far
+## 🚲 Räder, die schon dabei sind / Bikes already on the list
 
 🇩🇪 Beispiele (ohne Namen/Seriennummern) – zeigt die Bandbreite, nicht jedes Modell einzeln:
 🇬🇧 Examples (no names/serials) – shows the range, not every single model:

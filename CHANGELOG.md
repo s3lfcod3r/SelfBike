@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.47 · November 2026
+- 🇬🇧 Compatibility list: the "bikes we have reports for" heading now reads "bikes already on the list", and the call-to-action points to the in-app "Contribute to the list" button (email still works as an alternative) – since riders now add their bike themselves.
+- 🇩🇪 Kompatibilitätsliste: Die Überschrift „Räder, von denen schon Protokolle da sind" heißt jetzt „Räder, die schon dabei sind", und der Aufruf nennt den „Zur Liste beitragen"-Knopf in der App (Mail bleibt als Alternative) – weil Fahrer ihr Rad nun selbst eintragen.
+
 ## 1.9.46 · November 2026
 - 🇬🇧 Security hardening of the contribution path: inputs are normalised and stripped of invisible/bidirectional characters, serial-/VIN-like runs are dropped, so the preview shows exactly what gets stored. (Server side adds a pending cap, auto-expiry, stronger de-duplication and clickjacking/no-index protection on the review page.)
 - 🇩🇪 Sicherheits-Härtung des Beitrags-Wegs: Eingaben werden normalisiert und von unsichtbaren/umkehrenden Zeichen befreit, serien-/rahmennummern-artige Folgen verworfen – die Vorschau zeigt also genau, was gespeichert wird. (Serverseitig zusätzlich Warteschlangen-Obergrenze, Auto-Ablauf, stärkere Dedupe und Clickjacking-/No-Index-Schutz der Freigabeseite.)
