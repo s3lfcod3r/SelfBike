@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.39 · November 2026
+- 🇬🇧 New "Tested bikes" page (linked from the start page) with a clean list of hardware SelfBike already reads out successfully – motors, batteries, displays and Smart System components, grouped by system, DE/EN. Plus a COMPATIBILITY.md as the source list. Grows with every report sent in.
+- 🇩🇪 Neue Seite „Getestete Räder" (von der Startseite verlinkt) mit einer übersichtlichen Liste der Hardware, die SelfBike schon erfolgreich ausliest – Motoren, Akkus, Displays und Smart-System-Komponenten, nach System gruppiert, DE/EN. Dazu eine COMPATIBILITY.md als Quell-Liste. Wächst mit jedem eingeschickten Protokoll.
+
 ## 1.9.38 · November 2026
 - 🇬🇧 New read-only experiment "Find second battery" (Settings tab) for dual-battery bikes: probes further CAN addresses for a second battery node and reads the battery's MULTIID, then saves a small report to send in. It only reads — nothing is written or changed.
 - 🇩🇪 Neues read-only Experiment „Zweiten Akku suchen" (Tab Einstellungen) für Doppelakku-Räder: klopft weitere CAN-Adressen nach einem zweiten Akku-Knoten ab und liest die MULTIID des Akkus, dann wird ein kleines Protokoll zum Einschicken gespeichert. Es wird nur gelesen — nichts geschrieben oder verändert.

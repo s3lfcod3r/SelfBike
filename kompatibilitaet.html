@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SelfBike – Getestete Hardware</title>
+<link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
+<link rel="apple-touch-icon" href="brand/favicon-192.png">
+<link rel="stylesheet" href="brand/tokens.css">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--self-bg-0);color:var(--self-text);font-family:var(--self-font-sans);
+  -webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;
+  padding:calc(24px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom))}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--self-bg-0);transform:translateZ(0)}
+.wrap{width:100%;max-width:560px}
+.app{background:var(--self-bg-1);border:1px solid var(--self-line);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+
+/* Kopf */
+.top{display:flex;align-items:center;gap:11px;padding:16px 16px 14px;border-bottom:1px solid var(--self-line)}
+.top img{width:30px;height:30px;border-radius:9px;flex:none}
+.wm{font-family:var(--self-font-wordmark);font-weight:800;font-size:18px;letter-spacing:.01em;line-height:1}
+.wm .a{color:var(--self-ice)}.wm .b{color:var(--self-teal)}
+.sp{flex:1}
+.lngs{display:flex;gap:4px}
+.lngs button{background:var(--self-bg-2);color:var(--self-text-2);border:1px solid var(--self-line-strong);
+  border-radius:999px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--self-font-sans)}
+.lngs button.on{background:var(--self-teal);color:#041310;border-color:transparent}
+
+/* Hero */
+.hero{padding:22px 20px 6px}
+.hero h1{font-size:23px;margin:0 0 7px;letter-spacing:-.02em;line-height:1.1}
+.grad{background:linear-gradient(120deg,var(--self-ice-bright),var(--self-teal-bright));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--self-text-2);font-size:14px;line-height:1.55;margin:0}
+
+/* Statleiste */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:16px 20px 4px}
+.stat{background:var(--self-bg-2);border:1px solid var(--self-line);border-radius:12px;padding:11px 8px;text-align:center}
+.stat b{display:block;font-size:19px;font-weight:800;color:var(--self-teal-bright);line-height:1}
+.stat span{display:block;font-size:10.5px;color:var(--self-text-3);margin-top:5px;line-height:1.2;text-transform:uppercase;letter-spacing:.04em}
+
+/* System-Blöcke */
+.sys{margin:16px 20px 0;background:var(--self-bg-2);border:1px solid var(--self-line);border-radius:16px;overflow:hidden}
+.sys-h{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--self-line);position:relative}
+.sys-h::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc)}
+.sys-ic{width:42px;height:42px;flex:none;border-radius:12px;background:var(--self-bg-3);display:grid;place-items:center;font-size:21px;border:1px solid var(--self-line)}
+.sys-h h2{margin:0;font-size:16px;letter-spacing:-.01em}
+.sys-h .k{font-family:var(--self-font-mono);font-size:10.5px;color:var(--acc);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.sys-b{padding:6px 16px 15px}
+.cat{padding:12px 0;border-bottom:1px solid var(--self-line)}
+.cat:last-child{border-bottom:0}
+.cat .ct{font-size:12px;font-weight:700;color:var(--self-text);margin:0 0 8px;text-transform:uppercase;letter-spacing:.04em}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--self-bg-3);border:1px solid var(--self-line-strong);
+  border-radius:999px;padding:5px 11px;font-size:12.5px;color:var(--self-text);font-family:var(--self-font-mono)}
+.chip::before{content:"✓";color:var(--acc);font-weight:800;font-size:11px}
+.chip.plain{font-family:var(--self-font-sans)}
+.reads{font-size:12.5px;color:var(--self-text-2);line-height:1.5;margin:10px 0 0}
+.foot-note{font-size:11.5px;color:var(--self-text-3);line-height:1.5;margin:8px 0 0}
+
+/* Räder */
+.bikes{margin:16px 20px 0}
+.bikes .ct{font-size:12px;font-weight:700;color:var(--self-text);margin:0 0 9px;text-transform:uppercase;letter-spacing:.04em}
+
+/* CTA */
+.cta{margin:18px 20px 4px;background:linear-gradient(135deg,rgba(51,167,140,.14),rgba(29,184,212,.08));
+  border:1px solid var(--self-line-strong);border-radius:16px;padding:16px}
+.cta p{margin:0;font-size:13.5px;line-height:1.55;color:var(--self-text)}
+.cta a{color:var(--self-teal-bright);text-decoration:none;font-weight:700}
+
+/* Fuß */
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:18px 20px 22px;margin-top:14px;border-top:1px solid var(--self-line)}
+.back{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--self-text);text-decoration:none;
+  background:var(--self-bg-2);border:1px solid var(--self-line-strong);border-radius:999px;padding:9px 15px}
+.back:hover{border-color:var(--self-teal);color:var(--self-teal-bright)}
+.asof{font-family:var(--self-font-mono);font-size:11px;color:var(--self-text-3)}
+
+@media(max-width:430px){.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="app">
+  <div class="top">
+    <img src="brand/favicon-64.png" alt="">
+    <span class="wm"><span class="a">Self</span><span class="b">Bike</span></span>
+    <span class="sp"></span>
+    <div class="lngs"><button data-l="de">DE</button><button data-l="en">EN</button></div>
+  </div>
+
+  <div class="hero">
+    <h1><span class="grad" id="h-title"></span></h1>
+    <p id="h-sub"></p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>2</b><span id="s-sys"></span></div>
+    <div class="stat"><b>6</b><span id="s-mot"></span></div>
+    <div class="stat"><b>8</b><span id="s-comp"></span></div>
+    <div class="stat"><b>✓</b><span id="s-fault"></span></div>
+  </div>
+
+  <div id="systems"></div>
+
+  <div class="bikes">
+    <p class="ct" id="b-title"></p>
+    <div class="chips" id="b-chips"></div>
+  </div>
+
+  <div class="cta"><p id="cta-text"></p></div>
+
+  <div class="foot">
+    <a class="back" href="index.html">← <span id="f-back"></span></a>
+    <span class="asof" id="f-asof"></span>
+  </div>
+</div>
+</div>
+
+<script>
+(function(){
+  var L = {
+    de:{
+      title:'Was SelfBike schon ausliest',
+      sub:'Diese Liste zeigt die Hardware, die mit SelfBike bereits erfolgreich ausgelesen wurde – nach echten Protokollen aus der Community. Sie wächst mit jedem eingeschickten Protokoll.',
+      sSys:'Systeme', sMot:'Motoren', sComp:'Smart-Teile', sFault:'Fehlerspeicher',
+      bTitle:'Räder, von denen schon Protokolle da sind',
+      reads:'Was gelesen wird',
+      ctaText:'Deins fehlt? Lies dein Rad aus, speichere das Protokoll und schick es an {a}. Je mehr Protokolle, desto vollständiger die Liste – danke!',
+      back:'Zur Startseite', asof:'Stand 20.11.2026'
+    },
+    en:{
+      title:'What SelfBike already reads',
+      sub:'This list shows the hardware SelfBike has already read out successfully – based on real reports from the community. It grows with every report sent in.',
+      sSys:'Systems', sMot:'Motors', sComp:'Smart parts', sFault:'Fault memory',
+      bTitle:'Bikes we already have reports for',
+      reads:'What is read',
+      ctaText:'Yours missing? Read out your bike, save the report and send it to {a}. The more reports, the more complete the list – thanks!',
+      back:'Back to start', asof:'As of 2026-11-20'
+    }
+  };
+  var SYS = [
+    { icon:'🔧', acc:'var(--self-teal)', name:'BES2 (Gen 2–4)', k:'Kiox · Nyon · Intuvia · Purion',
+      cats:[
+        { t:{de:'Motoren',en:'Motors'}, chips:['BDU350','BDU365','BDU450CX','CX Gen 2'] },
+        { t:{de:'Akkus',en:'Batteries'}, chips:['PowerTube 500','PowerTube 625','BBP281','BBP290','BBS275'] },
+        { t:{de:'Displays & Bedienteile',en:'Displays & controls'}, chips:['Intuvia','Kiox BUI330','Kiox BUI350','Nyon','COBI *'] }
+      ],
+      note:{de:'* COBI (Fremd-Display): Motor & Akku lesbar, Display selbst nicht.',en:'* COBI (third-party display): motor & battery readable, the display itself not.'},
+      reads:{de:'Alle Motor-, Akku- und Display-Werte, Fehlerspeicher, Service-Historie, Fahrstatistik – plus sichere Einstellungen (Beta). Kein Tuning.',en:'All motor, battery and display values, fault memory, service history, ride stats – plus safe settings (beta). No tuning.'}
+    },
+    { icon:'⚡', acc:'var(--self-blue)', name:'Smart System (BES3)', k:'Kiox 300/500 · LED Remote',
+      cats:[
+        { t:{de:'Motoren',en:'Motors'}, chips:['BDU3740','BDU3741'] },
+        { t:{de:'Komponenten (eigene Steuergeräte)',en:'Components (separate units)'}, plain:true,
+          chips:['Motor','Akku','Zweitakku','Display / HeadUnit','LED Remote','Connect-Modul','ABS','Schaltung / Rohloff'] }
+      ],
+      note:null,
+      reads:{de:'Pro Steuergerät Produktcode + Software/Hardware; Akkuwerte für beide Akkus; Fehlerspeicher je Gerät (lesen; löschen wo erlaubt); Backup, Verlauf, PDF-Bericht.',en:'Per unit product code + software/hardware; battery values for both batteries; fault memory per unit (read; clear where allowed); backup, history, PDF report.'}
+    }
+  ];
+  var BIKES = ['Cube','Radon ZR Team','Radon Relate 8.0','Winora Sinus R5','Riese & Müller Delite'];
+
+  var cur = 'de';
+  try{ var st=localStorage.getItem('selfbike-lang'); if(st && st.slice(0,2)==='en') cur='en'; }catch(e){}
+
+  function esc(s){ return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];}); }
+  function chip(txt,plain){ return '<span class="chip'+(plain?' plain':'')+'">'+esc(txt)+'</span>'; }
+
+  function render(){
+    var x = L[cur];
+    document.documentElement.lang = cur;
+    document.getElementById('h-title').textContent = x.title;
+    document.getElementById('h-sub').textContent = x.sub;
+    document.getElementById('s-sys').textContent = x.sSys;
+    document.getElementById('s-mot').textContent = x.sMot;
+    document.getElementById('s-comp').textContent = x.sComp;
+    document.getElementById('s-fault').textContent = x.sFault;
+    document.getElementById('b-title').textContent = x.bTitle;
+    document.getElementById('b-chips').innerHTML = BIKES.map(function(b){return chip(b,true);}).join('');
+    document.getElementById('cta-text').innerHTML = esc(x.ctaText).replace('{a}','<a href="mailto:info@selfcoder.de">info@selfcoder.de</a>');
+    document.getElementById('f-back').textContent = x.back;
+    document.getElementById('f-asof').textContent = x.asof;
+
+    document.getElementById('systems').innerHTML = SYS.map(function(sy){
+      var cats = sy.cats.map(function(c){
+        return '<div class="cat"><p class="ct">'+esc(c.t[cur])+'</p><div class="chips">'
+          + c.chips.map(function(ch){return chip(ch, !!c.plain);}).join('') + '</div></div>';
+      }).join('');
+      var reads = '<p class="reads"><b>'+esc(x.reads)+':</b> '+esc(sy.reads[cur])+'</p>';
+      var note = sy.note ? '<p class="foot-note">'+esc(sy.note[cur])+'</p>' : '';
+      return '<div class="sys" style="--acc:'+sy.acc+'">'
+        + '<div class="sys-h"><div class="sys-ic">'+sy.icon+'</div><div><h2>'+esc(sy.name)+'</h2><div class="k">'+esc(sy.k)+'</div></div></div>'
+        + '<div class="sys-b">'+cats+reads+note+'</div></div>';
+    }).join('');
+
+    var btns = document.querySelectorAll('.lngs button');
+    for(var i=0;i<btns.length;i++){ btns[i].classList.toggle('on', btns[i].getAttribute('data-l')===cur); }
+  }
+
+  var btns = document.querySelectorAll('.lngs button');
+  for(var i=0;i<btns.length;i++){ btns[i].addEventListener('click', function(){ cur=this.getAttribute('data-l'); try{localStorage.setItem('selfbike-lang',cur);}catch(e){} render(); }); }
+  render();
+})();
+</script>
+</body>
+</html>
