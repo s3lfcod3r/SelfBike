@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.42 · November 2026
+- 🇬🇧 "Tested bikes" page is now fully multilingual (12 languages), with the same language selector as the rest of the app instead of just DE/EN. Headings, categories and notes are translated; hardware codes stay neutral.
+- 🇩🇪 Seite „Getestete Räder" jetzt vollständig mehrsprachig (12 Sprachen), mit demselben Sprachumschalter wie der Rest der App statt nur DE/EN. Überschriften, Kategorien und Hinweise sind übersetzt; Hardware-Codes bleiben neutral.
+
 ## 1.9.41 · November 2026
 - 🇬🇧 "Tested bikes" page: the Smart System card now uses the teal brand colour instead of a blue accent.
 - 🇩🇪 Seite „Getestete Räder": die Smart-System-Karte nutzt jetzt das Teal der Marke statt eines blauen Akzents.
