@@ -97,7 +97,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--self-
 
   <div class="stats">
     <div class="stat"><b>2</b><span id="s-sys"></span></div>
-    <div class="stat"><b>6</b><span id="s-mot"></span></div>
+    <div class="stat"><b>7</b><span id="s-mot"></span></div>
     <div class="stat"><b>8</b><span id="s-comp"></span></div>
     <div class="stat"><b>✓</b><span id="s-fault"></span></div>
   </div>
@@ -143,24 +143,25 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--self-
   var SYS = [
     { icon:'🔧', acc:'var(--self-teal)', name:'BES2 (Gen 2–4)', k:'Kiox · Nyon · Intuvia · Purion',
       cats:[
-        { t:{de:'Motoren',en:'Motors'}, chips:['BDU350','BDU365','BDU450CX','CX Gen 2'] },
-        { t:{de:'Akkus',en:'Batteries'}, chips:['PowerTube 500','PowerTube 625','BBP281','BBP290','BBS275'] },
-        { t:{de:'Displays & Bedienteile',en:'Displays & controls'}, chips:['Intuvia','Kiox BUI330','Kiox BUI350','Nyon','COBI *'] }
+        { t:{de:'Motoren',en:'Motors'}, chips:['BDU250PCX','BDU350','BDU365','BDU450CX','CX Gen 2'] },
+        { t:{de:'Akkus',en:'Batteries'}, chips:['BBP281','BBP290','BBP291','BBS275','PowerPack 400'] },
+        { t:{de:'Displays & Bedienteile',en:'Displays & controls'}, chips:['Intuvia (BUI255)','Kiox (BUI330)','Kiox (BUI350)','Purion (BUI215)','Nyon','COBI *'] }
       ],
       note:{de:'* COBI (Fremd-Display): Motor & Akku lesbar, Display selbst nicht.',en:'* COBI (third-party display): motor & battery readable, the display itself not.'},
-      reads:{de:'Alle Motor-, Akku- und Display-Werte, Fehlerspeicher, Service-Historie, Fahrstatistik – plus sichere Einstellungen (Beta). Kein Tuning.',en:'All motor, battery and display values, fault memory, service history, ride stats – plus safe settings (beta). No tuning.'}
+      reads:{de:'Alle Motor-, Akku- und Display-Werte, Fehlerspeicher, Service-Historie, Fahrstatistik, Schaltungs-/eShift-Daten (z. B. Rohloff) – plus sichere Einstellungen (Beta). Kein Tuning.',en:'All motor, battery and display values, fault memory, service history, ride stats, gearing/eShift data (e.g. Rohloff) – plus safe settings (beta). No tuning.'}
     },
     { icon:'⚡', acc:'var(--self-blue)', name:'Smart System (BES3)', k:'Kiox 300/500 · LED Remote',
       cats:[
         { t:{de:'Motoren',en:'Motors'}, chips:['BDU3740','BDU3741'] },
-        { t:{de:'Komponenten (eigene Steuergeräte)',en:'Components (separate units)'}, plain:true,
-          chips:['Motor','Akku','Zweitakku','Display / HeadUnit','LED Remote','Connect-Modul','ABS','Schaltung / Rohloff'] }
+        { t:{de:'Akkus',en:'Batteries'}, chips:['BBP3580 (PowerPack 800)'] },
+        { t:{de:'Steuergeräte, die abgefragt werden',en:'Units that are queried'}, plain:true,
+          chips:['Motor','Akku','Zweitakku','Display / HeadUnit','LED Remote','Connect-Modul','ABS','Schaltung / eShift'] }
       ],
-      note:null,
+      note:{de:'An echten Rädern bestätigt, u. a. Cannondale (BDU3741 Cargo Line, Akku PowerPack 800, HeadUnit BHU3600, LED Remote BRC3600, eShift). Nicht verbaute Teile (z. B. Connect-Modul, ABS, Zweitakku) werden übersprungen.',en:'Confirmed on real bikes incl. Cannondale (BDU3741 Cargo Line, PowerPack 800 battery, HeadUnit BHU3600, LED Remote BRC3600, eShift). Parts that are not installed (e.g. ConnectModule, ABS, 2nd battery) are skipped.'},
       reads:{de:'Pro Steuergerät Produktcode + Software/Hardware; Akkuwerte für beide Akkus; Fehlerspeicher je Gerät (lesen; löschen wo erlaubt); Backup, Verlauf, PDF-Bericht.',en:'Per unit product code + software/hardware; battery values for both batteries; fault memory per unit (read; clear where allowed); backup, history, PDF report.'}
     }
   ];
-  var BIKES = ['Cube','Radon ZR Team','Radon Relate 8.0','Winora Sinus R5','Riese & Müller Delite'];
+  var BIKES = ['Cube Reaction Hybrid Pro','Cube Nutrail Hybrid','Radon ZR Team','Radon Relate 8.0','Winora Sinus R5','HNF UD4 (Rohloff)','Nicolai G16 EBOXX','Victoria eTrekking 7.8','Riese & Müller Delite','Cannondale (Smart Cargo)'];
 
   var cur = 'de';
   try{ var st=localStorage.getItem('selfbike-lang'); if(st && st.slice(0,2)==='en') cur='en'; }catch(e){}

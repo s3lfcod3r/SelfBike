@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.40 · November 2026
+- 🇬🇧 "Tested bikes" list extended with new confirmed hardware from community reports: BES2 motor BDU250PCX, batteries BBP291 / PowerPack 400, Purion (BUI215) display, and the Smart System now confirmed on a real Cannondale (BDU3741 Cargo Line, PowerPack 800 / BBP3580, HeadUnit BHU3600, LED Remote BRC3600, eShift). More example bikes added.
+- 🇩🇪 Liste „Getestete Räder" um neue belegte Hardware aus Community-Protokollen erweitert: BES2-Motor BDU250PCX, Akkus BBP291 / PowerPack 400, Display Purion (BUI215), und das Smart System jetzt an einem echten Cannondale bestätigt (BDU3741 Cargo Line, PowerPack 800 / BBP3580, HeadUnit BHU3600, LED Remote BRC3600, eShift). Mehr Beispiel-Räder ergänzt.
+
 ## 1.9.39 · November 2026
 - 🇬🇧 New "Tested bikes" page (linked from the start page) with a clean list of hardware SelfBike already reads out successfully – motors, batteries, displays and Smart System components, grouped by system, DE/EN. Plus a COMPATIBILITY.md as the source list. Grows with every report sent in.
 - 🇩🇪 Neue Seite „Getestete Räder" (von der Startseite verlinkt) mit einer übersichtlichen Liste der Hardware, die SelfBike schon erfolgreich ausliest – Motoren, Akkus, Displays und Smart-System-Komponenten, nach System gruppiert, DE/EN. Dazu eine COMPATIBILITY.md als Quell-Liste. Wächst mit jedem eingeschickten Protokoll.

@@ -14,6 +14,7 @@
 🇬🇧 The older Bosch system (approx. 2014–2021), motors with **three digits** (BDU2xx–4xx).
 
 **Motoren / Motors**
+- BDU250PCX (Performance Line CX, Gen 2)
 - BDU350 (Performance Line)
 - BDU365 (Performance Line)
 - BDU450CX (Performance Line CX)
@@ -22,18 +23,21 @@
 **Akkus / Batteries**
 - PowerTube 500 (BBP281)
 - PowerTube 625 (BBP290)
+- PowerTube 625 (BBP291)
 - PowerPack / Kompakt 500 (BBS275)
+- PowerPack 400
 
 **Displays / Bedieneinheiten / Displays & control units**
 - Intuvia (BUI255)
 - Kiox (BUI330)
 - Kiox (BUI350)
+- Purion (BUI215)
 - Nyon
 - COBI (Fremd-Display / third-party): Motor + Akku lesbar, Display selbst nicht / motor + battery readable, display itself not
 
 **Was gelesen wird / What is read**
-- 🇩🇪 Alle Motor-, Akku- und Display-Werte, Fehlerspeicher, Service-Historie, Fahrstatistik, Komponenten; dazu sichere Einstellungen (Licht, Service-Erinnerung, Anzeige – Beta). Kein Tuning.
-- 🇬🇧 All motor, battery and display values, fault memory, service history, ride statistics, components; plus safe settings (light, service reminder, display – beta). No tuning.
+- 🇩🇪 Alle Motor-, Akku- und Display-Werte, Fehlerspeicher, Service-Historie, Fahrstatistik, Schaltungs-/eShift-Daten (z. B. Rohloff), Komponenten; dazu sichere Einstellungen (Licht, Service-Erinnerung, Anzeige – Beta). Kein Tuning.
+- 🇬🇧 All motor, battery and display values, fault memory, service history, ride statistics, gearing/eShift data (e.g. Rohloff), components; plus safe settings (light, service reminder, display – beta). No tuning.
 
 ---
 
@@ -44,17 +48,23 @@
 
 **Motoren / Motors**
 - BDU3740 (Performance Line CX)
-- BDU3741 (Performance Line CX)
+- BDU3741 (Performance Line CX / Cargo Line)
 
-**Komponenten (werden als eigene Steuergeräte ausgelesen) / Components (read as separate units)**
+**Akkus / Batteries**
+- PowerPack 800 (BBP3580)
+
+**Steuergeräte, die abgefragt werden / Units that are queried** (werden gelesen, sofern verbaut / read when installed)
 - Motor (DriveUnit)
 - Akku / Battery
 - Zweitakku / Second battery (DualBattery)
-- Display / HeadUnit (Kiox 300 / 500, Intuvia 100)
-- Bedieneinheit / Remote (LED Remote)
+- Display / HeadUnit (z. B. BHU3600 · Kiox 300 / 500, Intuvia 100)
+- Bedieneinheit / Remote (z. B. BRC3600 · LED Remote)
 - Connect-Modul / ConnectModule
 - ABS
 - Schaltung / Gearing (inkl. Rohloff E-14 / eShift)
+
+🇩🇪 An echten Rädern bestätigt, u. a. **Cannondale** (BDU3741 Cargo Line, PowerPack 800, HeadUnit BHU3600, LED Remote BRC3600, eShift). Nicht verbaute Teile werden übersprungen.
+🇬🇧 Confirmed on real bikes incl. **Cannondale** (BDU3741 Cargo Line, PowerPack 800, HeadUnit BHU3600, LED Remote BRC3600, eShift). Parts not installed are skipped.
 
 **Was gelesen wird / What is read**
 - 🇩🇪 Pro Steuergerät Produktcode + Software/Hardware; Akkuwerte (Ladestand, Gesundheit, Kapazität, Spannung, Temperatur, Ladezyklen) für beide Akkus; Fehlerspeicher je Gerät (lesen; löschen, wo erlaubt); Backup, Verlauf, PDF-Bericht.
@@ -67,11 +77,16 @@
 🇩🇪 Beispiele (ohne Namen/Seriennummern) – zeigt die Bandbreite, nicht jedes Modell einzeln:
 🇬🇧 Examples (no names/serials) – shows the range, not every single model:
 
-- Cube (Performance-Line)
+- Cube Reaction Hybrid Pro
+- Cube Nutrail Hybrid
 - Radon ZR Team
 - Radon Relate 8.0
 - Winora Sinus R5
+- HNF UD4 (Rohloff)
+- Nicolai G16 EBOXX
+- Victoria eTrekking 7.8
 - Riese & Müller Delite (Touring GX, DualAkku)
+- Cannondale (Smart System, Cargo)
 
 ---
 
