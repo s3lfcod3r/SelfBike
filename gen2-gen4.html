@@ -283,10 +283,12 @@
 
 <script>/* Skripte erben die Seiten-Query (?v=…) – so holt „Neu laden" vom Update-Banner wirklich frische Dateien (GitHub Pages cacht sonst 10 Min). */
 document.write('<' + 'script src="faults/bes2-faults.js' + location.search + '"></' + 'script>');
+document.write('<' + 'script src="lib/contribute.js' + location.search + '"></' + 'script>');
 document.write('<' + 'script src="gen2-gen4-engine.js' + location.search + '"></' + 'script>');</script>
 <script type="module">
 import { LANGS, t, setLang, detectLang, applyStatic } from './lib/i18n.js';
 import { VERSION, CHANGELOG_URL } from './lib/version.js';
+window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
 (function(){
   const DECODE_WORKER='https://bike-decode.s3lfcod3r.workers.dev';
   const el=id=>document.getElementById(id);

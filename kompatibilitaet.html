@@ -96,7 +96,7 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--self-
 
   <div class="stats">
     <div class="stat"><b>2</b><span id="s-sys"></span></div>
-    <div class="stat"><b>7</b><span id="s-mot"></span></div>
+    <div class="stat"><b id="s-mot-n">7</b><span id="s-mot"></span></div>
     <div class="stat"><b>8</b><span id="s-comp"></span></div>
     <div class="stat"><b>✓</b><span id="s-fault"></span></div>
   </div>
@@ -137,23 +137,36 @@ var TR = {
 };
 
 var SYS = [
-  { icon:'🔧', acc:'var(--self-teal)', name:'BES2 (Gen 2–4)', k:'Kiox · Nyon · Intuvia · Purion',
+  { sys:'bes2', icon:'🔧', acc:'var(--self-teal)', name:'BES2 (Gen 2–4)', k:'Kiox · Nyon · Intuvia · Purion',
     cats:[
-      { tKey:'catMotors', chips:['BDU250PCX','BDU350','BDU365','BDU450CX','CX Gen 2'] },
-      { tKey:'catBatteries', chips:['BBP281','BBP290','BBP291','BBS275','PowerPack 400'] },
-      { tKey:'catDisplays', chips:['Intuvia (BUI255)','Kiox (BUI330)','Kiox (BUI350)','Purion (BUI215)','Nyon','COBI *'] }
+      { tKey:'catMotors', kind:'motors', chips:['BDU250PCX','BDU350','BDU365','BDU450CX','CX Gen 2'] },
+      { tKey:'catBatteries', kind:'batteries', chips:['BBP281','BBP290','BBP291','BBS275','PowerPack 400'] },
+      { tKey:'catDisplays', kind:'displays', chips:['Intuvia (BUI255)','Kiox (BUI330)','Kiox (BUI350)','Purion (BUI215)','Nyon','COBI *'] }
     ],
     noteKey:'bes2Note', readsKey:'bes2Reads'
   },
-  { icon:'⚡', acc:'var(--self-teal-bright)', name:'Smart System (BES3)', k:'Kiox 300/500 · LED Remote',
+  { sys:'smart', icon:'⚡', acc:'var(--self-teal-bright)', name:'Smart System (BES3)', k:'Kiox 300/500 · LED Remote',
     cats:[
-      { tKey:'catMotors', chips:['BDU3740','BDU3741'] },
-      { tKey:'catBatteries', chips:['BBP3580 (PowerPack 800)','BBP3760'] },
+      { tKey:'catMotors', kind:'motors', chips:['BDU3740','BDU3741'] },
+      { tKey:'catBatteries', kind:'batteries', chips:['BBP3580 (PowerPack 800)','BBP3760'] },
+      { tKey:'catDisplays', kind:'displays', chips:[] },
       { tKey:'catUnits', plain:true, uchips:['uMotor','uBattery','uBattery2','uDisplay','uRemote','uConnect','uAbs','uGearing'] }
     ],
     noteKey:'smartNote', readsKey:'smartReads'
   }
 ];
+
+// Freigegebene Community-Beiträge (nur Modell-Codes) werden hier eingemischt.
+var LIST_WORKER = 'https://bike-list.s3lfcod3r.workers.dev';
+var COMM = { bes2:{motors:[],batteries:[],displays:[]}, smart:{motors:[],batteries:[],displays:[]}, bikes:[] };
+function normKey(s){ return String(s).split('(')[0].replace(/\s+/g,' ').trim().toLowerCase(); }
+// Vereinigung ohne Dubletten (nach Code-Teil vor der Klammer), erste Schreibweise gewinnt.
+function union(base, extra){
+  var out = base.slice(), seen = {};
+  out.forEach(function(x){ seen[normKey(x)] = 1; });
+  (extra||[]).forEach(function(x){ var k = normKey(x); if (k && !seen[k]) { seen[k] = 1; out.push(x); } });
+  return out;
+}
 var BIKES = ['Cube Reaction Hybrid Pro','Cube Nutrail Hybrid','Radon ZR Team','Radon Relate 8.0','Winora Sinus R5','HNF UD4 (Rohloff)','Nicolai G16 EBOXX','Victoria eTrekking 7.8','Focus Thron² 6.7','Riese & Müller Delite','Cannondale (Smart Cargo)'];
 
 var cur = detectLang(); if (!TR[cur]) cur = 'en';
@@ -171,16 +184,22 @@ function render(){
   el('s-comp').textContent = T('sComp');
   el('s-fault').textContent = T('sFault');
   el('b-title').textContent = T('bTitle');
-  el('b-chips').innerHTML = BIKES.map(function(b){ return chip(b, true); }).join('');
+  el('b-chips').innerHTML = union(BIKES, COMM.bikes).map(function(b){ return chip(b, true); }).join('');
   el('cta-text').innerHTML = esc(T('cta')).replace('{a}', '<a href="mailto:info@selfcoder.de">info@selfcoder.de</a>');
   el('f-back').textContent = T('back');
   el('f-asof').textContent = T('asof');
 
+  var motorSet = {};
   el('systems').innerHTML = SYS.map(function(sy){
     var cats = sy.cats.map(function(c){
-      var chipHtml = c.uchips
-        ? c.uchips.map(function(key){ return chip(T(key), true); }).join('')
-        : c.chips.map(function(ch){ return chip(ch, !!c.plain); }).join('');
+      if (c.uchips) {
+        var uh = c.uchips.map(function(key){ return chip(T(key), true); }).join('');
+        return '<div class="cat"><p class="ct">'+esc(T(c.tKey))+'</p><div class="chips">'+uh+'</div></div>';
+      }
+      var merged = c.kind ? union(c.chips, (COMM[sy.sys]||{})[c.kind]) : c.chips;
+      if (!merged.length) return '';
+      if (c.kind === 'motors') merged.forEach(function(m){ motorSet[normKey(m)] = 1; });
+      var chipHtml = merged.map(function(ch){ return chip(ch, !!c.plain); }).join('');
       return '<div class="cat"><p class="ct">'+esc(T(c.tKey))+'</p><div class="chips">'+chipHtml+'</div></div>';
     }).join('');
     var reads = '<p class="reads"><b>'+esc(T('readsLabel'))+':</b> '+esc(T(sy.readsKey))+'</p>';
@@ -189,6 +208,29 @@ function render(){
       + '<div class="sys-h"><div class="sys-ic">'+sy.icon+'</div><div><h2>'+esc(sy.name)+'</h2><div class="k">'+esc(sy.k)+'</div></div></div>'
       + '<div class="sys-b">'+cats+reads+note+'</div></div>';
   }).join('');
+
+  var mn = el('s-mot-n'); if (mn) mn.textContent = Object.keys(motorSet).length || '7';
+}
+
+// Freigegebene Beiträge vom Worker holen und einmischen; ohne Worker bleibt die statische Liste.
+async function loadCommunity(){
+  try {
+    var ctrl = new AbortController(); var tm = setTimeout(function(){ ctrl.abort(); }, 8000);
+    var r = await fetch(LIST_WORKER + '/list', { signal: ctrl.signal }); clearTimeout(tm);
+    if (!r.ok) return;
+    var j = await r.json(); var entries = (j && j.entries) || [];
+    entries.forEach(function(e){
+      var sys = e.sys === 'smart' ? 'smart' : 'bes2'; var tgt = COMM[sys];
+      if (e.motor) tgt.motors.push(e.motor);
+      if (e.battery) tgt.batteries.push(e.battery);
+      if (e.battery2) tgt.batteries.push(e.battery2);
+      if (e.display) tgt.displays.push(e.display);
+      if (sys === 'smart' && e.remote) tgt.displays.push(e.remote);
+      var bike = [e.brand, e.model].filter(Boolean).join(' ').trim();
+      if (bike) COMM.bikes.push(bike);
+    });
+    render();
+  } catch (e) { /* ohne Worker: statische Liste */ }
 }
 
 (function initLang(){
@@ -202,6 +244,7 @@ function render(){
   });
 })();
 render();
+loadCommunity();
 </script>
 </body>
 </html>

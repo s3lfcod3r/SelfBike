@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Oy6g4OXIaQDph08Ijtpw/Me0412xgrYN66qoRS542h4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'sha256-Oy6g4OXIaQDph08Ijtpw/Me0412xgrYN66qoRS542h4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://bike-list.s3lfcod3r.workers.dev; frame-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SelfBike</title>
 <link rel="icon" type="image/png" sizes="64x64" href="brand/favicon-64.png">
@@ -295,6 +295,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="lib/contribute.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -305,6 +305,7 @@ function renderMore() {
       <button class="row" data-act="protocol">${icon('protocol', '#0ea5e9')}<span class="t">${esc(t('prot.title'))}</span><span class="v">${changeLog().length || ''}</span></button>
       <button class="row" data-act="pdf">${icon('pdf', '#0ea5e9')}<span class="t">${esc(t('tools.pdf'))}</span></button>
       <button class="row" data-act="diagnose">${icon('export', '#0ea5e9')}<span class="t">${esc(t('diag.title'))}</span></button>
+      <button class="row" data-act="contribute">${icon('export', '#33a78c')}<span class="t">${esc(contribLabel())}</span></button>
       <label class="row">${icon('refresh', '#0ea5e9')}<span class="t">${esc(t('restore.title'))}</span><span class="chev">›</span>
         <input type="file" id="restoreFile" accept=".json,application/json" class="hidden"></label>
       <button class="row" data-act="support">${icon('export', '#e5534b')}<span class="t">Support-Paket (.zip)</span></button>
@@ -320,6 +321,7 @@ $('moreList').addEventListener('click', async (e) => {
   else if (act === 'protocol') openPage('protocol');
   else if (act === 'pdf') openReportSmart();
   else if (act === 'diagnose') openPage('diagnose');
+  else if (act === 'contribute') openContributeSmart();
   else if (act === 'support') openSupport();
   else if (act === 'backup') manualBackup();
   else if (act === 'refresh') { try { await refresh(); } catch (err) { await disconnect(); toast(t('msg.readError', { error: err.message }), 'err'); } }
@@ -1453,6 +1455,25 @@ function renderSmartReport() {
   const url = URL.createObjectURL(new Blob([html], { type: 'text/html' })); f.dataset.url = url; f.src = url;
   const b = $('rTheme'); if (b) b.textContent = smartTheme === 'dark' ? '☀ Hell' : '🌙 Dunkel';
 }
+// Opt-in: erkannte Modell-Codes (keine Seriennummern) zur Kompatibilitätsliste beitragen.
+function contribLabel() { return (window.SelfBikeContribute && window.SelfBikeContribute.t(lang(), 'title')) || 'Zur Liste beitragen'; }
+function openContributeSmart() {
+  if (!rows.length) return toast(t('ui.notConnected'), 'warn');
+  const extras = [];
+  if (ok('absName') || ok('absMode')) extras.push('ABS');
+  if (ok('gearCount') && Number(val('gearCount')) > 0) extras.push('eShift');
+  const prod = (k) => (ok(k) ? withProductName(txt(k, '')) : '');
+  const payload = {
+    sys: 'smart',
+    brand: txt('oemBrand', ''), model: txt('oemModel', ''),
+    motor: prod('controllerProduct'), battery: prod('batteryProduct'), battery2: prod('battery2Product'),
+    display: prod('headProduct'), connect: prod('connectProduct'),
+    extras, ver: VERSION, lang: lang(),
+  };
+  if (typeof window.openContribute === 'function') window.openContribute(payload, payload.lang);
+  else toast(t('ui.notConnected'), 'warn');
+}
+
 async function openReportSmart() {
   if (reader && ALL_LAZY.some((k) => S[k] === undefined)) { toast(t('ui.loadingDetails')); await ensureLazy(ALL_LAZY); }
   smartReport = { rows: READ_PLAN.map((p) => S[p.key]).filter(Boolean), name: [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim() };
