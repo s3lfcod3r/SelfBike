@@ -81,13 +81,13 @@
 - Cube Nutrail Hybrid 2016
 - Radon ZR Team 2021
 - Radon Relate 8.0 2021
-- Winora Sinus R5
+- Winora Sinus R5 2023
 - HNF UD4 (Rohloff) 2023
 - Nicolai G16 EBOXX 2020
 - Victoria eTrekking 7.8 2021
-- Focus Thron² 6.7 (Smart System)
-- Riese & Müller Delite (Touring GX, DualAkku)
-- Cannondale (Smart System, Cargo)
+- Focus Thron² 6.7 2023 (Smart System)
+- Riese & Müller Delite 2017 (Touring GX, DualAkku)
+- Cannondale 2024 (Smart System, Cargo)
 
 ---
 

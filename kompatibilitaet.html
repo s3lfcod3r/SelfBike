@@ -167,7 +167,7 @@ function union(base, extra){
   (extra||[]).forEach(function(x){ var k = normKey(x); if (k && !seen[k]) { seen[k] = 1; out.push(x); } });
   return out;
 }
-var BIKES = ['Cube Reaction Hybrid Pro 2021','Cube Nutrail Hybrid 2016','Radon ZR Team 2021','Radon Relate 8.0 2021','Winora Sinus R5','HNF UD4 (Rohloff) 2023','Nicolai G16 EBOXX 2020','Victoria eTrekking 7.8 2021','Focus Thron² 6.7','Riese & Müller Delite','Cannondale (Smart Cargo)'];
+var BIKES = ['Cube Reaction Hybrid Pro 2021','Cube Nutrail Hybrid 2016','Radon ZR Team 2021','Radon Relate 8.0 2021','Winora Sinus R5 2023','HNF UD4 (Rohloff) 2023','Nicolai G16 EBOXX 2020','Victoria eTrekking 7.8 2021','Focus Thron² 6.7 2023','Riese & Müller Delite 2017','Cannondale (Smart Cargo) 2024'];
 
 var cur = detectLang(); if (!TR[cur]) cur = 'en';
 function T(k){ return (TR[cur] && TR[cur][k]) || TR.en[k] || TR.de[k] || k; }

@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.51 · November 2026
+- 🇬🇧 Found read-out protocols for the remaining example bikes too, so every listed bike now shows its year (Winora Sinus R5 2023, Focus Thron² 6.7 2023, Riese & Müller Delite 2017, Cannondale 2024).
+- 🇩🇪 Auch für die übrigen Beispiel-Räder die Auslese-Protokolle gefunden – jetzt zeigt jedes gelistete Rad sein Baujahr (Winora Sinus R5 2023, Focus Thron² 6.7 2023, Riese & Müller Delite 2017, Cannondale 2024).
+
 ## 1.9.50 · November 2026
 - 🇬🇧 Added the build year to the existing example bikes where a read-out protocol was on file (e.g. "Cube Reaction Hybrid Pro 2021"), so the motor generation is visible at a glance; bikes without a protocol stay as they are.
 - 🇩🇪 Bei den bestehenden Beispiel-Rädern das Baujahr nachgetragen, wo ein Auslese-Protokoll vorlag (z. B. „Cube Reaction Hybrid Pro 2021"), damit die Motor-Generation sichtbar ist; Räder ohne Protokoll bleiben unverändert.
