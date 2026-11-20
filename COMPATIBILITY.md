@@ -14,11 +14,10 @@
 🇬🇧 The older Bosch system (approx. 2014–2021), motors with **three digits** (BDU2xx–4xx).
 
 **Motoren / Motors**
-- BDU250PCX (Performance Line CX, Gen 2)
+- BDU250PCX (Performance Line CX, Gen 2 — auch mit Doppelakku / also dual battery)
 - BDU350 (Performance Line)
 - BDU365 (Performance Line)
 - BDU450CX (Performance Line CX)
-- Performance Line CX (Gen 2, Doppelakku / dual battery)
 
 **Akkus / Batteries**
 - PowerTube 500 (BBP281)

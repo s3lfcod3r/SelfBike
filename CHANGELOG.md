@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.48 · November 2026
+- 🇬🇧 Compatibility list: removed the redundant "CX Gen 2" motor chip (it is the same motor as BDU250PCX); the dual-battery note now sits on BDU250PCX.
+- 🇩🇪 Kompatibilitätsliste: doppelten Motor-Chip „CX Gen 2" entfernt (ist derselbe Motor wie BDU250PCX); der Doppelakku-Hinweis steht jetzt bei BDU250PCX.
+
 ## 1.9.47 · November 2026
 - 🇬🇧 Compatibility list: the "bikes we have reports for" heading now reads "bikes already on the list", and the call-to-action points to the in-app "Contribute to the list" button (email still works as an alternative) – since riders now add their bike themselves.
 - 🇩🇪 Kompatibilitätsliste: Die Überschrift „Räder, von denen schon Protokolle da sind" heißt jetzt „Räder, die schon dabei sind", und der Aufruf nennt den „Zur Liste beitragen"-Knopf in der App (Mail bleibt als Alternative) – weil Fahrer ihr Rad nun selbst eintragen.
