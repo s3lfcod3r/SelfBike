@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.41 · November 2026
+- 🇬🇧 "Tested bikes" page: the Smart System card now uses the teal brand colour instead of a blue accent.
+- 🇩🇪 Seite „Getestete Räder": die Smart-System-Karte nutzt jetzt das Teal der Marke statt eines blauen Akzents.
+
 ## 1.9.40 · November 2026
 - 🇬🇧 "Tested bikes" list extended with new confirmed hardware from community reports: BES2 motor BDU250PCX, batteries BBP291 / PowerPack 400, Purion (BUI215) display, and the Smart System now confirmed on a real Cannondale (BDU3741 Cargo Line, PowerPack 800 / BBP3580, HeadUnit BHU3600, LED Remote BRC3600, eShift). More example bikes added.
 - 🇩🇪 Liste „Getestete Räder" um neue belegte Hardware aus Community-Protokollen erweitert: BES2-Motor BDU250PCX, Akkus BBP291 / PowerPack 400, Display Purion (BUI215), und das Smart System jetzt an einem echten Cannondale bestätigt (BDU3741 Cargo Line, PowerPack 800 / BBP3580, HeadUnit BHU3600, LED Remote BRC3600, eShift). Mehr Beispiel-Räder ergänzt.
