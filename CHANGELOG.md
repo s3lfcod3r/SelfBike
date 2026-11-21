@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.56 · November 2026
+- 🇬🇧 The start page now shows a clear browser hint right up front ("To read out: Chrome or Edge"), so newcomers know which browser they need before they even try – thanks to community feedback.
+- 🇩🇪 Die Startseite zeigt jetzt gleich oben einen klaren Browser-Hinweis („Zum Auslesen: Chrome oder Edge"), damit Neulinge direkt wissen, welchen Browser sie brauchen – dank Community-Feedback.
+
 ## 1.9.55 · November 2026
 - 🇬🇧 Added an anonymous read-out counter: the admin review page now shows how often bikes have been read out (total, by system, last 7 days). Review polish: freshly approved entries no longer linger briefly in the queue.
 - 🇩🇪 Anonymer Auslese-Zähler ergänzt: Die Admin-Seite zeigt jetzt, wie oft Räder ausgelesen wurden (gesamt, je System, letzte 7 Tage). Feinschliff: frisch freigegebene Einträge hängen nicht mehr kurz in der Warteliste nach.
