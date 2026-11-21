@@ -304,6 +304,7 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     async writeField(tk,did,pos,bytes){ const k=tk+did, buf=(DEMO_RAW[k]||[]).slice(); for(let i=0;i<bytes.length;i++){ if(pos+i<buf.length) buf[pos+i]=bytes[i]&0xff; } DEMO_RAW[k]=buf; return {before:buf,after:buf}; },
     async writeFieldMulti(tk,did,patches){ const k=tk+did, buf=(DEMO_RAW[k]||[]).slice(); for(const p of (patches||[])){ const bs=p.bytes||[]; for(let i=0;i<bs.length;i++){ if((p.pos|0)+i<buf.length) buf[(p.pos|0)+i]=bs[i]&0xff; } } DEMO_RAW[k]=buf; return {before:buf,after:buf}; },
     async restoreField(tk,did,bytes){ DEMO_RAW[tk+did]=Array.from(bytes).map(x=>x&0xff); return {after:DEMO_RAW[tk+did]}; },
+    async logServiceDone(){ await new Promise(r=>setTimeout(r,500)); return {ok:true, odoKm:2140, date:new Date().toLocaleDateString('de-DE')}; },
     async readDTC(){ return { M:[], A:[], D:[] }; },
     async clearFaults(){ return ['Demo: nichts zu löschen']; }
   };
@@ -1127,7 +1128,22 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     const save=document.createElement('button'); save.className='btn-big'; save.textContent='Ins Rad speichern';
     const del=document.createElement('button'); del.className='btn-text'; del.textContent='Erinnerung löschen'; del.style.color='var(--self-red)';
     const res=document.createElement('p'); res.className='desc'; res.style.textAlign='center';
-    body.appendChild(save); body.appendChild(del); body.appendChild(res);
+    // Zuverlässiger Weg: „Service als erledigt eintragen" nutzt die Bosch-Service-Routine (wie der Händler) und
+    // setzt die „Service fällig"-Anzeige zurück. Das direkte Setzen/Löschen (unten) nehmen viele Motoren nicht an.
+    const doneNote=document.createElement('p'); doneNote.className='desc';
+    doneNote.innerHTML='Trägt eine Wartung mit <b>heutigem Datum</b> und <b>aktuellem km-Stand</b> ein – das Rad setzt die „Service fällig"-Anzeige damit zurück. Das ist der Weg, den auch der Händler nutzt.';
+    const done=document.createElement('button'); done.className='btn-big'; done.textContent='✓ Service als erledigt eintragen';
+    const sep=document.createElement('p'); sep.className='desc'; sep.style.cssText='text-align:center;margin-top:18px'; sep.textContent='— oder Fälligkeit direkt setzen (klappt nicht auf allen Motoren) —';
+    body.appendChild(doneNote); body.appendChild(done); body.appendChild(sep); body.appendChild(save); body.appendChild(del); body.appendChild(res);
+    done.onclick=async()=>{
+      if(!confirm('Eine Wartung mit heutigem Datum und aktuellem km-Stand ins Rad eintragen? Das setzt die Service-Erinnerung zurück. Nur am eigenen Rad.'))return;
+      done.disabled=true; res.textContent='trage ein …';
+      try{ const r=await api().logServiceDone();
+        logChange('Motor','Service','—','als erledigt eingetragen'+(r&&r.odoKm?(' ('+nf(r.odoKm,0)+' km)'):''));
+        renderService(body); doneKofi('Service eingetragen ✓','Die „Service fällig"-Anzeige ist damit zurückgesetzt.');
+      }catch(e){ res.textContent=''; toast(/timeout/i.test(e.message)?'Dein Motor hat den Service-Eintrag nicht bestätigt (keine Antwort).':'Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-erledigt', e.message); }catch(_){} }
+      finally{ done.disabled=false; }
+    };
     // Alle Teilfelder EINMAL kodieren und in EINER Sitzung ins Rad schreiben (robust, kein Timeout durch
     // vier getrennte Freischalt-/Schreibvorgänge wie bisher). list: [{field,value}, …].
     async function wfAll(list){

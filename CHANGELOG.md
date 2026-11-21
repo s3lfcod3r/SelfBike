@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.66 · November 2026
+- 🇬🇧 Service reminder: new "Mark service as done" button resets the "service due" display via the Bosch service routine (the method dealers use) — this works where directly setting the date/km did not (motors rejected that).
+- 🇩🇪 Service-Erinnerung: neuer Knopf „Service als erledigt eintragen" setzt die „Service fällig"-Anzeige über die Bosch-Service-Routine zurück (der Händler-Weg) – das funktioniert, wo das direkte Setzen von Datum/km nicht ging (Motoren nahmen das nicht an).
+
+---
+
 ## 1.9.65 · November 2026
 - 🇬🇧 Service history: SelfBike now shows the past services stored on the bike (date + km) under "Your bike" — read-only.
 - 🇩🇪 Service-Historie: SelfBike zeigt jetzt die im Rad gespeicherten vergangenen Wartungen (Datum + km) unter „Dein Rad" an – rein lesend.

@@ -596,6 +596,26 @@ async function writeField(tk,didHex,pos,bytes){
     return { before:[...before], after:[...after] };
   } finally{ busy--; }
 }
+// Service als erledigt eintragen: legt über die Bosch-Routine 0x0361 (DU_NewServiceHistoryEntry) einen
+// Service-Eintrag mit heutigem Datum + aktuellem Kilometerstand an. Das Steuergerät berechnet die nächste
+// Fälligkeit neu → die „Service fällig"-Anzeige verschwindet. Das ist der Händler-Weg; das direkte Schreiben
+// von 024d (0x2e) nehmen die BES2-Motoren nicht an. Kodierung aus der ODX (BDU250): 31 01 03 61
+// (Jahr-2000) Monat Tag <odometer in Metern = km*1000, 4-Byte Big-Endian>. Nur dieser EINE Eintrag, read-safe.
+async function logServiceDone(){
+  if(!device) throw new Error('Nicht verbunden – bitte zuerst „Verbinden & Auslesen".');
+  const t=tgtOf('M'); busy++;
+  try{
+    await openSession(t); await precheck(t); await ensureUnlock(t);
+    const now=new Date();
+    const yr=(now.getFullYear()-2000)&0xff, mo=(now.getMonth()+1)&0xff, dy=now.getDate()&0xff;
+    const odoKm=num('M','0167')||0; const odoM=(Math.max(0,Math.round(odoKm*1000)))>>>0;
+    const req=Uint8Array.of(0x31,0x01,0x03,0x61, yr, mo, dy, (odoM>>>24)&0xff,(odoM>>>16)&0xff,(odoM>>>8)&0xff,odoM&0xff);
+    const r=await request(t,req,6000);
+    if(r[0]===0x71) return { ok:true, odoKm, date:dy+'.'+mo+'.'+now.getFullYear() };
+    if(r[0]===0x7f){ const e=new Error('NRC 0x'+pad(r[2])); e.nrc=r[2]; throw e; }
+    throw new Error('unerwartet '+hex(r));
+  } finally{ busy--; }
+}
 // Mehrere Teilfelder EINER Kennung in EINER Sitzung + Freischaltung schreiben (statt pro Feld neu
 // öffnen/freischalten/lesen/schreiben). Robuster und ohne die Timeouts beim Service-Reset, wo bisher
 // vier Felder nacheinander je eigene Sitzung brauchten. patches: [{pos,bytes}, …]. ms: längeres Zeitfenster.
@@ -788,7 +808,7 @@ async function runAkku2(){
 }
 window.runAkku2=runAkku2;
 
-window.__bikeWrite={ clearFaults, readFieldRaw, writeField, writeFieldMulti, restoreField, readDTC };
+window.__bikeWrite={ clearFaults, readFieldRaw, writeField, writeFieldMulti, restoreField, readDTC, logServiceDone };
 window.__scan=scan; // damit die „Mein E-Bike"-Hülle den Scan starten und abwarten kann
 // TX/RX-Übertragungsverlauf als Text (für das Support-Paket, damit man sieht, wo z. B. das Fehlerlesen hängt).
 window.__diagLog=()=>{ try{ return logEl ? Array.from(logEl.children).map(d=>d.textContent).join('\n') : ''; }catch(e){ return ''; } };
