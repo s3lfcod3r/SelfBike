@@ -1120,12 +1120,12 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
         const neu=[el('svcKmOn').checked?('bei '+nf((motorKm||0)+(Number(el('svcKm').value)||0),0)+' km'):null,(el('svcDateOn').checked&&el('svcDate').value)?('am '+new Date(el('svcDate').value).toLocaleDateString('de-DE')):null].filter(Boolean).join(' · ')||'nicht eingestellt';
         logChange('Motor','Service-Erinnerung',jetzt,neu);
         renderService(body); doneKofi('Service-Erinnerung gespeichert ✓','Die Erinnerung ist im Rad gespeichert.');
-      }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ save.disabled=false; }
+      }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-schreiben', e.message); }catch(_){} } finally{ save.disabled=false; }
     };
     del.onclick=async()=>{
       if(!confirm('Service-Erinnerung löschen?'))return; del.disabled=true; res.textContent='lösche …';
       try{ await wfAll([{field:'odometer',value:0},{field:'year',value:0},{field:'month',value:0},{field:'day',value:0}]); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); renderService(body); doneKofi('Service-Erinnerung gelöscht ✓','Die Erinnerung ist entfernt.'); }
-      catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); } finally{ del.disabled=false; }
+      catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-loeschen', e.message); }catch(_){} } finally{ del.disabled=false; }
     };
   }
   const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI'],C:['BCS']}, ECUNAME={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};

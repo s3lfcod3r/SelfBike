@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.62 · November 2026
+- 🇬🇧 Service reminder: a failed write (e.g. timeout) is now recorded in the error log, so a support package pinpoints exactly where it went wrong.
+- 🇩🇪 Service-Erinnerung: Ein fehlgeschlagener Schreibvorgang (z. B. Timeout) wird jetzt im Fehler-Protokoll erfasst – so zeigt das Support-Paket genau, wo es hakt.
+
+---
+
 ## 1.9.61 · November 2026
 - 🇬🇧 "Find second battery" experiment (dual-battery bikes) now also tries to unlock the found node (SecurityAccess) and read its product code, charge level and ID — still strictly read-only.
 - 🇩🇪 Experiment „Zweiten Akku suchen" (Doppelakku-Räder) versucht den gefundenen Knoten jetzt auch freizuschalten (SecurityAccess) und Produktcode, Ladestand und Kennung zu lesen – weiterhin strikt nur lesend.
