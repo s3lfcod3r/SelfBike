@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.60 · November 2026
+- 🇬🇧 "Contribute to the list" now also loads Display, second battery and Connect module reliably — they could be missing when contributing right after readout (auto-popup).
+- 🇩🇪 „Zur Liste beitragen" lädt jetzt auch Display, Zweitakku und Connect-Modul zuverlässig – die konnten beim Beitragen direkt nach dem Auslesen (Auto-Popup) fehlen.
+
+---
+
 ## 1.9.59 · November 2026
 - 🇬🇧 "Contribute to the list": Smart System now reliably detects Bosch ABS (and eShift) and includes it in the contribution, even when the ABS product name can't be read.
 - 🇩🇪 „Zur Liste beitragen": Smart System erkennt jetzt Bosch ABS (und eShift) zuverlässig und sendet es mit – auch wenn der ABS-Produktname nicht lesbar ist.

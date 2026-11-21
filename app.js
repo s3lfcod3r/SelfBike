@@ -1460,9 +1460,14 @@ function contribLabel() { return (window.SelfBikeContribute && window.SelfBikeCo
 async function openContributeSmart(opts) {
   if (!rows.length) return toast(t('ui.notConnected'), 'warn');
   if (demo) { if (opts && opts.auto) return; return toast((window.SelfBikeContribute && window.SelfBikeContribute.demoMsg(lang())) || 'Demo', 'warn'); }
-  // Baujahr- UND Zubehör-Felder (ABS, eShift) liegen im lazy Detail-Bereich – vor dem Beitragen nachladen,
-  // damit Jahr und erkanntes Zubehör mitkommen (sonst fehlt z. B. ABS im Beitrag).
-  try { if (reader) await ensureLazy(['motorMade', 'batteryMade', 'controllerMade', 'absName', 'absMode', 'gearCount']); } catch (e) {}
+  // Mehrere Beitrags-Felder liegen im lazy Detail-/Komponenten-Bereich und sind ohne Seitenbesuch ungelesen:
+  // Display (headProduct), Zweitakku (battery2Product), Connect-Modul (connectProduct), Zubehör (ABS/eShift)
+  // und die Baujahr-Felder. Alle vor dem Beitragen nachladen, sonst fehlen sie – besonders beim Auto-Popup
+  // direkt nach dem Auslesen (da ist noch keine Detailseite geöffnet worden).
+  try {
+    if (reader) await ensureLazy(['motorMade', 'batteryMade', 'controllerMade',
+      'headProduct', 'battery2Product', 'connectProduct', 'absName', 'absMode', 'gearCount']);
+  } catch (e) {}
   const extras = [];
   // ABS gilt als verbaut, wenn Produkt/Modus gelesen wurde ODER das ABS-Steuergerät (Adr 2340) beim Scan
   // überhaupt geantwortet hat (Status != 'none'). Reine Namensabfrage reicht nicht für alle ABS-Varianten.
