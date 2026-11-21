@@ -132,7 +132,7 @@ for (const b of document.querySelectorAll('nav.tabbar button')) b.onclick = () =
 function renderHead() {
   $('pageTitle').textContent = tab === 'home' && rows.length
     ? ([txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim() || t('ui.home')) : t(TITLES[tab]);
-  $('pageSub').textContent = tab !== 'home' ? '' : (rows.length ? t('ui.homeSub') : 'Smart System · Gen 5');
+  $('pageSub').textContent = tab !== 'home' ? '' : (rows.length ? t('ui.homeSub') : 'BES3');
   $('conn').className = `conn ${busy ? 'busy' : usb ? 'on' : ''}`;
   $('connText').textContent = t(busy ? 'conn.busy' : usb ? 'conn.on' : 'conn.off');
   $('demoBadge').classList.toggle('hidden', !demo);

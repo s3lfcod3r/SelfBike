@@ -5,6 +5,14 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.58 · November 2026
+- 🇬🇧 Smart System fault list: obsolete codes now carry a clearer label, and two codes (seatpost software / battery software outdated) show their real meaning and severity instead of a vague note — in all 12 languages.
+- 🇩🇪 Smart-System-Fehlerliste: veraltete Codes bekommen eine klarere Beschriftung, und zwei Codes (Sattelstützen-Software / Akkusoftware veraltet) zeigen jetzt ihre echte Bedeutung und Schwere statt eines vagen Hinweises – in allen 12 Sprachen.
+- 🇬🇧 Header subtitle simplified to just "BES2" / "BES3".
+- 🇩🇪 Kopf-Untertitel auf nur „BES2" bzw. „BES3" vereinfacht.
+
+---
+
 ## 1.9.57 · November 2026
 - 🇬🇧 Browser hint moved into the system cards: the device line now reads "… (Chrome/Edge)" on both cards, instead of a separate banner under the intro.
 - 🇩🇪 Browser-Hinweis in die System-Karten verschoben: Die Geräte-Zeile zeigt jetzt bei beiden Karten „… (Chrome/Edge)" statt eines eigenen Banners unter dem Intro.
