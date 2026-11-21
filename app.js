@@ -1460,10 +1460,15 @@ function contribLabel() { return (window.SelfBikeContribute && window.SelfBikeCo
 async function openContributeSmart(opts) {
   if (!rows.length) return toast(t('ui.notConnected'), 'warn');
   if (demo) { if (opts && opts.auto) return; return toast((window.SelfBikeContribute && window.SelfBikeContribute.demoMsg(lang())) || 'Demo', 'warn'); }
-  // Baujahr-Felder liegen im lazy Detail-Bereich – vor dem Beitragen nachladen, damit das Jahr mitkommt.
-  try { if (reader) await ensureLazy(['motorMade', 'batteryMade', 'controllerMade']); } catch (e) {}
+  // Baujahr- UND Zubehör-Felder (ABS, eShift) liegen im lazy Detail-Bereich – vor dem Beitragen nachladen,
+  // damit Jahr und erkanntes Zubehör mitkommen (sonst fehlt z. B. ABS im Beitrag).
+  try { if (reader) await ensureLazy(['motorMade', 'batteryMade', 'controllerMade', 'absName', 'absMode', 'gearCount']); } catch (e) {}
   const extras = [];
-  if (ok('absName') || ok('absMode')) extras.push('ABS');
+  // ABS gilt als verbaut, wenn Produkt/Modus gelesen wurde ODER das ABS-Steuergerät (Adr 2340) beim Scan
+  // überhaupt geantwortet hat (Status != 'none'). Reine Namensabfrage reicht nicht für alle ABS-Varianten.
+  const absPresent = ok('absName') || ok('absMode')
+    || (Array.isArray(faults) && faults.some((f) => f.address === 2340 && f.status && f.status !== 'none'));
+  if (absPresent) extras.push('ABS');
   if (ok('gearCount') && Number(val('gearCount')) > 0) extras.push('eShift');
   const prod = (k) => (ok(k) ? withProductName(txt(k, '')) : '');
   // Echter Antrieb = motorModel (Adr 6147); controllerProduct ist die Bedieneinheit, nicht der Motor.

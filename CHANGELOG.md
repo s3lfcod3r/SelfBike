@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.59 · November 2026
+- 🇬🇧 "Contribute to the list": Smart System now reliably detects Bosch ABS (and eShift) and includes it in the contribution, even when the ABS product name can't be read.
+- 🇩🇪 „Zur Liste beitragen": Smart System erkennt jetzt Bosch ABS (und eShift) zuverlässig und sendet es mit – auch wenn der ABS-Produktname nicht lesbar ist.
+
+---
+
 ## 1.9.58 · November 2026
 - 🇬🇧 Smart System fault list: obsolete codes now carry a clearer label, and two codes (seatpost software / battery software outdated) show their real meaning and severity instead of a vague note — in all 12 languages.
 - 🇩🇪 Smart-System-Fehlerliste: veraltete Codes bekommen eine klarere Beschriftung, und zwei Codes (Sattelstützen-Software / Akkusoftware veraltet) zeigen jetzt ihre echte Bedeutung und Schwere statt eines vagen Hinweises – in allen 12 Sprachen.
