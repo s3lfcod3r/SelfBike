@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.54 · November 2026
+- 🇬🇧 Fixed Smart System contributions: the motor is now the real drive unit (motorModel) instead of the control unit, the control unit is sent separately, and the manufacturing-date fields are loaded first so the build year is included.
+- 🇩🇪 Smart-System-Beiträge korrigiert: als Motor kommt jetzt der echte Antrieb (motorModel) statt der Bedieneinheit, die Bedieneinheit wird separat geschickt, und die Herstelldatum-Felder werden vorher geladen, damit das Baujahr dabei ist.
+
 ## 1.9.53 · November 2026
 - 🇬🇧 The compatibility list now shows an "Accessories" category per system with the confirmed extras from contributions (ABS, eShift, fast charger).
 - 🇩🇪 Die Kompatibilitätsliste zeigt jetzt pro System eine „Zubehör"-Kategorie mit den bestätigten Extras aus den Beiträgen (ABS, eShift, Fast Charger).

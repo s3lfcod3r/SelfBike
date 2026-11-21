@@ -1457,20 +1457,24 @@ function renderSmartReport() {
 }
 // Opt-in: erkannte Modell-Codes (keine Seriennummern) zur Kompatibilitätsliste beitragen.
 function contribLabel() { return (window.SelfBikeContribute && window.SelfBikeContribute.t(lang(), 'title')) || 'Zur Liste beitragen'; }
-function openContributeSmart(opts) {
+async function openContributeSmart(opts) {
   if (!rows.length) return toast(t('ui.notConnected'), 'warn');
   if (demo) { if (opts && opts.auto) return; return toast((window.SelfBikeContribute && window.SelfBikeContribute.demoMsg(lang())) || 'Demo', 'warn'); }
+  // Baujahr-Felder liegen im lazy Detail-Bereich – vor dem Beitragen nachladen, damit das Jahr mitkommt.
+  try { if (reader) await ensureLazy(['motorMade', 'batteryMade', 'controllerMade']); } catch (e) {}
   const extras = [];
   if (ok('absName') || ok('absMode')) extras.push('ABS');
   if (ok('gearCount') && Number(val('gearCount')) > 0) extras.push('eShift');
   const prod = (k) => (ok(k) ? withProductName(txt(k, '')) : '');
-  // Baujahr aus den „hergestellt"-Datumsfeldern der Komponenten (sofern geladen).
-  const madeYm = [txt('motorMade', ''), txt('controllerMade', ''), txt('batteryMade', '')].join(' ').match(/\b(20\d{2})\b/);
+  // Echter Antrieb = motorModel (Adr 6147); controllerProduct ist die Bedieneinheit, nicht der Motor.
+  const motorCode = ok('motorModel') ? txt('motorModel', '') : (ok('motorName') ? txt('motorName', '') : '');
+  const madeYm = [txt('motorMade', ''), txt('batteryMade', ''), txt('controllerMade', '')].join(' ').match(/\b(20\d{2})\b/);
   const payload = {
     sys: 'smart',
     brand: txt('oemBrand', ''), model: txt('oemModel', ''),
-    motor: prod('controllerProduct'), battery: prod('batteryProduct'), battery2: prod('battery2Product'),
-    display: prod('headProduct'), connect: prod('connectProduct'),
+    motor: motorCode ? withProductName(motorCode) : '',
+    battery: prod('batteryProduct'), battery2: prod('battery2Product'),
+    display: prod('headProduct'), remote: prod('controllerProduct'), connect: prod('connectProduct'),
     extras, year: madeYm ? madeYm[1] : '', ver: VERSION, lang: lang(),
   };
   if (typeof window.openContribute === 'function') window.openContribute(payload, payload.lang, opts || {});
