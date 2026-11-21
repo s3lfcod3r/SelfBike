@@ -23,14 +23,6 @@ const S = {
   fi:{title:'Mikä järjestelmä sinulla on?',intro:'Valitse Bosch-järjestelmäsi. Etkö ole varma? Avaa demo – näet kaiken ilman pyörää.',open:'Avaa',demo:'Katso demo',support:'Tue',disp:'Näytöt',year:'Vuosimalli',since:'alk.',pcOnly:'Vain tietokoneella / läppärillä',pcPhone:'Tietokoneella ja puhelimella',preSmart:'ennen Smart Systemiä',compat:'Testatut pyörät'}
 };
 
-// Browser-Hinweis für Neulinge (Chrome/Edge). Browsernamen bleiben neutral.
-const BROWSER = {
-  de:'Zum Auslesen: Chrome oder Edge', en:'To read out: Chrome or Edge', fr:'Pour lire : Chrome ou Edge',
-  it:'Per leggere: Chrome o Edge', es:'Para leer: Chrome o Edge', pt:'Para ler: Chrome ou Edge',
-  nl:'Uitlezen: Chrome of Edge', pl:'Do odczytu: Chrome lub Edge', cs:'Ke čtení: Chrome nebo Edge',
-  da:'Til aflæsning: Chrome eller Edge', sv:'För avläsning: Chrome eller Edge', fi:'Lukemiseen: Chrome tai Edge'
-};
-
 function fillLangs(cur){
   $('lang').innerHTML = Object.entries(LANGS).map(([c,n]) => '<option value="'+c+'">'+n+'</option>').join('');
   $('lang').value = cur;
@@ -43,17 +35,16 @@ function applyCards(code){
   $('t-bes2f1').textContent = 'Active · Performance · Cargo';
   $('t-bes2f2').textContent = 'Purion · BDU2xx–4xx';
   $('t-bes2f3').textContent = s.year + ' ~2014–2021';
-  $('t-bes2f4').textContent = s.pcOnly;
+  $('t-bes2f4').textContent = s.pcOnly + ' (Chrome/Edge)';
   $('t-ssk').textContent = 'BES3';
   $('t-ssf1').textContent = s.disp + ': Kiox 300 / 500';
   $('t-ssf2').textContent = 'Controller & LED-Remote';
   $('t-ssf3').textContent = s.year + ' ' + s.since + ' ~2022';
-  $('t-ssf4').textContent = s.pcPhone;
+  $('t-ssf4').textContent = s.pcPhone + ' (Chrome/Edge)';
   $('t-open1').textContent = s.open; $('t-demo1').textContent = s.demo;
   $('t-open2').textContent = s.open; $('t-demo2').textContent = s.demo;
   $('t-support').textContent = s.support;
   { const cc = $('t-compat'); if (cc) cc.textContent = s.compat; }
-  { const bc = $('t-browser'); if (bc) bc.textContent = BROWSER[code] || BROWSER.en; }
 }
 
 // Rechtshinweis-Fenster

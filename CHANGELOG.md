@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.57 · November 2026
+- 🇬🇧 Browser hint moved into the system cards: the device line now reads "… (Chrome/Edge)" on both cards, instead of a separate banner under the intro.
+- 🇩🇪 Browser-Hinweis in die System-Karten verschoben: Die Geräte-Zeile zeigt jetzt bei beiden Karten „… (Chrome/Edge)" statt eines eigenen Banners unter dem Intro.
+
 ## 1.9.56 · November 2026
 - 🇬🇧 The start page now shows a clear browser hint right up front ("To read out: Chrome or Edge"), so newcomers know which browser they need before they even try – thanks to community feedback.
 - 🇩🇪 Die Startseite zeigt jetzt gleich oben einen klaren Browser-Hinweis („Zum Auslesen: Chrome oder Edge"), damit Neulinge direkt wissen, welchen Browser sie brauchen – dank Community-Feedback.
