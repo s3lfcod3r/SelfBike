@@ -648,6 +648,45 @@ function probeOne(tx,uds,ms){
     }, ms||260);
   });
 }
+// Einen DID read-only abfragen; liefert {hex, ascii, ok} (ok = positive 0x62-Antwort).
+async function tryDid(t,did){
+  try{ const r=await request(t,Uint8Array.of(0x22,did[0],did[1]));
+    return { hex:hex(r), ascii:(r[0]===0x62?asciiOf(r.subarray(3)):''), ok:r[0]===0x62 }; }
+  catch(e){ return { hex:e.message, ascii:'', ok:false }; }
+}
+// Einen neu gefundenen Knoten (Kandidat 2. Akku) auslesen: Sitzung → SecurityAccess (Slot 1 = Akku,
+// Seed→Key wie beim Haupt-Akku) → Produktcode/Ladestand/MULTIID. NUR LESEN, keine Writes.
+async function akku2ReadNode(tx,rx){
+  const out=[]; const add=(s,cls)=>{ out.push(s); log(s,cls||''); };
+  const t2={ name:'Akku-2-Knoten 0x'+pad(rx), tx, rx, slot:1, kontext:[0x22,0x05,0x01] };
+  add('');
+  add('=== Akku-2-Suche · Knoten 0x'+pad(rx)+' auslesen (SecurityAccess, nur gelesen) ===');
+  try{
+    await reopenIfClosed(); await openSession(t2);
+    try{ await precheck(t2); }catch(e){ add('  Kontext (01 05 01): '+e.message,'warn'); }
+    const pc0=await tryDid(t2,[0x5b,0x7c]);
+    add('  Produktcode (5b 7c) ohne Freischaltung: '+pc0.hex+(pc0.ok&&pc0.ascii?' = '+pc0.ascii:''), pc0.ok?'ok':'warn');
+    let unlocked=false;
+    try{ unlocked=await sendKey(t2,0x11,1); add('  SecurityAccess (Slot 1 = Akku): '+(unlocked?'freigeschaltet ✓':'abgelehnt'), unlocked?'ok':'warn'); }
+    catch(e){ add('  SecurityAccess (Slot 1) fehlgeschlagen: '+e.message,'no'); }
+    const fields=[
+      ['Produktcode (5b 7c)',[0x5b,0x7c],true],
+      ['Software-Version (01 03)',[0x01,0x03],false],
+      ['Herstelldatum (01 20)',[0x01,0x20],false],
+      ['Akku-Variante (01 21)',[0x01,0x21],false],
+      ['Nennenergie (02 a0)',[0x02,0xa0],false],
+      ['Ladestand % (05 10)',[0x05,0x10],false],
+      ['MULTIID 29-Bit (01 10)',[0x01,0x10],false],
+      ['MULTIID LastWorking (01 11)',[0x01,0x11],false],
+    ];
+    for(const [lbl,did,ascii] of fields){
+      const r=await tryDid(t2,did);
+      add('  '+lbl+': '+r.hex+(ascii&&r.ok&&r.ascii?' = '+r.ascii:''), r.ok?'ok':'warn');
+      await sleep(T.DID_GAP);
+    }
+  }catch(e){ add('  Knoten-Sitzung fehlgeschlagen: '+e.message,'no'); }
+  return out;
+}
 async function akku2Probe(){
   const lines=[]; const add=(s,cls)=>{ lines.push(s); log(s,cls||''); };
   busy++; // Keepalive (3e 00 an alle Ziele) während der Sonde aussetzen – sonst Querantworten
@@ -656,12 +695,12 @@ async function akku2Probe(){
     add('=== Akku-2-Suche · Adress-Sonde (nur gelesen: 10 03 = Sitzung öffnen) ===');
     const known=new Set([0x20,0x21,0x22,0x23,0x3a,0x3d,0x6e,0x6f]); // Motor/Akku/Display/Charger TX+RX
     const addrs=[]; for(let a=0x10;a<=0x4e;a+=2){ if(!known.has(a)) addrs.push(a); }
-    let hits=0, news=0;
+    let hits=0, news=0; const newHits=[];
     for(const tx of addrs){
       progMsg('Adress-Sonde … 0x'+pad(tx));
       const got=await probeOne(tx,[0x10,0x03]);
       for(const g of got){
-        const isNew=!known.has(g.src); if(isNew)news++; hits++;
+        const isNew=!known.has(g.src); if(isNew){ news++; if(!newHits.some(h=>h.src===g.src)) newHits.push({tx,src:g.src}); } hits++;
         add('  TX 0x'+pad(tx)+' → Antwort von Adresse 0x'+pad(g.src)+': '+hex(Uint8Array.from(g.bytes))+(isNew?'   << NEUE ADRESSE':'   (bekannt)'), isNew?'ok':'rx');
       }
       await sleep(40);
@@ -681,6 +720,11 @@ async function akku2Probe(){
         await sleep(T.DID_GAP);
       }
     }catch(e){ add('  Akku-Sitzung fehlgeschlagen: '+e.message,'no'); }
+    // Jeden neu gefundenen Knoten auslesen (Kandidat für den 2. Akku) – SecurityAccess + Lesen, read-only.
+    for(const h of newHits){
+      try{ const r=await akku2ReadNode(h.tx,h.src); for(const s of r) lines.push(s); }
+      catch(e){ add('  Knoten 0x'+pad(h.src)+': '+e.message,'no'); }
+    }
     return lines.join('\n');
   } finally { busy--; }
 }

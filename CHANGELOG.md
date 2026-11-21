@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.61 · November 2026
+- 🇬🇧 "Find second battery" experiment (dual-battery bikes) now also tries to unlock the found node (SecurityAccess) and read its product code, charge level and ID — still strictly read-only.
+- 🇩🇪 Experiment „Zweiten Akku suchen" (Doppelakku-Räder) versucht den gefundenen Knoten jetzt auch freizuschalten (SecurityAccess) und Produktcode, Ladestand und Kennung zu lesen – weiterhin strikt nur lesend.
+
+---
+
 ## 1.9.60 · November 2026
 - 🇬🇧 "Contribute to the list" now also loads Display, second battery and Connect module reliably — they could be missing when contributing right after readout (auto-popup).
 - 🇩🇪 „Zur Liste beitragen" lädt jetzt auch Display, Zweitakku und Connect-Modul zuverlässig – die konnten beim Beitragen direkt nach dem Auslesen (Auto-Popup) fehlen.
