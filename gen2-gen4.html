@@ -497,6 +497,8 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     const zust=(cyc!=null)?(cyc<300?'sehr gut':cyc<600?'gut':'mäßig'):null;
     h+=tile(t('tile.battery')+' · '+t('bat.soc'), soc==null?'—':Math.round(soc), '%', soc>50?'good':soc>20?'warn':'bad', {meter:soc, c:[zust?'Zustand '+zust:null, rest!=null?'Rest '+ni(rest)+' Wh':null, cyc?t('tile.cycles',{n:Math.round(cyc)}):null].filter(Boolean).join(' · ')});
     h+=tile(t('tile.check'), ok?t('check.ok'):t('check.warn'), '', ok?'good':'bad', {c:[t('check.speed',{v:nf(assist!=null?assist:dmax,1)+' km/h'}).trim(), dmax!=null?'Anzeige '+nf(dmax,1)+' km/h':null, ok?t('tuning.none'):'Manipulation!'].filter(Boolean).join(' · ')});
+    if(M()['A2']){ const c2=num('A2','02a0'); let s2=num('A2','0510'); if(s2==null||s2>=255) s2=null;
+      h+=tile('Akku 2', s2!=null?Math.round(s2):(c2?ni(c2):'✓'), s2!=null?'%':(c2?' Wh':''), 'good', {meter:s2, c:['DualBattery', c2?ni(c2)+' Wh':null].filter(Boolean).join(' · ')}); }
     h+=tile(t('ui.km'), odo==null?'—':nf(odo,0), ' km');
     h+=tile(t('ui.faults'), '…', '', '', {id:'tFaults'});
     h+=tile('Nächster Service', '…', '', '', {id:'tService', cid:'tServiceSub'});
@@ -507,6 +509,21 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     window.__akkuHtml='<div class="group noico">'
       +kv(t('more.voltage'),nf(volt,2)+' V')+kv(tb('temp'),nf(temp,1)+' °C')+kv(t('more.capacity'),ni(cap)+' Wh')
       +kv(t('bat.cycles'),nf(cyc,1))+kv(tb('minCell'),nf(mcell,2)+' V')+kv(tb('maxCell'),nf(mcellMax,2)+' V')+'</div>';
+    // Zweiter Akku (DualBattery) – nur wenn ein zweiter Akku-Knoten gelesen wurde.
+    if(M()['A2']){
+      const cap2=num('A2','02a0'); let soc2=num('A2','0510'); if(soc2==null||soc2>=255) soc2=null;
+      const volt2=num('A2','0413'), cyc2=(num('A2','0312')||0)+(num('A2','0313')||0);
+      const d2=M()['A2'].dids['0120'], dp2=d2&&d2.dec&&d2.dec.parts;
+      const date2=(dp2&&dp2.length>=3)?(String(dp2[0].num).padStart(2,'0')+'.'+String(dp2[1].num).padStart(2,'0')+'.'+dp2[2].num):null;
+      window.__akkuHtml+='<p class="gh" style="margin:16px 0 6px">Zweiter Akku (DualBattery)</p><div class="group noico">'
+        +kv('Modell',esc(str('A2','5b7c')||'—'))
+        +(cap2?kv(t('more.capacity'),ni(cap2)+' Wh'):'')
+        +(soc2!=null?kv(t('bat.soc'),Math.round(soc2)+' %'):'')
+        +(volt2!=null?kv(t('more.voltage'),nf(volt2,2)+' V'):'')
+        +(cyc2?kv(t('bat.cycles'),nf(cyc2,1)):'')
+        +(date2?kv('Baujahr',esc(date2)):'')
+        +'</div>';
+    }
     window.__antriebHtml='<div class="group noico">'
       +kv(tb('frame'),esc(str('M','0181')||'—'))+kv(tb('modelId'),esc(str('M','0180')||'—'))
       +kv(tb('motorNr'),esc(str('M','014a')||'—'))+kv(t('check.speed',{v:''}).trim(),nf(assist!=null?assist:dmax,1)+' km/h')+'</div>';
@@ -565,9 +582,9 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
   /* ---------- Backup: alle ausgelesenen Werte als Datei sichern ---------- */
   const bkHex=a=>{ try{ return Array.from(a).map(x=>x.toString(16).padStart(2,'0')).join(''); }catch(e){ return ''; } };
   function makeBackup(){
-    const m=M(); const NAMES={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
+    const m=M(); const NAMES={M:'Motor',A:'Akku',A2:'Akku 2',D:'Display',C:'Fast Charger'};
     const out={ tool:'SelfBike · BES2 (Gen2–4)', version:VERSION, erstellt:new Date().toISOString(), demo:!!m.__demo, fahrrad:(str('M','5b7c')||str('M','0181')||''), systeme:{} };
-    for(const tk of ['M','A','D','C']){ const tgt=m[tk]; if(!tgt)continue; const sys={ werte:{}, routinen:[] };
+    for(const tk of ['M','A','A2','D','C']){ const tgt=m[tk]; if(!tgt)continue; const sys={ werte:{}, routinen:[] };
       for(const did in (tgt.dids||{})){ const o=tgt.dids[did]; if(!o)continue; const e={ name:(o.dec&&o.dec.n)||'', parts:((o.dec&&o.dec.parts)||[]).map(p=>({name:p.name,wert:p.val,zahl:p.num})) }; if(o.raw)e.hex=bkHex(o.raw); sys.werte[did]=e; }
       for(const r of (tgt.rc||[])){ const e={ req:(r.req?Array.from(r.req).map(x=>x.toString(16).padStart(2,'0')).join(' '):''), parts:((r.dec&&r.dec.parts)||[]).map(p=>({name:p.name,wert:p.val})) }; if(r.raw)e.hex=bkHex(r.raw); sys.routinen.push(e); }
       out.systeme[NAMES[tk]]=sys;
@@ -1194,6 +1211,10 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
   function DEMO(){ return { __demo:true,
     M:{dids:{'0510':null,'0167':P(2140),'0181':S('Cube Stereo Hybrid 160'),'0180':S('CBX-2021-0815'),'014a':S('••••••••'),'0143':P(25),'0210':P(27.4),'0272':P(0),'5b7c':S('BDU450CX'),'022a':P(16800000),'0226':P(8200000),'0227':P(2100000),'0228':P(650000),'0247':P(120000),'0229':P(4300000)}, rc:[]},
     A:{dids:{'0510':P(81),'0413':P(36.2),'0433':P(24),'02a0':P(597),'0312':P(120),'0313':P(8),'07a1':P(3.78),'0610':P(3.81),'5b7c':S('PowerPack 400')}, rc:[]},
+    A2:{dids:{'02a0':P(500),'0510':P(64),'0413':P(39.0),'0433':P(22),'0121':P(5),'0312':P(60),'0313':P(5),'5b7c':S('PowerPack 500'),
+      '0120':{dec:{parts:[{name:'Tag',num:11,val:'11'},{name:'Monat',num:9,val:'9'},{name:'Jahr',num:2021,val:'2021'}]}},
+      '0103':{dec:{parts:[{name:'Major',num:1,val:'1'},{name:'Minor',num:8,val:'8'},{name:'Bugfix',num:0,val:'0'},{name:'Internal',num:0,val:'0'}]}},
+      '0110':P(151338680)}, rc:[]},
     D:{dids:{'5b7c':S('Nyon')}, rc:[]},
     C:{dids:{'5b7c':S('Fast Charger · BCS250'),
       '0103':{dec:{parts:[{name:'Major',num:1,val:'1'},{name:'Minor',num:0,val:'0'},{name:'Bugfix',num:5,val:'5'},{name:'Internal',num:0,val:'0'}]}},

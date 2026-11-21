@@ -29,6 +29,11 @@ const TARGETS = [
   { key:'C', id:'charger', name:'Fast Charger', tx:0x6e, rx:0x6f, slot:null, kontext:null, shortKey:false, optional:true, routines:[],
     dids:[[1,3],[1,4],[1,7],[1,0x20],[1,0x22],[1,0x23],[0x44,0x20],[0x5b,0x7c]] },
 ];
+// Zweiter Akku (DualBattery): eigener Knoten tx 0x24 / rx 0x25, gleiche Freischaltung (Akku-Key, Slot 1) und
+// dieselben DIDs wie Akku 1. Optional → bei Einzelakku-Rädern antwortet 0x25 nicht und wird sauber übersprungen.
+// Bewiesen an Jörgs Delite DualAkku (0x25 per SecurityAccess freigeschaltet + ausgelesen, 21.11.2026).
+{ const A1=TARGETS.find((t)=>t.key==='A');
+  if(A1) TARGETS.push({ key:'A2', id:'akku2', name:'Akku 2', tx:0x24, rx:0x25, slot:1, kontext:A1.kontext, shortKey:false, optional:true, routines:[], dids:A1.dids }); }
 
 /* ---------- Schlüssel über den geschützten Worker (Keys bleiben serverseitig) ---------- */
 const toHexStr=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
@@ -125,9 +130,10 @@ async function sendKey(t,sub,slot){
 async function decodeAll(){
   try{ decodeCharger(); }catch(e){}
   const items=[], refs=[];
-  for(const tk of ['M','A','D']){ const m=model[tk]; if(!m)continue;
-    for(const did in m.dids){ items.push({t:tk,did,b:[...m.dids[did].raw]}); refs.push(m.dids[did]); }
-    for(const r of m.rc){ items.push({t:tk,rid:r.rid,b:[...r.raw]}); refs.push(r); }
+  for(const tk of ['M','A','D','A2']){ const m=model[tk]; if(!m)continue;
+    const wt = tk==='A2' ? 'A' : tk; // 2. Akku wie Akku dekodieren (Worker kennt nur Motor/Akku/Display)
+    for(const did in m.dids){ items.push({t:wt,did,b:[...m.dids[did].raw]}); refs.push(m.dids[did]); }
+    for(const r of m.rc){ items.push({t:wt,rid:r.rid,b:[...r.raw]}); refs.push(r); }
   }
   if(!items.length)return;
   const res=await fetch(DECODE_WORKER,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})});
@@ -357,6 +363,26 @@ function render(){
     </div>
   </div>`;
 
+  // Zweiter Akku (DualBattery) – nur anzeigen, wenn wirklich ein zweiter Knoten gelesen wurde.
+  if(model['A2'] && (num('A2','02a0')!=null || str('A2','0103'))){
+    const cap2=num('A2','02a0'); let soc2=num('A2','0510'); if(soc2==null||soc2>=255) soc2=null;
+    const vr2=num('A2','0121');
+    const d2=model['A2'].dids['0120'] && model['A2'].dids['0120'].dec && model['A2'].dids['0120'].dec.parts;
+    const date2=(d2&&d2.length>=3)?(d2[0].num+'.'+d2[1].num+'.'+d2[2].num):null;
+    const id2=str('A2','0110');
+    h+=`<div class="card"><h3><span class="ico">▰</span> Akku 2</h3>
+      <p class="cardsub">${esc(str('A2','5b7c')||'Zweiter Akku (DualBattery)')}${cap2?' · '+ni(cap2)+' Wh':''}</p>
+      <div class="chips">
+        ${cap2?`<div class="chip"><span>Nennkapazität</span> <b>${ni(cap2)} Wh</b></div>`:''}
+        ${soc2!=null?`<div class="chip"><span>Ladestand</span> <b>${ni(soc2)} %</b></div>`:''}
+        ${date2?`<div class="chip"><span>Baujahr</span> <b>${esc(date2)}</b></div>`:''}
+        ${vr2!=null?`<div class="chip"><span>Variante</span> <b>${vr2}</b></div>`:''}
+        <div class="chip"><span>SW</span> <b>${esc(verStr('A2','0103'))}</b></div>
+        ${id2?`<div class="chip"><span>Kennung</span> <b>${esc(id2)}</b></div>`:''}
+      </div>
+    </div>`;
+  }
+
   h+=`<div class="card"><h3><span class="ico">⚙</span> Motor</h3><p class="cardsub">${esc(str('M','5b7c')||'')} · ${esc(str('M','0150')||'')}</p>
     <div class="battstats" style="grid-template-columns:1fr 1fr">
       ${metric('Motor-Laufzeit',nf(rtM,1)+' <small>h</small>')}
@@ -427,7 +453,7 @@ function render(){
 function verStr(tk,didhex){ const p=model[tk]&&model[tk].dids[didhex]; if(!p)return '—'; const q=p.dec.parts; if(q.length>=3)return q.slice(0,4).map(x=>x.num!=null?x.num:x.val).join('.'); return q[0]?q[0].val:'—'; }
 
 function fullTables(){
-  const names={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
+  const names={M:'Motor',A:'Akku',A2:'Akku 2',D:'Display',C:'Fast Charger'};
   const det=document.createElement('details');
   let h='<summary>Alle Werte ('+Object.values(model).reduce((a,m)=>a+Object.keys(m.dids).length,0)+' Kennungen) <span class="arr">▾</span></summary>';
   for(const tk of ['M','A','D','C']){
@@ -455,13 +481,13 @@ const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI']};
 function faultTextEng(tk,code){ const L=(window.__bes2lang||'de'); const F=(L!=='de' && window['BES2_FAULTS_'+L.toUpperCase()]) || window.BES2_FAULTS || {}; for(const p of (FAULT_PREF[tk]||[])){ if(F[p]&&F[p][code]) return F[p][code]; } return null; }
 function buildReport(dtc){
   dtc=dtc||{};
-  const names={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
+  const names={M:'Motor',A:'Akku',A2:'Akku 2',D:'Display',C:'Fast Charger'};
   const bike=(el('bikeName')?el('bikeName').value.trim():'')||'—';
   const L=['SelfBike · BES2 (Gen2–4) — Auslese-Protokoll','Fahrrad: '+bike,'Datum: '+new Date().toLocaleString('de-DE'),
     'Seriennummern/IDs sind zum Schutz ausgeblendet. Senden an: info@selfcoder.de','',
     'Typ: '+(str('M','5b7c')||'unbekannt')+' / '+(str('A','5b7c')||'unbekannt')+' / '+(str('D','5b7c')||'unbekannt'),
     'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),''];
-  for(const tk of ['M','A','D','C']){ const m=model[tk]; if(!m)continue;
+  for(const tk of ['M','A','A2','D','C']){ const m=model[tk]; if(!m)continue;
     L.push('=== '+names[tk]+' ===');
     for(const [did,o] of Object.entries(m.dids)){
       const parts=o.dec.parts.map(p=>(p.name?p.name+': ':'')+blurVal(p.name,o.dec.n,p.val,p.str)).join(' · ');
@@ -514,7 +540,8 @@ function contributeBES2(opts){
   try{ const rc=(model.M&&model.M.rc)||[]; for(const r of rc){ const d=r&&r.dec; if(d&&!d.empty&&d.parts&&d.parts.length>=4&&d.parts[3].num===0){ const y=d.parts[0].num; if(y>2000&&y<2100){ year=y; break; } } }
     if(!year){ const bd=model.A&&model.A.dids&&model.A.dids['0120']; const p=bd&&bd.dec&&bd.dec.parts; if(p&&p.length>=3&&p[2].num>2000&&p[2].num<2100) year=p[2].num; }
   }catch(e){}
-  const payload={ sys:'bes2', model:bike, motor:str('M','5b7c'), battery:str('A','5b7c'), display:str('D','5b7c'),
+  const payload={ sys:'bes2', model:bike, motor:str('M','5b7c'), battery:str('A','5b7c'),
+    battery2:(str('A2','5b7c') || (model['A2']?'2. Akku (DualBattery)':'')), display:str('D','5b7c'),
     extras, year, ver:(window.__sbver||''), lang:(window.__bes2lang||'de') };
   if(typeof window.openContribute==='function') window.openContribute(payload, payload.lang, opts);
   else if(!opts.auto) alert('Beitragen ist gerade nicht verfügbar.');

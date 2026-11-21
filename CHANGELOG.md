@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.64 · November 2026
+- 🇬🇧 Dual-battery bikes (BES2): SelfBike now reads and shows the second battery when present — as its own tile, in the battery detail and in the protocol (read-only, via SecurityAccess on the second node).
+- 🇩🇪 Doppelakku-Räder (BES2): SelfBike liest und zeigt jetzt auch den zweiten Akku, wenn vorhanden – als eigene Kachel, im Akku-Detail und im Protokoll (nur lesend, per SecurityAccess am zweiten Knoten).
+
+---
+
 ## 1.9.63 · November 2026
 - 🇬🇧 Service reminder: if the motor doesn't acknowledge the change (timeout), SelfBike now automatically retries once and shows a clear message instead of a bare "timeout".
 - 🇩🇪 Service-Erinnerung: Wenn der Motor die Änderung nicht quittiert (Timeout), versucht SelfBike es jetzt automatisch ein zweites Mal und zeigt eine klare Meldung statt nur „Timeout".
