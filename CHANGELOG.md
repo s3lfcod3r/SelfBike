@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.63 · November 2026
+- 🇬🇧 Service reminder: if the motor doesn't acknowledge the change (timeout), SelfBike now automatically retries once and shows a clear message instead of a bare "timeout".
+- 🇩🇪 Service-Erinnerung: Wenn der Motor die Änderung nicht quittiert (Timeout), versucht SelfBike es jetzt automatisch ein zweites Mal und zeigt eine klare Meldung statt nur „Timeout".
+
+---
+
 ## 1.9.62 · November 2026
 - 🇬🇧 Service reminder: a failed write (e.g. timeout) is now recorded in the error log, so a support package pinpoints exactly where it went wrong.
 - 🇩🇪 Service-Erinnerung: Ein fehlgeschlagener Schreibvorgang (z. B. Timeout) wird jetzt im Fehler-Protokoll erfasst – so zeigt das Support-Paket genau, wo es hakt.

@@ -1105,7 +1105,15 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
         patches.push({pos:enc.pos,bytes:enc.bytes});
       }
       const a=api();
-      if(typeof a.writeFieldMulti==='function') return a.writeFieldMulti('M','024d',patches,6000);
+      if(typeof a.writeFieldMulti==='function'){
+        // Manche Motoren (z. B. Karls BDU350) quittieren den Service-Write beim ersten Mal nicht
+        // (keine Antwort → Timeout). Ein zweiter Versuch ist ungefährlich: ohne Quittung wurde nichts
+        // geschrieben. Darum bei Timeout einmal mit etwas mehr Zeit wiederholen.
+        try{ return await a.writeFieldMulti('M','024d',patches,6000); }
+        catch(e){ if(!/timeout/i.test(e.message||'')) throw e;
+          res.textContent='Motor antwortet nicht – zweiter Versuch …'; await new Promise(r=>setTimeout(r,800));
+          return await a.writeFieldMulti('M','024d',patches,9000); }
+      }
       for(const p of patches) await a.writeField('M','024d',p.pos,p.bytes); // Fallback (alter Pfad)
     }
     save.onclick=async()=>{
@@ -1120,12 +1128,12 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
         const neu=[el('svcKmOn').checked?('bei '+nf((motorKm||0)+(Number(el('svcKm').value)||0),0)+' km'):null,(el('svcDateOn').checked&&el('svcDate').value)?('am '+new Date(el('svcDate').value).toLocaleDateString('de-DE')):null].filter(Boolean).join(' · ')||'nicht eingestellt';
         logChange('Motor','Service-Erinnerung',jetzt,neu);
         renderService(body); doneKofi('Service-Erinnerung gespeichert ✓','Die Erinnerung ist im Rad gespeichert.');
-      }catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-schreiben', e.message); }catch(_){} } finally{ save.disabled=false; }
+      }catch(e){ res.textContent=''; toast(/timeout/i.test(e.message)?'Dein Motor hat die Service-Erinnerung nicht bestätigt (keine Antwort). Bei manchen Modellen klappt das direkte Ändern leider nicht – ich schau mir das an.':'Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-schreiben', e.message); }catch(_){} } finally{ save.disabled=false; }
     };
     del.onclick=async()=>{
       if(!confirm('Service-Erinnerung löschen?'))return; del.disabled=true; res.textContent='lösche …';
       try{ await wfAll([{field:'odometer',value:0},{field:'year',value:0},{field:'month',value:0},{field:'day',value:0}]); logChange('Motor','Service-Erinnerung',jetzt,'gelöscht'); renderService(body); doneKofi('Service-Erinnerung gelöscht ✓','Die Erinnerung ist entfernt.'); }
-      catch(e){ res.textContent=''; toast('Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-loeschen', e.message); }catch(_){} } finally{ del.disabled=false; }
+      catch(e){ res.textContent=''; toast(/timeout/i.test(e.message)?'Dein Motor hat das Löschen der Service-Erinnerung nicht bestätigt (keine Antwort). Bei manchen Modellen klappt das direkte Ändern leider nicht – ich schau mir das an.':'Fehler: '+e.message,'err'); try{ if(window.recordError) window.recordError('service-loeschen', e.message); }catch(_){} } finally{ del.disabled=false; }
     };
   }
   const FAULT_PREF={M:['BDU','DU'],A:['BBP','BMS','BCT','BCS'],D:['HMI'],C:['BCS']}, ECUNAME={M:'Motor',A:'Akku',D:'Display',C:'Fast Charger'};
