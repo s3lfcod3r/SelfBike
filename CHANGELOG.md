@@ -5,6 +5,10 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.55 · November 2026
+- 🇬🇧 Added an anonymous read-out counter: the admin review page now shows how often bikes have been read out (total, by system, last 7 days). Review polish: freshly approved entries no longer linger briefly in the queue.
+- 🇩🇪 Anonymer Auslese-Zähler ergänzt: Die Admin-Seite zeigt jetzt, wie oft Räder ausgelesen wurden (gesamt, je System, letzte 7 Tage). Feinschliff: frisch freigegebene Einträge hängen nicht mehr kurz in der Warteliste nach.
+
 ## 1.9.54 · November 2026
 - 🇬🇧 Fixed Smart System contributions: the motor is now the real drive unit (motorModel) instead of the control unit, the control unit is sent separately, and the manufacturing-date fields are loaded first so the build year is included.
 - 🇩🇪 Smart-System-Beiträge korrigiert: als Motor kommt jetzt der echte Antrieb (motorModel) statt der Bedieneinheit, die Bedieneinheit wird separat geschickt, und die Herstelldatum-Felder werden vorher geladen, damit das Baujahr dabei ist.

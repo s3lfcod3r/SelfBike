@@ -661,6 +661,7 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
   window.__afterRead=function(){ try{ if(M()&&M().__demo) return; (async()=>{ let dtc={}; try{ dtc=await api().readDTC(); }catch(e){}
     const bike=(el('bikeName')?el('bikeName').value.trim():'')||str('M','0181')||str('M','5b7c')||'';
     try{ if(typeof window.__buildReport==='function') archiveProto('bes2',bike,window.__buildReport(dtc)); }catch(e){} })();
+    try{ window.sbReadStat&&window.sbReadStat('bes2'); }catch(e){}
     setTimeout(function(){ try{ window.contributeBES2&&window.contributeBES2({auto:true}); }catch(e){} }, 1200); }catch(e){} };
   function supportInfoText(){ const n=protoLoad().length; return ['SelfBike · BES2 (Gen2–4) — Support-Paket','Erstellt: '+new Date().toLocaleString('de-DE'),'Rad: '+(str('M','5b7c')||'?')+' / '+(str('A','5b7c')||'?')+' / '+(str('D','5b7c')||'?'),'Gesamt-km: '+(num('M','0167')!=null?nf(num('M','0167'),1):'—'),'','Enthalten: alle im Browser gespeicherten Auslese-Protokolle ('+n+') mit ausgeblendeten Seriennummern/IDs, Änderungs-Protokoll'+(CHANGELOG.length?' ('+CHANGELOG.length+' Einträge)':' (leer)')+', Fehler-Protokoll'+(ERRLOG.length?' ('+ERRLOG.length+')':'')+', ggf. deine Anhänge.','Kontakt: info@selfcoder.de','','Erstellt mit SelfBike · bike.selfcoder.de'].join('\n'); }
   function openSupport(){

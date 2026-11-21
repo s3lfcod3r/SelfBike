@@ -1647,6 +1647,7 @@ async function refresh() {
   releaseWake();
   busy = false;
   if (!demo) { addSnapshot(snapshotFromRows(rows, new Date())); try { const nm = [txt('oemBrand', ''), txt('oemModel', '')].join(' ').trim(); archiveProto('smart', nm, diagText()); } catch (e) {} }
+  if (!demo) { try { window.sbReadStat && window.sbReadStat('smart'); } catch (e) {} }
   if (!demo) setTimeout(() => { try { openContributeSmart({ auto: true }); } catch (e) {} }, 1200);
   renderAll();
   if (stack.length) drawPage();
