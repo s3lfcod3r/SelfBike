@@ -5,6 +5,12 @@ Neueste Version zuerst.
 
 ---
 
+## 1.9.65 · November 2026
+- 🇬🇧 Service history: SelfBike now shows the past services stored on the bike (date + km) under "Your bike" — read-only.
+- 🇩🇪 Service-Historie: SelfBike zeigt jetzt die im Rad gespeicherten vergangenen Wartungen (Datum + km) unter „Dein Rad" an – rein lesend.
+
+---
+
 ## 1.9.64 · November 2026
 - 🇬🇧 Dual-battery bikes (BES2): SelfBike now reads and shows the second battery when present — as its own tile, in the battery detail and in the protocol (read-only, via SecurityAccess on the second node).
 - 🇩🇪 Doppelakku-Räder (BES2): SelfBike liest und zeigt jetzt auch den zweiten Akku, wenn vorhanden – als eigene Kachel, im Akku-Detail und im Protokoll (nur lesend, per SecurityAccess am zweiten Knoten).

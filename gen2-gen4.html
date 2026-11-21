@@ -552,10 +552,25 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
       sh+='</div><p class="foot">'+esc(tb('statsNote'))+'</p>';
     } else sh='<p class="foot">'+esc(t('ride.noStats'))+'</p>';
     window.__statsHtml=sh;
+    // Service-Historie: vergangene Wartungen, rein lesend aus den 03-60-Routinen des Motors.
+    const svcHist=[];
+    for(const r of ((M().M&&M().M.rc)||[])){
+      if(r.rid!=='0360' || (r.dec&&r.dec.empty)) continue;
+      const p=(r.dec&&r.dec.parts)||[]; if(!p.length) continue;
+      const g=(n)=>p.find(q=>new RegExp(n,'i').test(q.name||''));
+      const y=g('year'), mo=g('month'), d=g('day'), od=g('odometer');
+      if(!y||y.num==null||y.num===0) continue;
+      const date=(d&&d.num!=null?String(d.num).padStart(2,'0')+'.':'')+(mo&&mo.num!=null?String(mo.num).padStart(2,'0')+'.':'')+y.num;
+      const km=(od&&od.num!=null)?nf(od.num/1000,0)+' km':'';
+      svcHist.push({date,km});
+    }
+    window.__serviceHistHtml = svcHist.length
+      ? '<div class="group noico">'+svcHist.map((e,i)=>kv('Service '+(i+1), esc(e.date)+(e.km?' · bei '+e.km:''))).join('')+'</div><p class="foot">Vergangene Wartungen, wie im Rad gespeichert.</p>'
+      : '<p class="foot">Keine Service-Historie im Rad gespeichert.</p>';
     const drow=(ico,bg,title,sub,act)=>'<button class="row" data-info="'+act+'"><span class="ico" style="background:'+bg+'">'+ico+'</span><span class="t">'+esc(title)+(sub?'<small>'+esc(sub)+'</small>':'')+'</span><span class="chev">›</span></button>';
     let g='<div class="gh">'+esc(t('tile.battery'))+'</div><div class="group">'+drow('🔋','#22a35a',tb('akkuDetail'),tb('akkuDetailSub'),'akku')+'</div>';
     g+='<div class="gh">'+esc(t('nav.ride'))+'</div><div class="group">'+drow('📊','#3b82f6',tb('statsTitle'),tb('statsSub'),'stats')+'</div>';
-    g+='<div class="gh">'+esc(t('ui.groupBike'))+'</div><div class="group">'+drow('⚙️','#64748b',t('grp.Antrieb'),tb('antriebSub'),'antrieb')+drow('⚠️','#e5534b',t('ui.faults'),tb('faultsSub'),'fehler')+(M().C?drow('⚡','#f0a500','Fast Charger',str('C','5b7c')||'','charger'):'')+'</div>';
+    g+='<div class="gh">'+esc(t('ui.groupBike'))+'</div><div class="group">'+drow('⚙️','#64748b',t('grp.Antrieb'),tb('antriebSub'),'antrieb')+(svcHist.length?drow('🔧','#33a78c','Service-Historie','Vergangene Wartungen','servicehist'):'')+drow('⚠️','#e5534b',t('ui.faults'),tb('faultsSub'),'fehler')+(M().C?drow('⚡','#f0a500','Fast Charger',str('C','5b7c')||'','charger'):'')+'</div>';
     g+='<div class="gh">'+esc(t('ui.groupSafe'))+'</div><div class="group">'+drow(svgIco('backup'),'#0ea5e9','Backup jetzt speichern','Alle Werte als Datei sichern','backup')+drow(svgIco('protocol'),'#0ea5e9','Protokoll','Auslese-Protokoll speichern','save')+drow(svgIco('export'),'#33a78c',(window.SelfBikeContribute?window.SelfBikeContribute.t(curLang,'title'):'Zur Liste beitragen'),(window.SelfBikeContribute?window.SelfBikeContribute.t(curLang,'consent'):''),'contribute')+drow(svgIco('pdf'),'#0ea5e9','PDF-Bericht erstellen','Übersicht zum Ausdrucken / Speichern','pdf')+drow(svgIco('refresh'),'#0ea5e9','Aus Backup wiederherstellen','Einstellungen vom selben Rad zurückschreiben','restore')+drow(svgIco('protocol'),'#0ea5e9','Änderungs-Protokoll','Alle Änderungen – speichern & schicken','changelog')+drow(svgIco('export'),'#e5534b','Support-Paket (.zip)','Bei Problemen: alles gebündelt zum Schicken','support')+drow(svgIco('refresh'),'#0ea5e9',t('ui.refresh'),'','rescan')+'</div>';
     el('moreList').innerHTML=g;
     el('moreList').querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>onInfo(b.dataset.info));
@@ -566,6 +581,7 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
     if(key==='akku') return openInfo(tb('akkuDetail'), window.__akkuHtml||'');
     if(key==='antrieb') return openInfo(t('grp.Antrieb'), window.__antriebHtml||'');
     if(key==='charger') return openInfo('Fast Charger', window.__chargerHtml||'');
+    if(key==='servicehist') return openInfo('Service-Historie', window.__serviceHistHtml||'');
     if(key==='stats') return openInfo(tb('statsTitle'), window.__statsHtml||'');
     if(key==='pdf') return openReport();
     if(key==='changelog') return openChangeLog();
@@ -1209,7 +1225,9 @@ window.__sbver=VERSION; // Version für den Listen-Beitrag (contribute.js)
   function P(n){ return {dec:{parts:[{num:n,val:String(n)}]}}; }
   function S(s){ return {dec:{parts:[{val:s}]}}; }
   function DEMO(){ return { __demo:true,
-    M:{dids:{'0510':null,'0167':P(2140),'0181':S('Cube Stereo Hybrid 160'),'0180':S('CBX-2021-0815'),'014a':S('••••••••'),'0143':P(25),'0210':P(27.4),'0272':P(0),'5b7c':S('BDU450CX'),'022a':P(16800000),'0226':P(8200000),'0227':P(2100000),'0228':P(650000),'0247':P(120000),'0229':P(4300000)}, rc:[]},
+    M:{dids:{'0510':null,'0167':P(2140),'0181':S('Cube Stereo Hybrid 160'),'0180':S('CBX-2021-0815'),'014a':S('••••••••'),'0143':P(25),'0210':P(27.4),'0272':P(0),'5b7c':S('BDU450CX'),'022a':P(16800000),'0226':P(8200000),'0227':P(2100000),'0228':P(650000),'0247':P(120000),'0229':P(4300000)},
+      rc:[{req:[3,0x60,0],rid:'0360',dec:{parts:[{name:'year',num:2023,val:'2023'},{name:'month',num:5,val:'5'},{name:'day',num:14,val:'14'},{name:'odometer',num:1500000,val:'1500000'}]}},
+          {req:[3,0x60,1],rid:'0360',dec:{parts:[{name:'year',num:2021,val:'2021'},{name:'month',num:4,val:'4'},{name:'day',num:3,val:'3'},{name:'odometer',num:600000,val:'600000'}]}}]},
     A:{dids:{'0510':P(81),'0413':P(36.2),'0433':P(24),'02a0':P(597),'0312':P(120),'0313':P(8),'07a1':P(3.78),'0610':P(3.81),'5b7c':S('PowerPack 400')}, rc:[]},
     A2:{dids:{'02a0':P(500),'0510':P(64),'0413':P(39.0),'0433':P(22),'0121':P(5),'0312':P(60),'0313':P(5),'5b7c':S('PowerPack 500'),
       '0120':{dec:{parts:[{name:'Tag',num:11,val:'11'},{name:'Monat',num:9,val:'9'},{name:'Jahr',num:2021,val:'2021'}]}},
